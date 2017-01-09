@@ -19,6 +19,7 @@ class MzML(TagBase):
 
 
 _COMPONENT_NAMESPACE = 'mzml'
+_xmlns = "http://psidev.info/psi/pi/mzML/1.1"
 
 
 class ComponentDispatcher(ComponentDispatcherBase):
@@ -43,12 +44,6 @@ default_cv_list = [
 ]
 
 
-common_units = {
-    "parts per million": "UO:0000169",
-    "dalton": "UO:0000221"
-}
-
-
 class ParameterContainer(ComponentBase):
     def __init__(self, tag_name, params=None, context=NullMap):
         if params is None:
@@ -67,7 +62,7 @@ class GenericCollection(ComponentBase):
     def __init__(self, tag_name, members, context=NullMap):
         self.members = members
         self.tag_name = tag_name
-        self.element = _element(tag_name, xmlns="http://psidev.info/psi/pi/mzML/1.1", count=len(self.members))
+        self.element = _element(tag_name, xmlns=_xmlns, count=len(self.members))
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=False):
@@ -86,7 +81,7 @@ class IDGenericCollection(GenericCollection):
     def __init__(self, tag_name, members, id, context=NullMap):
         self.members = members
         self.tag_name = tag_name
-        self.element = _element(tag_name, xmlns="http://psidev.info/psi/pi/mzML/1.1", id=id, count=len(self.members))
+        self.element = _element(tag_name, xmlns=_xmlns, id=id, count=len(self.members))
         context[tag_name][id] = self.element.id
 
     def write(self, xml_file):
@@ -122,7 +117,7 @@ class SourceFile(ComponentBase):
             params = []
         self.location = location
         self.name = name
-        self.element = _element("SourceFile", location=location, id=id, name=name)
+        self.element = _element("sourceFile", location=location, id=id, name=name)
         self.params = params
         self.context = context
         context["SourceFile"][id] = self.element.id
@@ -595,6 +590,11 @@ class Precursor(ComponentBase):
             if self.isolation_window is not None:
                 self.isolation_window.write(xml_file)
             self.selected_ion_list.write(xml_file)
+
+
+class Activation(ParameterContainer):
+    def __init__(self, params, context=NullMap):
+        super(Activation, self).__init__("activation", params, context)
 
 
 class SelectedIonList(GenericCollection):

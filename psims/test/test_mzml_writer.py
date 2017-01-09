@@ -59,9 +59,12 @@ f = MzMLWriter(open(path, 'wb'))
 
 with f:
     f.controlled_vocabularies()
+    f.file_description(["spam"], [
+        dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
     with f.element('run'):
-        f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
-            {"name": "ms level", "value": 1}], polarity='negative scan')
+        with f.spectrum_list(count=1):
+            f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
+                {"name": "ms level", "value": 1}], polarity='negative scan')
 
 
 spec = next(mzml.read(path))

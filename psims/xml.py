@@ -201,6 +201,7 @@ def element(xml_file, _tag_name, *args, **kwargs):
 
 class CVParam(TagBase):
     tag_name = "cvParam"
+    _track = NO_TRACK
 
     @classmethod
     def param(cls, name, value=None, **attrs):
@@ -211,6 +212,17 @@ class CVParam(TagBase):
                 return cls(name=name, **attrs)
             else:
                 return cls(name=name, value=value, **attrs)
+
+    @staticmethod
+    def _normalize_units(attrs):
+        if 'unit_cv_ref' in attrs:
+            attrs["unitCvRef"] = attrs.pop("unit_cv_ref")
+        if 'unit_accession' in attrs:
+            attrs['unitAccession'] = attrs.pop("unit_accession")
+        if 'unit_name' in attrs:
+            attrs['unitName'] = attrs.pop("unit_name")
+
+        return attrs
 
     def __init__(self, accession=None, name=None, ref=None, value=None, **attrs):
         if ref is not None:
@@ -223,6 +235,9 @@ class CVParam(TagBase):
             attrs['value'] = value
         else:
             attrs['value'] = ''
+
+        attrs = self._normalize_units(attrs)
+
         super(CVParam, self).__init__(self.tag_name, **attrs)
         self.patch_accession(accession, ref)
 

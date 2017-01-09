@@ -1,7 +1,8 @@
 from contextlib import contextmanager
 from .components import (
     ComponentDispatcher, etree, common_units, element, _element,
-    default_cv_list, CVParam, UserParam)
+    default_cv_list, CVParam, UserParam,
+    _xmlns)
 
 from psims.xml import XMLWriterMixin
 
@@ -17,7 +18,7 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.writer = writer
 
     def __enter__(self):
-        self.toplevel = element(self.writer, self.section, xmlns="http://psidev.info/psi/pi/mzIdentML/1.1")
+        self.toplevel = element(self.writer, self.section, xmlns=_xmlns)
         self.toplevel.__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):

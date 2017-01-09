@@ -70,11 +70,14 @@ common_units = {
 }
 
 
+_xmlns = "http://psidev.info/psi/pi/mzIdentML/1.1"
+
+
 class GenericCollection(ComponentBase):
     def __init__(self, tag_name, members, context=NullMap):
         self.members = members
         self.tag_name = tag_name
-        self.element = _element(tag_name, xmlns="http://psidev.info/psi/pi/mzIdentML/1.1")
+        self.element = _element(tag_name, xmlns=_xmlns)
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=False):
@@ -86,7 +89,7 @@ class IDGenericCollection(GenericCollection):
     def __init__(self, tag_name, members, id, context=NullMap):
         self.members = members
         self.tag_name = tag_name
-        self.element = _element(tag_name, xmlns="http://psidev.info/psi/pi/mzIdentML/1.1", id=id)
+        self.element = _element(tag_name, xmlns=_xmlns, id=id)
         context[tag_name][id] = self.element.id
 
     def write(self, xml_file):
@@ -414,7 +417,7 @@ class SpectrumIdentificationList(ComponentBase):
     def __init__(self, identification_results, id, fragmentation_table=None, context=NullMap):
         self.identification_results = identification_results
         self.fragmentation_table = fragmentation_table
-        self.element = _element("SpectrumIdentificationList", xmlns="http://psidev.info/psi/pi/mzIdentML/1.1", id=id)
+        self.element = _element("SpectrumIdentificationList", xmlns=_xmlns, id=id)
         context["SpectrumIdentificationList"][id] = self.element.id
 
     def write(self, xml_file):
@@ -745,7 +748,7 @@ class Provider(ComponentBase):
         self.contact = contact
 
     def write(self, xml_file):
-        with element(xml_file, "Provider", id=self.id, xmlns="http://psidev.info/psi/pi/mzIdentML/1.1"):
+        with element(xml_file, "Provider", id=self.id, xmlns=_xmlns):
             with element(xml_file, "ContactRole", contact_ref=self.contact):
                 with element(xml_file, "Role"):
                     xml_file.write(CVParam(accession="MS:1001271", name="researcher", cvRef="PSI-MS").element())
@@ -791,7 +794,7 @@ class AuditCollection(ComponentBase):
         self.organizations = organizations
 
     def write(self, xml_file):
-        with element(xml_file, "AuditCollection", xmlns="http://psidev.info/psi/pi/mzIdentML/1.1"):
+        with element(xml_file, "AuditCollection", xmlns=_xmlns):
             for person in self.persons:
                 person.write(xml_file)
             for organization in self.organizations:
