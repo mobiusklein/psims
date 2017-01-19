@@ -65,7 +65,7 @@ with f:
         with f.spectrum_list(count=1):
             f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
                 {"name": "ms level", "value": 1}], polarity='negative scan')
-
+f._prettyify()
 
 spec = next(mzml.read(path))
 assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))

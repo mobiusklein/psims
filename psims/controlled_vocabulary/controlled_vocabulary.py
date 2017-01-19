@@ -10,7 +10,9 @@ class ControlledVocabulary(object):
     @classmethod
     def from_obo(cls, handle):
         parser = OBOParser(handle)
-        return cls(parser.terms)
+        inst = cls(parser.terms)
+        assert len(parser.terms) > 0
+        return inst
 
     def __init__(self, terms, id=None):
         self.terms = terms
@@ -81,30 +83,48 @@ class OBOCache(object):
     def resolve(self, uri):
         if uri in self.resolvers:
             return self.resolvers[uri](self)
-        if self.enabled:
-            name = self.path_for(uri)
-            if os.path.exists(name):
-                return open(name)
+        try:
+            if self.enabled:
+                name = self.path_for(uri)
+                if os.path.exists(name) and os.path.getsize(name) > 0:
+                    return open(name)
+                else:
+                    f = urlopen(uri)
+                    code = None
+                    # The keepalive library monkey patches urllib2's urlopen and returns
+                    # an object with a different API. First handle the normal case, then
+                    # the patched case.
+                    if hasattr(f, 'getcode'):
+                        code = f.getcode()
+                    elif hasattr(f, "code"):
+                        code = f.code
+                    else:
+                        raise ValueError("Can't understand how to get HTTP response code from %r" % f)
+                    if code != 200:
+                        raise ValueError("%s did not resolve" % uri)
+                    with open(name, 'w') as cache_f:
+                        n_chars = 0
+                        for i, line in enumerate(f.readlines()):
+                            n_chars += len(line)
+                            cache_f.write(line)
+                        if n_chars < 5:
+                            raise ValueError("No bytes written")
+                    if os.path.getsize(name) > 0:
+                        return open(name)
+                    else:
+                        raise ValueError("Failed to download .obo")
             else:
-                f = urlopen(uri)
                 code = None
-                # The keepalive library monkey patches urllib2's urlopen and returns
-                # an object with a different API. First handle the normal case, then
-                # the patched case.
                 if hasattr(f, 'getcode'):
                     code = f.getcode()
                 elif hasattr(f, "code"):
                     code = f.code
-                else:
-                    raise TypeError("Can't understand how to get HTTP response code from %r" % f)
                 if code != 200:
                     raise ValueError("%s did not resolve" % uri)
-                with open(name, 'w') as cache_f:
-                    for line in f:
-                        cache_f.write(line)
-                return open(name)
-        else:
-            return urlopen(uri)
+                return urlopen(uri)
+        except ValueError:
+            import traceback
+            traceback.print_exc()
 
     def set_resolver(self, uri, provider):
         self.resolvers[uri] = provider

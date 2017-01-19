@@ -4,7 +4,7 @@ import numbers
 from lxml import etree
 import numpy as np
 
-from psims.xml import XMLWriterMixin
+from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
 from .components import (
     ComponentDispatcher, element,
@@ -20,6 +20,8 @@ from utils import ensure_iterable, basestring
 MZ_ARRAY = 'm/z array'
 INTENSITY_ARRAY = 'intensity array'
 CHARGE_ARRAY = 'charge array'
+
+NON_STANDARD_ARRAY = 'non-standard data array'
 
 ARRAY_TYPES = [
     'm/z array',
@@ -92,7 +94,7 @@ class RunSection(DocumentSection):
 # todo
 
 
-class MzMLWriter(ComponentDispatcher, XMLWriterMixin):
+class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     """
     A high level API for generating mzML XML files from simple Python objects.
 
@@ -100,7 +102,7 @@ class MzMLWriter(ComponentDispatcher, XMLWriterMixin):
     depends heavily on context managers. Almost all logic is handled inside a context
     manager and in the context of a particular document. Since all operations assume
     that they have access to a universal identity map for each element in the document,
-    that map is centralized in this instance.
+    that map is centralized in this class.
 
     MzMLWriter inherits from :class:`.ComponentDispatcher`, giving it a :attr:`context`
     attribute and access to all `Component` objects pre-bound to that context with attribute-access
@@ -127,30 +129,9 @@ class MzMLWriter(ComponentDispatcher, XMLWriterMixin):
         if vocabularies is None:
             vocabularies = []
         vocabularies = default_cv_list + list(vocabularies)
-        super(MzMLWriter, self).__init__(vocabularies=vocabularies)
-        self.outfile = outfile
-        self.xmlfile = etree.xmlfile(outfile, **kwargs)
-        self.writer = None
-        self.toplevel = None
+        ComponentDispatcher.__init__(self, vocabularies=vocabularies)
+        XMLDocumentWriter.__init__(self, outfile, **kwargs)
         self.spectrum_count = 0
-
-    def _begin(self):
-        self.outfile.write('<?xml version="1.0" encoding="utf-8"?>\n')
-        self.writer = self.xmlfile.__enter__()
-
-    def __enter__(self):
-        self._begin()
-        self.toplevel = element(self.writer, self.toplevel_tag())
-        self.toplevel.__enter__()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.toplevel.__exit__(exc_type, exc_value, traceback)
-        self.writer.flush()
-        self.xmlfile.__exit__(exc_type, exc_value, traceback)
-        self.outfile.close()
-
-    def close(self):
-        self.outfile.close()
 
     def controlled_vocabularies(self, vocabularies=None):
         if vocabularies is None:
@@ -214,6 +195,7 @@ class MzMLWriter(ComponentDispatcher, XMLWriterMixin):
         if other_arrays is None:
             other_arrays = []
 
+        # Binary choice, default to positive
         if polarity is None:
             polarity = 'positive scan'
         elif isinstance(polarity, int):
@@ -273,7 +255,7 @@ class MzMLWriter(ComponentDispatcher, XMLWriterMixin):
                 scan_params.append(scan_start_time)
 
         scan = self.Scan(params=scan_params)
-        scan_list = self.ScanList([scan])
+        scan_list = self.ScanList([scan], params=["no combination"])
 
         index = self.spectrum_count
         self.spectrum_count += 1
@@ -282,7 +264,6 @@ class MzMLWriter(ComponentDispatcher, XMLWriterMixin):
             default_array_length=len(mz_array),
             precursor_list=precursor_list)
         spectrum.write(self.writer)
-        self.outfile.write("\n")
 
     def _prepare_array(self, numeric, encoding=32, compression=COMPRESSION_ZLIB, array_type=None):
         _encoding = int(encoding)
@@ -295,16 +276,21 @@ class MzMLWriter(ComponentDispatcher, XMLWriterMixin):
         if array_type is not None:
             params.append(array_type)
             if array_type not in ARRAY_TYPES:
-                params.append('non-standard data array')
+                params.append(NON_STANDARD_ARRAY)
         params.append(compression_map[compression])
         params.append("%d-bit float" % _encoding)
         encoded_length = len(encoded_binary)
         return self.BinaryDataArray(binary, encoded_length, params=params)
 
-    def _prepare_precursor_information(self, mz, intensity, charge, scan_id):
+    def _prepare_precursor_information(self, mz, intensity, charge, scan_id, activation=None):
+        if activation is not None:
+            activation = self.Activation(activation)
         ion = self.SelectedIon(mz, intensity, charge)
         ion_list = self.SelectedIonList([ion])
         precursor = self.Precursor(
-            ion_list, activation=None, isolation_window=None, spectrum_reference=scan_id)
+            ion_list,
+            activation=activation,
+            isolation_window=None,
+            spectrum_reference=scan_id)
         precursor_list = self.PrecursorList([precursor])
         return precursor_list

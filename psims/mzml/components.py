@@ -24,7 +24,8 @@ _xmlns = "http://psidev.info/psi/pi/mzML/1.1"
 
 class ComponentDispatcher(ComponentDispatcherBase):
     def __init__(self, *args, **kwargs):
-        super(ComponentDispatcher, self).__init__(*args, component_namespace=_COMPONENT_NAMESPACE, **kwargs)
+        super(ComponentDispatcher, self).__init__(
+            *args, component_namespace=_COMPONENT_NAMESPACE, **kwargs)
 
 
 class ComponentBase(_ComponentBase):
@@ -208,9 +209,10 @@ class SoftwareList(GenericCollection):
 
 
 class Software(ComponentBase):
-    def __init__(self, id=None, version="0.0", params=None, context=NullMap):
+    def __init__(self, id=None, version="0.0", params=None, context=NullMap, **kwargs):
         if params is None:
             params = []
+        params.extend(kwargs.items())
         self.version = version
         self.params = params
         self.element = _element("software", id=id, version=version)

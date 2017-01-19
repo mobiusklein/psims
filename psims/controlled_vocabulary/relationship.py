@@ -24,5 +24,11 @@ class Relationship(object):
 
     @classmethod
     def fromstring(cls, string):
-        groups = re.search(r"(?P<predicate>\S+):?\s(?P<accession>\S+)\s(?:!\s(?P<comment>.*))", string).groupdict()
-        return cls(**groups)
+        groups_match = re.search(
+            r"(?P<predicate>\S+):?\s(?P<accession>\S+)\s?(?:!\s(?P<comment>.*))?",
+            string)
+        if groups_match is None:
+            raise ValueError("Could not parse relationship from %r" % string)
+        else:
+            groups = groups_match.groupdict()
+            return cls(**groups)

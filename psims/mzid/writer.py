@@ -1,10 +1,11 @@
 from contextlib import contextmanager
 from .components import (
+    MzIdentML,
     ComponentDispatcher, etree, common_units, element, _element,
     default_cv_list, CVParam, UserParam,
     _xmlns)
 
-from psims.xml import XMLWriterMixin
+from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
 from utils import ensure_iterable, basestring
 
@@ -31,7 +32,7 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
 # Providence -> Input -> Protocol -> Identification
 
 
-class MzIdentMLWriter(ComponentDispatcher, XMLWriterMixin):
+class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     """
     A high level API for generating MzIdentML XML files from simple Python objects.
 
@@ -60,32 +61,13 @@ class MzIdentMLWriter(ComponentDispatcher, XMLWriterMixin):
     context : :class:`.DocumentContext`
     """
 
+    toplevel_tag = MzIdentML
+
     def __init__(self, outfile, vocabularies=None, **kwargs):
         if vocabularies is None:
             vocabularies = list(default_cv_list)
-        super(MzIdentMLWriter, self).__init__(vocabularies=vocabularies)
-        self.outfile = outfile
-        self.xmlfile = etree.xmlfile(outfile, **kwargs)
-        self.writer = None
-        self.toplevel = None
-
-    def _begin(self):
-        self.outfile.write('<?xml version="1.0" encoding="utf-8"?>\n')
-        self.writer = self.xmlfile.__enter__()
-
-    def __enter__(self):
-        self._begin()
-        self.toplevel = element(self.writer, "MzIdentML")
-        self.toplevel.__enter__()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.toplevel.__exit__(exc_type, exc_value, traceback)
-        self.writer.flush()
-        self.xmlfile.__exit__(exc_type, exc_value, traceback)
-        self.outfile.close()
-
-    def close(self):
-        self.outfile.close()
+        ComponentDispatcher.__init__(self, vocabularies=vocabularies)
+        XMLDocumentWriter.__init__(self, outfile, **kwargs)
 
     def controlled_vocabularies(self, vocabularies=None):
         if vocabularies is None:

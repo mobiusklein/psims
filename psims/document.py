@@ -58,15 +58,18 @@ class VocabularyResolver(object):
         accession = kwargs.get("accession")
         if isinstance(name, CVParam):
             return name
-
-        if isinstance(name, Mapping):
+        elif isinstance(name, (tuple, list)) and value is None:
+            name, value = name
+        elif isinstance(name, Mapping):
             mapping = name
             value = value or mapping.get('value')
             accession = accession or mapping.get("accession")
             cv_ref = cv_ref or mapping.get("cv_ref") or mapping.get("cvRef")
             name = mapping.get('name')
 
-            kwargs.update({k: v for k, v in mapping.items() if k not in ("name", "value", "accession")})
+            kwargs.update({k: v for k, v in mapping.items()
+                           if k not in (
+                "name", "value", "accession")})
 
         if cv_ref is None:
             for cv in self.vocabularies:
@@ -75,7 +78,7 @@ class VocabularyResolver(object):
                     name = term["name"]
                     accession = term["id"]
                     cv_ref = cv.id
-                except:
+                except KeyError:
                     pass
         if cv_ref is None:
             return UserParam(name=name, value=value, **kwargs)
@@ -92,7 +95,7 @@ class VocabularyResolver(object):
                     return term, cv
                 else:
                     return term
-            except:
+            except KeyError:
                 pass
         else:
             raise KeyError(name)

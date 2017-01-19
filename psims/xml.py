@@ -1,10 +1,13 @@
+import os
 import re
 from contextlib import contextmanager
+import tempfile
 
 from lxml import etree
 from six import add_metaclass
 
 from . import controlled_vocabulary
+from .utils import pretty_xml
 
 
 def make_counter(start=1):
@@ -207,6 +210,8 @@ class CVParam(TagBase):
     def param(cls, name, value=None, **attrs):
         if isinstance(name, cls):
             return name
+        elif isinstance(name, (tuple, list)):
+            name, value = name
         else:
             if value is None:
                 return cls(name=name, **attrs)
@@ -296,7 +301,9 @@ class CV(TagBase):
             cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle)
         try:
             cv.id = self.id
-        except:
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
             pass
         return cv
 
@@ -366,3 +373,47 @@ class XMLWriterMixin(object):
                     "__exit__ methods.")
             else:
                 raise
+
+
+class XMLDocumentWriter(XMLWriterMixin):
+    @staticmethod
+    def toplevel_tag():
+        raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
+
+    def __init__(self, outfile, **kwargs):
+        self.outfile = outfile
+        self.xmlfile = etree.xmlfile(outfile, **kwargs)
+        self.writer = None
+        self.toplevel = None
+
+    def _begin(self):
+        self.outfile.write('<?xml version="1.0" encoding="utf-8"?>')
+        self.writer = self.xmlfile.__enter__()
+
+    def __enter__(self):
+        self._begin()
+        self.toplevel = element(self.writer, self.toplevel_tag())
+        self.toplevel.__enter__()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.toplevel.__exit__(exc_type, exc_value, traceback)
+        self.writer.flush()
+        self.xmlfile.__exit__(exc_type, exc_value, traceback)
+        self.outfile.close()
+
+    def close(self):
+        self.outfile.close()
+
+    def _prettyify(self, outfile=None):
+        use_temp = False
+        if outfile is None:
+            use_temp = True
+            handle = tempfile.NamedTemporaryFile(delete=False)
+        else:
+            handle = open(outfile, 'wb')
+        pretty_xml(self.outfile.name, handle.name)
+
+        if use_temp:
+            handle.close()
+            os.remove(self.outfile.name)
+            os.rename(handle.name, self.outfile.name)
