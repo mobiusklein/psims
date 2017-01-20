@@ -113,9 +113,10 @@ class SourceFileList(GenericCollection):
 
 
 class SourceFile(ComponentBase):
-    def __init__(self, location, name, id=None, params=None, context=NullMap):
+    def __init__(self, location=None, name=None, id=None, params=None, context=NullMap, **kwargs):
         if params is None:
             params = []
+        params.extend(kwargs.items())
         self.location = location
         self.name = name
         self.element = _element("sourceFile", location=location, id=id, name=name)

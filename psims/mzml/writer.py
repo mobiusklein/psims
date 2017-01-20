@@ -151,9 +151,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             with self.element("fileContent"):
                 for param in file_contents:
                     self.param(param)(self)
-        source_file_list = self.SourceFileList(
-            [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
-        source_file_list.write(self)
+            source_file_list = self.SourceFileList(
+                [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
+            source_file_list.write(self)
 
     def instrument_configuration_list(self, instrument_configurations=None):
         configs = [
@@ -215,7 +215,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         params.append(peak_mode)
 
         array_list = []
-
+        default_array_length = len(mz_array)
         if mz_array is not None:
             mz_array_tag = self._prepare_array(
                 mz_array, encoding=encoding, compression=compression, array_type=MZ_ARRAY)
@@ -232,7 +232,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             array_list.append(charge_array_tag)
         for array, array_type in other_arrays:
             array_tag = self._prepare_array(
-                array, encoding=encoding, compression=compression, array_type=array_type)
+                array, encoding=encoding, compression=compression, array_type=array_type,
+                default_array_length=default_array_length)
             array_list.append(array_tag)
         array_list_tag = self.BinaryDataArrayList(array_list)
 
@@ -261,17 +262,22 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.spectrum_count += 1
         spectrum = self.Spectrum(
             index, array_list_tag, scan_list=scan_list, params=params, id=id,
-            default_array_length=len(mz_array),
+            default_array_length=default_array_length,
             precursor_list=precursor_list)
         spectrum.write(self.writer)
 
-    def _prepare_array(self, numeric, encoding=32, compression=COMPRESSION_ZLIB, array_type=None):
+    def _prepare_array(self, numeric, encoding=32, compression=COMPRESSION_ZLIB, array_type=None,
+                       default_array_length=None):
         _encoding = int(encoding)
         array = np.array(numeric)
         encoding = encoding_map[_encoding]
         encoded_binary = encode_array(
             array, compression=compression, dtype=encoding)
         binary = self.Binary(encoded_binary)
+        if default_array_length is not None and len(array) != default_array_length:
+            override_length = True
+        else:
+            override_length = False
         params = []
         if array_type is not None:
             params.append(array_type)
@@ -280,7 +286,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         params.append(compression_map[compression])
         params.append("%d-bit float" % _encoding)
         encoded_length = len(encoded_binary)
-        return self.BinaryDataArray(binary, encoded_length, params=params)
+        return self.BinaryDataArray(
+            binary, encoded_length, array_length=(len(array) if override_length else None),
+            params=params)
 
     def _prepare_precursor_information(self, mz, intensity, charge, scan_id, activation=None):
         if activation is not None:
