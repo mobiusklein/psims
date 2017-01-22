@@ -219,6 +219,10 @@ class ComponentBase(object):
         pass
 
     def __getattr__(self, key):
+        if key == "element":
+            raise AttributeError(
+                ("The `element` attribute failed to instantiate "
+                 "or is being accessed to early."))
         try:
             return self.element.attrs[key]
         except KeyError:

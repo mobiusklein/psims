@@ -37,7 +37,7 @@ default_cv_list = [
         "cv", id="PSI-MS",
         uri=("http://psidev.cvs.sourceforge.net/*checkout*/"
              "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"),
-        version="3.79.0", fullName="PSI-MS"),
+        fullName="PSI-MS"),
     _element(
         "cv", id="UO",
         uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
