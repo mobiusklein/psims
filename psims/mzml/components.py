@@ -374,7 +374,8 @@ class DataProcessing(ComponentBase):
         if processing_methods is None:
             processing_methods = []
         if processing_methods and not isinstance(processing_methods[0], ProcessingMethod):
-            processing_methods = [ProcessingMethod(context=context, **m) for m in processing_methods]
+            processing_methods = [ProcessingMethod(context=context, **m) for m in (
+                processing_methods)]
         self.processing_methods = processing_methods
         self.element = _element("dataProcessing", id=id)
         self.context = context
@@ -387,9 +388,10 @@ class DataProcessing(ComponentBase):
 
 
 class ProcessingMethod(ComponentBase):
-    def __init__(self, order, software_reference, params=None, context=NullMap):
+    def __init__(self, order, software_reference, params=None, context=NullMap, **kwargs):
         if params is None:
             params = []
+        params.extend(kwargs.items())
         self.order = order
         self.software_reference = software_reference
         self._software_reference = context['Software'][software_reference]
