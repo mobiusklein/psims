@@ -4,10 +4,9 @@ from contextlib import contextmanager
 import tempfile
 
 from lxml import etree
-from six import add_metaclass
 
 from . import controlled_vocabulary
-from .utils import pretty_xml
+from .utils import pretty_xml, add_metaclass
 
 
 def make_counter(start=1):
@@ -80,7 +79,7 @@ def attrencode(o):
         return str(o)
 
 
-@add_metaclass(CountedType)
+@(CountedType)
 class TagBase(object):
 
     type_attrs = {}
