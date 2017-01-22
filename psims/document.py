@@ -2,6 +2,8 @@ import warnings
 from collections import Mapping, defaultdict
 from functools import partial, update_wrapper
 
+from six import add_metaclass
+
 from .xml import (
     id_maker, CVParam, UserParam,
     _element)
@@ -212,8 +214,18 @@ class ComponentDispatcherBase(object):
 # Base Component Definitions
 
 
+@add_metaclass(ChildTrackingMeta)
 class ComponentBase(object):
-    __metaclass__ = ChildTrackingMeta
+    """A base class for all parts of an XML document which
+    describe structures composed of more than a single XML
+    tag without any children. In addition to wrapping additional
+    descriptive data, this type's metaclass is :class:`ChildTrackingMeta`
+    which gives all instances a unique id for use with a :class:`DocumentContext`
+    object.
+
+    Forwards any missing attribute requests to :attr:`element` for resolution
+    against's the XML tag's attributes.
+    """
 
     def __init__(self, *args, **kwargs):
         pass
@@ -243,6 +255,18 @@ class ComponentBase(object):
 
 
 class ParameterContainer(ComponentBase):
+    """An base class for a component whose only purpose
+    is to contain one or more cv- or userParams.
+
+    Attributes
+    ----------
+    context : DocumentContext
+        The document metadata store
+    element : lxml.etree.Element
+        The XML tag object to be written
+    params : list
+        The list of parameters to include
+    """
     def __init__(self, tag_name, params=None, context=NullMap):
         if params is None:
             params = []

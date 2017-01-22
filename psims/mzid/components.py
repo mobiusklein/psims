@@ -159,7 +159,11 @@ class Inputs(GenericCollection):
 
 
 class DBSequence(ComponentBase):
-    def __init__(self, accession, sequence, id, search_database_id=1, context=NullMap):
+    def __init__(self, accession, sequence=None, id=None, search_database_id=1, params=None, context=NullMap, **kwargs):
+        if params is None:
+            params = []
+        params.extend(kwargs.items())
+        self.params = params
         self.sequence = sequence
         self.search_database_ref = context['SearchDatabase'][search_database_id]
         self.element = _element(
@@ -167,12 +171,16 @@ class DBSequence(ComponentBase):
             length=len(sequence), searchDatabase_ref=self.search_database_ref)
 
         context["DBSequence"][id] = self.element.id
+        self.context = context
 
     def write(self, xml_file):
         protein = self.sequence
         with self.element.element(xml_file, with_id=True):
-            with element(xml_file, "Seq"):
-                xml_file.write(protein)
+            if self.sequence is not None:
+                with element(xml_file, "Seq"):
+                    xml_file.write(protein)
+            for param in self.params:
+                self.context.param(param)(xml_file)
 
 
 class Peptide(ComponentBase):
@@ -188,6 +196,7 @@ class Peptide(ComponentBase):
         self.params = params
         self.element = _element("Peptide", id=id)
         context["Peptide"][id] = self.element.id
+        self.context = context
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
