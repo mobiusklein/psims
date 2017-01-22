@@ -20,7 +20,7 @@ from utils import ensure_iterable, basestring
 MZ_ARRAY = 'm/z array'
 INTENSITY_ARRAY = 'intensity array'
 CHARGE_ARRAY = 'charge array'
-
+TIME_ARRAY = "time array"
 NON_STANDARD_ARRAY = 'non-standard data array'
 
 ARRAY_TYPES = [
@@ -70,6 +70,17 @@ class SpectrumListSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(SpectrumListSection, self).__init__(
             "spectrumList", writer, parent_context, section_args=section_args, **kwargs)
+        self.section_args.setdefault("count", 0)
+        data_processing_method = self.section_args.pop("data_processing_method", None)
+        if data_processing_method is not None:
+            self.section_args["defaultDataProcessingRef"] = self.context[
+                "DataProcessing"][data_processing_method]
+
+
+class ChromatogramListSection(DocumentSection):
+    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+        super(ChromatogramListSection, self).__init__(
+            "chromatogramList", writer, parent_context, section_args=section_args, **kwargs)
         self.section_args.setdefault("count", 0)
         data_processing_method = self.section_args.pop("data_processing_method", None)
         if data_processing_method is not None:
@@ -128,10 +139,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def __init__(self, outfile, vocabularies=None, **kwargs):
         if vocabularies is None:
             vocabularies = []
-        vocabularies = default_cv_list + list(vocabularies)
+        vocabularies = list(default_cv_list) + list(vocabularies)
         ComponentDispatcher.__init__(self, vocabularies=vocabularies)
         XMLDocumentWriter.__init__(self, outfile, **kwargs)
         self.spectrum_count = 0
+        self.chromatogram_count = 0
 
     def controlled_vocabularies(self, vocabularies=None):
         if vocabularies is None:
@@ -181,6 +193,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     def spectrum_list(self, count, data_processing_method=None):
         return SpectrumListSection(
+            self.writer, self.context, count=count,
+            data_processing_method=data_processing_method)
+
+    def chromatogram_list(self, count, data_processing_method=None):
+        return ChromatogramListSection(
             self.writer, self.context, count=count,
             data_processing_method=data_processing_method)
 
@@ -265,6 +282,43 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             default_array_length=default_array_length,
             precursor_list=precursor_list)
         spectrum.write(self.writer)
+
+    def write_chromatogram(self, time_array, intensity_array, id=None,
+                           chromatogram_type="selected ion current", params=None,
+                           compression=COMPRESSION_ZLIB, encoding=32, other_arrays=None):
+        if params is None:
+            params = []
+        else:
+            params = list(params)
+        if other_arrays is None:
+            other_arrays = []
+        array_list = []
+
+        default_array_length = len(time_array)
+        if time_array is not None:
+            time_array_tag = self._prepare_array(
+                time_array, encoding=encoding, compression=compression, array_type=TIME_ARRAY)
+            array_list.append(time_array_tag)
+
+        if intensity_array is not None:
+            intensity_array_tag = self._prepare_array(
+                intensity_array, encoding=encoding, compression=compression, array_type=INTENSITY_ARRAY)
+            array_list.append(intensity_array_tag)
+
+        for array, array_type in other_arrays:
+            array_tag = self._prepare_array(
+                array, encoding=encoding, compression=compression, array_type=array_type,
+                default_array_length=default_array_length)
+            array_list.append(array_tag)
+        params.append(chromatogram_type)
+        array_list_tag = self.BinaryDataArrayList(array_list)
+        index = self.chromatogram_count
+        self.chromatogram_count += 1
+        chromatogram = self.Chromatogram(
+            index=index, binary_data_list=array_list_tag,
+            default_array_length=default_array_length,
+            id=id, params=params)
+        chromatogram.write(self.writer)
 
     def _prepare_array(self, numeric, encoding=32, compression=COMPRESSION_ZLIB, array_type=None,
                        default_array_length=None):

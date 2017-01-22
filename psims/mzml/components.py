@@ -429,15 +429,15 @@ class Spectrum(ComponentBase):
         if params is None:
             params = []
         self.index = index
+        self.binary_data_list = binary_data_list
         self.scan_list = scan_list
+        self.data_processing_reference = data_processing_reference
+        self._data_processing_reference = context["DataProcessing"][data_processing_reference]
         self.precursor_list = precursor_list
         self.product_list = product_list
-        self.binary_data_list = binary_data_list
         self.default_array_length = default_array_length
         self.source_file_reference = source_file_reference
         self._source_file_reference = context["SourceFile"][source_file_reference]
-        self.data_processing_reference = data_processing_reference
-        self._data_processing_reference = context["DataProcessing"][data_processing_reference]
         self.element = _element(
             "spectrum", id=id, index=index, sourceFileRef=self._source_file_reference,
             defaultArrayLength=self.default_array_length, dataProcessingRef=self._data_processing_reference)
@@ -626,6 +626,31 @@ class SelectedIon(ComponentBase):
                 self.context.param(name="charge state", value=self.charge)(xml_file)
 
 
+class Chromatogram(ComponentBase):
+    def __init__(self, index, binary_data_list=None, default_array_length=None,
+                 data_processing_reference=None, id=None, params=None,
+                 context=NullMap):
+        if params is None:
+            params = []
+        self.index = index
+        self.default_array_length = default_array_length
+        self.binary_data_list = binary_data_list
+        self.data_processing_reference = data_processing_reference
+        self._data_processing_reference = context["DataProcessing"][data_processing_reference]
+        self.element = _element(
+            "chromatogram", id=id, index=index,
+            defaultArrayLength=self.default_array_length,
+            dataProcessingRef=self._data_processing_reference)
+        self.context = context
+        self.context["Chromatogram"][id] = self.element.id
+        self.params = params
+
+    def write(self, xml_file):
+        with self.element.element(xml_file, with_id=True):
+            for param in self.params:
+                self.context.param(param)(xml_file)
+
+            self.binary_data_list.write(xml_file)
 # --------------------------------------------------
 # Misc. Providence Management
 
