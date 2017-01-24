@@ -35,6 +35,19 @@ def make_counter(start=1):
 
 
 def camelize(name):
+    """Adapts an attribute name from "snake_case" to "camelCase"
+    to make lookups on Element.attrib easier.
+
+    Parameters
+    ----------
+    name : str
+        Attribute name
+
+    Returns
+    -------
+    str
+        transformed name
+    """
     parts = name.split("_")
     if len(parts) > 1:
         return ''.join(parts[0] + [part.title() if part != "ref" else "_ref" for part in parts[1:]])
@@ -47,6 +60,17 @@ def id_maker(type_name, id_number):
 
 
 def sanitize_id(string):
+    """Remove characters from a string which would be invalid
+    in XML identifiers
+
+    Parameters
+    ----------
+    string : str
+
+    Returns
+    -------
+    str
+    """
     string = re.sub(r"\s", '_', string)
     string = re.sub(r"\\|/", '', string)
     return string
@@ -56,6 +80,9 @@ NO_TRACK = object()
 
 
 class CountedType(type):
+    """A metaclass to keep a count of the number of times
+    an instance of each derived class is created.
+    """
     _cache = {}
 
     def __new__(cls, name, parents, attrs):
@@ -73,13 +100,28 @@ class CountedType(type):
 
 
 def attrencode(o):
+    """A simple function to convert most
+    basic python types to a string form
+    which is safe to serialize in XML
+    attributes
+
+    Parameters
+    ----------
+    o : object
+        Attribute value to encode
+
+    Returns
+    -------
+    str:
+        The encoded value
+    """
     if isinstance(o, bool):
         return str(o).lower()
     else:
         return str(o)
 
 
-@(CountedType)
+@add_metaclass(CountedType)
 class TagBase(object):
 
     type_attrs = {}
@@ -136,12 +178,8 @@ class TagBase(object):
             self._id_string = id_maker(self.tag_name, self._id_number)
         return self._id_string
 
-    @property
-    def with_id(self):
-        return False
-
     def element(self, xml_file=None, with_id=False):
-        with_id = self.with_id or with_id or self._force_id
+        with_id = with_id or self._force_id
         attrs = {k: attrencode(v) for k, v in self.attrs.items() if v is not None}
         if with_id:
             attrs['id'] = self.id
@@ -181,6 +219,21 @@ def identity(x):
 
 
 def _make_tag_type(name, **attrs):
+    """Creates a new TagBase-derived class dynamically at runtime.
+    The new type will be cached.
+
+    Parameters
+    ----------
+    name : str
+        The tag name
+    **attrs : dict
+        Any class-wide attributes to include
+
+    Returns
+    -------
+    type
+        A TagBase subclass
+    """
     return type(name, (TagBase,), {"tag_name": name, "type_attrs": attrs})
 
 
@@ -300,7 +353,7 @@ class CV(TagBase):
             cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle)
         try:
             cv.id = self.id
-        except Exception as e:
+        except Exception:
             import traceback
             traceback.print_exc()
             pass
@@ -335,6 +388,16 @@ class ProvidedCV(CV):
 
 
 class XMLWriterMixin(object):
+    """A mixin class to provide methods for writing
+    XML elements and aggregate Components.
+
+    Attributes
+    ----------
+    verbose : bool
+        Controls debug printing
+    writer: lxml.etree._IncrementalFileWriter
+        The low-level XML writer used by :attr:`xmlfile`
+    """
     verbose = False
 
     @contextmanager
@@ -375,26 +438,54 @@ class XMLWriterMixin(object):
 
 
 class XMLDocumentWriter(XMLWriterMixin):
+    """A base class for types which are used to
+    write complete XML documents.
+
+    Attributes
+    ----------
+    outfile : file
+        A writable file object
+    toplevel : TagBase
+        The top-level XML tag
+    xmlfile : lxml.etree.xmlfile
+        The XML formatter
+    writer : lxml.etree._IncrementalFileWriter
+        The low-level XML writer used by :attr:`xmlfile`
+    """
     @staticmethod
     def toplevel_tag():
+        """Overridable method to construct the appropriate
+        tag for :attr:`toplevel`
+
+        Returns
+        -------
+        TagBase
+        """
         raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
 
     def __init__(self, outfile, **kwargs):
         self.outfile = outfile
-        self.xmlfile = etree.xmlfile(outfile, **kwargs)
+        self.xmlfile = etree.xmlfile(outfile, encoding='utf-8', **kwargs)
         self.writer = None
         self.toplevel = None
 
     def _begin(self):
+        """Writes the doctype and starts the low-level writing machinery
+        """
         self.outfile.write('<?xml version="1.0" encoding="utf-8"?>')
         self.writer = self.xmlfile.__enter__()
 
     def __enter__(self):
+        """Begins writing, opening the top-level tag
+        """
         self._begin()
         self.toplevel = element(self.writer, self.toplevel_tag())
         self.toplevel.__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):
+        """Closes the top-level tag, the XML formatter,
+        and the file itself.
+        """
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
         self.xmlfile.__exit__(exc_type, exc_value, traceback)
@@ -403,16 +494,26 @@ class XMLDocumentWriter(XMLWriterMixin):
     def close(self):
         self.outfile.close()
 
-    def _prettyify(self, outfile=None):
+    def format(self, outfile=None):
+        """Pretty-prints the contents of the file.
+
+        Uses a tempfile.NamedTemporaryFile to receive
+        the formatted XML content, removes the
+        original file, and moves the temporary file
+        to the original file's name.
+        """
         use_temp = False
         if outfile is None:
             use_temp = True
             handle = tempfile.NamedTemporaryFile(delete=False)
         else:
             handle = open(outfile, 'wb')
-        pretty_xml(self.outfile.name, handle.name)
+        try:
+            pretty_xml(self.outfile.name, handle.name)
 
-        if use_temp:
-            handle.close()
-            os.remove(self.outfile.name)
-            os.rename(handle.name, self.outfile.name)
+            if use_temp:
+                handle.close()
+                os.remove(self.outfile.name)
+                os.rename(handle.name, self.outfile.name)
+        except MemoryError:
+            pass

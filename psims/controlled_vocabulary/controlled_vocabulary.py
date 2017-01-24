@@ -7,6 +7,18 @@ from .obo import OBOParser
 
 
 class ControlledVocabulary(object):
+    """A Controlled Vocabulary is a collection
+    of terms or entities with controlled meanings
+    and semantics.
+
+    This object makes entities resolvable by name,
+    accession number, or synonym.
+
+    Attributes
+    ----------
+    id : str
+        Unique identifier for this collection
+    """
     @classmethod
     def from_obo(cls, handle):
         parser = OBOParser(handle)

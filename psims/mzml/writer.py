@@ -1,20 +1,18 @@
-from contextlib import contextmanager
 import numbers
 
-from lxml import etree
 import numpy as np
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
 from .components import (
     ComponentDispatcher, element,
-    default_cv_list, MzML, _xmlns)
+    default_cv_list, MzML)
 
 from .binary_encoding import (
     encode_array, COMPRESSION_NONE, COMPRESSION_ZLIB,
     encoding_map)
 
-from utils import ensure_iterable, basestring
+from utils import ensure_iterable
 
 
 MZ_ARRAY = 'm/z array'
@@ -42,7 +40,9 @@ ARRAY_TYPES = [
 compression_map = {
     COMPRESSION_ZLIB: "zlib compression",
     COMPRESSION_NONE: 'no compression',
-    None: 'no compression'
+    None: 'no compression',
+    False: 'no compression',
+    True: "zlib compression"
 }
 
 
@@ -69,9 +69,11 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
 class SpectrumListSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(SpectrumListSection, self).__init__(
-            "spectrumList", writer, parent_context, section_args=section_args, **kwargs)
+            "spectrumList", writer, parent_context, section_args=section_args,
+            **kwargs)
         self.section_args.setdefault("count", 0)
-        data_processing_method = self.section_args.pop("data_processing_method", None)
+        data_processing_method = self.section_args.pop(
+            "data_processing_method", None)
         if data_processing_method is not None:
             self.section_args["defaultDataProcessingRef"] = self.context[
                 "DataProcessing"][data_processing_method]
@@ -80,9 +82,11 @@ class SpectrumListSection(DocumentSection):
 class ChromatogramListSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(ChromatogramListSection, self).__init__(
-            "chromatogramList", writer, parent_context, section_args=section_args, **kwargs)
+            "chromatogramList", writer, parent_context,
+            section_args=section_args, **kwargs)
         self.section_args.setdefault("count", 0)
-        data_processing_method = self.section_args.pop("data_processing_method", None)
+        data_processing_method = self.section_args.pop(
+            "data_processing_method", None)
         if data_processing_method is not None:
             self.section_args["defaultDataProcessingRef"] = self.context[
                 "DataProcessing"][data_processing_method]
@@ -92,17 +96,18 @@ class RunSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(RunSection, self).__init__(
             "run", writer, parent_context, section_args=section_args, **kwargs)
-        instrument_configuration_name = self.section_args.pop("instrument_configuration", None)
+        instrument_configuration_name = self.section_args.pop(
+            "instrument_configuration", None)
         if instrument_configuration_name is not None:
             self.section_args["defaultInstrumentConfigurationRef"] = self.context[
                 "InstrumentConfiguration"][instrument_configuration_name]
         source_file_name = self.section_args.pop("source_file", None)
         if source_file_name is not None:
-            self.section_args["defaultSourceFileRef"] = self.context["SourceFile"][source_file_name]
-
-# ----------------------
-# Order of Instantiation
-# todo
+            self.section_args["defaultSourceFileRef"] = self.context[
+                "SourceFile"][source_file_name]
+        sample_id = self.section_args.pop("sample", None)
+        if sample_id is not None:
+            self.section_args["sampleRef"] = self.context['Sample'][sample_id]
 
 
 class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
@@ -183,13 +188,58 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             self.ReferenceableParamGroup(**g) for g in ensure_iterable(groups)]
         self.ReferenceableParamGroupList(groups).write(self)
 
-    def run(self, id=None, instrument_configuration=None, source_file=None, start_time=None):
+    def sample_list(self, samples):
+        for i, sample in enumerate(samples):
+            sample_id = sample.get('id')
+            sample_name = sample.get("name")
+
+            if sample_id is None and sample_name is not None:
+                sample_id = "%s_id" % (sample_name,)
+            elif sample_id is not None and sample_name is None:
+                sample_name = str(sample_id)
+            elif sample_id is sample_name is None:
+                sample_id = "sample_%d_id" % (i,)
+                sample_name = "sample_%d" % (i,)
+            sample['id'] = sample_id
+            sample['name'] = sample_name
+
+        sample_entries = [
+            self.Sample(**sample) for sample in samples
+        ]
+
+        self.SampleList(sample_entries).write(self)
+
+    def run(self, id=None, instrument_configuration=None, source_file=None, start_time=None,
+            sample=None):
+        """Begins the `<run>` section of the document, describing a single
+        sample run.
+
+        Parameters
+        ----------
+        id : str, optional
+            The unique identifier for this element
+        instrument_configuration : str, optional
+            The id string for the default `InstrumentConfiguration` for this
+            sample
+        source_file : str, optional
+            The id string for the source file used to produce this data
+        start_time : str, optional
+            A string encoding the date and time the sample was acquired
+        sample: str, optional
+            The id string for the sample used to produce this data
+
+        Returns
+        -------
+        RunSection
+        """
         kwargs = {}
         if start_time is not None:
             kwargs['startTimeStamp'] = start_time
         return RunSection(
-            self.writer, self.context, id=id, instrument_configuration=instrument_configuration,
-            source_file=source_file, **kwargs)
+            self.writer, self.context, id=id,
+            instrument_configuration=instrument_configuration,
+            source_file=source_file,
+            sample=sample, **kwargs)
 
     def spectrum_list(self, count, data_processing_method=None):
         return SpectrumListSection(
@@ -247,7 +297,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             charge_array_tag = self._prepare_array(
                 charge_array, encoding=encoding, compression=compression, array_type=CHARGE_ARRAY)
             array_list.append(charge_array_tag)
-        for array, array_type in other_arrays:
+        for array_type, array in other_arrays:
             array_tag = self._prepare_array(
                 array, encoding=encoding, compression=compression, array_type=array_type,
                 default_array_length=default_array_length)
@@ -297,15 +347,17 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         default_array_length = len(time_array)
         if time_array is not None:
             time_array_tag = self._prepare_array(
-                time_array, encoding=encoding, compression=compression, array_type=TIME_ARRAY)
+                time_array, encoding=encoding, compression=compression,
+                array_type=TIME_ARRAY)
             array_list.append(time_array_tag)
 
         if intensity_array is not None:
             intensity_array_tag = self._prepare_array(
-                intensity_array, encoding=encoding, compression=compression, array_type=INTENSITY_ARRAY)
+                intensity_array, encoding=encoding, compression=compression,
+                array_type=INTENSITY_ARRAY)
             array_list.append(intensity_array_tag)
 
-        for array, array_type in other_arrays:
+        for array_type, array in other_arrays:
             array_tag = self._prepare_array(
                 array, encoding=encoding, compression=compression, array_type=array_type,
                 default_array_length=default_array_length)
@@ -320,8 +372,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             id=id, params=params)
         chromatogram.write(self.writer)
 
-    def _prepare_array(self, numeric, encoding=32, compression=COMPRESSION_ZLIB, array_type=None,
-                       default_array_length=None):
+    def _prepare_array(self, numeric, encoding=32, compression=COMPRESSION_ZLIB,
+                       array_type=None, default_array_length=None):
         _encoding = int(encoding)
         array = np.array(numeric)
         encoding = encoding_map[_encoding]
@@ -341,7 +393,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         params.append("%d-bit float" % _encoding)
         encoded_length = len(encoded_binary)
         return self.BinaryDataArray(
-            binary, encoded_length, array_length=(len(array) if override_length else None),
+            binary, encoded_length,
+            array_length=(len(array) if override_length else None),
             params=params)
 
     def _prepare_precursor_information(self, mz, intensity, charge, scan_id, activation=None):

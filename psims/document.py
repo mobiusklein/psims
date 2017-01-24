@@ -2,7 +2,7 @@ import warnings
 from collections import Mapping, defaultdict
 from functools import partial, update_wrapper
 
-from six import add_metaclass
+from .utils import add_metaclass
 
 from .xml import (
     id_maker, CVParam, UserParam,
@@ -220,8 +220,9 @@ class ComponentBase(object):
     describe structures composed of more than a single XML
     tag without any children. In addition to wrapping additional
     descriptive data, this type's metaclass is :class:`ChildTrackingMeta`
-    which gives all instances a unique id for use with a :class:`DocumentContext`
-    object.
+    which enables :class:`ComponentDispatcherBase` to automatically bind
+    a :class:`DocumentContext` object to the `context` paramter of the
+    constructor of dynamically generated wrappers.
 
     Forwards any missing attribute requests to :attr:`element` for resolution
     against's the XML tag's attributes.

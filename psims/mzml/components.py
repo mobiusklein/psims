@@ -186,14 +186,16 @@ class SampleList(GenericCollection):
 
 
 class Sample(ComponentBase):
-    def __init__(self, name, params=None, id=None, context=NullMap):
+    def __init__(self, name, params=None, id=None, context=NullMap, **kwargs):
         if params is None:
             params = []
+        params.extend(kwargs.items())
         self.name = name
         self.params = params
         self.element = _element("sample", name=name, id=id)
         self.id = self.element.id
         self.context = context
+        context["Sample"][id] = self.element.id
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
