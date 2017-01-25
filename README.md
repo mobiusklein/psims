@@ -32,7 +32,7 @@ with MzMLWriter(open("out.mzML", 'wb')) as out:
                         id=prod.id, params=[
                             "MSn Spectrum",
                             {"ms level": 2},
-                            {"total ion current": sum(scan.intensity_array)}   
+                            {"total ion current": sum(prod.intensity_array)}   
                          ], 
                          # Include precursor information
                          precursor_information={
