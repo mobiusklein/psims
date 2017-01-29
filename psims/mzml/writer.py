@@ -93,6 +93,9 @@ class ChromatogramListSection(DocumentSection):
 
 
 class RunSection(DocumentSection):
+    """Describes a `<run>` tag. Implemented as a section to provide a more
+    expressive API
+    """
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(RunSection, self).__init__(
             "run", writer, parent_context, section_args=section_args, **kwargs)
@@ -111,8 +114,7 @@ class RunSection(DocumentSection):
 
 
 class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
-    """
-    A high level API for generating mzML XML files from simple Python objects.
+    """A high level API for generating mzML XML files from simple Python objects.
 
     This class depends heavily on lxml's incremental file writing API which in turn
     depends heavily on context managers. Almost all logic is handled inside a context
@@ -126,19 +128,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     Attributes
     ----------
-    outfile : file
-        The open, writable file descriptor which XML will be written to.
-    xmlfile : lxml.etree.xmlfile
-        The incremental XML file wrapper which organizes file writes onto :attr:`outfile`.
-        Kept to control context.
-    writer : lxml.etree._IncrementalFileWriter
-        The incremental XML writer produced by :attr:`xmlfile`. Kept to control context.
-    toplevel : lxml.etree._FileWriterElement
-        The top level incremental xml writer element which will be closed at the end
-        of file generation. Kept to control context
-    context : :class:`.DocumentContext`
+    chromatogram_count : int
+        A count of the number of chromatograms written
+    spectrum_count : int
+        A count of the number of spectrums written
     """
-
     toplevel_tag = MzML
 
     def __init__(self, outfile, vocabularies=None, **kwargs):
@@ -150,27 +144,39 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.spectrum_count = 0
         self.chromatogram_count = 0
 
-    def controlled_vocabularies(self, vocabularies=None):
-        if vocabularies is None:
-            vocabularies = []
-        self.vocabularies.extend(vocabularies)
-        cvlist = self.CVList(self.vocabularies)
-        cvlist.write(self.writer)
-
     def software_list(self, software_list):
         n = len(software_list)
         if n:
-            software_list = [self.Software(**sw) for sw in software_list]
+            software_list = [self.Software(**sw) for sw in ensure_iterable(software_list)]
         self.SoftwareList(software_list).write(self)
 
     def file_description(self, file_contents=None, source_files=None, params=None):
+        """Writes the `<fileDescription>` section of the document using the
+        provided parameters.
+
+        From the specification:
+        .. note::
+            Information pertaining to the entire mzML file (i.e. not specific
+            to any part of the data set) is stored here.
+
+        Parameters
+        ----------
+        file_contents : list, optional
+            A list or other iterable of str, dict, or *Param-types which will
+            be placed in the `<fileContent>` element.
+        source_files : list, optional
+            A list or other iterable of dict or :class:`.SourceFile`-like objects
+            to be placed in the `<sourceFileList>` element
+        """
         with self.element("fileDescription"):
-            with self.element("fileContent"):
-                for param in file_contents:
-                    self.param(param)(self)
-            source_file_list = self.SourceFileList(
-                [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
-            source_file_list.write(self)
+            if file_contents is not None:
+                with self.element("fileContent"):
+                    for param in file_contents:
+                        self.param(param)(self)
+            if source_files is not None:
+                source_file_list = self.SourceFileList(
+                    [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
+                source_file_list.write(self)
 
     def instrument_configuration_list(self, instrument_configurations=None):
         configs = [

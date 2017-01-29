@@ -491,6 +491,13 @@ class XMLDocumentWriter(XMLWriterMixin):
         self.xmlfile.__exit__(exc_type, exc_value, traceback)
         self.outfile.close()
 
+    def controlled_vocabularies(self, vocabularies=None):
+        if vocabularies is None:
+            vocabularies = []
+        self.vocabularies.extend(vocabularies)
+        cvlist = self.CVList(self.vocabularies)
+        cvlist.write(self.writer)
+
     def close(self):
         self.outfile.close()
 
