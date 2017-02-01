@@ -342,9 +342,9 @@ class IonType(ComponentBase):
 class SpectrumIdentificationItem(ComponentBase):
     def __init__(self, calculated_mass_to_charge, experimental_mass_to_charge,
                  charge_state, peptide_id, peptide_evidence_id, score, id, ion_types=None,
-                 cv_params=None, pass_threshold=True, rank=1, context=NullMap):
+                 params=None, pass_threshold=True, rank=1, context=NullMap):
         self.peptide_evidence_ref = context["PeptideEvidence"][peptide_evidence_id]
-        self.cv_params = cv_params
+        self.params = params
         self.score = score
         self.ion_types = ion_types
         self.element = _element(
@@ -368,10 +368,12 @@ class SpectrumIdentificationItem(ComponentBase):
                         ion_type.write(xml_file)
             if isinstance(self.score, CVParam):
                 self.score.write(xml_file)
+            elif isinstance(self.score, dict):
+                self.context.param(self.score)(xml_file)
             else:
                 self.context.param(name="score", value=self.score)(xml_file)
-            for cvp in self.cv_params:
-                self.context.param(cvp)(xml_file)
+            for param in self.params:
+                self.context.param(param)(xml_file)
 
 
 class Measure(ComponentBase):
@@ -489,8 +491,7 @@ class ProteinDetectionHypothesis(ComponentBase):
         self.element = _element(
             "ProteinDetectionHypothesis", id=id,
             dBSequence_ref=context["DBSequence"][db_sequence_id],
-            passThreshold=pass_threshold
-            )
+            passThreshold=pass_threshold)
         context['ProteinDetectionHypothesis'][id] = self.element.id
 
     def write(self, xml_file):
@@ -630,6 +631,15 @@ class SpectrumIdentificationProtocol(ComponentBase):
         self.fragment_tolerance = fragment_tolerance
         self.threshold = threshold
         self.enzymes = enzymes
+        temp = []
+        for mod in modification_params:
+            if isinstance(mod, SearchModification):
+                temp.append(mod)
+            else:
+                temp.append(
+                    SearchModification(
+                        context=context, **mod))
+        modification_params = temp
         self.modification_params = modification_params
         self.additional_search_params = additional_search_params
         self.search_type = search_type
@@ -660,6 +670,35 @@ class SpectrumIdentificationProtocol(ComponentBase):
             if self.parent_tolerance is not None:
                 self.parent_tolerance.write(xml_file)
             self.threshold.write(xml_file)
+
+
+class SearchModification(ComponentBase):
+    def __init__(self, mass_delta, fixed, residues, specificity=None,
+                 params=None, context=NullMap, **kwargs):
+        if params is None:
+            params = []
+        if specificity is not None:
+            if not isinstance(specificity, (tuple, list)):
+                specificity = [specificity]
+        params.extend(kwargs.items())
+        self.params = params
+        self.mass_delta = mass_delta
+        self.fixed = fixed
+        self.residues = ''.join(residues)
+        self.specificity = specificity
+        self.context = context
+        self.element = _element(
+            "SearchModification", fixedMod=fixed, massDelta=mass_delta,
+            residues=self.residues)
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=False):
+            for param in self.params:
+                self.context.param(param)(xml_file)
+            if self.specificity is not None:
+                with _element("SpecificityRules"):
+                    for param in self.specificity:
+                        self.context.param(param)(xml_file)
 
 
 class ProteinDetectionProtocol(ComponentBase):

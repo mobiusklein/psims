@@ -13,18 +13,30 @@ _t = tuple()
 
 
 class DocumentSection(ComponentDispatcher, XMLWriterMixin):
-    def __init__(self, section, writer, parent_context):
+
+    def __init__(self, section, writer, parent_context, section_args=None, **kwargs):
+        if section_args is None:
+            section_args = dict()
+        section_args.update(kwargs)
         super(DocumentSection, self).__init__(parent_context)
         self.section = section
         self.writer = writer
+        self.section_args = section_args
 
     def __enter__(self):
-        self.toplevel = element(self.writer, self.section, xmlns=_xmlns)
+        self.toplevel = element(self.writer, self.section, **self.section_args)
         self.toplevel.__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
+
+
+class AnalysisProtocolCollection(DocumentSection):
+    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+        super(AnalysisProtocolCollection, self).__init__(
+            "AnalysisProtocolCollection", writer, parent_context,
+            xmlns=_xmlns)
 
 
 # ----------------------
@@ -114,6 +126,9 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.Inputs(source_files, search_databases,
                     spectra_data).write(self.writer)
 
+    def analysis_protocol_collection(self):
+        return AnalysisProtocolCollection(self.writer, self.context)
+
     def sequence_collection(self, db_sequences=tuple(), peptides=tuple(), peptide_evidence=tuple()):
         db_sequences = (self.DBSequence(**(s or {}))
                         for s in ensure_iterable(db_sequences))
@@ -145,23 +160,23 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def spectrum_identification_list(self, id, identification_results=None, measures=None):
         if measures is None:
             measures = self.FragmentationTable()
-        converting = (self._spectrum_identification_result(**(s or {}))
+        converting = (self.spectrum_identification_result(**(s or {}))
                       for s in ensure_iterable(identification_results))
         self.SpectrumIdentificationList(
             id=id, identification_results=converting,
             fragmentation_table=measures).write(self.writer)
 
-    def _spectrum_identification_result(self, spectrum_id, id, spectra_data_id=1, identifications=None):
+    def spectrum_identification_result(self, spectrum_id, id, spectra_data_id=1, identifications=None):
         return self.SpectrumIdentificationResult(
             spectra_data_id=spectra_data_id,
             spectrum_id=spectrum_id,
             id=id,
-            identifications=(self._spectrum_identification_item(**(s or {}))
+            identifications=(self.spectrum_identification_item(**(s or {}))
                              for s in ensure_iterable(identifications)))
 
-    def _spectrum_identification_item(self, calculated_mass_to_charge, experimental_mass_to_charge,
-                                      charge_state, peptide_id, peptide_evidence_id, score, id, ion_types=None,
-                                      cv_params=None, pass_threshold=True, rank=1):
+    def spectrum_identification_item(self, calculated_mass_to_charge, experimental_mass_to_charge,
+                                     charge_state, peptide_id, peptide_evidence_id, score, id, ion_types=None,
+                                     params=None, pass_threshold=True, rank=1):
         mappings = []
         # measure_mapping = self.context["Measure"]
         if ion_types is not None:
@@ -180,4 +195,4 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             calculated_mass_to_charge, experimental_mass_to_charge,
             charge_state, peptide_id, peptide_evidence_id, score, id,
             ion_types=mappings,
-            cv_params=ensure_iterable(cv_params), pass_threshold=pass_threshold, rank=rank)
+            params=ensure_iterable(params), pass_threshold=pass_threshold, rank=rank)

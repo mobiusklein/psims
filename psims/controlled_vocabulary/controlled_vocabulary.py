@@ -4,6 +4,7 @@ try:
 except:
     from urllib.request import urlopen
 from .obo import OBOParser
+from . import unimod
 
 
 class ControlledVocabulary(object):
@@ -146,4 +147,18 @@ class OBOCache(object):
             self.cache_path, self.enabled, self.resolvers)
 
 
+def _make_relative_sqlite_sqlalchemy_uri(path):
+    return "sqlite:///%s" % path
+
+
+def resolve_unimod(cache):
+    if cache.enabled:
+        path = _make_relative_sqlite_sqlalchemy_uri(
+            cache.path_for("unimod.db", False))
+        return unimod.Unimod(path)
+    else:
+        return unimod.Unimod()
+
+
 obo_cache = OBOCache()
+obo_cache.set_resolver("http://www.unimod.org/obo/unimod.obo", resolve_unimod)
