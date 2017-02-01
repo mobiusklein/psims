@@ -1,4 +1,5 @@
 import os
+import shutil
 import re
 from contextlib import contextmanager
 import tempfile
@@ -521,6 +522,6 @@ class XMLDocumentWriter(XMLWriterMixin):
             if use_temp:
                 handle.close()
                 os.remove(self.outfile.name)
-                os.rename(handle.name, self.outfile.name)
+                shutil.move(handle.name, self.outfile.name)
         except MemoryError:
             pass
