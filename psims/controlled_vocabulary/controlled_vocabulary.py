@@ -127,6 +127,7 @@ class OBOCache(object):
                     else:
                         raise ValueError("Failed to download .obo")
             else:
+                f = urlopen(uri)
                 code = None
                 if hasattr(f, 'getcode'):
                     code = f.getcode()
@@ -160,5 +161,5 @@ def resolve_unimod(cache):
         return unimod.Unimod()
 
 
-obo_cache = OBOCache()
+obo_cache = OBOCache(enabled=False)
 obo_cache.set_resolver("http://www.unimod.org/obo/unimod.obo", resolve_unimod)

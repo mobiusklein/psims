@@ -40,7 +40,7 @@ class OBOParser(object):
         self.current_term = None
 
     def parse(self):
-        for line in self.handle:
+        for line in self.handle.readlines():
             line = line.strip()
             if not line:
                 continue
