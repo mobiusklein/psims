@@ -311,7 +311,7 @@ class Brick(Base, HasFullNameMixin):
         composition = CompositionType()
         for element_relation in self.elements:
             symbol = element_relation.element
-            isotope, element = re.search(r"(?P<isotope>\d*)?(?P<element>\S+)", symbol).groups()
+            isotope, element = re.search(r"(?P<isotope>\d*?)(?P<element>\S+)", symbol).groups()
             if isotope != "":
                 isotope = int(isotope)
                 iso_str = _make_isotope_string(element, isotope)
