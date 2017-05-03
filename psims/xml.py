@@ -9,6 +9,8 @@ from lxml import etree
 from . import controlled_vocabulary
 from .utils import pretty_xml, add_metaclass
 
+from six import string_types as basestring
+
 
 def make_counter(start=1):
     '''
@@ -473,7 +475,7 @@ class XMLDocumentWriter(XMLWriterMixin):
     def _begin(self):
         """Writes the doctype and starts the low-level writing machinery
         """
-        self.outfile.write('<?xml version="1.0" encoding="utf-8"?>')
+        self.outfile.write(b'<?xml version="1.0" encoding="utf-8"?>')
         self.writer = self.xmlfile.__enter__()
 
     def __enter__(self):
@@ -493,6 +495,18 @@ class XMLDocumentWriter(XMLWriterMixin):
         self.outfile.close()
 
     def controlled_vocabularies(self, vocabularies=None):
+        """Write out the `<cvList>` element and all its children,
+        including both this format's default controlled vocabularies
+        and those passed as arguments to this method.this
+
+        This method requires writing to have begun.
+
+        Parameters
+        ----------
+        vocabularies : list of ControlledVocabulary, optional
+            A list of additional ControlledVocabulary objects
+            which will be used to construct `<cv>` elements
+        """
         if vocabularies is None:
             vocabularies = []
         self.vocabularies.extend(vocabularies)
@@ -518,10 +532,22 @@ class XMLDocumentWriter(XMLWriterMixin):
             handle = open(outfile, 'wb')
         try:
             pretty_xml(self.outfile.name, handle.name)
-
-            if use_temp:
-                handle.close()
-                os.remove(self.outfile.name)
-                shutil.move(handle.name, self.outfile.name)
         except MemoryError:
             pass
+
+        if use_temp:
+            handle.close()
+            os.remove(self.outfile.name)
+            try:
+                shutil.move(handle.name, self.outfile.name)
+            except IOError as e:
+                if e.errno == 13:
+                    try:
+                        import time
+                        time.sleep(3)
+                        shutil.move(handle.name, self.outfile.name)
+                    except IOError:
+                        print(
+                            "Could not obtain write-permission for original\
+                             file name. Formatted XML document located at \"%s\"" % (
+                                handle.name))

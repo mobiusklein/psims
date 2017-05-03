@@ -12,7 +12,7 @@ from .binary_encoding import (
     encode_array, COMPRESSION_NONE, COMPRESSION_ZLIB,
     encoding_map)
 
-from utils import ensure_iterable
+from .utils import ensure_iterable
 
 
 MZ_ARRAY = 'm/z array'

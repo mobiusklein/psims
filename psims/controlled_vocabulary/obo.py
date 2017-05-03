@@ -3,6 +3,8 @@ from .reference import Reference
 from .entity import Entity
 from .relationship import Relationship
 
+from six import string_types as basestring
+
 
 class OBOParser(object):
     def __init__(self, handle):
@@ -41,6 +43,7 @@ class OBOParser(object):
 
     def parse(self):
         for line in self.handle.readlines():
+            line = line.decode('utf-8')
             line = line.strip()
             if not line:
                 continue

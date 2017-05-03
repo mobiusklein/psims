@@ -1,7 +1,7 @@
 import os
 try:
     from urllib2 import urlopen
-except:
+except ImportError:
     from urllib.request import urlopen
 from .obo import OBOParser
 from . import unimod
@@ -43,13 +43,13 @@ class ControlledVocabulary(object):
     def __getitem__(self, key):
         try:
             return self.terms[key]
-        except KeyError, e:
+        except KeyError as e:
             try:
                 return self._names[key]
             except KeyError:
                 try:
                     return self._names[self.normalize_name(key)]
-                except KeyError, e2:
+                except KeyError as e2:
                     raise KeyError("%s and %s were not found." % (e, e2))
 
     def __iter__(self):

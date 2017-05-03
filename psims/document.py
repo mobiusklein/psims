@@ -14,7 +14,7 @@ class ChildTrackingMeta(type):
         if not hasattr(cls, "_cache"):
             cls._cache = defaultdict(dict)
         new_type = type.__new__(cls, name, parents, attrs)
-        ns = attrs.get("component_namespace", None)
+        ns = getattr(new_type, "component_namespace", None)
         cls._cache[ns][name] = new_type
         return new_type
 
@@ -123,7 +123,7 @@ class ReprBorrowingPartial(partial):
     """
     def __init__(self, func, *args, **kwargs):
         self._func = func
-        super(ReprBorrowingPartial, self).__init__(func, *args, **kwargs)
+        # super(ReprBorrowingPartial, self).__init__(func, *args, **kwargs)
         update_wrapper(self, func)
 
     def __repr__(self):

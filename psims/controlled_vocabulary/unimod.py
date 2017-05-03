@@ -1,5 +1,6 @@
 import warnings
 import re
+from collections import Counter
 
 from lxml import etree
 from sqlalchemy.ext.declarative import declarative_base
@@ -12,19 +13,26 @@ from sqlalchemy import exc as sa_exc
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from pyteomics.mass.mass import Composition, _make_isotope_string
+from six import string_types as basestring
+
+try:
+    has_pyteomics = True
+    from pyteomics.mass.mass import Composition, _make_isotope_string
+    CompositionType = Composition
+except ImportError:
+    has_pyteomics = False
+    CompositionType = Counter
+
+    def _make_isotope_string(element, isotope):
+        if isotope:
+            return "%s[%d]" % (element, isotope)
+        else:
+            return str(element)
+
 
 Base = declarative_base()
 
 _unimod_xml_download_url = "http://www.unimod.org/xml/unimod_tables.xml"
-
-try:
-    basestring
-except:
-    basestring = (str, bytes)
-
-
-CompositionType = Composition
 
 
 def simple_repr(self):  # pragma: no cover
@@ -195,7 +203,7 @@ class AlternativeName(Base):
             id=int(attrib["record_id"]),
             alt_name=attrib['alt_name'],
             modification_id=int(attrib['mod_key'])
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -221,7 +229,7 @@ class AminoAcid(Base, HasFullNameMixin):
             num_C=int(attrib["num_C"]),
             num_N=int(attrib["num_N"]),
             num_S=int(attrib["num_S"]),
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -247,7 +255,7 @@ class Classification(Base):
         inst = cls(
             id=int(attrib['record_id']),
             classification=attrib["classification"]
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -266,7 +274,7 @@ class Position(Base):
         inst = cls(
             id=int(attrib['record_id']),
             position=attrib['position']
-            )
+        )
         return inst
 
     def __eq__(self, other):
@@ -297,7 +305,7 @@ class Brick(Base, HasFullNameMixin):
             id=int(attrib['record_id']),
             brick=attrib['brick'],
             full_name=attrib['full_name']
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -333,7 +341,7 @@ class Fragment(Base):
         inst = cls(
             id=int(attrib['record_id']),
             modification_id=int(attrib["mod_key"])
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -378,7 +386,7 @@ class FragmentComposition(Base):
             brick_string=attrib["brick"],
             fragment_id=int(attrib["fragments_key"]),
             count=int(attrib["num_brick"])
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -400,7 +408,7 @@ class ModificationToBrick(Base):
             brick_string=(attrib['brick']),
             modification_id=int(attrib["mod_key"]),
             count=int(attrib["num_brick"])
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -422,7 +430,7 @@ class BrickToElement(Base):
             brick_id=int(attrib['brick_key']),
             count=int(attrib["num_element"]),
             element=attrib['element']
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -446,8 +454,7 @@ class Element(Base, HasFullNameMixin):
             monoisotopic_mass=float(attrib["mono_mass"]),
             full_name=attrib["full_name"],
             element=attrib["element"]
-
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -498,7 +505,7 @@ class Modification(Base, HasFullNameMixin):
             full_name=attrib["full_name"],
             approved=bool(int(attrib['approved'])),
             _composition=attrib["composition"]
-            )
+        )
         for note in tag:
             if note.tag == MiscNotesModifications._tag_name:
                 model_note = MiscNotesModifications._from_tag(note, inst.id)
@@ -550,7 +557,7 @@ class Specificity(Base):
             hidden=bool(int(attrib["hidden"])),
             amino_acid=attrib["one_letter"],
             modification_id=int(attrib["mod_key"]),
-            )
+        )
         return inst
 
 
@@ -567,7 +574,7 @@ class NeutralLoss(Base):
             brick_string=(attrib['brick']),
             count=int(attrib["num_brick"]),
             specificity_id=int(attrib["spec_key"])
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -594,7 +601,7 @@ class SpecificityToNeutralLoss(Base):
             is_peptide_neutral_loss=bool(int(attrib["is_pep_nl"])),
             is_slave=bool(int(attrib["is_slave_nl"])),
             _composition=attrib['nl_composition']
-            )
+        )
         return inst
 
     id = Column(Integer, primary_key=True)
@@ -692,7 +699,7 @@ class Unimod(object):
                 self.session = session(path)
                 if self.session.query(Modification).first() is None:
                     raise Exception()
-            except:
+            except Exception:
                 # Database may not yet exist at that location
                 self.session = create(_unimod_xml_download_url, path)
                 self.session.query(Modification).first()

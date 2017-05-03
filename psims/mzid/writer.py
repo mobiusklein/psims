@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from .components import (
     MzIdentML,
     ComponentDispatcher, etree, common_units, element, _element,
@@ -7,7 +6,7 @@ from .components import (
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
-from utils import ensure_iterable, basestring
+from .utils import ensure_iterable
 
 _t = tuple()
 

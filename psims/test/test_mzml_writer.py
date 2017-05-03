@@ -5,7 +5,6 @@ from lxml import etree
 
 path = "test_mzml.mzml"
 
-
 mz_array = [
     255.22935009, 283.26141863, 284.26105318, 301.23572871,
     304.908247, 329.26327093, 755.25267878, 910.6317435,
@@ -55,17 +54,18 @@ charge_array = [
 ]
 
 
-f = MzMLWriter(open(path, 'wb'))
+def test_write():
+    f = MzMLWriter(open(path, 'wb'))
 
-with f:
-    f.controlled_vocabularies()
-    f.file_description(["spam"], [
-        dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
-    with f.element('run'):
-        with f.spectrum_list(count=1):
-            f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
-                {"name": "ms level", "value": 1}], polarity='negative scan')
-f._prettyify()
+    with f:
+        f.controlled_vocabularies()
+        f.file_description(["spam"], [
+            dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
+        with f.element('run'):
+            with f.spectrum_list(count=1):
+                f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
+                    {"name": "ms level", "value": 1}], polarity='negative scan')
+    f.format()
 
-spec = next(mzml.read(path))
-assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
+    spec = next(mzml.read(path))
+    assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
