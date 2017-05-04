@@ -9,18 +9,18 @@ path = 'test_mzid.mzid'
 
 
 def test_write():
-    software = mzid_data.software
-    spectra_data = mzid_data.spectra_data
-    search_database = mzid_data.search_database
+    software                     = mzid_data.software
+    spectra_data                 = mzid_data.spectra_data
+    search_database              = mzid_data.search_database
     spectrum_identification_list = mzid_data.spectrum_identification_list
 
-    proteins = mzid_data.proteins
-    peptides = mzid_data.peptides
-    peptide_evidence = mzid_data.peptide_evidence
+    proteins                     = mzid_data.proteins
+    peptides                     = mzid_data.peptides
+    peptide_evidence             = mzid_data.peptide_evidence
 
-    protocol = mzid_data.protocol
-    analysis = mzid_data.analysis
-    source_file = mzid_data.source_file
+    protocol                     = mzid_data.protocol
+    analysis                     = mzid_data.analysis
+    source_file                  = mzid_data.source_file
 
     f = MzIdentMLWriter(open(path, 'wb'))
     with f:
