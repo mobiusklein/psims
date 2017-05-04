@@ -1,5 +1,0 @@
-lxml
-sqlalchemy
-pyteomics
-numpy
-nose
