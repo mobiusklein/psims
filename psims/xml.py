@@ -7,9 +7,9 @@ import tempfile
 from lxml import etree
 
 from . import controlled_vocabulary
-from .utils import pretty_xml, add_metaclass
+from .utils import pretty_xml
 
-from six import string_types as basestring
+from six import string_types as basestring, add_metaclass
 
 
 def make_counter(start=1):
