@@ -3,12 +3,11 @@ from pyteomics import mzid
 from lxml import etree
 
 from psims.test import mzid_data
+from psims.test.utils import output_path
 
 
-path = 'test_mzid.mzid'
 
-
-def test_write():
+def test_write(output_path):
     software                     = mzid_data.software
     spectra_data                 = mzid_data.spectra_data
     search_database              = mzid_data.search_database
@@ -22,7 +21,7 @@ def test_write():
     analysis                     = mzid_data.analysis
     source_file                  = mzid_data.source_file
 
-    f = MzIdentMLWriter(open(path, 'wb'))
+    f = MzIdentMLWriter(open(output_path, 'wb'))
     with f:
         f.controlled_vocabularies()
         f.providence(software=software)
@@ -41,8 +40,12 @@ def test_write():
             with f.element("AnalysisData"):
                 f.spectrum_identification_list(**spectrum_identification_list)
 
-    f.format()
 
-    reader = mzid.read(path)
+    try:
+        f.format()
+    except OSError:
+        pass
+
+    reader = mzid.read(output_path)
     n_peptide_evidence = len(peptide_evidence)
     assert n_peptide_evidence == len(list(reader.iterfind("PeptideEvidence")))

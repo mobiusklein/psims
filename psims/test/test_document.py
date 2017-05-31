@@ -1,11 +1,10 @@
 from psims import document
 from psims.mzid import writer, components
+from .utils import output_path
 
-path = "test_document.mzid"
 
-
-def test_repr_borrow():
-    f = writer.MzIdentMLWriter(open(path, 'wb'))
+def test_repr_borrow(output_path):
+    f = writer.MzIdentMLWriter(open(output_path, 'wb'))
 
     with f:
         f.controlled_vocabularies()

@@ -3,7 +3,7 @@ import shutil
 import re
 from contextlib import contextmanager
 import tempfile
-
+import time
 from lxml import etree
 
 from . import controlled_vocabulary
@@ -543,7 +543,6 @@ class XMLDocumentWriter(XMLWriterMixin):
             except IOError as e:
                 if e.errno == 13:
                     try:
-                        import time
                         time.sleep(3)
                         shutil.move(handle.name, self.outfile.name)
                     except IOError:

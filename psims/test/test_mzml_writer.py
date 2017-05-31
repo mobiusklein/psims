@@ -2,8 +2,13 @@ from psims.mzml import MzMLWriter
 from pyteomics import mzml
 import numpy as np
 from lxml import etree
+import tempfile
+import os
 
-path = "test_mzml.mzml"
+import pytest
+
+from .utils import output_path
+
 
 mz_array = [
     255.22935009, 283.26141863, 284.26105318, 301.23572871,
@@ -54,8 +59,8 @@ charge_array = [
 ]
 
 
-def test_write():
-    f = MzMLWriter(open(path, 'wb'))
+def test_write(output_path):
+    f = MzMLWriter(open(output_path, 'wb'))
 
     with f:
         f.controlled_vocabularies()
@@ -65,7 +70,10 @@ def test_write():
             with f.spectrum_list(count=1):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
                     {"name": "ms level", "value": 1}], polarity='negative scan')
-    f.format()
+    try:
+        f.format()
+    except OSError:
+        pass
 
-    spec = next(mzml.read(path))
+    spec = next(mzml.read(output_path))
     assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
