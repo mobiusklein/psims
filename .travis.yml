@@ -10,6 +10,7 @@ cache: pip
 install:
   - pip install --upgrade pip setuptools wheel
   - pip install Cython --install-option="--no-cython-compile"
+  - pip install sqlalchemy
   - pip install coverage pytest pytest-cov
   - pip install lxml pyteomics
   - pip install --upgrade coverage
