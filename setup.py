@@ -8,5 +8,6 @@ setup(
     install_requires=[
         "lxml",
         "six",
+        "sqlalchemy"
     ]
 )
