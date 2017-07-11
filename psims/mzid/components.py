@@ -210,17 +210,27 @@ class Peptide(ComponentBase):
 
 class Modification(ComponentBase):
     def __init__(self, monoisotopic_mass_delta=None, location=None, name=None,
-                 id=None, params=None, context=NullMap):
+                 id=None, known=True, params=None, context=NullMap):
         if params is None:
             params = []
         if id is None:
-            mod = context.term(name)
-            self.name = mod["name"]
-            self.accession = mod['id']
+            try:
+                mod = context.term(name)
+                self.name = mod["name"]
+                self.accession = mod['id']
+            except KeyError:
+                known = False
+                self.name = name
+                self.accession = "MS:1001460"
         elif name is None:
-            mod = context.term(id)
-            self.name = mod["name"]
-            self.accession = mod['id']
+            try:
+                mod = context.term(id)
+                self.name = mod["name"]
+                self.accession = mod['id']
+            except KeyError:
+                known = False
+                self.name = id
+                self.accession = "MS:1001460"
         else:
             warnings.warn("Unknown modification saved: %s" % monoisotopic_mass_delta)
             self.name = name
@@ -231,13 +241,21 @@ class Modification(ComponentBase):
             location=location)
         self.context = context
         self.params = params
+        self.known = known
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=False):
             if self.accession is not None:
-                self.context.param(
-                    name=self.name, accession=self.accession,
-                    ref=self.accession.split(":")[0])(xml_file)
+                if self.known:
+                    self.context.param(
+                        name=self.name, accession=self.accession,
+                        ref=self.accession.split(":")[0])(xml_file)
+                else:
+                    self.context.param(
+                        name="unknown modification",
+                        accession=self.accession,
+                        value=self.name,
+                        ref=self.accession.split(":")[0])(xml_file)
             for param in self.params:
                 self.context.param(param)(xml_file)
 
