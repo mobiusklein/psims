@@ -1,10 +1,27 @@
 import os
+import pkg_resources
 try:
-    from urllib2 import urlopen
+    from urllib2 import urlopen, URLError
 except ImportError:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, URLError
 from .obo import OBOParser
 from . import unimod
+
+
+def _use_vendored_psims_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/psi-ms.obo")
+
+
+def _use_vendored_unit_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/unit.obo")
+
+
+fallback = {
+    ("http://psidev.cvs.sourceforge.net/*checkout*/"
+     "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
+    ("http://obo.cvs.sourceforge.net/*checkout*/"
+     "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo
+}
 
 
 class ControlledVocabulary(object):
@@ -93,6 +110,28 @@ class OBOCache(object):
             name += '.obo'
         return os.path.join(self.cache_path, name)
 
+    def _open_url(self, uri):
+        try:
+            f = urlopen(uri)
+            code = None
+            # The keepalive library monkey patches urllib2's urlopen and returns
+            # an object with a different API. First handle the normal case, then
+            # the patched case.
+            if hasattr(f, 'getcode'):
+                code = f.getcode()
+            elif hasattr(f, "code"):
+                code = f.code
+            else:
+                raise ValueError("Can't understand how to get HTTP response code from %r" % f)
+            if code != 200:
+                raise ValueError("%s did not resolve" % uri)
+        except Exception:
+            if uri in fallback:
+                f = fallback[uri]()
+            else:
+                raise
+        return f
+
     def resolve(self, uri):
         if uri in self.resolvers:
             return self.resolvers[uri](self)
@@ -102,19 +141,7 @@ class OBOCache(object):
                 if os.path.exists(name) and os.path.getsize(name) > 0:
                     return open(name)
                 else:
-                    f = urlopen(uri)
-                    code = None
-                    # The keepalive library monkey patches urllib2's urlopen and returns
-                    # an object with a different API. First handle the normal case, then
-                    # the patched case.
-                    if hasattr(f, 'getcode'):
-                        code = f.getcode()
-                    elif hasattr(f, "code"):
-                        code = f.code
-                    else:
-                        raise ValueError("Can't understand how to get HTTP response code from %r" % f)
-                    if code != 200:
-                        raise ValueError("%s did not resolve" % uri)
+                    f = self._open_url(uri)
                     with open(name, 'w') as cache_f:
                         n_chars = 0
                         for i, line in enumerate(f.readlines()):
@@ -127,18 +154,12 @@ class OBOCache(object):
                     else:
                         raise ValueError("Failed to download .obo")
             else:
-                f = urlopen(uri)
-                code = None
-                if hasattr(f, 'getcode'):
-                    code = f.getcode()
-                elif hasattr(f, "code"):
-                    code = f.code
-                if code != 200:
-                    raise ValueError("%s did not resolve" % uri)
-                return urlopen(uri)
+                f = self._open_url(uri)
+                return f
         except ValueError:
             import traceback
             traceback.print_exc()
+            raise
 
     def set_resolver(self, uri, provider):
         self.resolvers[uri] = provider
@@ -163,3 +184,15 @@ def resolve_unimod(cache):
 
 obo_cache = OBOCache(enabled=False)
 obo_cache.set_resolver("http://www.unimod.org/obo/unimod.obo", resolve_unimod)
+
+
+def configure_obo_store(path):
+    if path is None:
+        obo_cache.enabled = False
+    else:
+        obo_cache.cache_path = path
+        obo_cache.enabled = True
+
+
+def register_resolver(name, fn):
+    obo_cache.set_resolver(name, fn)
