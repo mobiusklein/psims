@@ -12,6 +12,13 @@ from .utils import pretty_xml
 from six import string_types as basestring, add_metaclass
 
 
+try:
+    WindowsError
+    on_windows = True
+except NameError:
+    on_windows = False
+
+
 def make_counter(start=1):
     '''
     Create a functor whose only internal piece of data is a mutable container
