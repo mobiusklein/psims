@@ -268,18 +268,23 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         if other_arrays is None:
             other_arrays = []
 
-        # Binary choice, default to positive
-        if polarity is None:
-            polarity = 'positive scan'
-        elif isinstance(polarity, int):
-            if polarity > 0:
+        if polarity is not None:
+            if isinstance(polarity, int):
+                if polarity > 0:
+                    polarity = 'positive scan'
+                elif polarity < 0:
+                    polarity = 'negative scan'
+                else:
+                    polarity = None
+            elif 'positive' in polarity:
                 polarity = 'positive scan'
-            else:
+            elif 'negative' in polarity:
                 polarity = 'negative scan'
-        elif 'positive' in polarity:
-            polarity = 'positive scan'
-        else:
-            polarity = 'negative scan'
+            else:
+                polarity = None
+
+            if polarity not in params and polarity is not None:
+                params.append(polarity)
 
         if centroided:
             peak_mode = "centroid spectrum"
@@ -309,9 +314,6 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 default_array_length=default_array_length)
             array_list.append(array_tag)
         array_list_tag = self.BinaryDataArrayList(array_list)
-
-        if polarity not in params:
-            params.append(polarity)
 
         if precursor_information is not None:
             precursor_list = self._prepare_precursor_information(
