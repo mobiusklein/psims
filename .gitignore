@@ -1,2 +1,9 @@
 *.pyc
 .obo_cache
+htmlcov/
+dist/
+build/
+.cache
+*egg-info
+.coverage
+*sublime*

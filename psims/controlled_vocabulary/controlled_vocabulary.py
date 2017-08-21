@@ -86,6 +86,23 @@ class ControlledVocabulary(object):
 
 
 class OBOCache(object):
+    """A cache for retrieved ontology sources
+
+    Attributes
+    ----------
+    cache_exists : bool
+        Whether the cache directory exists
+    cache_path : str
+        The path to the cache directory
+    enabled : bool
+        Whether the cache will be used or not
+    resolvers : dict
+        A mapping from ontology URL to a function
+        which will be called instead of opening the
+        URL to retrieve the :class:`ControlledVocabulary`
+        object.
+    """
+
     def __init__(self, cache_path='.obo_cache', enabled=True, resolvers=None):
         self._cache_path = None
         self.cache_path = cache_path

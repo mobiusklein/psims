@@ -10,8 +10,25 @@ COMPRESSION_ZLIB = 'zlib'
 
 encoding_map = {
     32: np.float32,
-    64: np.float64
+    64: np.float64,
+    '64-bit integer': np.int64,
+    'MS:1000522': np.int64,
+    'MS:1000519': np.int32,
+    '32-bit integer': np.int32,
+    'MS:1000520': np.float16,
+    '16-bit float': np.float16,
+    'MS:1000521': np.float32,
+    '32-bit float': np.float32,
+    'MS:1000523': np.float64,
+    '64-bit float': np.float64,
+    'MS:1001479': np.bytes_,
+    'null-terminated ASCII string': np.bytes_,
+    float: np.float64,
+    int: np.int32
 }
+
+for dtype in list(encoding_map.values()):
+    encoding_map[dtype] = dtype
 
 
 def encode_array(array, compression=COMPRESSION_NONE, dtype=np.float32):
