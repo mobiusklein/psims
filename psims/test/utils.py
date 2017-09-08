@@ -5,6 +5,7 @@ import pytest
 
 fixtured_files = []
 
+
 @pytest.fixture(scope='function')
 def output_path(request):
     fd, path = tempfile.mkstemp()
@@ -17,7 +18,6 @@ def output_path(request):
             pass
     request.addfinalizer(fin)
     return path
-
 
 
 test_root = os.path.abspath(os.path.dirname(__file__))

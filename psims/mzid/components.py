@@ -570,7 +570,7 @@ class Enzyme(ComponentBase):
                 regex_ent = context.term(regex_ref)
                 regex = regex_ent['name']
                 site_regexp = regex
-            except:
+            except Exception:
                 pass
         self.site_regexp = site_regexp
         self.element = _element(

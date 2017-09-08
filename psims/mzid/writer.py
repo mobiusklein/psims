@@ -1,3 +1,4 @@
+from numbers import Number
 from .components import (
     MzIdentML,
     ComponentDispatcher, etree, common_units, element, _element,
@@ -36,6 +37,30 @@ class AnalysisProtocolCollection(DocumentSection):
         super(AnalysisProtocolCollection, self).__init__(
             "AnalysisProtocolCollection", writer, parent_context,
             xmlns=_xmlns)
+
+
+class SequenceCollection(DocumentSection):
+    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+        super(SequenceCollection, self).__init__(
+            "SequenceCollection", writer, parent_context, xmlns=_xmlns)
+
+
+class AnalysisCollection(DocumentSection):
+    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+        super(AnalysisCollection, self).__init__(
+            "AnalysisCollection", writer, parent_context, xmlns=_xmlns)
+
+
+class DataCollection(DocumentSection):
+    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+        super(DataCollection, self).__init__(
+            "DataCollection", writer, parent_context, xmlns=_xmlns)
+
+
+class AnalysisData(DocumentSection):
+    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+        super(AnalysisData, self).__init__(
+            "AnalysisData", writer, parent_context, xmlns=_xmlns)
 
 
 # ----------------------
@@ -128,7 +153,16 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def analysis_protocol_collection(self):
         return AnalysisProtocolCollection(self.writer, self.context)
 
-    def sequence_collection(self, db_sequences=tuple(), peptides=tuple(), peptide_evidence=tuple()):
+    def sequence_collection(self):
+        return SequenceCollection(self.writer, self.context)
+
+    def analysis_collection(self):
+        return AnalysisCollection(self.writer, self.context)
+
+    def data_collection(self):
+        return DataCollection(self.writer, self.context)
+
+    def _sequence_collection(self, db_sequences=tuple(), peptides=tuple(), peptide_evidence=tuple()):
         db_sequences = (self.DBSequence(**(s or {}))
                         for s in ensure_iterable(db_sequences))
         peptides = (self.Peptide(**(s or {}))
@@ -148,13 +182,27 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             **(s or {})) for s in ensure_iterable(modification_params)]
         if isinstance(fragment_tolerance, (list, tuple)):
             fragment_tolerance = self.FragmentTolerance(*fragment_tolerance)
+        elif isinstance(fragment_tolerance, Number):
+            if fragment_tolerance < 1e-4:
+                fragment_tolerance = self.FragmentTolerance(fragment_tolerance * 1e6, None, "parts per million")
+            else:
+                fragment_tolerance = self.FragmentTolerance(fragment_tolerance, None, "dalton")
+
         if isinstance(parent_tolerance, (list, tuple)):
             parent_tolerance = self.ParentTolerance(*parent_tolerance)
+        elif isinstance(parent_tolerance, Number):
+            if parent_tolerance < 1e-4:
+                parent_tolerance = self.ParentTolerance(parent_tolerance * 1e6, None, "parts per million")
+            else:
+                parent_tolerance = self.ParentTolerance(parent_tolerance, None, "dalton")
         threshold = self.Threshold(threshold)
         protocol = self.SpectrumIdentificationProtocol(
             search_type, analysis_software_id, id, additional_search_params, modification_params, enzymes,
             fragment_tolerance, parent_tolerance, threshold)
         protocol.write(self.writer)
+
+    def analysis_data(self):
+        return AnalysisData(self.writer, self.context)
 
     def spectrum_identification_list(self, id, identification_results=None, measures=None):
         if measures is None:

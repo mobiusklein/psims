@@ -1,6 +1,7 @@
 import warnings
 from collections import Mapping, defaultdict
 from functools import partial, update_wrapper
+from contextlib import contextmanager
 
 from .utils import add_metaclass
 
@@ -227,6 +228,8 @@ class ComponentBase(object):
     Forwards any missing attribute requests to :attr:`element` for resolution
     against's the XML tag's attributes.
     """
+    is_open = False
+    _entering = None
 
     def __init__(self, *args, **kwargs):
         pass
@@ -243,6 +246,16 @@ class ComponentBase(object):
 
     def write(self, xml_file):
         raise NotImplementedError()
+
+    @contextmanager
+    def begin(self, xml_file=None, with_id=True):
+        if xml_file is None:
+            xml_file = getattr(self, "xml_file", None)
+            if xml_file is None:
+                raise ValueError("xml_file must be provided if this component is not bound!")
+        self._entering = self.element(xml_file, with_id=with_id).__enter__()
+        self.is_open = True
+        yield
 
     def __call__(self, xml_file):
         self.write(xml_file)
