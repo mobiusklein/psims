@@ -19,6 +19,8 @@ def _use_vendored_unit_obo():
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
+    ("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/"
+     "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
     ("http://obo.cvs.sourceforge.net/*checkout*/"
      "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo
 }
@@ -146,7 +148,7 @@ class OBOCache(object):
             if uri in fallback:
                 f = fallback[uri]()
             else:
-                raise
+                raise ValueError(uri)
         return f
 
     def resolve(self, uri):
