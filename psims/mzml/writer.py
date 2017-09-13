@@ -201,7 +201,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             sample_name = sample.get("name")
 
             if sample_id is None and sample_name is not None:
-                sample_id = "%s_id" % (sample_name,)
+                sample_id = "%s_%d_id" % (sample_name, i)
             elif sample_id is not None and sample_name is None:
                 sample_name = str(sample_id)
             elif sample_id is sample_name is None:
@@ -267,7 +267,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         else:
             params = list(params)
         if scan_params is None:
-            scan_params  = []
+            scan_params = []
         else:
             scan_params = list(scan_params)
         if other_arrays is None:
