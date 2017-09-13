@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from ..xml import _element, element, TagBase, UserParam
+from ..xml import _element, element, TagBase
 from ..document import (
-    ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase)
+    ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase,
+    ParameterContainer, IDParameterContainer)
 
 
 class MzML(TagBase):
@@ -43,20 +44,6 @@ default_cv_list = [
         uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
         fullName="UNIT-ONTOLOGY"),
 ]
-
-
-class ParameterContainer(ComponentBase):
-    def __init__(self, tag_name, params=None, context=NullMap):
-        if params is None:
-            params = []
-        self.element = _element(tag_name)
-        self.context = context
-        self.params = params
-
-    def write(self, xml_file):
-        with self.element(xml_file, with_id=False):
-            for param in self.params:
-                self.context.param(param)(xml_file)
 
 
 class GenericCollection(ComponentBase):
@@ -160,20 +147,14 @@ class ReferenceableParamGroupList(IDGenericCollection):
             "referenceableParamGroupList", members, context)
 
 
-class ReferenceableParamGroup(ComponentBase):
+class ReferenceableParamGroup(IDParameterContainer):
     def __init__(self, params=None, id=None, context=NullMap):
         if params is None:
             params = []
-        self.params = params
-        self.element = _element("referenceableParamGroup", id=id)
+        super(ReferenceableParamGroup, self).__init__(
+            "referenceableParamGroup", params, dict(id=id), context=context)
         self.id = self.element.id
-        self.context = context
         context["ReferenceableParamGroup"][id] = self.element.id
-
-    def write(self, xml_file):
-        with self.element.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
 
 
 # --------------------------------------------------
@@ -185,22 +166,15 @@ class SampleList(GenericCollection):
         super(SampleList, self).__init__("sampleList", members, context)
 
 
-class Sample(ComponentBase):
+class Sample(IDParameterContainer):
     def __init__(self, name, params=None, id=None, context=NullMap, **kwargs):
         if params is None:
             params = []
         params.extend(kwargs.items())
+        super(Sample, self).__init__("sample", params, dict(name=name, id=id), context)
         self.name = name
-        self.params = params
-        self.element = _element("sample", name=name, id=id)
         self.id = self.element.id
-        self.context = context
         context["Sample"][id] = self.element.id
-
-    def write(self, xml_file):
-        with self.element.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
 
 # --------------------------------------------------
 # Software Processing Metadata
@@ -211,26 +185,20 @@ class SoftwareList(GenericCollection):
         super(SoftwareList, self).__init__("softwareList", members, context)
 
 
-class Software(ComponentBase):
+class Software(IDParameterContainer):
     def __init__(self, id=None, version="0.0", params=None, context=NullMap, **kwargs):
         if params is None:
             params = []
         params.extend(kwargs.items())
+        super(Software, self).__init__(
+            "software", params, dict(id=id, version=version), context=context)
         self.version = version
-        self.params = params
-        self.element = _element("software", id=id, version=version)
         self.id = self.element.id
-        self.context = context
         context['Software'][id] = self.element.id
 
     @property
     def with_id(self):
         return True
-
-    def write(self, xml_file):
-        with self.element.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
 
 
 # --------------------------------------------------
@@ -323,43 +291,28 @@ class ComponentList(GenericCollection):
         return cls(components, context=context)
 
 
-class Source(ComponentBase):
-    def __init__(self, order, params=None, context=NullMap):
+class Source(ParameterContainer):
+    def __init__(self, order, params=None, context=NullMap, **kwargs):
+        if params is None:
+            params = []
+        params.extend(kwargs.items())
+        super(Source, self).__init__(
+            "source", params, dict(order=order), context=context)
         self.order = order
-        self.params = params
-        self.element = _element("source", order=order)
-        self.context = context
-
-    def write(self, xml_file):
-        with self.element.element(xml_file):
-            for param in self.params:
-                self.context.param(param)(xml_file)
 
 
-class Analyzer(ComponentBase):
-    def __init__(self, order, params=None, context=NullMap):
+class Analyzer(ParameterContainer):
+    def __init__(self, order, params=None, context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
+        super(Analyzer, self).__init__("analyzer", params, dict(order=order), context=context)
         self.order = order
-        self.params = params
-        self.element = _element("analyzer", order=order)
-        self.context = context
-
-    def write(self, xml_file):
-        with self.element.element(xml_file):
-            for param in self.params:
-                self.context.param(param)(xml_file)
 
 
 class Detector(ComponentBase):
-    def __init__(self, order, params=None, context=NullMap):
+    def __init__(self, order, params=None, context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
+        super(Detector, self).__init__("detector", params, dict(order=order), context=context)
         self.order = order
-        self.params = params
-        self.element = _element("detector", order=order)
-        self.context = context
-
-    def write(self, xml_file):
-        with self.element.element(xml_file):
-            for param in self.params:
-                self.context.param(param)(xml_file)
 
 
 # --------------------------------------------------
@@ -389,11 +342,9 @@ class DataProcessing(ComponentBase):
                 method.write(xml_file)
 
 
-class ProcessingMethod(ComponentBase):
+class ProcessingMethod(ParameterContainer):
     def __init__(self, order, software_reference, params=None, context=NullMap, **kwargs):
-        if params is None:
-            params = []
-        params.extend(kwargs.items())
+        params = self.prepare_params(params, **kwargs)
         self.order = order
         self.software_reference = software_reference
         self._software_reference = context['Software'][software_reference]

@@ -59,6 +59,7 @@ class VocabularyResolver(object):
 
     def param(self, name, value=None, cv_ref=None, **kwargs):
         accession = kwargs.get("accession")
+
         if isinstance(name, CVParam):
             return name
         elif isinstance(name, (tuple, list)) and value is None:
@@ -69,11 +70,18 @@ class VocabularyResolver(object):
             accession = accession or mapping.get("accession")
             cv_ref = cv_ref or mapping.get("cv_ref") or mapping.get("cvRef")
             name = mapping.get('name')
+            if name is None:
+                if len(mapping) == 1:
+                    name, value = tuple(mapping.items())[0]
+                else:
+                    raise ValueError("Could not coerce paramter from %r" % (mapping,))
+            else:
+                kwargs.update({k: v for k, v in mapping.items()
+                               if k not in (
+                    "name", "value", "accession")})
 
-            kwargs.update({k: v for k, v in mapping.items()
-                           if k not in (
-                "name", "value", "accession")})
-
+        if name is None:
+            raise ValueError("Could not coerce paramter from %r, %r, %r" % (name, value, kwargs))
         if cv_ref is None:
             for cv in self.vocabularies:
                 try:
@@ -238,7 +246,7 @@ class ComponentBase(object):
         if key == "element":
             raise AttributeError(
                 ("The `element` attribute failed to instantiate "
-                 "or is being accessed to early."))
+                 "or is being accessed too early."))
         try:
             return self.element.attrs[key]
         except KeyError:
@@ -267,6 +275,11 @@ class ComponentBase(object):
                 if k not in ("context", "element") and not k.startswith("_")])
         )
 
+    def prepare_params(self, params, **kwargs):
+        params = params or []
+        params.extend(kwargs.items())
+        return params
+
 
 class ParameterContainer(ComponentBase):
     """An base class for a component whose only purpose
@@ -281,14 +294,23 @@ class ParameterContainer(ComponentBase):
     params : list
         The list of parameters to include
     """
-    def __init__(self, tag_name, params=None, context=NullMap):
+    def __init__(self, tag_name, params=None, element_args=None, context=NullMap):
+        if element_args is None:
+            element_args = dict()
         if params is None:
             params = []
-        self.element = _element(tag_name)
-        self.context = context
         self.params = params
+        self.context = context
+        self.element = _element(tag_name, **element_args)
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=False):
+            for param in self.params:
+                self.context.param(param)(xml_file)
+
+
+class IDParameterContainer(ParameterContainer):
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=True):
             for param in self.params:
                 self.context.param(param)(xml_file)
