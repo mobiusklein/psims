@@ -59,6 +59,15 @@ charge_array = [
 ]
 
 
+sample = {
+    "name": "shotgun explodeomics precipitate #123",
+    "params": [
+        "certified organic",
+        {"acquired in": "1812"}
+    ]
+}
+
+
 def test_write(output_path):
     f = MzMLWriter(open(output_path, 'wb'))
 
@@ -66,6 +75,7 @@ def test_write(output_path):
         f.controlled_vocabularies()
         f.file_description(["spam"], [
             dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
+        f.sample_list([sample])
         with f.element('run'):
             with f.spectrum_list(count=1):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
@@ -75,5 +85,10 @@ def test_write(output_path):
     except OSError:
         pass
 
+    reader = mzml.read(output_path)
+    sample_data = next(reader.iterfind("sample"))
+    assert sample_data['name'] == "shotgun explodeomics precipitate #123"
     spec = next(mzml.read(output_path))
     assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
+    assert "negative scan" in spec
+    assert spec['ms level'] == 1
