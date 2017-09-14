@@ -689,10 +689,10 @@ def session(path="sqlite:///unimod.db"):
 
 
 class Unimod(object):
-    def __init__(self, path=None):
+    def __init__(self, path=None, unimod_xml_uri=_unimod_xml_download_url):
         if path is None:
             self.path = None
-            self.session = create(_unimod_xml_download_url)
+            self.session = create(unimod_xml_uri)
         else:
             self.path = path
             try:
@@ -701,7 +701,7 @@ class Unimod(object):
                     raise Exception()
             except Exception:
                 # Database may not yet exist at that location
-                self.session = create(_unimod_xml_download_url, path)
+                self.session = create(unimod_xml_uri, path)
                 self.session.query(Modification).first()
 
     def get(self, identifier, strict=True):

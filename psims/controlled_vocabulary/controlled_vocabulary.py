@@ -16,6 +16,10 @@ def _use_vendored_unit_obo():
     return pkg_resources.resource_stream(__name__, "vendor/unit.obo")
 
 
+def _use_vendored_unimod_xml():
+    return pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml")
+
+
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
@@ -196,9 +200,15 @@ def resolve_unimod(cache):
     if cache.enabled:
         path = _make_relative_sqlite_sqlalchemy_uri(
             cache.path_for("unimod.db", False))
-        return unimod.Unimod(path)
+        try:
+            return unimod.Unimod(path)
+        except IOError:
+            return unimod.Unimod(path, _use_vendored_unimod_xml())
     else:
-        return unimod.Unimod()
+        try:
+            return unimod.Unimod()
+        except IOError:
+            return unimod.Unimod(None, _use_vendored_unimod_xml())
 
 
 obo_cache = OBOCache(enabled=False)
