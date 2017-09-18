@@ -519,7 +519,7 @@ class Scan(ComponentBase):
 
 class ScanWindowList(GenericCollection):
     def __init__(self, members, context=NullMap):
-        super(ScanWindowList, self).__init__('scanWindowList', members, context)
+        super(ScanWindowList, self).__init__('scanWindowList', members, context=context)
 
 
 class ScanWindow(ParameterContainer):
@@ -529,7 +529,7 @@ class ScanWindow(ParameterContainer):
 
 class PrecursorList(GenericCollection):
     def __init__(self, members, context=NullMap):
-        super(PrecursorList, self).__init__('precursorList', members, context)
+        super(PrecursorList, self).__init__('precursorList', members, context=context)
 
 
 class Precursor(ComponentBase):
@@ -552,12 +552,12 @@ class Precursor(ComponentBase):
 
 class Activation(ParameterContainer):
     def __init__(self, params, context=NullMap):
-        super(Activation, self).__init__("activation", params, context)
+        super(Activation, self).__init__("activation", params, context=context)
 
 
 class SelectedIonList(GenericCollection):
     def __init__(self, members, context=NullMap):
-        super(SelectedIonList, self).__init__("selectedIonList", members, context)
+        super(SelectedIonList, self).__init__("selectedIonList", members, context=context)
 
 
 class SelectedIon(ComponentBase):
