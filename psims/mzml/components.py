@@ -527,6 +527,32 @@ class ScanWindow(ParameterContainer):
         super(ScanWindow, self).__init__("scanWindow", *args, **kwargs)
 
 
+class IsolationWindow(ComponentBase):
+    def __init__(self, target, lower, upper, params=None, context=NullMap):
+        if params is None:
+            params = []
+        self.target = target
+        self.lower = lower
+        self.upper = upper
+        self.element = _element("isolationWindow")
+        self.context = context
+        self.params = params
+
+    def write(self, xml_file):
+        with self.element.element(xml_file, with_id=False):
+            self.context.param(name="isolation window target m/z", value=self.target,
+                               unit_name='m/z', unit_accession="MS:1000040",
+                               unit_cv_ref="MS")(xml_file)
+            self.context.param(name="isolation window lower offset", value=self.lower,
+                               unit_name='m/z', unit_accession="MS:1000040",
+                               unit_cv_ref="MS")(xml_file)
+            self.context.param(name="isolation window upper offset", value=self.upper,
+                               unit_name='m/z', unit_accession="MS:1000040",
+                               unit_cv_ref="MS")(xml_file)
+            for param in self.params:
+                self.context.param(param)(xml_file)
+
+
 class PrecursorList(GenericCollection):
     def __init__(self, members, context=NullMap):
         super(PrecursorList, self).__init__('precursorList', members, context=context)
@@ -540,6 +566,7 @@ class Precursor(ComponentBase):
         self.spectrum_reference = spectrum_reference
         self._spectrum_reference = context["Spectrum"][spectrum_reference]
         self.element = _element("precursor", spectrumRef=self._spectrum_reference)
+        self.context = context
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=False):
