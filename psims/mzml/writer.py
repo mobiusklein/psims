@@ -430,10 +430,12 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             array_length=(len(array) if override_length else None),
             params=params)
 
-    def _prepare_precursor_information(self, mz, intensity, charge, scan_id, activation=None):
+    def _prepare_precursor_information(self, mz, intensity, charge, scan_id, activation=None, params=None):
+        if params is None:
+            params = []
         if activation is not None:
             activation = self.Activation(activation)
-        ion = self.SelectedIon(mz, intensity, charge)
+        ion = self.SelectedIon(mz, intensity, charge, params=params)
         ion_list = self.SelectedIonList([ion])
         precursor = self.Precursor(
             ion_list,

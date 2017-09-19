@@ -80,6 +80,13 @@ def test_write(output_path):
             with f.spectrum_list(count=1):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
                     {"name": "ms level", "value": 1}], polarity='negative scan')
+                f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=2', params=[
+                    {"name": "ms level", "value": 2}], polarity='negative scan', precursor_information={
+                        "mz": 1230, "intensity": None, "charge": None, "params": [
+                            "No Ion Found"
+                        ],
+                        "scan_id": "scanId=1"
+                })
     try:
         f.format()
     except OSError:
@@ -88,7 +95,11 @@ def test_write(output_path):
     reader = mzml.read(output_path)
     sample_data = next(reader.iterfind("sample"))
     assert sample_data['name'] == "shotgun explodeomics precipitate #123"
-    spec = next(mzml.read(output_path))
+    reader.reset()
+    spec = next(reader)
     assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
     assert "negative scan" in spec
     assert spec['ms level'] == 1
+    spec = next(reader)
+    assert "negative scan" in spec
+    assert spec['ms level'] == 2
