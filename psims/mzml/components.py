@@ -50,7 +50,7 @@ class GenericCollection(ComponentBase):
     def __init__(self, tag_name, members, context=NullMap):
         self.members = members
         self.tag_name = tag_name
-        self.element = _element(tag_name, xmlns=_xmlns, count=len(self.members))
+        self.element = _element(tag_name, count=len(self.members))
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=False):
@@ -69,7 +69,7 @@ class IDGenericCollection(GenericCollection):
     def __init__(self, tag_name, members, id, context=NullMap):
         self.members = members
         self.tag_name = tag_name
-        self.element = _element(tag_name, xmlns=_xmlns, id=id, count=len(self.members))
+        self.element = _element(tag_name, id=id, count=len(self.members))
         context[tag_name][id] = self.element.id
 
     def write(self, xml_file):
