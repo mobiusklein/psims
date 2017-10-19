@@ -605,7 +605,7 @@ class SelectedIon(ComponentBase):
             if self.intensity is not None:
                 self.context.param(name="peak intensity", value=self.intensity)(xml_file)
             if self.charge is not None:
-                self.context.param(name="charge state", value=self.charge)(xml_file)
+                self.context.param(name="charge state", value=int(self.charge))(xml_file)
             for param in self.params:
                 self.context.param(param)(xml_file)
 
