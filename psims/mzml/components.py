@@ -1,4 +1,5 @@
 from datetime import datetime
+from collections import Mapping
 
 from ..xml import _element, element, TagBase
 from ..document import (
@@ -528,7 +529,7 @@ class ScanWindow(ParameterContainer):
 
 
 class IsolationWindow(ComponentBase):
-    def __init__(self, target, lower, upper, params=None, context=NullMap):
+    def __init__(self, lower, target, upper, params=None, context=NullMap):
         if params is None:
             params = []
         self.target = target
@@ -560,6 +561,11 @@ class PrecursorList(GenericCollection):
 
 class Precursor(ComponentBase):
     def __init__(self, selected_ion_list, activation, isolation_window=None, spectrum_reference=None, context=NullMap):
+        if isolation_window is not None:
+            if isinstance(isolation_window, (tuple, list)):
+                isolation_window = IsolationWindow(*isolation_window, context=context)
+            elif isinstance(isolation_window, Mapping):
+                isolation_window = IsolationWindow(context=context, **isolation_window)
         self.selected_ion_list = selected_ion_list
         self.activation = activation
         self.isolation_window = isolation_window
