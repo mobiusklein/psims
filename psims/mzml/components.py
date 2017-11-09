@@ -1,5 +1,7 @@
+import warnings
 from datetime import datetime
-from collections import Mapping
+from collections import Mapping, Iterable
+from numbers import Number
 
 from ..xml import _element, element, TagBase
 from ..document import (
@@ -611,7 +613,12 @@ class SelectedIon(ComponentBase):
             if self.intensity is not None:
                 self.context.param(name="peak intensity", value=self.intensity)(xml_file)
             if self.charge is not None:
-                self.context.param(name="charge state", value=int(self.charge))(xml_file)
+                if isinstance(self.charge, Number):
+                    self.context.param(name="charge state", value=int(self.charge))(xml_file)
+                elif isinstance(self.charge, Iterable):
+                    self.context.param(name="charge state", value=' '.join(map(str, self.charge)))(xml_file)
+                else:
+                    warnings.warn("Invalid charge state provided (%r)" % (self.charge,))
             for param in self.params:
                 self.context.param(param)(xml_file)
 
