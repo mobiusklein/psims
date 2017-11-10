@@ -21,11 +21,11 @@ class OBOParser(object):
             is_as = entity['is_a']
             if isinstance(is_as, basestring):
                 is_as = Reference.fromstring(is_as)
-                self[is_as].children.append(entity)
+                # self[is_as].children.append(entity)
             else:
                 is_as = map(Reference.fromstring, is_as)
-                for term in is_as:
-                    self[term].children.append(entity)
+                # for term in is_as:
+                #     self[term].children.append(entity)
             entity['is_a'] = is_as
         except KeyError:
             pass
@@ -40,6 +40,17 @@ class OBOParser(object):
             pass
         self.terms[entity['id']] = entity
         self.current_term = None
+
+    def _connect_parents(self):
+        for term in self.terms.values():
+            try:
+                if isinstance(term.is_a, Reference):
+                    self.terms[term.is_a].children.append(term)
+                else:
+                    for is_a in term.is_a:
+                        self.terms[is_a].children.append(term)
+            except KeyError:
+                continue
 
     def parse(self):
         for line in self.handle.readlines():
@@ -61,6 +72,7 @@ class OBOParser(object):
                 key, sep, val = line.partition(":")
                 self.current_term[key].append(val.strip())
         self.pack()
+        self._connect_parents()
 
     def __getitem__(self, key):
         return self.terms[key]

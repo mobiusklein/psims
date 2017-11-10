@@ -13,7 +13,7 @@ class Reference(object):
         return not (self.accession == other.accession)
 
     def __repr__(self):
-        return "%s ! %s" % (self.accession, self.comment)
+        return "Reference(%r, %r)" % (self.accession, self.comment)
 
     def __hash__(self):
         return hash(self.accession)
@@ -23,5 +23,5 @@ class Reference(object):
         try:
             accession, comment = map(lambda s: s.strip(), string.split("!"))
             return cls(accession, comment)
-        except:
+        except Exception:
             return cls(string)

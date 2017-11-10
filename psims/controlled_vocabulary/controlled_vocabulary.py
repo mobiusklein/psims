@@ -225,3 +225,9 @@ def configure_obo_store(path):
 
 def register_resolver(name, fn):
     obo_cache.set_resolver(name, fn)
+
+
+def load_psims():
+    cv = obo_cache.resolve(("http://psidev.cvs.sourceforge.net/*checkout*/"
+                            "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"))
+    return ControlledVocabulary.from_obo(cv)
