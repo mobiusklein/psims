@@ -254,6 +254,8 @@ class InstrumentConfiguration(ComponentBase):
                  software_reference=None, context=NullMap):
         if params is None:
             params = []
+        if not isinstance(component_list, ComponentList):
+            component_list = ComponentList(component_list, context=context)
         self.params = params
         self.software_reference = software_reference
         self._software_reference = context['Software'][software_reference]
@@ -312,7 +314,7 @@ class Analyzer(ParameterContainer):
         self.order = order
 
 
-class Detector(ComponentBase):
+class Detector(ParameterContainer):
     def __init__(self, order, params=None, context=NullMap, **kwargs):
         params = self.prepare_params(params, **kwargs)
         super(Detector, self).__init__("detector", params, dict(order=order), context=context)
