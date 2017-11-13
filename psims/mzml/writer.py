@@ -7,7 +7,7 @@ from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
 from .components import (
     ComponentDispatcher, element,
-    default_cv_list, MzML)
+    default_cv_list, MzML, InstrumentConfiguration)
 
 from .binary_encoding import (
     encode_array, COMPRESSION_NONE, COMPRESSION_ZLIB,
@@ -181,7 +181,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     def instrument_configuration_list(self, instrument_configurations=None):
         configs = [
-            self.InstrumentConfiguration(**ic) for ic in ensure_iterable(
+            self.InstrumentConfiguration(**ic) if not isinstance(
+                ic, InstrumentConfiguration) else ic
+            for ic in ensure_iterable(
                 instrument_configurations)]
         self.InstrumentConfigurationList(configs).write(self)
 

@@ -7,7 +7,7 @@ import os
 
 import pytest
 
-from .utils import output_path
+from psims.test.utils import output_path
 
 
 mz_array = [
@@ -75,6 +75,12 @@ def test_write(output_path):
         f.controlled_vocabularies()
         f.file_description(["spam"], [
             dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
+        f.instrument_configuration_list([
+            f.InstrumentConfiguration(id=1, component_list=f.ComponentList([
+                f.Source(params=['electrospray ionization'], order=1),
+                f.Analyzer(params=['quadrupole'], order=2)
+            ]))
+        ])
         f.sample_list([sample])
         with f.element('run'):
             with f.spectrum_list(count=1):
@@ -103,3 +109,8 @@ def test_write(output_path):
     spec = next(reader)
     assert "negative scan" in spec
     assert spec['ms level'] == 2
+
+    reader.reset()
+    inst_config = next(reader.iterfind("instrumentConfiguration"))
+    assert inst_config['id'] == 'INSTRUMENTCONFIGURATION_1'
+    assert ("quadrupole") in inst_config['componentList']['analyzer'][0]

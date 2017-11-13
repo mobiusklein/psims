@@ -250,17 +250,18 @@ class InstrumentConfigurationList(GenericCollection):
 
 
 class InstrumentConfiguration(ComponentBase):
-    def __init__(self, scan_settings_reference, id, component_list=None, params=None,
+    def __init__(self, id, component_list=None, params=None,
                  software_reference=None, context=NullMap):
-        self.scan_settings_reference = scan_settings_reference
+        if params is None:
+            params = []
         self.params = params
         self.software_reference = software_reference
         self._software_reference = context['Software'][software_reference]
         self.component_list = component_list
         self.element = _element(
-            "instrumentConfiguration", id=id,
-            scanSettingsRef=context['ScanSettings'][scan_settings_reference])
+            "instrumentConfiguration", id=id)
         self.context = context
+        self.context['InstrumentConfiguration'][id] = self.element.id
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
@@ -279,16 +280,16 @@ class ComponentList(GenericCollection):
     @classmethod
     def build(cls, members, context=NullMap, type_key='type'):
         components = []
-        for component in members:
+        for component in sorted(members, key=lambda x: int(x['order'])):
             if component[type_key] == 'source':
                 components.append(
-                    Source(component['order'], component['params'], context))
+                    Source(int(component['order']), component['params'], context))
             elif component[type_key] == 'analyzer':
                 components.append(
-                    Analyzer(component['order'], component['params'], context))
+                    Analyzer(int(component['order']), component['params'], context))
             elif component[type_key] == 'detector':
                 components.append(
-                    Detector(component['order'], component['params'], context))
+                    Detector(int(component['order']), component['params'], context))
             else:
                 raise KeyError("Unknown component %s" % component[type_key])
         return cls(components, context=context)
