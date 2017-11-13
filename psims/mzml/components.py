@@ -502,16 +502,20 @@ class ScanList(ComponentBase):
 
 
 class Scan(ComponentBase):
-    def __init__(self, scan_window_list=None, params=None, context=NullMap):
+    def __init__(self, scan_window_list=None, instrument_configuration_ref=None, params=None, context=NullMap):
         if scan_window_list is None:
             scan_window_list = ScanWindowList([], context)
         elif not isinstance(scan_window_list, ScanWindowList):
             scan_window_list = ScanWindowList(scan_window_list, context)
         if params is None:
             params = []
+        self.instrument_configuration_ref = instrument_configuration_ref
+        self._instrument_configuration_ref = context['InstrumentConfiguration'].get(instrument_configuration_ref)
         self.params = params
         self.scan_window_list = scan_window_list
         self.element = _element("scan")
+        if self._instrument_configuration_ref is not None:
+            self.element.attrs['instrumentConfigurationRef'] = self._instrument_configuration_ref
         self.context = context
 
     def write(self, xml_file):

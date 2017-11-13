@@ -92,7 +92,7 @@ def test_write(output_path):
                             "No Ion Found"
                         ],
                         "scan_id": "scanId=1"
-                })
+                }, instrument_configuration_id=1)
     try:
         f.format()
     except OSError:
@@ -109,6 +109,13 @@ def test_write(output_path):
     spec = next(reader)
     assert "negative scan" in spec
     assert spec['ms level'] == 2
+    scan_list_struct = spec['scanList']
+    reference = None
+    for scan in scan_list_struct.get("scan", []):
+        reference = scan.get("instrumentConfigurationRef")
+        if reference is None:
+            continue
+    assert reference == "INSTRUMENTCONFIGURATION_1"
 
     reader.reset()
     inst_config = next(reader.iterfind("instrumentConfiguration"))
