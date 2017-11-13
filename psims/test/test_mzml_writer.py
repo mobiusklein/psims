@@ -79,10 +79,14 @@ def test_write(output_path):
             f.InstrumentConfiguration(id=1, component_list=f.ComponentList([
                 f.Source(params=['electrospray ionization'], order=1),
                 f.Analyzer(params=['quadrupole'], order=2)
+            ])),
+            f.InstrumentConfiguration(id=2, component_list=f.ComponentList([
+                f.Source(params=['electrospray ionization'], order=1),
+                f.Analyzer(params=['radial ejection linear ion trap'], order=2)
             ]))
         ])
         f.sample_list([sample])
-        with f.element('run'):
+        with f.run():
             with f.spectrum_list(count=1):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
                     {"name": "ms level", "value": 1}], polarity='negative scan')
@@ -92,7 +96,7 @@ def test_write(output_path):
                             "No Ion Found"
                         ],
                         "scan_id": "scanId=1"
-                }, instrument_configuration_id=1)
+                }, instrument_configuration_id=2)
     try:
         f.format()
     except OSError:
@@ -115,9 +119,13 @@ def test_write(output_path):
         reference = scan.get("instrumentConfigurationRef")
         if reference is None:
             continue
-    assert reference == "INSTRUMENTCONFIGURATION_1"
+    assert reference == "INSTRUMENTCONFIGURATION_2"
 
     reader.reset()
     inst_config = next(reader.iterfind("instrumentConfiguration"))
     assert inst_config['id'] == 'INSTRUMENTCONFIGURATION_1'
     assert ("quadrupole") in inst_config['componentList']['analyzer'][0]
+
+    reader.reset()
+    run = next(reader.iterfind("run"))
+    assert run.get("defaultInstrumentConfigurationRef") == "INSTRUMENTCONFIGURATION_1"

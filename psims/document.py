@@ -1,5 +1,5 @@
 import warnings
-from collections import Mapping, defaultdict
+from collections import Mapping, defaultdict, OrderedDict
 from functools import partial, update_wrapper
 from contextlib import contextmanager
 
@@ -27,8 +27,9 @@ class ChildTrackingMeta(type):
             return self._cache[None][name]
 
 
-class SpecializedContextCache(dict):
+class SpecializedContextCache(OrderedDict):
     def __init__(self, type_name):
+        super(SpecializedContextCache, self).__init__()
         self.type_name = type_name
 
     def __getitem__(self, key):

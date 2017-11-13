@@ -144,6 +144,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         XMLDocumentWriter.__init__(self, outfile, **kwargs)
         self.spectrum_count = 0
         self.chromatogram_count = 0
+        self.default_instrument_configuration = None
 
     def software_list(self, software_list):
         n = len(software_list)
@@ -244,6 +245,13 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         kwargs = {}
         if start_time is not None:
             kwargs['startTimeStamp'] = start_time
+        if instrument_configuration is None:
+            keys = list(self.context['InstrumentConfiguration'].keys())
+            if keys:
+                instrument_configuration = keys[0]
+            else:
+                instrument_configuration = None
+        self.default_instrument_configuration = instrument_configuration
         return RunSection(
             self.writer, self.context, id=id,
             instrument_configuration=instrument_configuration,
@@ -345,7 +353,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                                     "unitName": 'minute'})
             else:
                 scan_params.append(scan_start_time)
-
+        if self.default_instrument_configuration == instrument_configuration_id:
+            instrument_configuration_id = None
         scan = self.Scan(params=scan_params, instrument_configuration_ref=instrument_configuration_id)
         scan_list = self.ScanList([scan], params=["no combination"])
 
