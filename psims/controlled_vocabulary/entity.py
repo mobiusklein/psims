@@ -7,6 +7,10 @@ class Entity(dict):
     def __getattr__(self, key):
         return self[key]
 
+    @property
+    def definition(self):
+        return self['def']
+
     def __setattr__(self, key, value):
         if key in ("vocabulary", "children"):
             object.__setattr__(self, key, value)
