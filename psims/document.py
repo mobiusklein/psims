@@ -56,6 +56,11 @@ class VocabularyResolver(object):
         for vocab in self.vocabularies:
             if vocab.id == id:
                 return vocab
+            try:
+                if vocab.full_name == id:
+                    return vocab
+            except AttributeError:
+                pass
         raise KeyError(id)
 
     def param(self, name, value=None, cv_ref=None, **kwargs):
@@ -66,11 +71,13 @@ class VocabularyResolver(object):
         elif isinstance(name, (tuple, list)) and value is None:
             name, value = name
         elif isinstance(name, Mapping):
-            mapping = name
-            value = value or mapping.get('value')
-            accession = accession or mapping.get("accession")
-            cv_ref = cv_ref or mapping.get("cv_ref") or mapping.get("cvRef")
-            name = mapping.get('name')
+            mapping = dict(name)
+            value = value or mapping.pop('value', None)
+            accession = accession or mapping.pop("accession", None)
+            cv_ref = cv_ref or mapping.pop("cv_ref", None) or mapping.pop("cvRef", None)
+            unit_name = mapping.pop("unit_name", None) or mapping.pop("unitName", None)
+            unit_accession = mapping.pop("unit_accession", None) or mapping.pop("unitAccession", None)
+            name = mapping.pop('name', None)
             if name is None:
                 if len(mapping) == 1:
                     name, value = tuple(mapping.items())[0]
@@ -80,6 +87,11 @@ class VocabularyResolver(object):
                 kwargs.update({k: v for k, v in mapping.items()
                                if k not in (
                     "name", "value", "accession")})
+                # case normalize unit information so that cvParam can detect them
+                if unit_name is not None:
+                    kwargs.setdefault("unit_name", unit_name)
+                if unit_accession is not None:
+                    kwargs.setdefault("unit_accession", unit_accession)
 
         if name is None:
             raise ValueError("Could not coerce paramter from %r, %r, %r" % (name, value, kwargs))

@@ -60,7 +60,7 @@ def camelize(name):
     """
     parts = name.split("_")
     if len(parts) > 1:
-        return ''.join(parts[0] + [part.title() if part != "ref" else "_ref" for part in parts[1:]])
+        return ''.join([parts[0]] + [part.title() if part != "ref" else "_ref" for part in parts[1:]])
     else:
         return name
 
