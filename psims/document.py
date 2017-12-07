@@ -82,7 +82,7 @@ class VocabularyResolver(object):
                 if len(mapping) == 1:
                     name, value = tuple(mapping.items())[0]
                 else:
-                    raise ValueError("Could not coerce paramter from %r" % (mapping,))
+                    raise ValueError("Could not coerce parameter from %r" % (mapping,))
             else:
                 kwargs.update({k: v for k, v in mapping.items()
                                if k not in (
@@ -94,7 +94,7 @@ class VocabularyResolver(object):
                     kwargs.setdefault("unit_accession", unit_accession)
 
         if name is None:
-            raise ValueError("Could not coerce paramter from %r, %r, %r" % (name, value, kwargs))
+            raise ValueError("Could not coerce parameter from %r, %r, %r" % (name, value, kwargs))
         if cv_ref is None:
             for cv in self.vocabularies:
                 try:
@@ -123,6 +123,10 @@ class VocabularyResolver(object):
                 pass
         else:
             raise KeyError(name)
+
+    def load_vocabularies(self):
+        for vocab in self.vocabularies:
+            vocab.load()
 
 
 class DocumentContext(dict, VocabularyResolver):
@@ -222,6 +226,9 @@ class ComponentDispatcherBase(object):
     @property
     def vocabularies(self):
         return self.context.vocabularies
+
+    def load_vocabularies(self):
+        self.context.load_vocabularies()
 
     def param(self, *args, **kwargs):
         return self.context.param(*args, **kwargs)

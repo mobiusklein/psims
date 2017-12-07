@@ -674,6 +674,9 @@ class CVList(ComponentBase):
             for member in self.cv_list:
                 xml_file.write(member.element(with_id=True))
 
+    def __iter__(self):
+        return iter(self.cv_list)
+
 
 class Person(ComponentBase):
     def __init__(self, first_name='first_name', last_name='last_name', id=DEFAULT_CONTACT_ID,

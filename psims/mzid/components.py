@@ -787,6 +787,9 @@ class CVList(ComponentBase):
             for member in self.cv_list:
                 xml_file.write(member.element(with_id=True))
 
+    def __iter__(self):
+        return iter(self.cv_list)
+
 
 class AnalysisSoftware(ComponentBase):
     def __init__(self, name, id=1, version=None, uri=None, contact=DEFAULT_CONTACT_ID, context=NullMap, **kwargs):
