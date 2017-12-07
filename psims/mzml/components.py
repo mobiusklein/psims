@@ -39,8 +39,7 @@ class ComponentBase(_ComponentBase):
 default_cv_list = [
     _element(
         "cv", id="PSI-MS",
-        uri=("http://psidev.cvs.sourceforge.net/*checkout*/"
-             "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"),
+        uri=("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"),
         fullName="PSI-MS"),
     _element(
         "cv", id="UO",
