@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='psims',
-    version='0.0.11',
+    version='0.0.12',
     description="Writers and controlled vocabulary manager for PSI-MS's mzML and mzIdentML standards",
     maintainer='Joshua Klein',
     maintainer_email="jaklein@bu.edu",
