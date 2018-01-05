@@ -48,7 +48,8 @@ class ControlledVocabulary(object):
     def from_obo(cls, handle):
         parser = OBOParser(handle)
         inst = cls(parser.terms)
-        assert len(parser.terms) > 0
+        if len(parser.terms) == 0:
+            raise ValueError("Empty Vocabulary")
         return inst
 
     def __init__(self, terms, id=None):
@@ -156,6 +157,13 @@ class OBOCache(object):
                 raise ValueError(uri)
         return f
 
+    def fallback(self, uri):
+        if uri in fallback:
+            f = fallback[uri]()
+        else:
+            f = None
+        return f
+
     def resolve(self, uri):
         if uri in self.resolvers:
             return self.resolvers[uri](self)
@@ -229,6 +237,5 @@ def register_resolver(name, fn):
 
 
 def load_psims():
-    cv = obo_cache.resolve(("http://psidev.cvs.sourceforge.net/*checkout*/"
-                            "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"))
+    cv = obo_cache.resolve(("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"))
     return ControlledVocabulary.from_obo(cv)

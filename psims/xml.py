@@ -357,8 +357,15 @@ class CV(TagBase):
 
     def load(self, handle=None):
         if handle is None:
-            fp = controlled_vocabulary.obo_cache.resolve(self.uri)
-            cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
+            try:
+                fp = controlled_vocabulary.obo_cache.resolve(self.uri)
+                cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
+            except ValueError:
+                fp = controlled_vocabulary.obo_cache.fallback(self.uri)
+                if fp is not None:
+                    cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
+                else:
+                    raise LookupError(self.uri)
         else:
             cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle)
         try:
@@ -473,8 +480,9 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
 
-    def __init__(self, outfile, **kwargs):
+    def __init__(self, outfile, compression=None, **kwargs):
         self.outfile = outfile
+        self.compression = compression
         self.xmlfile = etree.xmlfile(outfile, encoding='utf-8', **kwargs)
         self.writer = None
         self.toplevel = None
@@ -538,7 +546,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         else:
             handle = open(outfile, 'wb')
         try:
-            pretty_xml(self.outfile.name, handle.name)
+            pretty_xml(self.outfile.name, handle.name, compression=self.compression)
         except MemoryError:
             pass
 
