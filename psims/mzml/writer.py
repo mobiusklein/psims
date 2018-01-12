@@ -271,7 +271,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def write_spectrum(self, mz_array=None, intensity_array=None, charge_array=None, id=None,
                        polarity='positive scan', centroided=True, precursor_information=None,
                        scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
-                       encoding=32, other_arrays=None, scan_params=None,
+                       encoding=32, other_arrays=None, scan_params=None, scan_window_list=None,
                        instrument_configuration_id=None):
         if params is None:
             params = []
@@ -283,6 +283,10 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             scan_params = list(scan_params)
         if other_arrays is None:
             other_arrays = []
+        if scan_window_list is None:
+            scan_window_list = []
+        else:
+            scan_window_list = list(scan_window_list)
 
         if isinstance(encoding, Mapping):
             encoding = defaultdict(lambda: np.float32, encoding)
@@ -355,7 +359,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 scan_params.append(scan_start_time)
         if self.default_instrument_configuration == instrument_configuration_id:
             instrument_configuration_id = None
-        scan = self.Scan(params=scan_params, instrument_configuration_ref=instrument_configuration_id)
+        scan = self.Scan(scan_window_list=scan_window_list, params=scan_params,
+                         instrument_configuration_ref=instrument_configuration_id)
         scan_list = self.ScanList([scan], params=["no combination"])
 
         index = self.spectrum_count

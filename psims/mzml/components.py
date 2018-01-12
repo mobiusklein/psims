@@ -528,12 +528,35 @@ class Scan(ComponentBase):
 
 class ScanWindowList(GenericCollection):
     def __init__(self, members, context=NullMap):
-        super(ScanWindowList, self).__init__('scanWindowList', members, context=context)
+        components = []
+        for member in members:
+            if isinstance(member, (list, tuple)):
+                components.append(ScanWindow(*member, context=context))
+            elif isinstance(member, Mapping):
+                components.append(ScanWindow(context=context, **member))
+            else:
+                components.append(member)
+        super(ScanWindowList, self).__init__('scanWindowList', components, context=context)
 
 
-class ScanWindow(ParameterContainer):
-    def __init__(self, *args, **kwargs):
-        super(ScanWindow, self).__init__("scanWindow", *args, **kwargs)
+class ScanWindow(ComponentBase):
+    def __init__(self, lower, upper, params=None, context=NullMap):
+        if params is None:
+            params = []
+        self.lower = lower
+        self.upper = upper
+        self.params = params
+        self.element = _element("scanWindow")
+        self.context = context
+
+    def write(self, xml_file):
+        with self.element.element(xml_file, with_id=False):
+            self.context.param(name="scan window lower limit", value=self.lower,
+                               unit_name='m/z', unit_accession="MS:1000040", unit_cv_ref='MS')(xml_file)
+            self.context.param(name="scan window upper limit", value=self.upper,
+                               unit_name='m/z', unit_accession="MS:1000040", unit_cv_ref='MS')(xml_file)
+            for param in self.params:
+                self.context.param(param)(xml_file)
 
 
 class IsolationWindow(ComponentBase):
