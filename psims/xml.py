@@ -9,7 +9,7 @@ from lxml import etree
 from . import controlled_vocabulary
 from .utils import pretty_xml
 
-from six import string_types as basestring, add_metaclass
+from six import string_types as basestring, add_metaclass, text_type
 
 
 try:
@@ -126,9 +126,9 @@ def attrencode(o):
         The encoded value
     """
     if isinstance(o, bool):
-        return str(o).lower()
+        return text_type(o).lower()
     else:
-        return str(o)
+        return text_type(o)
 
 
 @add_metaclass(CountedType)
