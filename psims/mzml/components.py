@@ -3,10 +3,13 @@ from datetime import datetime
 from collections import Mapping, Iterable
 from numbers import Number
 
+import numpy as np
+
 from ..xml import _element, element, TagBase
 from ..document import (
     ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase,
     ParameterContainer, IDParameterContainer)
+from .binary_encoding import (encoding_map, dtype_to_encoding, compression_map, encode_array)
 
 
 class MzML(TagBase):
@@ -472,6 +475,28 @@ class BinaryDataArray(ComponentBase):
             for param in self.params:
                 self.context.param(param)(xml_file)
             self.binary.write(xml_file)
+
+    @classmethod
+    def from_array(cls, data_array, encoding=32, compression=None, params=None, context=None):
+        if params is None:
+            params = []
+        if context is None:
+            context = NullMap
+        dtype = encoding_map[encoding]
+        compression = compression_map[compression]
+        array = np.asanyarray(data_array)
+        encoded_binary = encode_array(
+            array, compression=compression, dtype=dtype)
+        binary = Binary(encoded_binary)
+        array_length = len(data_array)
+        params.append(compression_map[compression])
+        params.append(dtype_to_encoding[dtype])
+        encoded_length = len(encoded_binary)
+        inst = cls(
+            binary, encoded_length,
+            array_length=array_length,
+            params=params, context=context)
+        return inst
 
 
 class Binary(ComponentBase):

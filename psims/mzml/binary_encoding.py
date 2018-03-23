@@ -27,6 +27,26 @@ encoding_map = {
     int: np.int32
 }
 
+
+dtype_to_encoding = {
+    np.int64: '64-bit integer',
+    np.int32: '32-bit integer',
+    np.float16: '16-bit float',
+    np.float32: '32-bit float',
+    np.float64: '64-bit float',
+    np.bytes_: 'null-terminated ASCII string',
+}
+
+
+compression_map = {
+    COMPRESSION_ZLIB: "zlib compression",
+    COMPRESSION_NONE: 'no compression',
+    None: 'no compression',
+    False: 'no compression',
+    True: "zlib compression"
+}
+
+
 for dtype in list(encoding_map.values()):
     encoding_map[dtype] = dtype
 

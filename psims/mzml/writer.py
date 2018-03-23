@@ -11,7 +11,7 @@ from .components import (
 
 from .binary_encoding import (
     encode_array, COMPRESSION_NONE, COMPRESSION_ZLIB,
-    encoding_map)
+    encoding_map, compression_map, dtype_to_encoding)
 
 from .utils import ensure_iterable
 
@@ -37,14 +37,6 @@ ARRAY_TYPES = [
     'resolution array',
     'baseline array'
 ]
-
-compression_map = {
-    COMPRESSION_ZLIB: "zlib compression",
-    COMPRESSION_NONE: 'no compression',
-    None: 'no compression',
-    False: 'no compression',
-    True: "zlib compression"
-}
 
 
 class DocumentSection(ComponentDispatcher, XMLWriterMixin):
@@ -426,9 +418,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             _encoding = encoding
             print(encoding)
         array = np.array(numeric)
-        encoding = encoding_map[_encoding]
+        dtype = encoding_map[_encoding]
         encoded_binary = encode_array(
-            array, compression=compression, dtype=encoding)
+            array, compression=compression, dtype=dtype)
         binary = self.Binary(encoded_binary)
         if default_array_length is not None and len(array) != default_array_length:
             override_length = True
@@ -440,7 +432,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             if array_type not in ARRAY_TYPES:
                 params.append(NON_STANDARD_ARRAY)
         params.append(compression_map[compression])
-        params.append("%d-bit float" % _encoding)
+        params.append(dtype_to_encoding[dtype])
         encoded_length = len(encoded_binary)
         return self.BinaryDataArray(
             binary, encoded_length,
