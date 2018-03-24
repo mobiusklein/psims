@@ -513,14 +513,14 @@ class MzMLIndexer(object):
         is_spectrum = self.spectrum_pattern.search(data)
         if is_spectrum:
             attrs = dict(self.attr_pattern.findall(data))
-            xid = attrs['id']
+            xid = attrs[b'id']
             offset = self.accumulator + is_spectrum.start()
             self.spectrum_index[xid] = offset
         if not is_spectrum:
             is_chromatogram = self.chromatogram_pattern.search(data)
             if is_chromatogram:
                 attrs = dict(self.attr_pattern.findall(data))
-                xid = attrs['id']
+                xid = attrs[b'id']
                 offset = self.accumulator + is_chromatogram.start()
                 self.chromatogram_index[xid] = offset
         self.buffer.write(data)
@@ -540,10 +540,11 @@ class MzMLIndexer(object):
         tree = etree.parse(self.source)
         content = etree.tostring(tree, pretty_print=True).splitlines()
         for line in content:
-            self.write('  %s\n' % line)
+            indented = b''.join((b'  ', line, b'\n'))
+            self.write(indented)
 
     def write_index(self, index, name):
-        self.write(b"    <index name=\"{}\">\n".format(name))
+        self.write("    <index name=\"{}\">\n".format(name).encode('utf-8'))
         for ref_id, index_data in index.items():
             self.write_offset(ref_id, index_data)
         self.write(b"    </index>\n")
@@ -555,18 +556,19 @@ class MzMLIndexer(object):
         self.write_index(self.chromatogram_index, 'chromatogram')
         self.write(b"  </indexList>\n")
         self.write(b"  <indexListOffset>")
-        self.write(b"{:d}</indexListOffset>\n".format(offset))
+        self.write("{:d}</indexListOffset>\n".format(offset).encode("utf-8"))
 
     def write_checksum(self):
         self.write(b"  <fileChecksum>")
-        self.write(self.checksum.hexdigest())
+        self.write(self.checksum.hexdigest().encode('utf-8'))
         self.write(b"</fileChecksum>\n")
 
     def write_closing(self):
         self.write(b"</indexedmzML>")
 
     def write_offset(self, ref_id, index_data):
-        self.write(b'      <offset idRef="{}">{:d}</offset>\n'.format(ref_id, index_data))
+        self.write('      <offset idRef="{}">{:d}</offset>\n'.format(
+            ref_id, index_data).encode('utf-8'))
 
     def build(self):
         self.write_opening()
