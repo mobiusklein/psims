@@ -484,9 +484,21 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         precursor_list = self.PrecursorList([precursor])
         return precursor_list
 
+    def format(self, outfile=None):
+        if self.outfile.closed:
+            fh = self.outfile.name
+        else:
+            fh = self.outfile
+        indexer = MzMLIndexer(fh)
+        try:
+            indexer.build()
+            indexer.overwrite()
+        except MemoryError:
+            pass
+
 
 class MzMLIndexer(object):
-    def __init__(self, source):
+    def __init__(self, source, pretty=True):
         self.source = source
         self.checksum = sha1()
         self.buffer = BytesIO()
@@ -518,10 +530,10 @@ class MzMLIndexer(object):
 
     def write_opening(self):
         header = (b'<?xml version="1.0" encoding="utf-8"?>\n'
-                  '<indexedmzML xmlns="http://psi.hupo.org/ms/mzml" '
-                  'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-                  ' xsi:schemaLocation="http://psi.hupo.org/ms/mzml '
-                  'http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd">\n')
+                  b'<indexedmzML xmlns="http://psi.hupo.org/ms/mzml" '
+                  b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+                  b' xsi:schemaLocation="http://psi.hupo.org/ms/mzml '
+                  b'http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd">\n')
         self.write(header)
 
     def embed_source(self):
