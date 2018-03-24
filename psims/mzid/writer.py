@@ -129,10 +129,10 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A dictionary specifying a :class:`Organization` instance. If missing, a default organization will
             be created
         """
-        software = [self.AnalysisSoftware(**(s or {}))
+        software = [self.AnalysisSoftware.ensure(s or {})
                     for s in ensure_iterable(software)]
-        owner = self.Person(**(owner or {}))
-        organization = self.Organization(**(organization or {}))
+        owner = self.Person.ensure(owner or {})
+        organization = self.Organization.ensure(organization or {})
 
         self.GenericCollection("AnalysisSoftwareList",
                                software).write(self.writer)
@@ -140,11 +140,11 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.AuditCollection([owner], [organization]).write(self.writer)
 
     def inputs(self, source_files=tuple(), search_databases=tuple(), spectra_data=tuple()):
-        source_files = [self.SourceFile(**(s or {}))
+        source_files = [self.SourceFile.ensure(s or {})
                         for s in ensure_iterable(source_files)]
-        search_databases = [self.SearchDatabase(
-            **(s or {})) for s in ensure_iterable(search_databases)]
-        spectra_data = [self.SpectraData(**(s or {}))
+        search_databases = [self.SearchDatabase.ensure(
+            s or {}) for s in ensure_iterable(search_databases)]
+        spectra_data = [self.SpectraData.ensure(s or {})
                         for s in ensure_iterable(spectra_data)]
 
         self.Inputs(source_files, search_databases,
@@ -163,11 +163,11 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         return DataCollection(self.writer, self.context)
 
     def _sequence_collection(self, db_sequences=tuple(), peptides=tuple(), peptide_evidence=tuple()):
-        db_sequences = (self.DBSequence(**(s or {}))
+        db_sequences = (self.DBSequence.ensure((s or {}))
                         for s in ensure_iterable(db_sequences))
-        peptides = (self.Peptide(**(s or {}))
+        peptides = (self.Peptide.ensure((s or {}))
                     for s in ensure_iterable(peptides))
-        peptide_evidence = (self.PeptideEvidence(**(s or {}))
+        peptide_evidence = (self.PeptideEvidence.ensure((s or {}))
                             for s in ensure_iterable(peptide_evidence))
 
         self.SequenceCollection(db_sequences, peptides,
@@ -177,9 +177,9 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                                          additional_search_params=None, enzymes=None, modification_params=None,
                                          fragment_tolerance=None, parent_tolerance=None, threshold=None):
 
-        enzymes = [self.Enzyme(**(s or {})) for s in ensure_iterable(enzymes)]
-        modification_params = [self.SearchModification(
-            **(s or {})) for s in ensure_iterable(modification_params)]
+        enzymes = [self.Enzyme.ensure((s or {})) for s in ensure_iterable(enzymes)]
+        modification_params = [self.SearchModification.ensure(
+            (s or {})) for s in ensure_iterable(modification_params)]
         if isinstance(fragment_tolerance, (list, tuple)):
             fragment_tolerance = self.FragmentTolerance(*fragment_tolerance)
         elif isinstance(fragment_tolerance, Number):
