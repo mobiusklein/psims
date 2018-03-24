@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 from .reference import Reference
 from .entity import Entity
@@ -6,12 +7,47 @@ from .relationship import Relationship
 from six import string_types as basestring
 
 
+xsd_pattern = re.compile(r"(?:value-type:)?xsd\\?:([^\"]+)")
+
+
+def non_negative_integer(value):
+    x = int(value)
+    if x < 0:
+        raise TypeError("non_negative_integer cannot be negative. (%r)" % value)
+    return x
+
+
+def positive_integer(value):
+    x = int(value)
+    if x < 0:
+        raise TypeError("positive_integer cannot be less than 1. (%r)" % value)
+    return x
+
+
+value_type_resolvers = {
+    'int': int,
+    'double': float,
+    'float': float,
+    'string': str,
+    "anyURI": str,
+    'nonNegativeInteger': non_negative_integer,
+    'boolean': bool,
+    'positiveInteger': positive_integer,
+}
+
+
 class OBOParser(object):
     def __init__(self, handle):
         self.handle = handle
         self.terms = {}
         self.current_term = None
         self.parse()
+
+    def _get_value_type(self, xref_string):
+        match = xsd_pattern.search(xref_string)
+        if match:
+            dtype_name = match.group(1).strip()
+            return value_type_resolvers[dtype_name]
 
     def pack(self):
         if self.current_term is None:
@@ -38,6 +74,17 @@ class OBOParser(object):
                 entity[rel.predicate] = rel
         except KeyError:
             pass
+        try:
+            xref = entity['xref']
+            if isinstance(xref, basestring):
+                entity.value_type = self._get_value_type(xref)
+            else:
+                for x in xref:
+                    value_type = self._get_value_type(x)
+                    if x is not None:
+                        entity.value_type = value_type
+        except KeyError:
+            pass
         self.terms[entity['id']] = entity
         self.current_term = None
 
@@ -52,6 +99,10 @@ class OBOParser(object):
             except KeyError:
                 continue
 
+    def _pack_if_occupied(self):
+        if self.current_term is not None:
+            self.pack()
+
     def parse(self):
         for line in self.handle.readlines():
             line = line.decode('utf-8')
@@ -59,12 +110,10 @@ class OBOParser(object):
             if not line:
                 continue
             elif line == "[Typedef]":
-                if self.current_term is not None:
-                    self.pack()
+                self._pack_if_occupied()
                 self.current_term = None
             elif line == "[Term]":
-                if self.current_term is not None:
-                    self.pack()
+                self._pack_if_occupied()
                 self.current_term = defaultdict(list)
             else:
                 if self.current_term is None:

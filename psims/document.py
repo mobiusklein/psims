@@ -31,6 +31,7 @@ class SpecializedContextCache(OrderedDict):
     def __init__(self, type_name):
         super(SpecializedContextCache, self).__init__()
         self.type_name = type_name
+        self.bijection = dict()
 
     def __getitem__(self, key):
         try:
@@ -43,6 +44,10 @@ class SpecializedContextCache(OrderedDict):
             new_value = id_maker(self.type_name, key)
             self[key] = new_value
             return new_value
+
+    def __setitem__(self, key, value):
+        super(SpecializedContextCache, self).__setitem__(key, value)
+        self.bijection[value] = key
 
     def __repr__(self):
         return '%s\n%s' % (self.type_name, dict.__repr__(self))
@@ -134,7 +139,22 @@ class DocumentContext(dict, VocabularyResolver):
         dict.__init__(self)
         VocabularyResolver.__init__(self, vocabularies)
 
+    def __getitem__(self, key):
+        if not isinstance(key, str):
+            if isinstance(key, (type, ReprBorrowingPartial)):
+                key = key.__name__
+        return dict.__getitem__(self, key)
+
+    def __setitem__(self, key, value):
+        if not isinstance(key, str):
+            if isinstance(key, (type, ReprBorrowingPartial)):
+                key = key.__name__
+        dict.__setitem__(self, key, value)
+
     def __missing__(self, key):
+        if not isinstance(key, str):
+            if isinstance(key, (type, ReprBorrowingPartial)):
+                key = key.__name__
         self[key] = SpecializedContextCache(key)
         return self[key]
 
@@ -152,11 +172,23 @@ class ReprBorrowingPartial(partial):
         # super(ReprBorrowingPartial, self).__init__(func, *args, **kwargs)
         update_wrapper(self, func)
 
+    @property
+    def type(self):
+        return self._func
+
     def __repr__(self):
         return repr(self.func)
 
     def __getattr__(self, name):
         return getattr(self._func, name)
+
+    def ensure(self, data):
+        if not isinstance(data, self.type):
+            return self(**data)
+        else:
+            if data.context is not self.context:
+                raise ValueError("Cannot bind a component from another context")
+        return data
 
 
 class ComponentDispatcherBase(object):
@@ -200,7 +232,17 @@ class ComponentDispatcherBase(object):
             the :class:`ComponentBase` type requested.
         """
         component = ChildTrackingMeta.resolve_component(self.component_namespace, name)
-        return ReprBorrowingPartial(component, context=self.context)
+        tp = ReprBorrowingPartial(component, context=self.context)
+        tp.context = self.context
+        return tp
+
+    def ensure_component(self, data, tp):
+        if isinstance(data, tp.type):
+            if self.context is not data.context:
+                raise ValueError("Cannot bind a component from another context")
+            return data
+        else:
+            return tp(**data)
 
     def register(self, entity_type, id):
         """
@@ -219,7 +261,10 @@ class ComponentDispatcherBase(object):
         str
             The constructed reference id
         """
-        value = id_maker(entity_type, id)
+        if isinstance(id, int):
+            value = id_maker(entity_type, id)
+        else:
+            value = str(id)
         self.context[entity_type][id] = value
         return value
 

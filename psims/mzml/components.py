@@ -361,7 +361,7 @@ class ProcessingMethod(ParameterContainer):
         self.context = context
 
     def write(self, xml_file):
-        with self.element.element(xml_file, with_id=True):
+        with self.element.element(xml_file, with_id=False):
             for param in self.params:
                 self.context.param(param)(xml_file)
 
@@ -477,20 +477,18 @@ class BinaryDataArray(ComponentBase):
             self.binary.write(xml_file)
 
     @classmethod
-    def from_array(cls, data_array, encoding=32, compression=None, params=None, context=None):
+    def from_array(cls, data_array, compression=None, params=None, context=None):
         if params is None:
             params = []
         if context is None:
             context = NullMap
-        dtype = encoding_map[encoding]
         compression = compression_map[compression]
-        array = np.asanyarray(data_array)
         encoded_binary = encode_array(
-            array, compression=compression, dtype=dtype)
+            data_array, compression=compression, dtype=data_array.dtype.type)
         binary = Binary(encoded_binary)
         array_length = len(data_array)
         params.append(compression_map[compression])
-        params.append(dtype_to_encoding[dtype])
+        params.append(dtype_to_encoding[data_array.dtype.type])
         encoded_length = len(encoded_binary)
         inst = cls(
             binary, encoded_length,
@@ -717,7 +715,7 @@ class CVList(ComponentBase):
         self.cv_list = cv_list
 
     def write(self, xml_file):
-        with element(xml_file, 'cvList'):
+        with element(xml_file, 'cvList', count=len(self.cv_list)):
             for member in self.cv_list:
                 xml_file.write(member.element(with_id=True))
 

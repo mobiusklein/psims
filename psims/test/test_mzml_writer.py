@@ -67,10 +67,16 @@ sample = {
     ]
 }
 
+encodings = {
+    "m/z array": np.float64,
+    "intensity array": np.float64,
+    "charge array": np.float64
+}
+
 
 def test_write(output_path):
     f = MzMLWriter(open(output_path, 'wb'))
-
+    f.register("Software", 'psims')
     with f:
         f.controlled_vocabularies()
         f.file_description(["spam"], [
@@ -85,18 +91,27 @@ def test_write(output_path):
                 f.Analyzer(params=['radial ejection linear ion trap'], order=2)
             ]))
         ])
+        f.data_processing_list([
+            f.DataProcessing(processing_methods=[
+                dict(order=0, software_reference='psims', params=['Conversion to mzML'])
+            ])
+        ])
+        f.software_list([
+            f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'psims'])
+        ])
         f.sample_list([sample])
-        with f.run():
-            with f.spectrum_list(count=1):
+        with f.run(id='test'):
+            with f.spectrum_list(count=2):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
-                    {"name": "ms level", "value": 1}], polarity='negative scan')
+                    {"name": "ms level", "value": 1}], polarity='negative scan', encoding=encodings,
+                    compression='zlib')
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=2', params=[
                     {"name": "ms level", "value": 2}], polarity='negative scan', precursor_information={
                         "mz": 1230, "intensity": None, "charge": None, "params": [
                             "No Ion Found"
                         ],
                         "scan_id": "scanId=1"
-                }, instrument_configuration_id=2)
+                }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
     try:
         f.format()
     except OSError:
@@ -129,3 +144,4 @@ def test_write(output_path):
     reader.reset()
     run = next(reader.iterfind("run"))
     assert run.get("defaultInstrumentConfigurationRef") == "INSTRUMENTCONFIGURATION_1"
+    return f

@@ -1,10 +1,18 @@
-from collections import Mapping, defaultdict
+import re
 import numbers
+import warnings
+
+from io import BytesIO
+from collections import Mapping, defaultdict, OrderedDict
+from hashlib import sha1
+
+from lxml import etree
 
 import numpy as np
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
+from . import components
 from .components import (
     ComponentDispatcher, element,
     default_cv_list, MzML, InstrumentConfiguration)
@@ -67,9 +75,15 @@ class SpectrumListSection(DocumentSection):
         self.section_args.setdefault("count", 0)
         data_processing_method = self.section_args.pop(
             "data_processing_method", None)
-        if data_processing_method is not None:
+        try:
             self.section_args["defaultDataProcessingRef"] = self.context[
                 "DataProcessing"][data_processing_method]
+        except KeyError:
+            try:
+                self.section_args["defaultDataProcessingRef"] = list(
+                    self.context["DataProcessing"].values())[0]
+            except IndexError:
+                warnings.warn("No Data Processing method found. mzML file may not be fully standard-compliant")
 
 
 class ChromatogramListSection(DocumentSection):
@@ -80,9 +94,15 @@ class ChromatogramListSection(DocumentSection):
         self.section_args.setdefault("count", 0)
         data_processing_method = self.section_args.pop(
             "data_processing_method", None)
-        if data_processing_method is not None:
+        try:
             self.section_args["defaultDataProcessingRef"] = self.context[
                 "DataProcessing"][data_processing_method]
+        except KeyError:
+            try:
+                self.section_args["defaultDataProcessingRef"] = list(
+                    self.context["DataProcessing"].values())[0]
+            except IndexError:
+                warnings.warn("No Data Processing method found. mzML file may not be fully standard-compliant")
 
 
 class RunSection(DocumentSection):
@@ -141,7 +161,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def software_list(self, software_list):
         n = len(software_list)
         if n:
-            software_list = [self.Software(**sw) for sw in ensure_iterable(software_list)]
+            software_list = [self.Software.ensure(sw) for sw in ensure_iterable(software_list)]
         self.SoftwareList(software_list).write(self)
 
     def file_description(self, file_contents=None, source_files=None, params=None):
@@ -174,7 +194,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     def instrument_configuration_list(self, instrument_configurations=None):
         configs = [
-            self.InstrumentConfiguration(**ic) if not isinstance(
+            self.InstrumentConfiguration.ensure(ic) if not isinstance(
                 ic, InstrumentConfiguration) else ic
             for ic in ensure_iterable(
                 instrument_configurations)]
@@ -182,12 +202,12 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     def data_processing_list(self, processing_methods=None):
         methods = [
-            self.DataProcessing(**dp) for dp in ensure_iterable(processing_methods)]
+            self.DataProcessing.ensure(dp) for dp in ensure_iterable(processing_methods)]
         self.DataProcessingList(methods).write(self)
 
     def reference_param_group_list(self, groups=None):
         groups = [
-            self.ReferenceableParamGroup(**g) for g in ensure_iterable(groups)]
+            self.ReferenceableParamGroup.ensure(g) for g in ensure_iterable(groups)]
         self.ReferenceableParamGroupList(groups).write(self)
 
     def sample_list(self, samples):
@@ -251,6 +271,12 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             sample=sample, **kwargs)
 
     def spectrum_list(self, count, data_processing_method=None):
+        if data_processing_method is None:
+            dp_map = self.context['DataProcessing']
+            try:
+                data_processing_method = list(dp_map.keys())[0]
+            except IndexError:
+                warnings.warn("No Data Processing method found. mzML file may not be fully standard-compliant")
         return SpectrumListSection(
             self.writer, self.context, count=count,
             data_processing_method=data_processing_method)
@@ -410,15 +436,14 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             id=id, params=params)
         chromatogram.write(self.writer)
 
-    def _prepare_array(self, numeric, encoding=32, compression=COMPRESSION_ZLIB,
+    def _prepare_array(self, array, encoding=32, compression=COMPRESSION_ZLIB,
                        array_type=None, default_array_length=None):
         if isinstance(encoding, numbers.Number):
             _encoding = int(encoding)
         else:
             _encoding = encoding
-            print(encoding)
-        array = np.array(numeric)
         dtype = encoding_map[_encoding]
+        array = np.array(array, dtype=dtype)
         encoded_binary = encode_array(
             array, compression=compression, dtype=dtype)
         binary = self.Binary(encoded_binary)
@@ -458,3 +483,90 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             spectrum_reference=scan_id)
         precursor_list = self.PrecursorList([precursor])
         return precursor_list
+
+
+class MzMLIndexer(object):
+    def __init__(self, source):
+        self.source = source
+        self.checksum = sha1()
+        self.buffer = BytesIO()
+        self.accumulator = 0
+        self.spectrum_index = OrderedDict()
+        self.chromatogram_index = OrderedDict()
+        self.spectrum_pattern = re.compile(b"<spectrum ")
+        self.attr_pattern = re.compile(br"(\S+)=[\"']([^\"']+)[\"']")
+        self.chromatogram_pattern = re.compile(b"<chromatogram ")
+
+    def write(self, data):
+        is_spectrum = self.spectrum_pattern.search(data)
+        if is_spectrum:
+            attrs = dict(self.attr_pattern.findall(data))
+            xid = attrs['id']
+            offset = self.accumulator + is_spectrum.start()
+            self.spectrum_index[xid] = offset
+        if not is_spectrum:
+            is_chromatogram = self.chromatogram_pattern.search(data)
+            if is_chromatogram:
+                attrs = dict(self.attr_pattern.findall(data))
+                xid = attrs['id']
+                offset = self.accumulator + is_chromatogram.start()
+                self.chromatogram_index[xid] = offset
+        self.buffer.write(data)
+        self.accumulator += len(data)
+        self.checksum.update(data)
+        return self.accumulator
+
+    def write_opening(self):
+        header = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                  '<indexedmzML xmlns="http://psi.hupo.org/ms/mzml" '
+                  'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+                  ' xsi:schemaLocation="http://psi.hupo.org/ms/mzml '
+                  'http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd">\n')
+        self.write(header)
+
+    def embed_source(self):
+        tree = etree.parse(self.source)
+        content = etree.tostring(tree, pretty_print=True).splitlines()
+        for line in content:
+            self.write('  %s\n' % line)
+
+    def write_index(self, index, name):
+        self.write(b"    <index name=\"{}\">\n".format(name))
+        for ref_id, index_data in index.items():
+            self.write_offset(ref_id, index_data)
+        self.write(b"    </index>\n")
+
+    def write_index_list(self):
+        offset = self.accumulator
+        self.write(b"  <indexList count=\"2\">\n")
+        self.write_index(self.spectrum_index, 'spectrum')
+        self.write_index(self.chromatogram_index, 'chromatogram')
+        self.write(b"  </indexList>\n")
+        self.write(b"  <indexListOffset>")
+        self.write(b"{:d}</indexListOffset>\n".format(offset))
+
+    def write_checksum(self):
+        self.write(b"  <fileChecksum>")
+        self.write(self.checksum.hexdigest())
+        self.write(b"</fileChecksum>\n")
+
+    def write_closing(self):
+        self.write(b"</indexedmzML>")
+
+    def write_offset(self, ref_id, index_data):
+        self.write(b'      <offset idRef="{}">{:d}</offset>\n'.format(ref_id, index_data))
+
+    def build(self):
+        self.write_opening()
+        self.embed_source()
+        self.write_index_list()
+        self.write_checksum()
+        self.write_closing()
+
+    def overwrite(self):
+        try:
+            self.source.seek(0)
+            fh = self.source
+        except AttributeError:
+            fh = open(self.source, 'wb')
+        fh.write(self.buffer.getvalue())
