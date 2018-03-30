@@ -197,8 +197,9 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 parent_tolerance = self.ParentTolerance(parent_tolerance, None, "dalton")
         threshold = self.Threshold(threshold)
         protocol = self.SpectrumIdentificationProtocol(
-            search_type, analysis_software_id, id, additional_search_params, modification_params, enzymes,
-            fragment_tolerance, parent_tolerance, threshold)
+            search_type, analysis_software_id, id, additional_search_params,
+            modification_params, enzymes, fragment_tolerance,
+            parent_tolerance, threshold)
         protocol.write(self.writer)
 
     def analysis_data(self):

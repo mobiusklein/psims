@@ -24,7 +24,8 @@ encoding_map = {
     'MS:1001479': np.bytes_,
     'null-terminated ASCII string': np.bytes_,
     float: np.float64,
-    int: np.int32
+    int: np.int32,
+    None: np.float32
 }
 
 

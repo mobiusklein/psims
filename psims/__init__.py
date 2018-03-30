@@ -4,7 +4,8 @@ from .controlled_vocabulary import (
     obo_cache, OBOCache)
 
 from .mzml import (
-    MzMLWriter, array_types, compression_map,
+    MzMLWriter, ARRAY_TYPES, compression_map,
+    MZ_ARRAY, INTENSITY_ARRAY, CHARGE_ARRAY,
     components as mzml_components,
     default_cv_list as default_mzml_cv_list)
 

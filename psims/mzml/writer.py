@@ -289,8 +289,10 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def write_spectrum(self, mz_array=None, intensity_array=None, charge_array=None, id=None,
                        polarity='positive scan', centroided=True, precursor_information=None,
                        scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
-                       encoding=32, other_arrays=None, scan_params=None, scan_window_list=None,
+                       encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                        instrument_configuration_id=None):
+        if encoding is None:
+            {MZ_ARRAY: np.float64}
         if params is None:
             params = []
         else:
@@ -356,6 +358,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 array_type=CHARGE_ARRAY)
             array_list.append(charge_array_tag)
         for array_type, array in other_arrays:
+            if array_type is None:
+                raise ValueError("array type can't be None")
             array_tag = self._prepare_array(
                 array, encoding=encoding[array_type], compression=compression, array_type=array_type,
                 default_array_length=default_array_length)

@@ -9,6 +9,11 @@ compressed_stream_openers = {
 }
 
 
+compressed_file_extensions = {
+    'gz': 'gzip'
+}
+
+
 def pretty_xml(path, outpath=None, encoding=b'utf-8', compression=None):
     tree = etree.parse(path)
     if outpath is None:
