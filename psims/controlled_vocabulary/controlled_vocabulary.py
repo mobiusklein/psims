@@ -16,6 +16,10 @@ def _use_vendored_unit_obo():
     return pkg_resources.resource_stream(__name__, "vendor/unit.obo")
 
 
+def _use_vendored_pato_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/pato.obo")
+
+
 def _use_vendored_unimod_xml():
     return pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml")
 
@@ -27,7 +31,8 @@ fallback = {
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"): _use_vendored_psims_obo,
     ("http://obo.cvs.sourceforge.net/*checkout*/"
-     "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo
+     "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo,
+    ("http://ontologies.berkeleybop.org/pato.obo"): _use_vendored_pato_obo,
 }
 
 
@@ -47,12 +52,14 @@ class ControlledVocabulary(object):
     @classmethod
     def from_obo(cls, handle):
         parser = OBOParser(handle)
-        inst = cls(parser.terms)
+        inst = cls(parser.terms, metadata=parser.header)
         if len(parser.terms) == 0:
             raise ValueError("Empty Vocabulary")
         return inst
 
-    def __init__(self, terms, id=None):
+    def __init__(self, terms, id=None, metadata=None):
+        if metadata is None:
+            metadata = dict()
         self.terms = terms
         for term in terms.values():
             term.vocabulary = self
@@ -64,6 +71,14 @@ class ControlledVocabulary(object):
             for v in terms.values()
         }
         self.id = id
+        self.metadata = metadata
+
+    @property
+    def version(self):
+        try:
+            return self.metadata['data-version']
+        except KeyError:
+            return None
 
     def __getitem__(self, key):
         try:
