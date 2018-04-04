@@ -1,9 +1,9 @@
 import warnings
-from collections import Mapping, defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict
 from functools import partial, update_wrapper
 from contextlib import contextmanager
 
-from .utils import add_metaclass
+from .utils import add_metaclass, ensure_iterable, Mapping
 
 from .xml import (
     id_maker, CVParam, UserParam,
@@ -341,9 +341,30 @@ class ComponentBase(object):
         )
 
     def prepare_params(self, params, **kwargs):
-        params = params or []
+        if isinstance(params, Mapping):
+            if "name" not in params and "accession" not in params:
+                params = list(params.items())
+            else:
+                params = [params]
+        elif isinstance(params, (list, tuple)):
+            params = list(params)
+        else:
+            params = list(ensure_iterable(params)) or []
         params.extend(kwargs.items())
         return params
+
+    def add_param(self, param):
+        if isinstance(param, list):
+            self.params.extend(param)
+        else:
+            self.params.append(param)
+        return self
+
+    def write_params(self, xml_file, params=None):
+        if params is None:
+            params = self.params
+        for param in params:
+            self.context.param(param)(xml_file)
 
 
 class ParameterContainer(ComponentBase):
