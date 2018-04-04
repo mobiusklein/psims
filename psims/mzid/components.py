@@ -2,6 +2,8 @@ import warnings
 import operator
 import re
 
+from collections import Mapping
+
 from datetime import datetime
 from numbers import Number as NumberBase
 from itertools import chain
@@ -10,23 +12,40 @@ from ..xml import (
     _element, element, TagBase, ProvidedCV, UserParam,
     CVParam, sanitize_id)
 from ..document import (
-    ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase)
+    ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase,
+    ParameterContainer)
 
 from .utils import ensure_iterable
 
 from lxml import etree
 
 
+AUTO = object()
+
+
 class MzIdentML(TagBase):
-    type_attrs = {
+    v1_1_0_type_attrs = {
         "xmlns": "http://psidev.info/psi/pi/mzIdentML/1.1",
-        "version": "1.1.0",
         "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
         "xsi:schemaLocation": "http://psidev.info/psi/pi/mzIdentML/1.1 ../../schema/mzIdentML1.1.0.xsd"
     }
 
+    v1_2_0_type_attrs = {
+        "xmlns": "http://psidev.info/psi/pi/mzIdentML/1.2",
+        "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+        "xsi:schemaLocation": "http://psidev.info/psi/pi/mzIdentML/1.2 ../../schema/mzIdentML1.2.0.xsd"
+    }
+
     def __init__(self, **attrs):
-        attrs.setdefault('creationDate', datetime.utcnow())
+        attrs.setdefault('creationDate', datetime.utcnow().isoformat())
+        attrs.setdefault("id", 0)
+        attrs.setdefault("version", '1.1.0')
+        version = attrs['version']
+        if version == '1.1.0':
+            self.type_attrs = self.v1_1_0_type_attrs
+        elif version == '1.2.0':
+            self.type_attrs = self.v1_2_0_type_attrs
+
         super(MzIdentML, self).__init__("MzIdentML", **attrs)
 
 
@@ -55,7 +74,7 @@ default_cv_list = [
         "cv", id="PSI-MS",
         uri=("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/psidev"
              "/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"),
-        version="2.25.0", fullName="PSI-MS"),
+        fullName="PSI-MS"),
     _element(
         "cv", id="UO",
         uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
@@ -102,7 +121,10 @@ class IDGenericCollection(GenericCollection):
 
 
 class SourceFile(ComponentBase):
-    def __init__(self, location, file_format, id=None, context=NullMap):
+    def __init__(self, location, file_format, id=None, external_format=None,
+                 params=None, context=NullMap, **kwargs):
+        self.params = self.prepare_params(params, **kwargs)
+        self.external_format = external_format
         self.file_format = file_format
         self.element = _element("SourceFile", location=location, id=id)
         self.context = context
@@ -112,10 +134,17 @@ class SourceFile(ComponentBase):
         with self.element.element(xml_file, with_id=True):
             with element(xml_file, "FileFormat"):
                 self.context.param(self.file_format)(xml_file)
+            if self.external_format is not None:
+                with element(xml_file, "ExternalFormatDocumentation"):
+                    xml_file.write(str(self.external_format))
+            self.write_params(xml_file)
 
 
 class SearchDatabase(ComponentBase):
-    def __init__(self, name, file_format, location=None, id=None, context=NullMap):
+    def __init__(self, name, file_format, location=None, id=None, external_format=None,
+                 params=None, context=NullMap, **kwargs):
+        self.external_format = external_format
+        self.params = self.prepare_params(params, **kwargs)
         self.location = location
         self.file_format = file_format
         self.element = _element("SearchDatabase", location=location, name=name, id=id)
@@ -125,13 +154,18 @@ class SearchDatabase(ComponentBase):
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
             with element(xml_file, "FileFormat"):
-                self.context.param(self.file_format)(xml_file)
+                self.write_params(xml_file, self.prepare_params(self.file_format))
             with element(xml_file, "DatabaseName"):
                 UserParam(name=self.name).write(xml_file)
+            if self.external_format is not None:
+                with element(xml_file, "ExternalFormatDocumentation"):
+                    xml_file.write(str(self.external_format))
+            self.write_params(xml_file)
 
 
 class SpectraData(ComponentBase):
-    def __init__(self, location, file_format, spectrum_id_format, id=None, context=NullMap):
+    def __init__(self, location, file_format, spectrum_id_format, id=None, params=None, context=NullMap, **kwargs):
+        self.params = self.prepare_params(params, **kwargs)
         self.file_format = file_format
         self.spectrum_id_format = spectrum_id_format
         self.element = _element("SpectraData", id=id, location=location)
@@ -141,9 +175,10 @@ class SpectraData(ComponentBase):
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
             with element(xml_file, "FileFormat"):
-                self.context.param(self.file_format)(xml_file)
+                self.write_params(xml_file, self.prepare_params(self.file_format))
             with element(xml_file, "SpectrumIDFormat"):
                 self.context.param(self.spectrum_id_format)(xml_file)
+            self.write_params(xml_file)
 
 
 class Inputs(GenericCollection):
@@ -155,14 +190,12 @@ class Inputs(GenericCollection):
         super(Inputs, self).__init__("Inputs", items, context=context)
 
 # --------------------------------------------------
-# Identification Information
+# Search Database Content
 
 
 class DBSequence(ComponentBase):
     def __init__(self, accession, sequence=None, id=None, search_database_id=1, params=None, context=NullMap, **kwargs):
-        if params is None:
-            params = []
-        params.extend(kwargs.items())
+        params = self.prepare_params(params, **kwargs)
         self.params = params
         self.sequence = sequence
         self.search_database_ref = context['SearchDatabase'][search_database_id]
@@ -179,20 +212,18 @@ class DBSequence(ComponentBase):
             if self.sequence is not None:
                 with element(xml_file, "Seq"):
                     xml_file.write(protein)
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class Peptide(ComponentBase):
-    def __init__(self, peptide_sequence, id, modifications=None, params=None, context=NullMap):
+    def __init__(self, peptide_sequence, id, modifications=None, params=None, context=NullMap, **kwargs):
         if modifications is None:
             modifications = []
-        if params is None:
-            params = []
-
+        params = self.prepare_params(params, **kwargs)
         self.context = context
         self.peptide_sequence = peptide_sequence
-        self.modifications = [Modification(context=context, **mod) for mod in modifications]
+        self.modifications = [Modification(context=context, **mod)
+                              if not isinstance(mod, Modification) else mod for mod in modifications]
         self.params = params
         self.element = _element("Peptide", id=id)
         context["Peptide"][id] = self.element.id
@@ -204,15 +235,13 @@ class Peptide(ComponentBase):
                 xml_file.write(self.peptide_sequence)
             for mod in self.modifications:
                 mod.write(xml_file)
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class Modification(ComponentBase):
     def __init__(self, monoisotopic_mass_delta=None, location=None, name=None,
-                 id=None, known=True, params=None, context=NullMap):
-        if params is None:
-            params = []
+                 id=None, known=True, params=None, context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
         if id is None:
             try:
                 mod = context.term(name)
@@ -256,25 +285,50 @@ class Modification(ComponentBase):
                         accession=self.accession,
                         value=self.name,
                         ref=self.accession.split(":")[0])(xml_file)
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
+
+
+class SubstitutionModification(ComponentBase):
+    def __init__(self, original_residue, replacement_residue,
+                 monoisotopic_mass_delta=None, location=None,
+                 context=NullMap):
+        self.original_residue = original_residue
+        self.replacement_residue = replacement_residue
+        self.monoisotopic_mass_delta = monoisotopic_mass_delta
+        self.location = location
+        self.element = _element(
+            "SubstitutionModification", originalResidue=self.original_residue,
+            replacementResidue=self.replacement_residue)
+        if self.monoisotopic_mass_delta is not None:
+            self.element.attrs['monoisotopicMassDelta'] = self.monoisotopic_mass_delta
+        if self.location is not None:
+            self.element.attrs['location'] = self.location
+        self.context = context
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=False):
+            pass
 
 
 class PeptideEvidence(ComponentBase):
     def __init__(self, peptide_id, db_sequence_id, id, start_position, end_position,
-                 is_decoy=False, pre='', post='', params=None, context=NullMap):
-        if params is None:
-            params = []
+                 is_decoy=False, pre=None, post=None, params=None, frame=None,
+                 translation_table_id=None, context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
         self.params = params
         self.context = context
         self.peptide_id = peptide_id
         self.db_sequence_id = db_sequence_id
+        self.translation_table_id = translation_table_id
+        self.frame = frame
         self.element = _element(
             "PeptideEvidence", isDecoy=is_decoy, start=start_position,
             end=end_position, peptide_ref=context["Peptide"][peptide_id],
             dBSequence_ref=context['DBSequence'][db_sequence_id],
-            pre=pre, post=post, id=id)
-        context["PeptideEvidence"][id] = self.element.id
+            pre=pre, post=post, id=id, frame=frame)
+        if self.translation_table_id is not None:
+            self.element.attrs['translationTable_ref'] = self.context['TranslationTable'][self.translation_table_id]
+        self.context["PeptideEvidence"][id] = self.element.id
 
     def write(self, xml_file):
         if self.params:
@@ -285,10 +339,16 @@ class PeptideEvidence(ComponentBase):
             xml_file.write(self.element(with_id=True))
 
 
+# --------------------------------------------------
+# Identification Information
+
+
 class SpectrumIdentificationResult(ComponentBase):
-    def __init__(self, spectra_data_id, spectrum_id, id=None, identifications=None, context=NullMap):
+    def __init__(self, spectra_data_id, spectrum_id, id=None, identifications=None, params=None,
+                 context=NullMap, **kwargs):
         if identifications is None:
             identifications = []
+        self.params = self.prepare_params(params, **kwargs)
         self.identifications = identifications
         self.element = _element(
             "SpectrumIdentificationResult", spectraData_ref=context["SpectraData"][spectra_data_id],
@@ -298,6 +358,7 @@ class SpectrumIdentificationResult(ComponentBase):
         with self.element.element(xml_file, with_id=True):
             for item in self.identifications:
                 item.write(xml_file)
+            self.write_params(xml_file)
 
 
 class IonType(ComponentBase):
@@ -358,27 +419,65 @@ class IonType(ComponentBase):
 
 
 class SpectrumIdentificationItem(ComponentBase):
-    def __init__(self, calculated_mass_to_charge, experimental_mass_to_charge,
-                 charge_state, peptide_id, peptide_evidence_id, score, id, ion_types=None,
-                 params=None, pass_threshold=True, rank=1, context=NullMap):
-        self.peptide_evidence_ref = context["PeptideEvidence"][peptide_evidence_id]
+    def __init__(self, experimental_mass_to_charge,
+                 charge_state, peptide_id, peptide_evidence_ids, id, score=None,
+                 ion_types=None, params=None, pass_threshold=True, rank=1,
+                 calculated_mass_to_charge=None, calculated_pi=None,
+                 name=None, mass_table_id=None, sample_id=None,
+                 context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
+        self.peptide_evidence_refs = [
+            context["PeptideEvidence"][peptide_evidence_id]
+            for peptide_evidence_id in ensure_iterable(peptide_evidence_ids)]
         self.params = params
         self.score = score
-        self.ion_types = ion_types
+        self.rank = rank
         self.element = _element(
-            "SpectrumIdentificationItem", calculatedMassToCharge=calculated_mass_to_charge, chargeState=charge_state,
+            "SpectrumIdentificationItem", chargeState=charge_state,
             experimentalMassToCharge=experimental_mass_to_charge, id=id, passThreshold=pass_threshold,
-            peptide_ref=context['Peptide'][peptide_id]
+            peptide_ref=context['Peptide'][peptide_id], rank=self.rank
         )
+        self.element.attrs['calculatedMassToCharge'] = calculated_mass_to_charge
+        self.element.attrs['calculatedPI'] = calculated_pi
+        if sample_id is not None:
+            self.element.attrs['sample_ref'] = context['Sample'][sample_id]
+        if mass_table_id is not None:
+            self.element.attrs['massTable_ref'] = context['MassTable'][sample_id]
         context['SpectrumIdentificationItem'][id] = self.element.id
         self.context = context
+        self.ion_types = self.prepare_ion_types(ion_types)
+
+    def prepare_ion_types(self, ion_types):
+        mappings = []
+        if ion_types is not None:
+            if isinstance(ion_types, (list, tuple)):
+                try:
+                    if isinstance(ion_types[0], IonType):
+                        return ion_types
+                except IndexError:
+                    return mappings
+            elif isinstance(ion_types, Mapping):
+                ion_types = list(ion_types.items())
+            for series, measures in ion_types:
+                measures_ = {}
+                for measure, values in measures.items():
+                    if measure in ("indices", "charge_state"):
+                        continue
+                    measures_[measure] = values
+
+                it = IonType(series=IonType.guess_ion_type(series), indices=measures['indices'],
+                             charge_state=measures.get('charge_state', 1), measures=measures_,
+                             context=self.context)
+                mappings.append(it)
+        return mappings
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
-            _element(
-                "PeptideEvidenceRef",
-                peptideEvidence_ref=self.peptide_evidence_ref).write(
-                xml_file)
+            for peptide_evidence_ref in self.peptide_evidence_refs:
+                _element(
+                    "PeptideEvidenceRef",
+                    peptideEvidence_ref=peptide_evidence_ref).write(
+                    xml_file)
             ion_types = ensure_iterable(self.ion_types)
             if self.ion_types is not None and len(ion_types) > 0:
                 with element(xml_file, "Fragmentation"):
@@ -390,8 +489,7 @@ class SpectrumIdentificationItem(ComponentBase):
                 self.context.param(self.score)(xml_file)
             else:
                 self.context.param(name="score", value=self.score)(xml_file)
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class Measure(ComponentBase):
@@ -466,18 +564,37 @@ class AnalysisData(GenericCollection):
 
 
 class ProteinDetectionList(ComponentBase):
-    def __init__(self, ambiguity_groups=None, context=NullMap):
+    def __init__(self, ambiguity_groups=None, count=AUTO, params=None, context=NullMap, **kwargs):
         self.ambiguity_groups = ambiguity_groups
         self.element = _element("ProteinDetectionList")
+        self.count = count
+        self.params = self.prepare_params(params, **kwargs)
+
+    def _count_protein_groups(self):
+        count = 0
+        for pg in self.ambiguity_groups:
+            if pg.pass_threshold:
+                count += 1
+        return count
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
+            if self.count is AUTO:
+                count = self._count_protein_groups()
+                if count > 0:
+                    self.context.param("count of identified proteins", count)(xml_file)
+            elif self.count is not None:
+                self.context.param("count of identified proteins", self.count)(xml_file)
+            for param in ensure_iterable(self.params):
+                self.context.param(param)(xml_file)
             for ambiguity_group in self.ambiguity_groups:
                 ambiguity_group.write(xml_file)
 
 
 class PeptideHypothesis(ComponentBase):
-    def __init__(self, peptide_evidence_id, spectrum_identification_ids, params=None, context=NullMap):
+    def __init__(self, peptide_evidence_id, spectrum_identification_ids, params=None,
+                 context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
         self.peptide_evidence_id = peptide_evidence_id
         self.spectrum_identification_ids = spectrum_identification_ids
         self.params = params
@@ -492,53 +609,64 @@ class PeptideHypothesis(ComponentBase):
                     spectrumIdentificationItem_ref=self.context[
                         "SpectrumIdentificationItem"][spectrum_identification_id])
                 el.write(xml_file)
-            if self.params is not None:
-                for param in ensure_iterable(self.params):
-                    self.context.param(param)(xml_file)
+            for param in ensure_iterable(self.params):
+                self.context.param(param)(xml_file)
 
 
 class ProteinDetectionHypothesis(ComponentBase):
-    def __init__(self, id, db_sequence_id, peptide_hypotheses, score, pass_threshold=True,
-                 params=None, context=NullMap):
+    def __init__(self, id, db_sequence_id, peptide_hypotheses, pass_threshold=True,
+                 leading=True, params=None, name=None, context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
         self.peptide_hypotheses = peptide_hypotheses
         self.db_sequence_id = db_sequence_id
-        self.score = score
         self.pass_threshold = pass_threshold
+        self.leading = leading
         self.params = params
         self.context = context
         self.element = _element(
             "ProteinDetectionHypothesis", id=id,
             dBSequence_ref=context["DBSequence"][db_sequence_id],
             passThreshold=pass_threshold)
+        if name is not None:
+            self.element.attrs['name'] = name
         context['ProteinDetectionHypothesis'][id] = self.element.id
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
             for peptide_hypothesis in self.peptide_hypotheses:
                 peptide_hypothesis.write(xml_file)
-            if self.score is not None:
-                self.context.param(self.score)(xml_file)
-            if self.params is not None:
-                for param in ensure_iterable(self.params):
-                    self.context.param(param)(xml_file)
+            if self.leading is None:
+                pass
+            elif self.leading:
+                self.context.param("leading protein")(xml_file)
+            else:
+                self.context.param("non-leading protein")(xml_file)
+            for param in ensure_iterable(self.params):
+                self.context.param(param)(xml_file)
 
 
 class ProteinAmbiguityGroup(ComponentBase):
-    def __init__(self, id, protein_hypotheses, params=None, context=NullMap):
+    def __init__(self, id, protein_hypotheses, pass_threshold=True, params=None,
+                 distinct_sequences=None, context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
         self.protein_hypotheses = protein_hypotheses
         self.params = params
+        self.pass_threshold = pass_threshold
+        self.distinct_sequences = distinct_sequences
         self.context = context
         self.element = _element(
-            "ProteinAmbiguityGroup", id=id)
+            "ProteinAmbiguityGroup", id=id, passThreshold=self.pass_threshold)
         context["ProteinAmbiguityGroup"][id] = self.element.id
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
+            if self.distinct_sequences is not None:
+                self.context.param('number of distinct protein sequences',
+                                   self.distinct_sequences)(xml_file)
             for protein in self.protein_hypotheses:
                 protein.write(xml_file, with_id=True)
-            if self.params is not None:
-                for param in ensure_iterable(self.params):
-                    self.context.param(param)(xml_file)
+            for param in ensure_iterable(self.params):
+                self.context.param(param)(xml_file)
 
 
 # --------------------------------------------------
@@ -561,7 +689,9 @@ class SequenceCollection(GenericCollection):
 
 
 class Enzyme(ComponentBase):
-    def __init__(self, name, missed_cleavages=1, id=None, semi_specific=False, site_regexp=None, context=NullMap):
+    def __init__(self, name, missed_cleavages=1, id=None, semi_specific=False, site_regexp=None,
+                 min_distance=None, n_term_gain=None, c_term_gain=None, params=None, context=NullMap,
+                 **kwargs):
         self.name = name
         if site_regexp is None:
             term = context.term(name)
@@ -578,6 +708,16 @@ class Enzyme(ComponentBase):
             id=id)
         context["Enzyme"][id] = self.element.id
         self.context = context
+        self.params = self.prepare_params(params, **kwargs)
+        self.min_distance = min_distance
+        if min_distance is not None:
+            self.element.attrs['minDistance'] = int(min_distance)
+        self.n_term_gain = n_term_gain
+        if n_term_gain is not None:
+            self.element.attrs['nTermGain'] = str(n_term_gain)
+        self.c_term_gain = c_term_gain
+        if c_term_gain is not None:
+            self.element.attrs['cTermGain'] = str(c_term_gain)
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
@@ -587,6 +727,30 @@ class Enzyme(ComponentBase):
                 xml_file.write(regex)
             with element(xml_file, "EnzymeName"):
                 self.context.param(self.name)(xml_file)
+            self.write_params(xml_file)
+
+
+class Enzymes(ComponentBase):
+    def __init__(self, enzymes=None, independent=None, context=NullMap):
+        self.independent = independent
+        self.context = context
+        self.enzymes = self._coerce_enzymes(enzymes)
+        self.element = _element("Enzymes")
+        if self.independent is not None:
+            self.element.attrs['independent'] = bool(self.independent)
+
+    def _coerce_enzymes(self, enzymes):
+        temp = []
+        for enz in ensure_iterable(enzymes):
+            if not isinstance(enz, Enzyme):
+                enz = Enzyme(context=self.context, **enz)
+            temp.append(enz)
+        return temp
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=False):
+            for enzyme in self.enzymes:
+                enzyme.write(xml_file)
 
 
 class _Tolerance(ComponentBase):
@@ -616,6 +780,10 @@ class _Tolerance(ComponentBase):
             self.low.write(xml_file)
             self.high.write(xml_file)
 
+    def __iter__(self):
+        yield self.low.value
+        yield self.high.value
+
 
 class FragmentTolerance(_Tolerance):
     tag_name = "FragmentTolerance"
@@ -628,29 +796,55 @@ class ParentTolerance(_Tolerance):
 class Threshold(ComponentBase):
     no_threshold = CVParam(accession="MS:1001494", ref="PSI-MS", name="no threshold")
 
-    def __init__(self, name=None, context=NullMap):
-        if name is None:
-            name = self.no_threshold
-        self.name = name
+    def __init__(self, params=None, context=NullMap, **kwargs):
+        params = self.prepare_params(ensure_iterable(params), **kwargs)
+        self.params = params
         self.context = context
 
     def write(self, xml_file):
         with element(xml_file, "Threshold"):
-            self.context.param(self.name)(xml_file)
+            if not self.params:
+                self.no_threshold(xml_file)
+            else:
+                for param in self.params:
+                    self.context.param(param)(xml_file)
 
 
 class SpectrumIdentificationProtocol(ComponentBase):
     def __init__(self, search_type, analysis_software_id=1, id=1, additional_search_params=tuple(),
                  modification_params=tuple(), enzymes=tuple(), fragment_tolerance=None, parent_tolerance=None,
-                 threshold=None, context=NullMap):
+                 threshold=None, filters=None, context=NullMap):
+        self.context = context
         if threshold is None:
             threshold = Threshold(context=context)
+        elif not isinstance(threshold, Threshold):
+            threshold = Threshold(threshold, context=context)
+        if not isinstance(parent_tolerance, ParentTolerance):
+            if isinstance(parent_tolerance, NumberBase):
+                parent_tolerance = ParentTolerance(parent_tolerance)
+            elif isinstance(parent_tolerance, (tuple, list)):
+                parent_tolerance = ParentTolerance(*parent_tolerance)
+            elif parent_tolerance is None:
+                pass
+            else:
+                raise ValueError("Cannot infer ParentTolerance from %r" % (parent_tolerance,))
+        if not isinstance(fragment_tolerance, FragmentTolerance):
+            if isinstance(fragment_tolerance, NumberBase):
+                fragment_tolerance = FragmentTolerance(fragment_tolerance)
+            elif isinstance(fragment_tolerance, (tuple, list)):
+                fragment_tolerance = FragmentTolerance(*fragment_tolerance)
+            elif fragment_tolerance is None:
+                pass
+            else:
+                raise ValueError("Cannot infer FragmentTolerance from %r" % (fragment_tolerance,))
+        if not isinstance(enzymes, Enzymes):
+            enzymes = Enzymes(ensure_iterable(enzymes), context=context)
         self.parent_tolerance = parent_tolerance
         self.fragment_tolerance = fragment_tolerance
         self.threshold = threshold
         self.enzymes = enzymes
         temp = []
-        for mod in modification_params:
+        for mod in ensure_iterable(modification_params):
             if isinstance(mod, SearchModification):
                 temp.append(mod)
             else:
@@ -659,15 +853,20 @@ class SpectrumIdentificationProtocol(ComponentBase):
                         context=context, **mod))
         modification_params = temp
         self.modification_params = modification_params
-        self.additional_search_params = additional_search_params
+        self.additional_search_params = self.prepare_params(additional_search_params)
         self.search_type = search_type
-
+        temp = []
+        for filt in ensure_iterable(filters):
+            if isinstance(filt, Filter):
+                temp.append(filt)
+            else:
+                temp.append(Filter(context=context, **filt))
+        filters = temp
+        self.filters = filters
         self.element = _element(
             "SpectrumIdentificationProtocol", id=id,
             analysisSoftware_ref=context['AnalysisSoftware'][analysis_software_id])
-        context["SpectrumIdentificationProtocol"][id] = self.element.id
-
-        self.context = context
+        self.context["SpectrumIdentificationProtocol"][id] = self.element.id
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
@@ -675,19 +874,46 @@ class SpectrumIdentificationProtocol(ComponentBase):
                 self.context.param(self.search_type)(xml_file)
             if self.additional_search_params:
                 with element(xml_file, "AdditionalSearchParams"):
-                    for search_param in self.additional_search_params:
-                        self.contex.param(search_param)(xml_file)
+                    self.write_params(xml_file, self.additional_search_params)
             with element(xml_file, "ModificationParams"):
                 for mod in self.modification_params:
                     mod.write(xml_file)
-            with element(xml_file, "Enzymes"):
-                for enzyme in self.enzymes:
-                    enzyme.write(xml_file)
+            self.enzymes.write(xml_file)
             if self.fragment_tolerance is not None:
                 self.fragment_tolerance.write(xml_file)
             if self.parent_tolerance is not None:
                 self.parent_tolerance.write(xml_file)
             self.threshold.write(xml_file)
+            if self.filters:
+                with element(xml_file, "DatabaseFilters"):
+                    for filt in self.filters:
+                        filt.write(xml_file)
+
+
+class Filter(ComponentBase):
+    def __init__(self, filter_type, include=None, exclude=None, context=NullMap):
+        self.filter_type = filter_type
+        self.include = include
+        self.exclude = exclude
+        self.context = context
+        self.element = _element("Filter")
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=False):
+            with element(xml_file, "FilterType"):
+                self.context.param(self.filter_type)(xml_file)
+            if self.include:
+                with element(xml_file, "Include"):
+                    self.write_params(xml_file, self.prepare_params(self.include))
+            if self.exclude:
+                with element(xml_file, "Exclude"):
+                    self.write_params(xml_file, self.prepare_params(self.exclude))
+
+
+class SpecificityRules(ParameterContainer):
+    def __init__(self, params=None, context=NullMap, **kwargs):
+        params = self.prepare_params(params, **kwargs)
+        super(SpecificityRules, self).__init__("SpecificityRules", params, context=context)
 
 
 class SearchModification(ComponentBase):
@@ -698,6 +924,9 @@ class SearchModification(ComponentBase):
         if specificity is not None:
             if not isinstance(specificity, (tuple, list)):
                 specificity = [specificity]
+            if not isinstance(specificity[0], SpecificityRules):
+                specificity = [
+                    SpecificityRules(s, context=context) for s in specificity]
         params.extend(kwargs.items())
         self.params = params
         self.mass_delta = mass_delta
@@ -711,8 +940,7 @@ class SearchModification(ComponentBase):
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=False):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
             if self.specificity is not None:
                 with _element("SpecificityRules"):
                     for param in self.specificity:
@@ -720,9 +948,14 @@ class SearchModification(ComponentBase):
 
 
 class ProteinDetectionProtocol(ComponentBase):
-    def __init__(self, id=1, analysis_software_id=1, threshold=None, context=NullMap):
+    def __init__(self, id=1, params=None, analysis_software_id=1, threshold=None,
+                 context=NullMap, **kwargs):
         if threshold is None:
             threshold = Threshold(context=context)
+        elif isinstance(threshold, (list, tuple)):
+            threshold = Threshold(threshold, context=context)
+        params = self.prepare_params(params, **kwargs)
+        self.params = params
         self.analysis_software_id = analysis_software_id
         self.element = _element(
             "ProteinDetectionProtocol", id=id,
@@ -732,6 +965,9 @@ class ProteinDetectionProtocol(ComponentBase):
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
             self.threshold.write(xml_file)
+            with element(xml_file, "AnalysisParams"):
+                for param in self.params:
+                    self.context.params(param)(xml_file)
 
 
 class AnalysisProtocolCollection(GenericCollection):
@@ -792,61 +1028,85 @@ class CVList(ComponentBase):
 
 
 class AnalysisSoftware(ComponentBase):
-    def __init__(self, name, id=1, version=None, uri=None, contact=DEFAULT_CONTACT_ID, context=NullMap, **kwargs):
+    def __init__(self, name, id=1, version=None, uri=None, contact=DEFAULT_CONTACT_ID,
+                 role='software vendor', customization=None, context=NullMap, **kwargs):
         self.name = name
         self.version = version
         self.uri = uri
         self.contact = contact
+        self.role = role
         self.kwargs = kwargs
         self.element = _element("AnalysisSoftware", id=id, name=self.name, version=self.version, uri=self.uri)
-        context["AnalysisSoftware"][id] = self.element.id
         self.context = context
+        self.context["AnalysisSoftware"][id] = self.element.id
+        self.customization = customization
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
             with element(xml_file, "ContactRole", contact_ref=self.contact):
                 with element(xml_file, "Role"):
-                    xml_file.write(CVParam(accession="MS:1001267", name="software vendor", cvRef="PSI-MS").element())
+                    self.write_params(xml_file, self.prepare_params(self.role))
             with element(xml_file, "SoftwareName"):
                 self.context.param(name=self.name)(xml_file)
+            if self.customization is not None:
+                with element(xml_file, "Customizations"):
+                    xml_file.write('\n'.join(ensure_iterable(self.customization)))
 
 
 class Provider(ComponentBase):
-    def __init__(self, id="PROVIDER", contact=DEFAULT_CONTACT_ID, context=NullMap):
+    def __init__(self, id="PROVIDER", role='researcher', contact=DEFAULT_CONTACT_ID, context=NullMap):
         self.id = id
         self.contact = contact
+        self.role = role
+        self.context = context
+        self.element = _element('Provider', id=id, xmlns=_xmlns)
+        self.context['Provider'][id] = self.element.id
 
     def write(self, xml_file):
-        with element(xml_file, "Provider", id=self.id, xmlns=_xmlns):
+        with self.element(xml_file, with_id=True):
             with element(xml_file, "ContactRole", contact_ref=self.contact):
                 with element(xml_file, "Role"):
-                    xml_file.write(CVParam(accession="MS:1001271", name="researcher", cvRef="PSI-MS").element())
+                    self.write_params(xml_file, self.prepare_params(self.role))
 
 
 class Person(ComponentBase):
-    def __init__(self, first_name='first_name', last_name='last_name', id=DEFAULT_CONTACT_ID,
-                 affiliation=DEFAULT_ORGANIZATION_ID, context=NullMap):
+    def __init__(self, first_name=None, last_name=None, middle_initial=None, id=DEFAULT_CONTACT_ID,
+                 affiliation=DEFAULT_ORGANIZATION_ID, params=None, context=NullMap, **kwargs):
+        self.params = self.prepare_params(params, **kwargs)
         self.first_name = first_name
+        self.middle_initial = middle_initial
         self.last_name = last_name
         self.id = id
-        self.affiliation = affiliation
-        self.element = _element("Person", firstName=first_name, last_name=last_name, id=id)
-        context["Person"][id] = self.element.id
+        self.element = _element(
+            "Person", firstName=first_name, lastName=last_name,
+            midInitials=middle_initial, id=id)
+        self.context = context
+        self.context["Person"][id] = self.element.id
+        self.affiliation = self.context["Organization"][affiliation]
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
-            element(xml_file, 'Affiliation', organization_ref=self.affiliation)
+            if self.affiliation is not None:
+                _element('Affiliation', organization_ref=self.affiliation).write(xml_file)
+            self.write_params(xml_file)
 
 
 class Organization(ComponentBase):
-    def __init__(self, name="name", id=DEFAULT_ORGANIZATION_ID, context=NullMap):
+    def __init__(self, name=None, id=DEFAULT_ORGANIZATION_ID, params=None,
+                 parent=None, context=NullMap, **kwargs):
         self.name = name
         self.id = id
+        self.params = self.prepare_params(params, **kwargs)
         self.element = _element("Organization", name=name, id=id)
-        context["Organization"][id] = self.id
+        self.context = context
+        self.context["Organization"][id] = self.element.id
+        self.parent = self.context["Organization"][parent]
 
     def write(self, xml_file):
         xml_file.write(self.element.element())
+        self.write_params(xml_file)
+        if self.parent is not None:
+            _element("Parent", organization_ref=self.parent).write(xml_file)
 
 
 DEFAULT_PERSON = Person()
@@ -868,3 +1128,40 @@ class AuditCollection(ComponentBase):
                 person.write(xml_file)
             for organization in self.organizations:
                 organization.write(xml_file)
+
+
+class AnalysisSampleCollection(ComponentBase):
+    def __init__(self, samples=None, context=NullMap):
+        self.samples = ensure_iterable(samples)
+        self.context = context
+        self.element = _element("AnalysisSampleCollection")
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=False):
+            for sample in self.samples:
+                sample.write(xml_file)
+
+
+class Sample(ComponentBase):
+    def __init__(self, id, name=None, contact=None, role=None, sub_samples=None,
+                 params=None, context=NullMap, **kwargs):
+        self.id = id
+        self.name = name
+        self.contact = contact
+        self.role = ensure_iterable(role)
+        self.sub_samples = ensure_iterable(sub_samples)
+        self.params = self.prepare_params(params, **kwargs)
+        self.context = context
+        self.element = _element("Sample", id=self.id, name=self.name)
+        self.context['Sample'][self.id] = self.element.id
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=True):
+            with element(xml_file, "ContactRole", contact_ref=self.contact):
+                with element(xml_file, "Role"):
+                    self.write_params(xml_file, self.prepare_params(self.role))
+            for sample_ref in self.sub_samples:
+                _element(
+                    "SubSample",
+                    sample_ref=self.context['Sample'][sample_ref]).write(xml_file)
+            self.write_params(xml_file)
