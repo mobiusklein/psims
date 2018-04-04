@@ -41,6 +41,7 @@ class OBOParser(object):
         self.handle = handle
         self.terms = {}
         self.current_term = None
+        self.header = defaultdict(list)
         self.parse()
 
     def _get_value_type(self, xref_string):
@@ -103,12 +104,22 @@ class OBOParser(object):
         if self.current_term is not None:
             self.pack()
 
+    def _simplify_header_information(self):
+        self.header = {
+            k: v if len(v) > 1 else v[0] for k, v in self.header.items()
+        }
+
     def parse(self):
+        in_header = True
         for line in self.handle.readlines():
             line = line.decode('utf-8')
             line = line.strip()
             if not line:
+                in_header = False
                 continue
+            elif in_header:
+                key, val = line.split(":", 1)
+                self.header[key].append(val)
             elif line == "[Typedef]":
                 self._pack_if_occupied()
                 self.current_term = None
@@ -122,6 +133,7 @@ class OBOParser(object):
                 self.current_term[key].append(val.strip())
         self.pack()
         self._connect_parents()
+        self._simplify_header_information()
 
     def __getitem__(self, key):
         return self.terms[key]
