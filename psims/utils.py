@@ -1,6 +1,19 @@
 from lxml import etree
-from six import add_metaclass
+from six import add_metaclass, string_types as basestring
 from gzip import GzipFile
+
+try:
+    from collections import Iterable, Mapping
+except ImportError:
+    from collections.abc import Iterable, Mapping
+
+
+def ensure_iterable(obj):
+    if obj is None:
+        return tuple()
+    if not isinstance(obj, Iterable) or isinstance(obj, basestring) or isinstance(obj, Mapping):
+        return [obj]
+    return obj
 
 
 compressed_stream_openers = {
