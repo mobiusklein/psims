@@ -157,6 +157,7 @@ class TagBase(object):
         elif isinstance(_id, basestring):
             self._id_number = None
             self._id_string = _id
+        self.is_open = False
 
     def __getattr__(self, key):
         try:
@@ -201,6 +202,17 @@ class TagBase(object):
     def write(self, xml_file, with_id=False):
         el = self.element(with_id=with_id)
         xml_file.write(el)
+
+    def bind(self, xml_file):
+        self._xml_file = xml_file
+        self._context_manager = None
+
+    @contextmanager
+    def begin(self, xml_file, with_id=False):
+        with self.element(xml_file, with_id):
+            self.is_open = True
+            yield
+        self.is_open = False
 
     __call__ = element
 
@@ -354,6 +366,12 @@ class CV(TagBase):
     def __init__(self, id, uri, **kwargs):
         super(CV, self).__init__(id=id, uri=uri, **kwargs)
         self._vocabulary = None
+        if self.attrs.get('version') is None:
+            self._vocabulary = self.load()
+            try:
+                self.attrs['version'] = self._vocabulary.version
+            except AttributeError:
+                pass
 
     def load(self, handle=None):
         if handle is None:
