@@ -74,7 +74,7 @@ class OBOParser(object):
                 is_as = Reference.fromstring(is_as)
                 # self[is_as].children.append(entity)
             else:
-                is_as = map(Reference.fromstring, is_as)
+                is_as = list(map(Reference.fromstring, is_as))
                 # for term in is_as:
                 #     self[term].children.append(entity)
             entity['is_a'] = is_as

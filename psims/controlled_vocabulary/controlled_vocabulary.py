@@ -185,7 +185,7 @@ class OBOCache(object):
                     return open(name)
                 else:
                     f = self._open_url(uri)
-                    with open(name, 'w') as cache_f:
+                    with open(name, 'wb') as cache_f:
                         n_chars = 0
                         for i, line in enumerate(f.readlines()):
                             n_chars += len(line)
@@ -193,7 +193,7 @@ class OBOCache(object):
                         if n_chars < 5:
                             raise ValueError("No bytes written")
                     if os.path.getsize(name) > 0:
-                        return open(name)
+                        return open(name, 'rb')
                     else:
                         raise ValueError("Failed to download .obo")
             else:
