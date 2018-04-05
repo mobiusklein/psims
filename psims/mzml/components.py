@@ -63,13 +63,6 @@ class GenericCollection(ComponentBase):
                 member.write(xml_file)
 
 
-class IDMemberGenericCollection(GenericCollection):
-    def write(self, xml_file):
-        with self.element.element(xml_file, with_id=False):
-            for member in self.members:
-                member.write(xml_file, with_id=True)
-
-
 class IDGenericCollection(GenericCollection):
     def __init__(self, tag_name, members, id, context=NullMap):
         self.members = members

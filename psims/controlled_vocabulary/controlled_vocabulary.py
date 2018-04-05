@@ -52,14 +52,16 @@ class ControlledVocabulary(object):
     @classmethod
     def from_obo(cls, handle):
         parser = OBOParser(handle)
-        inst = cls(parser.terms, metadata=parser.header)
+        inst = cls(parser.terms, metadata=parser.header, version=parser.version, name=parser.name)
         if len(parser.terms) == 0:
             raise ValueError("Empty Vocabulary")
         return inst
 
-    def __init__(self, terms, id=None, metadata=None):
+    def __init__(self, terms, id=None, metadata=None, version=None, name=None):
         if metadata is None:
             metadata = dict()
+        self.version = version
+        self.name = name
         self.terms = terms
         for term in terms.values():
             term.vocabulary = self
@@ -73,12 +75,6 @@ class ControlledVocabulary(object):
         self.id = id
         self.metadata = metadata
 
-    @property
-    def version(self):
-        try:
-            return self.metadata['data-version']
-        except KeyError:
-            return None
 
     def __getitem__(self, key):
         try:

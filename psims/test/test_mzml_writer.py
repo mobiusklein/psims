@@ -1,9 +1,11 @@
-from psims.mzml import MzMLWriter
+import itertools
+import os
+import tempfile
+
+from psims.mzml import MzMLWriter, binary_encoding
 from pyteomics import mzml
 import numpy as np
 from lxml import etree
-import tempfile
-import os
 
 import pytest
 
@@ -72,6 +74,23 @@ encodings = {
     "intensity array": np.float64,
     "charge array": np.float64
 }
+
+
+def test_array_codec():
+    encode = binary_encoding.encode_array
+    decode = binary_encoding.decode_array
+
+    compression_types = [binary_encoding.COMPRESSION_ZLIB, binary_encoding.COMPRESSION_NONE]
+
+    dtypes = [np.float64, np.float32]
+
+    for dtype, compression in itertools.product(dtypes, compression_types):
+        original = np.array(intensity_array, dtype=dtype)
+        encoded = encode(original, compression, dtype)
+        decoded = decode(encoded, compression, dtype)
+        np.allclose(original, decoded)
+
+
 
 
 def test_write(output_path):

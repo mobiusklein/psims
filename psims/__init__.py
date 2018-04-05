@@ -12,3 +12,5 @@ from .mzml import (
 from .mzid import (
     MzIdentMLWriter, default_cv_list as default_mzid_cv_list,
     components as mzid_components,)
+
+from .version import version as __version__

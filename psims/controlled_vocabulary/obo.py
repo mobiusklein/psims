@@ -44,6 +44,20 @@ class OBOParser(object):
         self.header = defaultdict(list)
         self.parse()
 
+    @property
+    def version(self):
+        try:
+            return self.header['data-version']
+        except KeyError:
+            return None
+
+    @property
+    def name(self):
+        try:
+            return self.header['ontology'].upper()
+        except KeyError:
+            return None
+
     def _get_value_type(self, xref_string):
         match = xsd_pattern.search(xref_string)
         if match:

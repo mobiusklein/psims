@@ -1,5 +1,6 @@
 import os
 import re
+import hashlib
 
 try:
     from urllib2 import urlopen
@@ -20,14 +21,20 @@ storage_dir = os.path.dirname(__file__)
 for cv, url in registry.items():
     print("Updating %s from %s" % (cv, url))
     path = os.path.join(storage_dir, cv)
+    old_hash = hashlib.new("md5")
     if not os.path.exists(path):
         print("No Previous Version")
     else:
         with open(path) as current:
-            head = current.read(2000)
-            version_search = re.search("data-version: ([^\n]+)\n", head)
+            read = current.read(2000)
+            version_search = re.search("data-version: ([^\n]+)\n", read)
             if version_search:
                 print("Have Version %s" % (version_search.group(1),))
+            while read:
+                old_hash.update(read)
+                read = current.read(2000)
+            print("Checksum (MD5): %s" % old_hash.hexdigest())
+
     f = urlopen(url)
     code = None
     # The keepalive library monkey patches urllib2's urlopen and returns
@@ -46,8 +53,13 @@ for cv, url in registry.items():
         while content:
             fh.write(content)
             content = f.read(2**16)
+    new_hash = hashlib.new("md5")
     with open(path) as current:
-            head = current.read(2000)
-            version_search = re.search("data-version: ([^\n]+)\n", head)
+            read = current.read(2000)
+            version_search = re.search("data-version: ([^\n]+)\n", read)
             if version_search:
                 print("New Version %s" % (version_search.group(1),))
+            while read:
+                new_hash.update(read)
+                read = current.read(2000)
+            print("Checksum (MD5): %s" % new_hash.hexdigest())

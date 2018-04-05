@@ -660,6 +660,14 @@ class Crossreference(Base):
         return inst
 
 
+class History(Base):
+    __tablename__ = "History"
+
+    id = Column(Integer, primary_key=True)
+    url = Column(Unicode(128))
+    version = Column(Unicode(128))
+
+
 def create(doc_path, output_path="sqlite://"):
     '''
     Parse the relational table-like XML file provided by http://www.unimod.org/downloads.html
@@ -678,6 +686,10 @@ def create(doc_path, output_path="sqlite://"):
                 for tag in tree.iterfind(".//" + model._tag_name):
                     session.add(model.from_tag(tag))
             session.commit()
+        root = tree.getroot()
+        version = "%s.%s" % (root.attrib['majorVersion'], root.attrib['minorVersion'])
+        session.add(History(url=doc_path, version=version))
+        session.commit()
     return session
 
 
@@ -689,6 +701,9 @@ def session(path="sqlite:///unimod.db"):
 
 
 class Unimod(object):
+    name = "UNIMOD"
+    default_version = '1.0'
+
     def __init__(self, path=None, unimod_xml_uri=_unimod_xml_download_url):
         if path is None:
             self.path = None
@@ -703,6 +718,16 @@ class Unimod(object):
                 # Database may not yet exist at that location
                 self.session = create(unimod_xml_uri, path)
                 self.session.query(Modification).first()
+
+    @property
+    def version(self):
+        try:
+            version = self.session.query(History.version).all()
+            if len(version) > 1:
+                version = max(version)
+            return version[0]
+        except Exception:
+            return self.default_version
 
     def get(self, identifier, strict=True):
         with warnings.catch_warnings():
