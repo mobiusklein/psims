@@ -182,7 +182,7 @@ class OBOCache(object):
             if self.enabled:
                 name = self.path_for(uri)
                 if os.path.exists(name) and os.path.getsize(name) > 0:
-                    return open(name)
+                    return open(name, 'rb')
                 else:
                     f = self._open_url(uri)
                     with open(name, 'wb') as cache_f:

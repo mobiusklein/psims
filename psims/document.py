@@ -133,6 +133,12 @@ class VocabularyResolver(object):
         for vocab in self.vocabularies:
             vocab.load()
 
+    def prepare_params(self, params):
+        out = []
+        for param in ensure_iterable(params):
+            out.append(self.param(param))
+        return out
+
 
 class DocumentContext(dict, VocabularyResolver):
     def __init__(self, vocabularies=None):
@@ -277,6 +283,9 @@ class ComponentDispatcherBase(object):
 
     def param(self, *args, **kwargs):
         return self.context.param(*args, **kwargs)
+
+    def prepare_params(self, params):
+        return self.context.prepare_params(params)
 
     def term(self, *args, **kwargs):
         return self.context.term(*args, **kwargs)

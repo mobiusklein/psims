@@ -1,5 +1,10 @@
+import warnings
 from numbers import Number
-from collections import Mapping
+
+try:
+    from collections import Mapping
+except ImportError:
+    from collections.abc import Mapping
 
 from .components import (
     MzIdentML,
@@ -24,6 +29,8 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.section = section
         self.writer = writer
         self.section_args = section_args
+        self.params = section_args.pop("params", [])
+        self.params = self.prepare_params(self.params)
         self.toplevel = None
         self._context_manager = None
 
@@ -39,6 +46,8 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         with_id = 'id' in self.section_args
         self._context_manager = self.toplevel.begin(self.writer, with_id=with_id)
         self._context_manager.__enter__()
+        for param in self.params:
+            param(self.writer)
 
     def __exit__(self, exc_type, exc_value, traceback):
         self._context_manager.__exit__(exc_type, exc_value, traceback)
@@ -101,6 +110,22 @@ class SpectrumIdentficationListSection(DocumentSection):
         super(SpectrumIdentficationListSection, self).__enter__()
         if self.fragmentation_table:
             self.fragmentation_table.write(self.writer)
+
+class ProteinDetectionListSection(DocumentSection):
+    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+        super(ProteinDetectionListSection, self).__init__(
+            "ProteinDetectionList", writer, parent_context, section_args=section_args, **kwargs)
+        count = self.section_args.pop('count', None)
+        has_count_param = any(param.accession == 'MS:1002404' for param in self.params)
+        if count is None and not has_count_param:
+            warnings.warn("MS:1002404 \"count of identified proteins\" is missing."
+                "Provide it as either a section parameter or as the \"count\" keyword argument")
+        if count is not None and has_count_param:
+            raise ValueError("MS:1002404 \"count of identified proteins\" was supplied both "
+                             "as a parameter and as a keyword argument.")
+        if count is not None:
+            self.params.append(self.param(name="count of identified proteins", value=int(count)))
+
 
 
 # ----------------------
@@ -273,8 +298,11 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             parent_tolerance, threshold)
         protocol.write(self.writer)
 
-    def protein_detection_protocol(self, params, threshold, **kwargs):
-        protocol = self.ProteinDetectionProtocol(threshold=threshold, params=params, **kwargs)
+    def protein_detection_protocol(self, threshold=None, analysis_software_id=1, id=1, params=None, **kwargs):
+        protocol = self.ProteinDetectionProtocol(
+            id=id,
+            threshold=threshold, params=params, analysis_software_id=analysis_software_id,
+            **kwargs)
         protocol.write(self.writer)
 
     def analysis_data(self):
@@ -330,18 +358,32 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             params=ensure_iterable(params), pass_threshold=pass_threshold, rank=rank,
             **kwargs)
 
+    def protein_detection_list(self, id, count=None, params=None, **kwargs):
+        return ProteinDetectionListSection(
+            self.writer, self.context, id=id, count=count, params=params, **kwargs)
+
+
+    def write_protein_ambiguity_group(self, protein_detection_hypotheses, id, pass_threshold=True,
+                                      params=None, **kwargs):
+        group = self.protein_ambiguity_group(
+            protein_detection_hypotheses=protein_detection_hypotheses, id=id,
+            pass_threshold=pass_threshold, params=params, **kwargs)
+        group.write(self.writer)
+
     def protein_ambiguity_group(self, protein_detection_hypotheses, id, pass_threshold=True,
-                                params=None, distinct_sequences=AUTO, **kwargs):
+                                params=None, **kwargs):
         converting = (self.protein_detection_hypothesis(**(s or {}))
+                      if isinstance(s, Mapping) else self.ProteinDetectionHypothesis.ensure(s)
                       for s in ensure_iterable(protein_detection_hypotheses))
         el = self.ProteinAmbiguityGroup(
             id=id, protein_detection_hypotheses=converting, pass_threshold=pass_threshold,
-            params=params, distinct_sequences=distinct_sequences, **kwargs)
+            params=params, **kwargs)
         return el
 
     def protein_detection_hypothesis(self, db_sequence_id, id, peptide_hypotheses,
                                      pass_threshold=True, name=None, params=None, **kwargs):
         converting = (self.peptide_hypothesis(**(s or {}))
+                      if isinstance(s, Mapping) else self.PeptideHypothesis.ensure(s)
                       for s in ensure_iterable(peptide_hypotheses))
         el = self.ProteinDetectionHypothesis(
             id=id, db_sequence_id=db_sequence_id, peptide_hypotheses=converting,

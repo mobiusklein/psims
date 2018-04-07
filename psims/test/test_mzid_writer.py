@@ -11,12 +11,14 @@ def test_write(output_path):
     spectra_data = mzid_data.spectra_data
     search_database = mzid_data.search_database
     spectrum_identification_list = mzid_data.spectrum_identification_list
+    protein_detect_list = mzid_data.protein_detect_list
 
     proteins = mzid_data.proteins
     peptides = mzid_data.peptides
     peptide_evidence = mzid_data.peptide_evidence
 
-    protocol = mzid_data.protocol
+    spectrum_id_protocol = mzid_data.spectrum_id_protocol
+    protein_detection_protocol = mzid_data.protein_detection_protocol
     analysis = mzid_data.analysis
     source_file = mzid_data.source_file
 
@@ -27,7 +29,8 @@ def test_write(output_path):
         f.register("SpectraData", spectra_data['id'])
         f.register("SearchDatabase", search_database['id'])
         f.register("SpectrumIdentificationList", spectrum_identification_list["id"])
-        f.register("SpectrumIdentificationProtocol", protocol['id'])
+        f.register("SpectrumIdentificationProtocol", spectrum_id_protocol['id'])
+        f.register("ProteinDetectionProtocol", protein_detection_protocol['id'])
 
         with f.sequence_collection():
             for prot in proteins:
@@ -40,13 +43,18 @@ def test_write(output_path):
         with f.analysis_collection():
             f.SpectrumIdentification(*analysis).write(f)
         with f.analysis_protocol_collection():
-            f.spectrum_identification_protocol(**protocol)
+            f.spectrum_identification_protocol(**spectrum_id_protocol)
+            f.protein_detection_protocol(**protein_detection_protocol)
         with f.data_collection():
             f.inputs(source_file, search_database, spectra_data)
             with f.analysis_data():
                 with f.spectrum_identification_list(id=spectrum_identification_list['id']):
                     for result in spectrum_identification_list['identification_results']:
                         f.write_spectrum_identification_result(**result)
+                with f.protein_detection_list(id=protein_detect_list['id'], count=len(
+                        protein_detect_list['protein_ambiguity_groups'])):
+                    for pag in protein_detect_list['protein_ambiguity_groups']:
+                        f.write_protein_ambiguity_group(**pag)
 
     try:
         f.format()

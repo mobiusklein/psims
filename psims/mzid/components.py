@@ -564,11 +564,13 @@ class AnalysisData(GenericCollection):
 
 
 class ProteinDetectionList(ComponentBase):
-    def __init__(self, ambiguity_groups=None, count=AUTO, params=None, context=NullMap, **kwargs):
+    def __init__(self, ambiguity_groups=None, count=AUTO, id=1, params=None, context=NullMap, **kwargs):
         self.ambiguity_groups = ambiguity_groups
-        self.element = _element("ProteinDetectionList")
+        self.element = _element("ProteinDetectionList", id=id)
         self.count = count
         self.params = self.prepare_params(params, **kwargs)
+        self.context = context
+        self.context['ProteinDetectionList'][id] = self.element.id
 
     def _count_protein_groups(self):
         count = 0
@@ -617,19 +619,27 @@ class ProteinDetectionHypothesis(ComponentBase):
     def __init__(self, id, db_sequence_id, peptide_hypotheses, pass_threshold=True,
                  leading=True, params=None, name=None, context=NullMap, **kwargs):
         params = self.prepare_params(params, **kwargs)
-        self.peptide_hypotheses = peptide_hypotheses
         self.db_sequence_id = db_sequence_id
         self.pass_threshold = pass_threshold
         self.leading = leading
         self.params = params
         self.context = context
+        self.peptide_hypotheses = self._coerce_peptide_hypotheses(peptide_hypotheses)
         self.element = _element(
             "ProteinDetectionHypothesis", id=id,
             dBSequence_ref=context["DBSequence"][db_sequence_id],
             passThreshold=pass_threshold)
         if name is not None:
             self.element.attrs['name'] = name
-        context['ProteinDetectionHypothesis'][id] = self.element.id
+        self.context['ProteinDetectionHypothesis'][id] = self.element.id
+
+    def _coerce_peptide_hypotheses(self, peptides):
+        out = []
+        for peptide in ensure_iterable(peptides):
+            if isinstance(peptide, Mapping):
+                peptide = PeptideHypothesis(context=self.context, **peptide)
+            out.append(peptide)
+        return out
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
@@ -646,25 +656,24 @@ class ProteinDetectionHypothesis(ComponentBase):
 
 
 class ProteinAmbiguityGroup(ComponentBase):
-    def __init__(self, id, protein_hypotheses, pass_threshold=True, params=None,
-                 distinct_sequences=None, context=NullMap, **kwargs):
+    def __init__(self, id, protein_detection_hypotheses, pass_threshold=True, params=None,
+                 context=NullMap, **kwargs):
         params = self.prepare_params(params, **kwargs)
-        self.protein_hypotheses = protein_hypotheses
+        self.protein_detection_hypotheses = protein_detection_hypotheses
         self.params = params
         self.pass_threshold = pass_threshold
-        self.distinct_sequences = distinct_sequences
         self.context = context
         self.element = _element(
-            "ProteinAmbiguityGroup", id=id, passThreshold=self.pass_threshold)
-        context["ProteinAmbiguityGroup"][id] = self.element.id
+            "ProteinAmbiguityGroup", id=id)
+        self.context["ProteinAmbiguityGroup"][id] = self.element.id
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
-            if self.distinct_sequences is not None:
-                self.context.param('number of distinct protein sequences',
-                                   self.distinct_sequences)(xml_file)
-            for protein in self.protein_hypotheses:
-                protein.write(xml_file, with_id=True)
+            if self.pass_threshold is not None:
+                self.context.param(name="protein group passes threshold",
+                                   value=self.pass_threshold)(xml_file)
+            for protein in self.protein_detection_hypotheses:
+                protein.write(xml_file)
             for param in ensure_iterable(self.params):
                 self.context.param(param)(xml_file)
 
@@ -955,19 +964,22 @@ class ProteinDetectionProtocol(ComponentBase):
         elif isinstance(threshold, (list, tuple)):
             threshold = Threshold(threshold, context=context)
         params = self.prepare_params(params, **kwargs)
+        self.context = context
+        self.threshold = threshold
         self.params = params
         self.analysis_software_id = analysis_software_id
         self.element = _element(
             "ProteinDetectionProtocol", id=id,
             analysisSoftware_ref=context["AnalysisSoftware"][analysis_software_id])
-        context["ProteinDetectionProtocol"][id] = self.element.id
+        self.context["ProteinDetectionProtocol"][id] = self.element.id
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
             self.threshold.write(xml_file)
-            with element(xml_file, "AnalysisParams"):
-                for param in self.params:
-                    self.context.params(param)(xml_file)
+            if self.params:
+                with element(xml_file, "AnalysisParams"):
+                    for param in self.params:
+                        self.context.params(param)(xml_file)
 
 
 class AnalysisProtocolCollection(GenericCollection):
