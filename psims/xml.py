@@ -364,7 +364,7 @@ class CV(TagBase):
     tag_name = 'cv'
 
     def __init__(self, id, uri, **kwargs):
-        super(CV, self).__init__(id=id, uri=uri, **kwargs)
+        super(CV, self).__init__(id=id, URI=uri, **kwargs)
         self._vocabulary = None
         if self.attrs.get('version') is None:
             self._vocabulary = self.load()
@@ -372,6 +372,10 @@ class CV(TagBase):
                 self.attrs['version'] = self._vocabulary.version
             except AttributeError:
                 pass
+
+    @property
+    def uri(self):
+        return self.URI
 
     def load(self, handle=None):
         if handle is None:

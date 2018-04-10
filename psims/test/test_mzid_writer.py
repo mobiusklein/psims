@@ -42,6 +42,7 @@ def test_write(output_path):
 
         with f.analysis_collection():
             f.SpectrumIdentification(*analysis).write(f)
+            f.ProteinDetection(spectrum_identification_ids_used=[1]).write(f)
         with f.analysis_protocol_collection():
             f.spectrum_identification_protocol(**spectrum_id_protocol)
             f.protein_detection_protocol(**protein_detection_protocol)

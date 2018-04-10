@@ -1006,6 +1006,7 @@ class SpectrumIdentification(ComponentBase):
                 spectrum_identification_list_id],
             spectrumIdentificationProtocol_ref=context["SpectrumIdentificationProtocol"][
                 spectrum_identification_protocol_id])
+        self.context = context
         context["SpectrumIdentification"] = self.element.id
 
     def write(self, xml_file):
@@ -1014,6 +1015,26 @@ class SpectrumIdentification(ComponentBase):
                 _element("InputSpectra", spectraData_ref=spectra_data_id).write(xml_file)
             for search_database_id in self.search_database_ids_used:
                 _element("SearchDatabaseRef", searchDatabase_ref=search_database_id).write(xml_file)
+
+
+class ProteinDetection(ComponentBase):
+    def __init__(self, spectrum_identification_ids_used, protein_detection_list_id=1,
+                 protein_detection_protocol_id=1, id=1, context=NullMap):
+        self.spectrum_identification_ids_used = [context['SpectrumIdentification'][x]
+                                                 for x in (spectrum_identification_ids_used or [])]
+        self.protein_detection_list_id = protein_detection_list_id
+        self.protein_detection_protocol_id = protein_detection_protocol_id
+        self.context = context
+        self.element = _element(
+            "ProteinDetection", id=id,
+            proteinDetectionProtocol_ref=context['ProteinDetectionProtocol'][protein_detection_protocol_id],
+            proteinDetectionList_ref=context['ProteinDetectionList'][protein_detection_list_id])
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=True):
+            for sid in self.spectrum_identification_ids_used:
+                _element("InputSpectrumIdentifications",
+                         spectrumIdentificationList_ref=sid).write(xml_file)
 
 
 # --------------------------------------------------

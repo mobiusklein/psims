@@ -3,7 +3,13 @@ import numbers
 import warnings
 
 from io import BytesIO
-from collections import Mapping, defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict
+
+try:
+    from collections import Sequence, Mapping
+except ImportError:
+    from collections.abc import Sequence, Mapping
+
 from hashlib import sha1
 
 from lxml import etree
@@ -488,12 +494,16 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         precursor_list = self.PrecursorList([precursor])
         return precursor_list
 
-    def format(self, outfile=None):
+    def format(self, outfile=None, index=True, indexer=None):
+        if indexer is None:
+            indexer = MzMLIndexer
+        if not index:
+            return super(MzMLWriter, self).format(outfile=outfile)
         if self.outfile.closed:
             fh = self.outfile.name
         else:
             fh = self.outfile
-        indexer = MzMLIndexer(fh)
+        indexer = indexer(fh)
         try:
             indexer.build()
             indexer.overwrite()
@@ -501,36 +511,148 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             pass
 
 
-class MzMLIndexer(object):
-    def __init__(self, source, pretty=True):
-        self.source = source
-        self.checksum = sha1()
-        self.buffer = BytesIO()
-        self.accumulator = 0
-        self.spectrum_index = OrderedDict()
-        self.chromatogram_index = OrderedDict()
-        self.spectrum_pattern = re.compile(b"<spectrum ")
-        self.attr_pattern = re.compile(br"(\S+)=[\"']([^\"']+)[\"']")
-        self.chromatogram_pattern = re.compile(b"<chromatogram ")
+class Offset(object):
+    __slots__ = ['offset', 'attrs']
 
-    def write(self, data):
-        is_spectrum = self.spectrum_pattern.search(data)
-        if is_spectrum:
+    def __init__(self, offset, attrs):
+        self.offset = offset
+        self.attrs = attrs
+
+    def __eq__(self, other):
+        return int(self) == int(other)
+
+    def __ne__(self, other):
+        return int(self) != int(other)
+
+    def __hash__(self):
+        return hash(self.offset)
+
+    def __int__(self):
+        return self.offset
+
+    def __index__(self):
+        return self.offset
+
+    def __repr__(self):
+        template = "{self.__class__.__name__}({self.offset}, {self.attrs})"
+        return template.format(self=self)
+
+
+class TagIndexerBase(object):
+    attr_pattern = re.compile(br"(\S+)=[\"']([^\"']+)[\"']")
+
+    def __init__(self, name, pattern):
+        if isinstance(pattern, str):
+            pattern = pattern.encode("utf8")
+        if isinstance(pattern, bytes):
+            pattern = re.compile(pattern)
+        if isinstance(name, str):
+            name = name.encode("utf8")
+        self.name = name
+        self.pattern = pattern
+        self.index = OrderedDict()
+
+    def __len__(self):
+        return len(self.index)
+
+    def __iter__(self):
+        return iter(self.index.items())
+
+    def scan(self, data, distance):
+        is_match = self.pattern.search(data)
+        if is_match:
             attrs = dict(self.attr_pattern.findall(data))
             xid = attrs[b'id']
-            offset = self.accumulator + is_spectrum.start()
-            self.spectrum_index[xid] = offset
-        if not is_spectrum:
-            is_chromatogram = self.chromatogram_pattern.search(data)
-            if is_chromatogram:
-                attrs = dict(self.attr_pattern.findall(data))
-                xid = attrs[b'id']
-                offset = self.accumulator + is_chromatogram.start()
-                self.chromatogram_index[xid] = offset
+            offset = Offset(distance + is_match.start(), attrs)
+            self.index[xid] = offset
+        return bool(is_match)
+
+    def __call__(self, data, distance):
+        return self.scan(data, distance)
+
+    def write(self, writer):
+        writer.write("    <index name=\"{}\">\n".format(self.name).encode('utf-8'))
+        for ref_id, index_data in self.index.items():
+            writer.write('      <offset idRef="{}">{:d}</offset>\n'.format(
+                ref_id, int(index_data)).encode('utf-8'))
+        writer.write(b"    </index>\n")
+
+
+class SpectrumIndexer(TagIndexerBase):
+    def __init__(self):
+        super(SpectrumIndexer, self).__init__(
+            'spectrum', re.compile(b"<spectrum "))
+
+
+class ChromatogramIndexer(TagIndexerBase):
+    def __init__(self):
+        super(ChromatogramIndexer, self).__init__(
+            'chromatogram', re.compile(b"<chromatogram "))
+
+
+class IndexList(Sequence):
+    def __init__(self, indexers=None):
+        if indexers is None:
+            indexers = []
+        self.indexers = list(indexers)
+
+    def __len__(self):
+        return len([ix for ix in self.indexers if len(ix) > 0])
+
+    def __getitem__(self, i):
+        return self.indexers[i]
+
+    def __iter__(self):
+        return iter(self.indexers)
+
+    def test(self, data, distance):
+        for indexer in self:
+            if indexer(data, distance):
+                return True
+        return False
+
+    def __call__(self, data, distance):
+        return self.test(data, distance)
+
+    def write_index_list(self, writer, distance):
+        offset = distance
+        n = len(self)
+        writer.write("  <indexList count=\"{:d}\">\n".format(n).encode("utf-8"))
+        for index in self:
+            if len(index) > 0:
+                index.write(writer)
+        writer.write(b"  </indexList>\n")
+        writer.write(b"  <indexListOffset>")
+        writer.write("{:d}</indexListOffset>\n".format(offset).encode("utf-8"))
+
+    def add(self, indexer):
+        self.indexers.append(indexer)
+
+
+class HashingFileBuffer(object):
+    def __init__(self):
+        self.buffer = BytesIO()
+        self.checksum = sha1()
+        self.accumulator = 0
+
+    def write(self, data):
         self.buffer.write(data)
         self.accumulator += len(data)
         self.checksum.update(data)
         return self.accumulator
+
+
+class MzMLIndexer(HashingFileBuffer):
+    def __init__(self, source, pretty=True):
+        self.source = source
+        super(MzMLIndexer, self).__init__()
+        self.indices = IndexList()
+        self.indices.add(SpectrumIndexer())
+        self.indices.add(ChromatogramIndexer())
+
+    def write(self, data):
+        self.indices.test(data, self.accumulator)
+        return super(MzMLIndexer, self).write(data)
 
     def write_opening(self):
         header = (b'<?xml version="1.0" encoding="utf-8"?>\n'
@@ -555,12 +677,7 @@ class MzMLIndexer(object):
 
     def write_index_list(self):
         offset = self.accumulator
-        self.write(b"  <indexList count=\"2\">\n")
-        self.write_index(self.spectrum_index, 'spectrum')
-        self.write_index(self.chromatogram_index, 'chromatogram')
-        self.write(b"  </indexList>\n")
-        self.write(b"  <indexListOffset>")
-        self.write("{:d}</indexListOffset>\n".format(offset).encode("utf-8"))
+        self.indices.write_index_list(self, offset)
 
     def write_checksum(self):
         self.write(b"  <fileChecksum>")

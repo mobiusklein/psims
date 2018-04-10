@@ -103,11 +103,13 @@ def test_write(output_path):
         f.instrument_configuration_list([
             f.InstrumentConfiguration(id=1, component_list=f.ComponentList([
                 f.Source(params=['electrospray ionization'], order=1),
-                f.Analyzer(params=['quadrupole'], order=2)
+                f.Analyzer(params=['quadrupole'], order=2),
+                f.Detector(params=['inductive detector'], order=3)
             ])),
             f.InstrumentConfiguration(id=2, component_list=f.ComponentList([
                 f.Source(params=['electrospray ionization'], order=1),
-                f.Analyzer(params=['radial ejection linear ion trap'], order=2)
+                f.Analyzer(params=['radial ejection linear ion trap'], order=2),
+                f.Detector(params=['inductive detector'], order=3)
             ]))
         ])
         f.data_processing_list([
@@ -127,9 +129,10 @@ def test_write(output_path):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=2', params=[
                     {"name": "ms level", "value": 2}], polarity='negative scan', precursor_information={
                         "mz": 1230, "intensity": None, "charge": None, "params": [
-                            "No Ion Found"
+                            "no peak detected"
                         ],
-                        "scan_id": "scanId=1"
+                        "scan_id": "scanId=1", "activation": ["collision-induced dissociation",
+                                                              {"collision energy": 56.}]
                 }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
     try:
         f.format()
@@ -163,4 +166,19 @@ def test_write(output_path):
     reader.reset()
     run = next(reader.iterfind("run"))
     assert run.get("defaultInstrumentConfigurationRef") == "INSTRUMENTCONFIGURATION_1"
+
+    reader.reset()
+    index_list = list(reader.iterfind("index"))
+    assert len(index_list) == 1
+    assert index_list[0]['name'] == 'spectrum'
+    reader.reset()
+    spectrum_offsets = list(reader.iterfind("offset"))
+    offset = int(spectrum_offsets[0]['offset'])
+    reader.seek(offset)
+    bytestring = reader.read(100)
+    try:
+        content = bytestring.decode("utf8")
+    except AttributeError:
+        content = bytestring
+    assert 'index="0"' in content
     return f

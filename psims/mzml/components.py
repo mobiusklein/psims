@@ -21,7 +21,7 @@ class MzML(TagBase):
     }
 
     def __init__(self, **attrs):
-        attrs.setdefault('creationDate', datetime.utcnow().isoformat())
+        # attrs.setdefault('creationDate', datetime.utcnow().isoformat())
         super(MzML, self).__init__("mzML", **attrs)
 
 
@@ -61,6 +61,15 @@ class GenericCollection(ComponentBase):
         with self.element.element(xml_file, with_id=False):
             for member in self.members:
                 member.write(xml_file)
+
+    def __len__(self):
+        return len(self.members)
+
+    def __iter__(self):
+        return iter(self.members)
+
+    def __getitem__(self, i):
+        return self.members[i]
 
 
 class IDGenericCollection(GenericCollection):
