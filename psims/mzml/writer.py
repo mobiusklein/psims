@@ -546,8 +546,6 @@ class TagIndexerBase(object):
             pattern = pattern.encode("utf8")
         if isinstance(pattern, bytes):
             pattern = re.compile(pattern)
-        if isinstance(name, str):
-            name = name.encode("utf8")
         self.name = name
         self.pattern = pattern
         self.index = OrderedDict()

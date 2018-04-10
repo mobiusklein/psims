@@ -31,6 +31,7 @@ def test_write(output_path):
         f.register("SpectrumIdentificationList", spectrum_identification_list["id"])
         f.register("SpectrumIdentificationProtocol", spectrum_id_protocol['id'])
         f.register("ProteinDetectionProtocol", protein_detection_protocol['id'])
+        f.register("ProteinDetectionList", 1)
 
         with f.sequence_collection():
             for prot in proteins:
@@ -42,7 +43,7 @@ def test_write(output_path):
 
         with f.analysis_collection():
             f.SpectrumIdentification(*analysis).write(f)
-            f.ProteinDetection(spectrum_identification_ids_used=[1]).write(f)
+            f.ProteinDetection(spectrum_identification_ids_used=[spectrum_identification_list["id"]]).write(f)
         with f.analysis_protocol_collection():
             f.spectrum_identification_protocol(**spectrum_id_protocol)
             f.protein_detection_protocol(**protein_detection_protocol)
