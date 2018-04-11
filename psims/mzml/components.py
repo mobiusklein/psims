@@ -389,8 +389,7 @@ class SpectrumList(ComponentBase):
 class Spectrum(ComponentBase):
     def __init__(self, index, binary_data_list=None, scan_list=None, precursor_list=None, product_list=None,
                  default_array_length=None, source_file_reference=None, data_processing_reference=None,
-                 id=None,
-                 params=None, context=NullMap):
+                 id=None, params=None, context=NullMap, **kwargs):
         if params is None:
             params = []
         self.index = index
@@ -408,12 +407,32 @@ class Spectrum(ComponentBase):
             defaultArrayLength=self.default_array_length, dataProcessingRef=self._data_processing_reference)
         self.context = context
         self.context["Spectrum"][id] = self.element.id
-        self.params = params
+        self.params = self.prepare_params(params, **kwargs)
+        self._check_params()
+
+    def _check_params(self):
+        ms_level = None
+        spectrum_type = None
+        for param in self.params:
+            param = self.context.param(param)
+            term = self.context.term(param.accession)
+            if term.id == 'MS:1000511':
+                ms_level = int(param.value)
+            elif term.id == 'MS:1000579' or term.id == 'MS:1000580':
+                spectrum_type = term.name
+        if ms_level is not None and spectrum_type is None:
+            spectrum_type = "MS:1000579" if ms_level == 1 else "MS:1000580"
+            self.params.append(self.context.param(spectrum_type))
+        elif spectrum_type is not None and ms_level is None:
+            if spectrum_type == 'MS:1000579':
+                self.params.append(self.context.param(accession='MS:1000511', value=1))
+            else:
+                raise ValueError("A spectrum without MS:100511 'ms level' and cannot "
+                                 "be determined from other parameters")
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
             if self.scan_list is not None:
                 self.scan_list.write(xml_file)
             if self.precursor_list is not None:

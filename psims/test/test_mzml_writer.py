@@ -91,14 +91,12 @@ def test_array_codec():
         np.allclose(original, decoded)
 
 
-
-
 def test_write(output_path):
     f = MzMLWriter(open(output_path, 'wb'))
     f.register("Software", 'psims')
     with f:
         f.controlled_vocabularies()
-        f.file_description(["spam"], [
+        f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
             dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
         f.instrument_configuration_list([
             f.InstrumentConfiguration(id=1, component_list=f.ComponentList([
@@ -162,6 +160,12 @@ def test_write(output_path):
     inst_config = next(reader.iterfind("instrumentConfiguration"))
     assert inst_config['id'] == 'INSTRUMENTCONFIGURATION_1'
     assert ("quadrupole") in inst_config['componentList']['analyzer'][0]
+
+    reader.reset()
+    file_description = next(reader.iterfind("fileDescription"))
+    content = file_description['fileContent']
+    assert "MS1 spectrum" in content
+    assert "spam" in content
 
     reader.reset()
     run = next(reader.iterfind("run"))
