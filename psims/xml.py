@@ -358,6 +358,7 @@ class CVParam(TagBase):
 
 class UserParam(CVParam):
     tag_name = "userParam"
+    accession = None
 
 
 class CV(TagBase):

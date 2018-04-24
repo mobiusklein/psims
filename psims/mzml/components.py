@@ -415,7 +415,10 @@ class Spectrum(ComponentBase):
         spectrum_type = None
         for param in self.params:
             param = self.context.param(param)
-            term = self.context.term(param.accession)
+            try:
+                term = self.context.term(param.accession)
+            except (AttributeError, KeyError):
+                continue
             if term.id == 'MS:1000511':
                 ms_level = int(param.value)
             elif term.id == 'MS:1000579' or term.id == 'MS:1000580':
