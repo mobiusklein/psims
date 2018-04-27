@@ -2,11 +2,12 @@ from psims.mzid import MzIdentMLWriter
 from pyteomics import mzid
 from lxml import etree
 
+from psims import compression
 from psims.test import mzid_data
-from psims.test.utils import output_path as output_path
+from psims.test.utils import output_path as output_path, compressor
 
 
-def test_write(output_path):
+def test_write(output_path, compressor):
     software = mzid_data.software
     spectra_data = mzid_data.spectra_data
     search_database = mzid_data.search_database
@@ -22,7 +23,7 @@ def test_write(output_path):
     analysis = mzid_data.analysis
     source_file = mzid_data.source_file
 
-    f = MzIdentMLWriter(open(output_path, 'wb'), close=True)
+    f = MzIdentMLWriter(compressor(output_path, 'wb'), close=True)
     with f:
         f.controlled_vocabularies()
         f.providence(software=software)
@@ -63,14 +64,20 @@ def test_write(output_path):
         f.close()
     except OSError:
         pass
+    opener = compression.get(output_path)
+    assert opener == compressor
+    reader = mzid.read(opener(output_path, 'rb'))
 
-    reader = mzid.read(output_path)
+    def reset():
+        reader.reset()
+        reader.seek(0)
+
     n_peptide_evidence = len(peptide_evidence)
     assert n_peptide_evidence == len(list(reader.iterfind("PeptideEvidence")))
     n_spectrum_identification_results = len(spectrum_identification_list['identification_results'])
-    reader.reset()
+    reset()
     assert n_spectrum_identification_results == len(list(reader.iterfind("SpectrumIdentificationResult")))
-    reader.reset()
+    reset()
     protocol = next(reader.iterfind("SpectrumIdentificationProtocol"))
     mods = protocol['ModificationParams']['SearchModification']
     assert len(mods) == 2

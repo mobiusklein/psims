@@ -576,7 +576,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         else:
             handle = open(outfile, 'wb')
         try:
-            pretty_xml(self.outfile.name, handle.name, compression=self.compression)
+            pretty_xml(self.outfile.name, handle.name)
         except MemoryError:
             pass
 

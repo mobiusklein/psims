@@ -7,6 +7,8 @@ try:
 except ImportError:
     from collections.abc import Iterable, Mapping
 
+from psims import compression
+
 
 def ensure_iterable(obj):
     if obj is None:
@@ -16,28 +18,16 @@ def ensure_iterable(obj):
     return obj
 
 
-compressed_stream_openers = {
-    None: open,
-    "gzip": GzipFile
-}
-
-
-compressed_file_extensions = {
-    'gz': 'gzip'
-}
-
-
-def pretty_xml(path, outpath=None, encoding=b'utf-8', compression=None):
+def pretty_xml(path, outpath=None, encoding=b'utf-8'):
     tree = etree.parse(path)
     if outpath is None:
-        outpath = path
+        opener = compression.get(path)
+        outpath = opener(path, 'wb')
     if hasattr(outpath, 'write'):
         outstream = outpath
     else:
-        try:
-            outstream = compressed_stream_openers[compression](outpath, 'wb')
-        except KeyError:
-            outstream = open(outpath, 'wb')
+        opener = compression.get(outpath)
+        outstream = opener(outpath, 'wb')
     with outstream:
         outstream.write(b'<?xml version="1.0" encoding="' + encoding + b'"?>\n')
         outstream.write(
