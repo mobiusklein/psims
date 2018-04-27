@@ -503,12 +503,18 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
 
-    def __init__(self, outfile, compression=None, **kwargs):
+    def __init__(self, outfile, close=False, compression=None, **kwargs):
         self.outfile = outfile
         self.compression = compression
         self.xmlfile = etree.xmlfile(outfile, encoding='utf-8', **kwargs)
         self.writer = None
         self.toplevel = None
+        self._close = close
+
+    def _should_close(self):
+        if self._close is None:
+            return (self.outfile, 'close')
+        return bool(self._close)
 
     def _begin(self):
         """Writes the doctype and starts the low-level writing machinery
@@ -530,7 +536,8 @@ class XMLDocumentWriter(XMLWriterMixin):
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
         self.xmlfile.__exit__(exc_type, exc_value, traceback)
-        self.outfile.close()
+        if self._should_close():
+            self.close()
 
     def controlled_vocabularies(self, vocabularies=None):
         """Write out the `<cvList>` element and all its children,

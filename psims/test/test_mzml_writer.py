@@ -1,4 +1,5 @@
 import itertools
+import gzip
 import os
 import tempfile
 
@@ -9,7 +10,8 @@ from lxml import etree
 
 import pytest
 
-from psims.test.utils import output_path
+from psims import compression as compression_registry
+from psims.test.utils import output_path, compressor
 
 
 mz_array = [
@@ -91,8 +93,8 @@ def test_array_codec():
         np.allclose(original, decoded)
 
 
-def test_write(output_path):
-    f = MzMLWriter(open(output_path, 'wb'))
+def test_write(output_path, compressor):
+    f = MzMLWriter(compressor(output_path, 'wb'), close=True)
     f.register("Software", 'psims')
     with f:
         f.controlled_vocabularies()
@@ -137,10 +139,19 @@ def test_write(output_path):
     except OSError:
         pass
 
-    reader = mzml.read(output_path)
+    output_path = f.outfile.name
+    opener = compression_registry.get(output_path)
+    assert opener == compressor
+    reader = mzml.read(opener(output_path, 'rb'))
+
+    def reset():
+        reader.reset()
+        reader.seek(0)
+
+    reset()
     sample_data = next(reader.iterfind("sample"))
     assert sample_data['name'] == "shotgun explodeomics precipitate #123"
-    reader.reset()
+    reset()
     spec = next(reader)
     assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
     assert "negative scan" in spec
@@ -156,26 +167,26 @@ def test_write(output_path):
             continue
     assert reference == "INSTRUMENTCONFIGURATION_2"
 
-    reader.reset()
+    reset()
     inst_config = next(reader.iterfind("instrumentConfiguration"))
     assert inst_config['id'] == 'INSTRUMENTCONFIGURATION_1'
     assert ("quadrupole") in inst_config['componentList']['analyzer'][0]
 
-    reader.reset()
+    reset()
     file_description = next(reader.iterfind("fileDescription"))
     content = file_description['fileContent']
     assert "MS1 spectrum" in content
     assert "spam" in content
 
-    reader.reset()
+    reset()
     run = next(reader.iterfind("run"))
     assert run.get("defaultInstrumentConfigurationRef") == "INSTRUMENTCONFIGURATION_1"
 
-    reader.reset()
+    reset()
     index_list = list(reader.iterfind("index"))
     assert len(index_list) == 1
     assert index_list[0]['name'] == 'spectrum'
-    reader.reset()
+    reset()
     spectrum_offsets = list(reader.iterfind("offset"))
     offset = int(spectrum_offsets[0]['offset'])
     reader.seek(offset)

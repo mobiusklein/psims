@@ -22,7 +22,7 @@ def test_write(output_path):
     analysis = mzid_data.analysis
     source_file = mzid_data.source_file
 
-    f = MzIdentMLWriter(open(output_path, 'wb'))
+    f = MzIdentMLWriter(open(output_path, 'wb'), close=True)
     with f:
         f.controlled_vocabularies()
         f.providence(software=software)

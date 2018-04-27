@@ -111,6 +111,7 @@ class SpectrumIdentficationListSection(DocumentSection):
         if self.fragmentation_table:
             self.fragmentation_table.write(self.writer)
 
+
 class ProteinDetectionListSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(ProteinDetectionListSection, self).__init__(
@@ -119,13 +120,12 @@ class ProteinDetectionListSection(DocumentSection):
         has_count_param = any(param.accession == 'MS:1002404' for param in self.params)
         if count is None and not has_count_param:
             warnings.warn("MS:1002404 \"count of identified proteins\" is missing."
-                "Provide it as either a section parameter or as the \"count\" keyword argument")
+                          "Provide it as either a section parameter or as the \"count\" keyword argument")
         if count is not None and has_count_param:
             raise ValueError("MS:1002404 \"count of identified proteins\" was supplied both "
                              "as a parameter and as a keyword argument.")
         if count is not None:
             self.params.append(self.param(name="count of identified proteins", value=int(count)))
-
 
 
 # ----------------------
@@ -164,11 +164,11 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     toplevel_tag = MzIdentML
 
-    def __init__(self, outfile, vocabularies=None, **kwargs):
+    def __init__(self, outfile, close=False, vocabularies=None, **kwargs):
         if vocabularies is None:
             vocabularies = list(default_cv_list)
         ComponentDispatcher.__init__(self, vocabularies=vocabularies)
-        XMLDocumentWriter.__init__(self, outfile, **kwargs)
+        XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
 
     def controlled_vocabularies(self, vocabularies=None):
         if vocabularies is None:
@@ -361,7 +361,6 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def protein_detection_list(self, id, count=None, params=None, **kwargs):
         return ProteinDetectionListSection(
             self.writer, self.context, id=id, count=count, params=params, **kwargs)
-
 
     def write_protein_ambiguity_group(self, protein_detection_hypotheses, id, pass_threshold=True,
                                       params=None, **kwargs):

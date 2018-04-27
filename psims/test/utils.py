@@ -1,9 +1,18 @@
 import os
 import tempfile
+import gzip
 
 import pytest
 
 fixtured_files = []
+
+
+compression_openers = [open, gzip.GzipFile]
+
+
+@pytest.fixture(scope='function', params=compression_openers)
+def compressor(request):
+    return request.param
 
 
 @pytest.fixture(scope='function')
