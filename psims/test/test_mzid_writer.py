@@ -85,3 +85,4 @@ def test_write(output_path, compressor):
     assert not mods[1]['fixedMod']
     assert "unknown modification" in mods[1]
     reader.close()
+    return f
