@@ -26,7 +26,7 @@ def pretty_xml(path, outpath=None, encoding=b'utf-8'):
     if hasattr(outpath, 'write'):
         outstream = outpath
     else:
-        opener = compression.get(outpath)
+        opener = compression.get(path)
         outstream = opener(outpath, 'wb')
     with outstream:
         outstream.write(b'<?xml version="1.0" encoding="' + encoding + b'"?>\n')
