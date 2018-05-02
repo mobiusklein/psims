@@ -688,6 +688,11 @@ def create(doc_path, output_path="sqlite://"):
             session.commit()
         root = tree.getroot()
         version = "%s.%s" % (root.attrib['majorVersion'], root.attrib['minorVersion'])
+        if not isinstance(doc_path, basestring):
+            try:
+                doc_path = doc_path.name
+            except AttributeError:
+                doc_path = str(doc_path)
         session.add(History(url=doc_path, version=version))
         session.commit()
     return session

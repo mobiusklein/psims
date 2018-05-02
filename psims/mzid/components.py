@@ -9,8 +9,9 @@ from numbers import Number as NumberBase
 from itertools import chain
 
 from ..xml import (
-    _element, element, TagBase, ProvidedCV, UserParam,
-    CVParam, sanitize_id)
+    _element, element, TagBase,
+    CVParam, UserParam, CV,
+    ProvidedCV, sanitize_id)
 from ..document import (
     ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase,
     ParameterContainer)
@@ -70,16 +71,16 @@ def _unimod_converter(modification):
 
 
 default_cv_list = [
-    _element(
-        "cv", id="PSI-MS",
+    CV(
+        id="PSI-MS",
         uri=("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/psidev"
              "/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"),
-        fullName="PSI-MS"),
-    _element(
-        "cv", id="UO",
+        full_name="PSI-MS"),
+    CV(
+        id="UO",
         uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
-        fullName="UNIT-ONTOLOGY"),
-    ProvidedCV(id="UNIMOD", uri="http://www.unimod.org/obo/unimod.obo", fullName="UNIMOD", converter=_unimod_converter)
+        full_name="UNIT-ONTOLOGY"),
+    ProvidedCV(id="UNIMOD", uri="http://www.unimod.org/obo/unimod.obo", full_name="UNIMOD", converter=_unimod_converter)
 ]
 
 
@@ -89,7 +90,7 @@ common_units = {
 }
 
 
-_xmlns = "http://psidev.info/psi/pi/mzIdentML/1.1"
+_xmlns = "http://psidev.info/psi/pi/mzIdentML/1.2"
 
 
 class GenericCollection(ComponentBase):
@@ -280,11 +281,12 @@ class Modification(ComponentBase):
                         name=self.name, accession=self.accession,
                         ref=self.accession.split(":")[0])(xml_file)
                 else:
+                    psi_ms = self.context.get_vocabulary("PSI-MS")
                     self.context.param(
                         name="unknown modification",
                         accession=self.accession,
                         value=self.name,
-                        ref=self.accession.split(":")[0])(xml_file)
+                        ref=psi_ms.id if psi_ms is not None else 'PSI-MS')(xml_file)
             self.write_params(xml_file)
 
 
@@ -333,8 +335,7 @@ class PeptideEvidence(ComponentBase):
     def write(self, xml_file):
         if self.params:
             with self.element(xml_file, with_id=True):
-                for param in self.params:
-                    self.context.param(param)(xml_file)
+                self.write_params(xml_file)
         else:
             xml_file.write(self.element(with_id=True))
 
@@ -581,16 +582,15 @@ class ProteinDetectionList(ComponentBase):
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
+            for ambiguity_group in self.ambiguity_groups:
+                ambiguity_group.write(xml_file)
             if self.count is AUTO:
                 count = self._count_protein_groups()
                 if count > 0:
                     self.context.param("count of identified proteins", count)(xml_file)
             elif self.count is not None:
                 self.context.param("count of identified proteins", self.count)(xml_file)
-            for param in ensure_iterable(self.params):
-                self.context.param(param)(xml_file)
-            for ambiguity_group in self.ambiguity_groups:
-                ambiguity_group.write(xml_file)
+            self.write_params(xml_file)
 
 
 class PeptideHypothesis(ComponentBase):
@@ -601,7 +601,8 @@ class PeptideHypothesis(ComponentBase):
         self.spectrum_identification_ids = spectrum_identification_ids
         self.params = params
         self.context = context
-        self.element = _element("PeptideHypothesis", peptideEvidence_ref=peptide_evidence_id)
+        self.element = _element("PeptideHypothesis",
+                                peptideEvidence_ref=self.context['PeptideEvidence'][peptide_evidence_id])
 
     def write(self, xml_file):
         with self.element(xml_file):
@@ -611,8 +612,7 @@ class PeptideHypothesis(ComponentBase):
                     spectrumIdentificationItem_ref=self.context[
                         "SpectrumIdentificationItem"][spectrum_identification_id])
                 el.write(xml_file)
-            for param in ensure_iterable(self.params):
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class ProteinDetectionHypothesis(ComponentBase):
@@ -651,8 +651,7 @@ class ProteinDetectionHypothesis(ComponentBase):
                 self.context.param("leading protein")(xml_file)
             else:
                 self.context.param("non-leading protein")(xml_file)
-            for param in ensure_iterable(self.params):
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class ProteinAmbiguityGroup(ComponentBase):
@@ -669,13 +668,12 @@ class ProteinAmbiguityGroup(ComponentBase):
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
+            for protein in self.protein_detection_hypotheses:
+                protein.write(xml_file)
             if self.pass_threshold is not None:
                 self.context.param(name="protein group passes threshold",
                                    value=self.pass_threshold)(xml_file)
-            for protein in self.protein_detection_hypotheses:
-                protein.write(xml_file)
-            for param in ensure_iterable(self.params):
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 # --------------------------------------------------
@@ -815,8 +813,7 @@ class Threshold(ComponentBase):
             if not self.params:
                 self.no_threshold(xml_file)
             else:
-                for param in self.params:
-                    self.context.param(param)(xml_file)
+                self.write_params(xml_file)
 
 
 class SpectrumIdentificationProtocol(ComponentBase):
@@ -952,8 +949,7 @@ class SearchModification(ComponentBase):
             self.write_params(xml_file)
             if self.specificity is not None:
                 with _element("SpecificityRules"):
-                    for param in self.specificity:
-                        self.context.param(param)(xml_file)
+                    self.write_params(xml_file, self.specificity)
 
 
 class ProteinDetectionProtocol(ComponentBase):
@@ -978,8 +974,7 @@ class ProteinDetectionProtocol(ComponentBase):
             self.threshold.write(xml_file)
             if self.params:
                 with element(xml_file, "AnalysisParams"):
-                    for param in self.params:
-                        self.context.params(param)(xml_file)
+                    self.write_params(xml_file)
 
 
 class AnalysisProtocolCollection(GenericCollection):
@@ -1020,7 +1015,7 @@ class SpectrumIdentification(ComponentBase):
 class ProteinDetection(ComponentBase):
     def __init__(self, spectrum_identification_ids_used, protein_detection_list_id=1,
                  protein_detection_protocol_id=1, id=1, context=NullMap):
-        self.spectrum_identification_ids_used = [context['SpectrumIdentification'][x]
+        self.spectrum_identification_ids_used = [context["SpectrumIdentificationList"][x]
                                                  for x in (spectrum_identification_ids_used or [])]
         self.protein_detection_list_id = protein_detection_list_id
         self.protein_detection_protocol_id = protein_detection_protocol_id
@@ -1054,7 +1049,14 @@ class CVList(ComponentBase):
     def write(self, xml_file):
         with element(xml_file, 'cvList'):
             for member in self.cv_list:
-                xml_file.write(member.element(with_id=True))
+                tag = _element(
+                    "cv", id=member.id, fullName=member.full_name,
+                    uri=member.uri)
+                if member.version is not None:
+                    tag.attrs['version'] = member.version
+                if member.options:
+                    tag.attrs.update(member.options)
+                xml_file.write(tag.element(with_id=True))
 
     def __iter__(self):
         return iter(self.cv_list)

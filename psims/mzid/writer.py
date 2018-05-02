@@ -46,10 +46,10 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         with_id = 'id' in self.section_args
         self._context_manager = self.toplevel.begin(self.writer, with_id=with_id)
         self._context_manager.__enter__()
-        for param in self.params:
-            param(self.writer)
 
     def __exit__(self, exc_type, exc_value, traceback):
+        for param in self.params:
+            param(self.writer)
         self._context_manager.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
 
@@ -162,13 +162,15 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     context : :class:`.DocumentContext`
     """
 
-    toplevel_tag = MzIdentML
-
-    def __init__(self, outfile, close=False, vocabularies=None, **kwargs):
+    def __init__(self, outfile, close=False, vocabularies=None, version='1.2.0', **kwargs):
         if vocabularies is None:
             vocabularies = list(default_cv_list)
         ComponentDispatcher.__init__(self, vocabularies=vocabularies)
         XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
+        self.version = version
+
+    def toplevel_tag(self):
+        return MzIdentML(version=self.version)
 
     def controlled_vocabularies(self, vocabularies=None):
         if vocabularies is None:
@@ -261,12 +263,12 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         el.write(self.writer)
 
     def write_peptide_evidence(self, peptide_id, db_sequence_id, id, start_position, end_position,
-                               is_decoy=False, pre=None, post=None, params=None, frame=None, translatio_table_id=None,
+                               is_decoy=False, pre=None, post=None, params=None, frame=None, translation_table_id=None,
                                **kwargs):
         el = self.PeptideEvidence(
             peptide_id=peptide_id, db_sequence_id=db_sequence_id, id=id,
             start_position=start_position, end_position=end_position, is_decoy=is_decoy,
-            pre=pre, post=post, frame=frame, translatio_table_id=translatio_table_id,
+            pre=pre, post=post, frame=frame, translation_table_id=translation_table_id,
             params=params, **kwargs)
         el.write(self.writer)
 

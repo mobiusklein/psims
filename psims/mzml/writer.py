@@ -186,15 +186,17 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A list or other iterable of dict or :class:`.SourceFile`-like objects
             to be placed in the `<sourceFileList>` element
         """
-        with self.element("fileDescription"):
-            if file_contents is not None:
-                with self.element("fileContent"):
-                    for param in file_contents:
-                        self.param(param)(self)
-            if source_files is not None:
-                source_file_list = self.SourceFileList(
-                    [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
-                source_file_list.write(self)
+        fd = self.FileDescription(file_contents, [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
+        fd.write(self.writer)
+        # with self.element("fileDescription"):
+        #     if file_contents is not None:
+        #         with self.element("fileContent"):
+        #             for param in file_contents:
+        #                 self.param(param)(self)
+        #     if source_files is not None:
+        #         source_file_list = self.SourceFileList(
+        #             [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
+        #         source_file_list.write(self)
 
     def instrument_configuration_list(self, instrument_configurations=None):
         configs = [

@@ -5,7 +5,7 @@ from numbers import Number
 
 import numpy as np
 
-from ..xml import _element, element, TagBase
+from ..xml import _element, element, TagBase, CV
 from ..document import (
     ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase,
     ParameterContainer, IDParameterContainer)
@@ -40,14 +40,12 @@ class ComponentBase(_ComponentBase):
 
 
 default_cv_list = [
-    _element(
-        "cv", id="PSI-MS",
-        uri=("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"),
-        fullName="PSI-MS"),
-    _element(
-        "cv", id="UO",
-        uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
-        fullName="UNIT-ONTOLOGY"),
+    CV(id="PSI-MS",
+       uri=("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"),
+       full_name="PSI-MS"),
+    CV(id="UO",
+       uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
+       full_name="UNIT-ONTOLOGY"),
 ]
 
 
@@ -90,15 +88,14 @@ class IDGenericCollection(GenericCollection):
 
 
 class FileContent(ComponentBase):
-    def __init__(self, spectrum_types, context=NullMap):
-        self.spectrum_types = spectrum_types
+    def __init__(self, params=None, context=NullMap, **kwargs):
+        self.params = self.prepare_params(params, **kwargs)
         self.element = _element("fileContent")
         self.context = context
 
     def write(self, xml_file):
         with self.element.element(xml_file):
-            for spectrum_type in self.spectrum_types:
-                self.context.param(spectrum_type)(xml_file)
+            self.write_params(xml_file)
 
 
 class SourceFileList(GenericCollection):
@@ -120,8 +117,7 @@ class SourceFile(ComponentBase):
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class FileDescription(ComponentBase):
@@ -241,8 +237,7 @@ class ScanSettings(ComponentBase):
             if len(source_refs):
                 source_refs.write(xml_file)
             # TODO handle targetList and targets
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 # --------------------------------------------------
@@ -271,8 +266,7 @@ class InstrumentConfiguration(ComponentBase):
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
             if self.component_list is not None:
                 self.component_list.write(xml_file)
             if self.software_reference is not None:
@@ -364,8 +358,7 @@ class ProcessingMethod(ParameterContainer):
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=False):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 # --------------------------------------------------
 # Spectral and Chromatographic Data Storage
@@ -496,8 +489,7 @@ class BinaryDataArray(ComponentBase):
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=False):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
             self.binary.write(xml_file)
 
     @classmethod
@@ -543,8 +535,7 @@ class ScanList(ComponentBase):
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=False):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
             for member in self.members:
                 member.write(xml_file)
 
@@ -568,9 +559,9 @@ class Scan(ComponentBase):
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=False):
-            for param in self.params:
-                self.context.param(param)(xml_file)
-            self.scan_window_list.write(xml_file)
+            self.write_params(xml_file)
+            if len(self.scan_window_list) > 0:
+                self.scan_window_list.write(xml_file)
 
 
 class ScanWindowList(GenericCollection):
@@ -602,8 +593,7 @@ class ScanWindow(ComponentBase):
                                unit_name='m/z', unit_accession="MS:1000040", unit_cv_ref='MS')(xml_file)
             self.context.param(name="scan window upper limit", value=self.upper,
                                unit_name='m/z', unit_accession="MS:1000040", unit_cv_ref='MS')(xml_file)
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class IsolationWindow(ComponentBase):
@@ -628,8 +618,7 @@ class IsolationWindow(ComponentBase):
             self.context.param(name="isolation window upper offset", value=self.upper,
                                unit_name='m/z', unit_accession="MS:1000040",
                                unit_cv_ref="MS")(xml_file)
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class PrecursorList(GenericCollection):
@@ -654,11 +643,11 @@ class Precursor(ComponentBase):
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=False):
-            if self.activation is not None:
-                self.activation.write(xml_file)
             if self.isolation_window is not None:
                 self.isolation_window.write(xml_file)
             self.selected_ion_list.write(xml_file)
+            if self.activation is not None:
+                self.activation.write(xml_file)
 
 
 class Activation(ParameterContainer):
@@ -695,8 +684,7 @@ class SelectedIon(ComponentBase):
                     self.context.param(name="charge state", value=' '.join(map(str, self.charge)))(xml_file)
                 else:
                     warnings.warn("Invalid charge state provided (%r)" % (self.charge,))
-            for param in self.params:
-                self.context.param(param)(xml_file)
+            self.write_params(xml_file)
 
 
 class Chromatogram(ComponentBase):
@@ -720,9 +708,7 @@ class Chromatogram(ComponentBase):
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
-
+            self.write_params(xml_file)
             self.binary_data_list.write(xml_file)
 # --------------------------------------------------
 # Misc. Providence Management
@@ -741,7 +727,14 @@ class CVList(ComponentBase):
     def write(self, xml_file):
         with element(xml_file, 'cvList', count=len(self.cv_list)):
             for member in self.cv_list:
-                xml_file.write(member.element(with_id=True))
+                tag = _element(
+                    "cv", id=member.id, fullName=member.full_name,
+                    URI=member.uri)
+                if member.version is not None:
+                    tag.attrs['version'] = member.version
+                if member.options:
+                    tag.attrs.update(member.options)
+                xml_file.write(tag.element(with_id=True))
 
     def __iter__(self):
         return iter(self.cv_list)

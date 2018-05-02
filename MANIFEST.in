@@ -1,1 +1,2 @@
 include psims/controlled_vocabulary/vendor/*.obo
+include psims/validation/xsd/*.xsd

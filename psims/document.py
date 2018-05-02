@@ -372,8 +372,17 @@ class ComponentBase(object):
     def write_params(self, xml_file, params=None):
         if params is None:
             params = self.params
+        params = self.prepare_params(params)
+        user_params = []
+        cv_params = []
         for param in params:
-            self.context.param(param)(xml_file)
+            param = self.context.param(param)
+            if isinstance(param, UserParam):
+                user_params.append(param)
+            else:
+                cv_params.append(param)
+        for param in cv_params + user_params:
+            param(xml_file)
 
 
 class ParameterContainer(ComponentBase):

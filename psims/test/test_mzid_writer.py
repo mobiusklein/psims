@@ -66,7 +66,7 @@ def test_write(output_path, compressor):
         pass
     opener = compression.get(output_path)
     assert opener == compressor
-    reader = mzid.read(opener(output_path, 'rb'))
+    reader = mzid.read(opener(output_path, 'rb'), read_schema=False)
 
     def reset():
         reader.reset()
@@ -85,4 +85,6 @@ def test_write(output_path, compressor):
     assert not mods[1]['fixedMod']
     assert "unknown modification" in mods[1]
     reader.close()
+    is_valid, schema = f.validate()
+    assert is_valid, schema.error_log
     return f

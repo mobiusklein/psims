@@ -1,5 +1,6 @@
 import os
 import shutil
+import warnings
 import re
 from contextlib import contextmanager
 import tempfile
@@ -8,6 +9,7 @@ from lxml import etree
 
 from . import controlled_vocabulary
 from .utils import pretty_xml
+from .validation import validate
 
 from six import string_types as basestring, add_metaclass, text_type
 
@@ -361,22 +363,21 @@ class UserParam(CVParam):
     accession = None
 
 
-class CV(TagBase):
-    tag_name = 'cv'
-
-    def __init__(self, id, uri, **kwargs):
-        super(CV, self).__init__(id=id, URI=uri, **kwargs)
+class CV(object):
+    def __init__(self, full_name, id, uri, version=None, **kwargs):
+        self.full_name = full_name
+        self.id = id
+        self.uri = uri
+        self.version = version
+        self.options = kwargs
         self._vocabulary = None
-        if self.attrs.get('version') is None:
+
+        if self.version is None:
             self._vocabulary = self.load()
             try:
-                self.attrs['version'] = self._vocabulary.version
+                self.version = self._vocabulary.version
             except AttributeError:
                 pass
-
-    @property
-    def uri(self):
-        return self.URI
 
     def load(self, handle=None):
         if handle is None:
@@ -406,25 +407,22 @@ class CV(TagBase):
 
 
 class ProvidedCV(CV):
-    _track = NO_TRACK
-
     def __init__(self, id, uri, converter=identity, **kwargs):
-        super(ProvidedCV, self).__init__(id, uri, **kwargs)
-        self._provider = None
         self.converter = converter
+        super(ProvidedCV, self).__init__(id=id, uri=uri, **kwargs)
 
     def load(self, handle=None):
         cv = controlled_vocabulary.obo_cache.resolve(self.uri)
         try:
             cv.id = self.id
-        except:
+        except Exception:
             pass
         return cv
 
     def __getitem__(self, key):
-        if self._provider is None:
-            self._provider = self.load()
-        return self.converter(self._provider[key])
+        if self._vocabulary is None:
+            self._vocabulary = self.load()
+        return self.converter(self._vocabulary[key])
 
 
 class XMLWriterMixin(object):
@@ -561,6 +559,9 @@ class XMLDocumentWriter(XMLWriterMixin):
     def close(self):
         self.outfile.close()
 
+    def flush(self):
+        self.outfile.flush()
+
     def format(self, outfile=None):
         """Pretty-prints the contents of the file.
 
@@ -595,3 +596,19 @@ class XMLDocumentWriter(XMLWriterMixin):
                             "Could not obtain write-permission for original\
                              file name. Formatted XML document located at \"%s\"" % (
                                 handle.name))
+
+    def validate(self):
+        prev = None
+        try:
+            fname = (self.outfile.name)
+        except AttributeError:
+            if hasattr(self.outfile, 'seek'):
+                prev = self.outfile.tell()
+                self.outfile.seek(0)
+                fname = self.outfile
+            else:
+                raise TypeError("Can't get file from %r" % (self.outfile,))
+        result, schema = validate(fname)
+        if prev is not None:
+            self.outfile.seek(prev)
+        return result, schema

@@ -64,7 +64,7 @@ charge_array = [
 
 
 sample = {
-    "name": "shotgun explodeomics precipitate #123",
+    "name": "shotgun_explodeomics_precipitate_123",
     "params": [
         "certified organic",
         {"acquired in": "1812"}
@@ -100,6 +100,10 @@ def test_write(output_path, compressor):
         f.controlled_vocabularies()
         f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
             dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
+        f.sample_list([sample])
+        f.software_list([
+            f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'psims'])
+        ])
         f.instrument_configuration_list([
             f.InstrumentConfiguration(id=1, component_list=f.ComponentList([
                 f.Source(params=['electrospray ionization'], order=1),
@@ -117,10 +121,6 @@ def test_write(output_path, compressor):
                 dict(order=0, software_reference='psims', params=['Conversion to mzML'])
             ])
         ])
-        f.software_list([
-            f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'psims'])
-        ])
-        f.sample_list([sample])
         with f.run(id='test'):
             with f.spectrum_list(count=2):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
@@ -150,7 +150,7 @@ def test_write(output_path, compressor):
 
     reset()
     sample_data = next(reader.iterfind("sample"))
-    assert sample_data['name'] == "shotgun explodeomics precipitate #123"
+    assert sample_data['name'] == "shotgun_explodeomics_precipitate_123"
     reset()
     spec = next(reader)
     assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
@@ -196,4 +196,6 @@ def test_write(output_path, compressor):
     except AttributeError:
         content = bytestring
     assert 'index="0"' in content
+    is_valid, schema = f.validate()
+    assert is_valid, schema.error_log
     return f
