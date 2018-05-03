@@ -368,16 +368,24 @@ class CV(object):
         self.full_name = full_name
         self.id = id
         self.uri = uri
-        self.version = version
+        self._version = version
         self.options = kwargs
         self._vocabulary = None
 
-        if self.version is None:
-            self._vocabulary = self.load()
+    @property
+    def version(self):
+        if self._version is None:
             try:
-                self.version = self._vocabulary.version
+                self._version = self.vocabulary.version
             except AttributeError:
                 pass
+        return self._version
+
+    @property
+    def vocabulary(self):
+        if self._vocabulary is None:
+            self._vocabulary = self.load()
+        return self._vocabulary
 
     def load(self, handle=None):
         if handle is None:
