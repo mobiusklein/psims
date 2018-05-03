@@ -75,7 +75,6 @@ class ControlledVocabulary(object):
         self.id = id
         self.metadata = metadata
 
-
     def __getitem__(self, key):
         try:
             return self.terms[key]

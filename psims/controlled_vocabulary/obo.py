@@ -133,7 +133,7 @@ class OBOParser(object):
                 continue
             elif in_header:
                 key, val = line.split(":", 1)
-                self.header[key].append(val)
+                self.header[key].append(val.strip())
             elif line == "[Typedef]":
                 self._pack_if_occupied()
                 self.current_term = None
