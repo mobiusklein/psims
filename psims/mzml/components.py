@@ -43,7 +43,7 @@ default_cv_list = [
        uri=("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"),
        full_name="PSI-MS"),
     CV(id="UO",
-       uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
+       uri="http://ontologies.berkeleybop.org/uo.obo",
        full_name="UNIT-ONTOLOGY"),
 ]
 

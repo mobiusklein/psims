@@ -78,7 +78,7 @@ default_cv_list = [
         full_name="PSI-MS"),
     CV(
         id="UO",
-        uri="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo",
+        uri="http://ontologies.berkeleybop.org/uo.obo",
         full_name="UNIT-ONTOLOGY"),
     ProvidedCV(id="UNIMOD", uri="http://www.unimod.org/obo/unimod.obo", full_name="UNIMOD", converter=_unimod_converter)
 ]
