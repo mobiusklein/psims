@@ -82,6 +82,7 @@ class VocabularyResolver(object):
             cv_ref = cv_ref or mapping.pop("cv_ref", None) or mapping.pop("cvRef", None)
             unit_name = mapping.pop("unit_name", None) or mapping.pop("unitName", None)
             unit_accession = mapping.pop("unit_accession", None) or mapping.pop("unitAccession", None)
+            unit_cv_ref = mapping.pop('unit_cv_ref', None) or mapping.pop('unitCvRef', None)
             name = mapping.pop('name', None)
             if name is None:
                 if len(mapping) == 1:
@@ -97,6 +98,25 @@ class VocabularyResolver(object):
                     kwargs.setdefault("unit_name", unit_name)
                 if unit_accession is not None:
                     kwargs.setdefault("unit_accession", unit_accession)
+                if unit_cv_ref is not None:
+                    kwargs.setdefault("unit_cv_ref", unit_cv_ref)
+        unit_name = kwargs.get("unit_name")
+        unit_accession = kwargs.get("unit_accession")
+        unit_ref = kwargs.get('unit_cv_ref')
+        if unit_name is not None or unit_accession is not None:
+            if unit_accession is not None:
+                unit_term, source = self.term(unit_accession, include_source=True)
+                unit_name = unit_term.name
+                unit_accession = unit_term.id
+                unit_ref = source.id
+            elif unit_name is not None:
+                unit_term, source = self.term(unit_name, include_source=True)
+                unit_name = unit_term.name
+                unit_accession = unit_term.id
+                unit_ref = source.id
+            kwargs['unit_name'] = unit_name
+            kwargs['unit_accession'] = unit_accession
+            kwargs['unit_cv_ref'] = unit_ref
 
         if name is None:
             raise ValueError("Could not coerce parameter from %r, %r, %r" % (name, value, kwargs))
@@ -117,9 +137,13 @@ class VocabularyResolver(object):
             return CVParam(name=name, value=value, **kwargs)
 
     def term(self, name, include_source=False):
+        deferred = None
         for cv in self.vocabularies:
             try:
                 term = cv[name]
+                if term.get("is_obsolete", False):
+                    deferred = term, cv
+                    raise KeyError(name)
                 if include_source:
                     return term, cv
                 else:
@@ -127,6 +151,11 @@ class VocabularyResolver(object):
             except KeyError:
                 pass
         else:
+            if deferred:
+                if include_source:
+                    return deferred
+                else:
+                    return deferred[0]
             raise KeyError(name)
 
     def load_vocabularies(self):
