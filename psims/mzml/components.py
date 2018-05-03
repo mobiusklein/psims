@@ -21,7 +21,6 @@ class MzML(TagBase):
     }
 
     def __init__(self, **attrs):
-        # attrs.setdefault('creationDate', datetime.utcnow().isoformat())
         super(MzML, self).__init__("mzML", **attrs)
 
 
