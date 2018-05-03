@@ -22,7 +22,8 @@ setup(
     url="https://github.com/mobiusklein/psims",
     include_package_data=True,
     package_data={
-        "psims.controlled_vocabulary": ["psims/controlled_vocabulary/vendor/*"]
+        "psims.controlled_vocabulary": ["psims/controlled_vocabulary/vendor/*"],
+        "psims.validation": ["psims/validation/xsd/*"]
     },
     install_requires=[
         "lxml",
