@@ -400,7 +400,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         spectrum.write(self.writer)
 
     def write_chromatogram(self, time_array, intensity_array, id=None,
-                           chromatogram_type="selected ion current", params=None,
+                           chromatogram_type="selected ion current",
+                           precursor_information=None, params=None,
                            compression=COMPRESSION_ZLIB, encoding=32, other_arrays=None):
         if params is None:
             params = []
@@ -417,6 +418,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         if other_arrays is None:
             other_arrays = []
         array_list = []
+
+        if precursor_information is not None:
+            precursor = self._prepare_precursor_information(**precursor_information)[0]
+        else:
+            precursor = None
 
         default_array_length = len(time_array)
         if time_array is not None:
@@ -442,6 +448,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.chromatogram_count += 1
         chromatogram = self.Chromatogram(
             index=index, binary_data_list=array_list_tag,
+            precursor=precursor,
             default_array_length=default_array_length,
             id=id, params=params)
         chromatogram.write(self.writer)

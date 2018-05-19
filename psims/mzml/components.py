@@ -432,7 +432,8 @@ class Spectrum(ComponentBase):
                 self.scan_list.write(xml_file)
             if self.precursor_list is not None:
                 self.precursor_list.write(xml_file)
-
+            if self.product_list is not None:
+                self.product_list.write(xml_file)
             self.binary_data_list.write(xml_file)
 
 
@@ -540,16 +541,15 @@ class ScanList(ComponentBase):
 
 
 class Scan(ComponentBase):
-    def __init__(self, scan_window_list=None, instrument_configuration_ref=None, params=None, context=NullMap):
+    def __init__(self, scan_window_list=None, instrument_configuration_ref=None, params=None,
+                 context=NullMap, **kwargs):
         if scan_window_list is None:
             scan_window_list = ScanWindowList([], context)
         elif not isinstance(scan_window_list, ScanWindowList):
             scan_window_list = ScanWindowList(scan_window_list, context)
-        if params is None:
-            params = []
         self.instrument_configuration_ref = instrument_configuration_ref
         self._instrument_configuration_ref = context['InstrumentConfiguration'].get(instrument_configuration_ref)
-        self.params = params
+        self.params = self.prepare_params(params, **kwargs)
         self.scan_window_list = scan_window_list
         self.element = _element("scan")
         if self._instrument_configuration_ref is not None:
@@ -649,6 +649,28 @@ class Precursor(ComponentBase):
                 self.activation.write(xml_file)
 
 
+class ProductList(GenericCollection):
+    def __init__(self, members, context=NullMap):
+        super(ProductList, self).__init__('productList', members, context=context)
+
+
+class Product(ComponentBase):
+    def __init__(self, isolation_window=None, spectrum_reference=None, context=NullMap):
+        if isolation_window is not None:
+            if isinstance(isolation_window, (tuple, list)):
+                isolation_window = IsolationWindow(*isolation_window, context=context)
+            elif isinstance(isolation_window, Mapping):
+                isolation_window = IsolationWindow(context=context, **isolation_window)
+        self.isolation_window = isolation_window
+        self.element = _element("product")
+        self.context = context
+
+    def write(self, xml_file):
+        with self.element.element(xml_file, with_id=False):
+            if self.isolation_window is not None:
+                self.isolation_window.write(xml_file)
+
+
 class Activation(ParameterContainer):
     def __init__(self, params, context=NullMap):
         super(Activation, self).__init__("activation", params, context=context)
@@ -687,14 +709,16 @@ class SelectedIon(ComponentBase):
 
 
 class Chromatogram(ComponentBase):
-    def __init__(self, index, binary_data_list=None, default_array_length=None,
-                 data_processing_reference=None, id=None, params=None,
+    def __init__(self, index, binary_data_list=None, precursor=None, product=None,
+                 default_array_length=None, data_processing_reference=None, id=None, params=None,
                  context=NullMap):
         if params is None:
             params = []
         self.index = index
         self.default_array_length = default_array_length
         self.binary_data_list = binary_data_list
+        self.precursor = precursor
+        self.product = product
         self.data_processing_reference = data_processing_reference
         self._data_processing_reference = context["DataProcessing"][data_processing_reference]
         self.element = _element(
@@ -708,7 +732,13 @@ class Chromatogram(ComponentBase):
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
             self.write_params(xml_file)
+            if self.precursor is not None:
+                self.precursor.write(xml_file)
+            if self.product is not None:
+                self.product.write(xml_file)
             self.binary_data_list.write(xml_file)
+
+
 # --------------------------------------------------
 # Misc. Providence Management
 
