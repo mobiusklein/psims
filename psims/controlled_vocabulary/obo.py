@@ -1,4 +1,6 @@
 import re
+import warnings
+
 from collections import defaultdict
 from .reference import Reference
 from .entity import Entity
@@ -34,6 +36,24 @@ value_type_resolvers = {
     'boolean': bool,
     'positiveInteger': positive_integer,
 }
+
+
+synonym_scopes = {
+    "EXACT",
+    "BROAD",
+    "NARROW",
+    "RELATED"
+}
+
+
+def synonym_parser(text):
+    original = text
+    if text.endswith("]"):
+        text = text.rsplit("[", 1)[0].rstrip()
+    synonym, scope = text.rsplit(" ", 1)
+    if scope not in synonym_scopes:
+        warnings.warn("Non-standardized Synonym Scope %s for %s" % (scope, original))
+    return synonym.strip()[1:-1]
 
 
 class OBOParser(object):
@@ -87,6 +107,14 @@ class OBOParser(object):
             relationships = [Relationship.fromstring(r) for r in relationships]
             for rel in relationships:
                 entity[rel.predicate] = rel
+        except KeyError:
+            pass
+        try:
+            synonyms = entity['synonym']
+            if not isinstance(synonyms, list):
+                synonyms = [synonyms]
+            synonyms = list(map(synonym_parser, synonyms))
+            entity['synonym'] = synonyms
         except KeyError:
             pass
         try:

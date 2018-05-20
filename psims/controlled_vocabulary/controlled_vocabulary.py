@@ -32,6 +32,7 @@ fallback = {
     ("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"): _use_vendored_psims_obo,
     ("http://obo.cvs.sourceforge.net/*checkout*/"
      "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo,
+    ("http://ontologies.berkeleybop.org/uo.obo"): _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/pato.obo"): _use_vendored_pato_obo,
 }
 
@@ -72,6 +73,11 @@ class ControlledVocabulary(object):
             v['name'].lower(): v['name']
             for v in terms.values()
         }
+        self._synonyms = {}
+        for term in terms.values():
+            if term.get('synonym'):
+                for synonym in term.get('synonym'):
+                    self._synonyms[synonym.lower()] = term
         self.id = id
         self.metadata = metadata
 
@@ -85,7 +91,15 @@ class ControlledVocabulary(object):
                 try:
                     return self._names[self.normalize_name(key)]
                 except KeyError as e2:
-                    raise KeyError("%s and %s were not found." % (e, e2))
+                    try:
+                        return self._synonyms[key.lower()]
+                    except KeyError:
+                        raise KeyError("%s and %s were not found." % (e, e2))
+
+    def __repr__(self):
+        template = ("{self.__class__.__name__}(terms={size}, id={self.id}, "
+                    "name={self.name}, version={self.version})")
+        return template.format(self=self, size=len(self.terms))
 
     def __iter__(self):
         return iter(self.terms)
@@ -248,4 +262,14 @@ def register_resolver(name, fn):
 
 def load_psims():
     cv = obo_cache.resolve(("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"))
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_uo():
+    cv = obo_cache.resolve("http://ontologies.berkeleybop.org/uo.obo")
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_pato():
+    cv = obo_cache.resolve("http://ontologies.berkeleybop.org/pato.obo")
     return ControlledVocabulary.from_obo(cv)
