@@ -100,6 +100,9 @@ def test_write(output_path, compressor):
         f.controlled_vocabularies()
         f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
             dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
+        f.reference_param_group_list([
+            {'id': 'common_params', 'params': [{"proven": "inductively"}]}
+        ])
         f.sample_list([sample])
         f.software_list([
             f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'psims'])
@@ -124,10 +127,12 @@ def test_write(output_path, compressor):
         with f.run(id='test'):
             with f.spectrum_list(count=2):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
-                    {"name": "ms level", "value": 1}], polarity='negative scan', encoding=encodings,
+                    {"name": "ms level", "value": 1}, {"ref": 'common_params'}],
+                    polarity='negative scan', encoding=encodings,
                     compression='zlib')
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=2', params=[
-                    {"name": "ms level", "value": 2}], polarity='negative scan', precursor_information={
+                    {"name": "ms level", "value": 2}, {"ref": 'common_params'}],
+                    polarity='negative scan', precursor_information={
                         "mz": 1230, "intensity": None, "charge": None, "params": [
                             "no peak detected"
                         ],
@@ -155,6 +160,7 @@ def test_write(output_path, compressor):
     spec = next(reader)
     assert (all(np.abs(spec['m/z array'] - mz_array) < 1e-4))
     assert "negative scan" in spec
+    assert "referenceableParamGroupRef" in spec and spec['referenceableParamGroupRef'][0]['ref'] == 'common_params'
     assert spec['ms level'] == 1
     spec = next(reader)
     assert "negative scan" in spec

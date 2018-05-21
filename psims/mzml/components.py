@@ -1,6 +1,9 @@
 import warnings
 from datetime import datetime
-from collections import Mapping, Iterable
+try:
+    from collections import Mapping, Iterable
+except ImportError:
+    from collections.abc import Mapping, Iterable
 from numbers import Number
 
 import numpy as np
@@ -9,7 +12,8 @@ from ..xml import _element, element, TagBase, CV
 from ..document import (
     ComponentBase as _ComponentBase, NullMap, ComponentDispatcherBase,
     ParameterContainer, IDParameterContainer)
-from .binary_encoding import (encoding_map, dtype_to_encoding, compression_map, encode_array)
+from .binary_encoding import (dtype_to_encoding, compression_map, encode_array)
+from .utils import ensure_iterable
 
 
 class MzML(TagBase):
@@ -127,6 +131,9 @@ class FileDescription(ComponentBase):
             if len(source_files) > 0 and not isinstance(source_files[0], SourceFile):
                 source_files = [SourceFile(context=context, **f) for f in source_files]
             source_files = SourceFileList(source_files, context=context)
+        contacts = ensure_iterable(contacts)
+        if contacts and not isinstance(contacts[0], Contact):
+            contacts = [Contact.ensure(contact, context=context) for contact in contacts]
         self.content = content
         self.source_files = source_files
         self.contacts = contacts
@@ -137,27 +144,28 @@ class FileDescription(ComponentBase):
         with self.element.element(xml_file, with_id=False):
             self.content.write(xml_file)
             self.source_files.write(xml_file)
-            # TODO: handle contact
+            for contact in self.contacts:
+                contact.write(xml_file)
 
 
 # --------------------------------------------------
 # ParamGroups
 
-class ReferenceableParamGroupList(IDGenericCollection):
+class ReferenceableParamGroupList(GenericCollection):
     def __init__(self, members, context):
         super(ReferenceableParamGroupList, self).__init__(
             "referenceableParamGroupList", members, context)
 
 
 class ReferenceableParamGroup(IDParameterContainer):
-    def __init__(self, params=None, id=None, context=NullMap):
+    def __init__(self, params=None, id=None, context=NullMap, **kwargs):
         if params is None:
             params = []
         super(ReferenceableParamGroup, self).__init__(
-            "referenceableParamGroup", params, dict(id=id), context=context)
+            "referenceableParamGroup", params, dict(id=id), context=context, **kwargs)
         self.id = self.element.id
-        context["ReferenceableParamGroup"][id] = self.element.id
-
+        self.context = context
+        self.context["ReferenceableParamGroup"][id] = self.element.id
 
 # --------------------------------------------------
 # Sample Metadata
@@ -767,6 +775,11 @@ class CVList(ComponentBase):
 
     def __iter__(self):
         return iter(self.cv_list)
+
+
+class Contact(ParameterContainer):
+    def __init__(self, params, context=NullMap, **kwargs):
+        super(Contact, self).__init__('contact', params, context=context, **kwargs)
 
 
 class Person(ComponentBase):

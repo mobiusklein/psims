@@ -216,7 +216,8 @@ class TagBase(object):
             yield
         self.is_open = False
 
-    __call__ = element
+    def __call__(self, xml_file=None, with_id=False):
+        return self.element(xml_file, with_id)
 
     def __repr__(self):
         return "<%s id=\"%s\" %s>" % (self.tag_name, self.id, " ".join("%s=\"%s\"" % (
@@ -361,6 +362,17 @@ class CVParam(TagBase):
 class UserParam(CVParam):
     tag_name = "userParam"
     accession = None
+
+
+class ParamGroupReference(TagBase):
+    tag_name = "referenceableParamGroupRef"
+
+    def __init__(self, ref):
+        self.ref = ref
+        super(ParamGroupReference, self).__init__(self.tag_name, ref=ref)
+
+    def __call__(self, *args, **kwargs):
+        self.write(*args, **kwargs)
 
 
 class CV(object):
@@ -579,6 +591,12 @@ class XMLDocumentWriter(XMLWriterMixin):
         to the original file's name.
         """
         use_temp = False
+        # can't format a terminal stream
+        try:
+            if self.outfile.isatty():
+                return
+        except (AttributeError, ValueError):
+            pass
         if outfile is None:
             use_temp = True
             handle = tempfile.NamedTemporaryFile(delete=False)

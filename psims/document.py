@@ -7,7 +7,7 @@ from .utils import add_metaclass, ensure_iterable, Mapping
 
 from .xml import (
     id_maker, CVParam, UserParam,
-    _element)
+    ParamGroupReference, _element)
 
 
 class ChildTrackingMeta(type):
@@ -68,15 +68,22 @@ class VocabularyResolver(object):
                 pass
         raise KeyError(id)
 
+    def param_group_reference(self, id):
+        return ParamGroupReference(id)
+
     def param(self, name, value=None, cv_ref=None, **kwargs):
         accession = kwargs.get("accession")
 
         if isinstance(name, CVParam):
             return name
+        elif isinstance(name, ParamGroupReference):
+            return name
         elif isinstance(name, (tuple, list)) and value is None:
             name, value = name
         elif isinstance(name, Mapping):
             mapping = dict(name)
+            if len(mapping) == 1 and 'ref' in mapping:
+                return self.param_group_reference(mapping['ref'])
             value = value or mapping.pop('value', None)
             accession = accession or mapping.pop("accession", None)
             cv_ref = cv_ref or mapping.pop("cv_ref", None) or mapping.pop("cvRef", None)
@@ -173,6 +180,12 @@ class DocumentContext(dict, VocabularyResolver):
     def __init__(self, vocabularies=None):
         dict.__init__(self)
         VocabularyResolver.__init__(self, vocabularies)
+
+    def param_group_reference(self, id):
+        # This is a inelegant, as ReferenceableParamGroup is not part document type
+        # independent, and may not be consistent
+        param_group_index = self['ReferenceableParamGroup']
+        return ParamGroupReference(param_group_index[id])
 
     def __getitem__(self, key):
         if not isinstance(key, str):
@@ -380,7 +393,7 @@ class ComponentBase(object):
 
     def prepare_params(self, params, **kwargs):
         if isinstance(params, Mapping):
-            if "name" not in params and "accession" not in params:
+            if ("name" not in params and "accession" not in params) and ("ref" not in params):
                 params = list(params.items())
             else:
                 params = [params]
@@ -404,13 +417,16 @@ class ComponentBase(object):
         params = self.prepare_params(params)
         user_params = []
         cv_params = []
+        references = []
         for param in params:
             param = self.context.param(param)
-            if isinstance(param, UserParam):
+            if isinstance(param, ParamGroupReference):
+                references.append(param)
+            elif isinstance(param, UserParam):
                 user_params.append(param)
             else:
                 cv_params.append(param)
-        for param in cv_params + user_params:
+        for param in (references + cv_params + user_params):
             param(xml_file)
 
 
@@ -427,12 +443,12 @@ class ParameterContainer(ComponentBase):
     params : list
         The list of parameters to include
     """
-    def __init__(self, tag_name, params=None, element_args=None, context=NullMap):
+    def __init__(self, tag_name, params=None, element_args=None, context=NullMap, **kwargs):
         if element_args is None:
             element_args = dict()
         if params is None:
             params = []
-        self.params = params
+        self.params = self.prepare_params(params, **kwargs)
         self.context = context
         self.element = _element(tag_name, **element_args)
 

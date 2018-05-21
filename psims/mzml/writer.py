@@ -188,15 +188,6 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         """
         fd = self.FileDescription(file_contents, [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
         fd.write(self.writer)
-        # with self.element("fileDescription"):
-        #     if file_contents is not None:
-        #         with self.element("fileContent"):
-        #             for param in file_contents:
-        #                 self.param(param)(self)
-        #     if source_files is not None:
-        #         source_file_list = self.SourceFileList(
-        #             [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
-        #         source_file_list.write(self)
 
     def instrument_configuration_list(self, instrument_configurations=None):
         configs = [
@@ -510,6 +501,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         #     fh = self.outfile.name
         # else:
         #     fh = self.outfile
+        try:
+            if self.outfile.isatty():
+                return
+        except (AttributeError, ValueError):
+            pass
         if hasattr(self.outfile, 'name'):
             fh = self.outfile.name
         else:
