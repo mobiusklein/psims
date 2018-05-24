@@ -228,8 +228,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
         self.SampleList(sample_entries).write(self)
 
-    def run(self, id=None, instrument_configuration=None, source_file=None, start_time=None,
-            sample=None):
+    def run(self, id=None, instrument_configuration=None, source_file=None, start_time=None, sample=None):
         """Begins the `<run>` section of the document, describing a single
         sample run.
 
