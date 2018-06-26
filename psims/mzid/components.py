@@ -202,7 +202,9 @@ class DBSequence(ComponentBase):
         self.search_database_ref = context['SearchDatabase'][search_database_id]
         self.element = _element(
             "DBSequence", accession=accession, id=id,
-            length=len(sequence), searchDatabase_ref=self.search_database_ref)
+            searchDatabase_ref=self.search_database_ref)
+        if sequence is not None:
+            self.element.attrs["length"] = len(sequence)
 
         context["DBSequence"][id] = self.element.id
         self.context = context
@@ -354,6 +356,7 @@ class SpectrumIdentificationResult(ComponentBase):
         self.element = _element(
             "SpectrumIdentificationResult", spectraData_ref=context["SpectraData"][spectra_data_id],
             spectrumID=spectrum_id, id=id)
+        self.context = context
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
@@ -1082,7 +1085,12 @@ class AnalysisSoftware(ComponentBase):
                 with element(xml_file, "Role"):
                     self.write_params(xml_file, self.prepare_params(self.role))
             with element(xml_file, "SoftwareName"):
-                self.context.param(name=self.name)(xml_file)
+                name_param = self.context.param(name=self.name)
+                # if the software name is not a controlled vocabulary term, specify it using
+                # the standard "unreleased custom software tool" term-value pair
+                if isinstance(name_param, UserParam):
+                    name_param = self.context.param("MS:1000799", value=self.name)
+                name_param(xml_file)
             if self.customization is not None:
                 with element(xml_file, "Customizations"):
                     xml_file.write('\n'.join(ensure_iterable(self.customization)))
