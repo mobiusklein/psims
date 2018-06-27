@@ -728,7 +728,7 @@ class Unimod(object):
     def version(self):
         try:
             version = self.session.query(History.version).all()
-            if len(version) > 1:
+            if len(version) > 0:
                 version = max(version)
             return version[0]
         except Exception:
