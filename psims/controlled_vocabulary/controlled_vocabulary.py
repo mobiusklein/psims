@@ -261,8 +261,12 @@ def register_resolver(name, fn):
 
 
 def load_psims():
-    cv = obo_cache.resolve(("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"))
-    return ControlledVocabulary.from_obo(cv)
+    try:
+        cv = obo_cache.resolve(("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"))
+        return ControlledVocabulary.from_obo(cv)
+    except TypeError:
+        cv = _use_vendored_psims_obo()
+        return ControlledVocabulary.from_obo(cv)
 
 
 def load_uo():

@@ -241,54 +241,64 @@ class Peptide(ComponentBase):
             self.write_params(xml_file)
 
 
-class Modification(ComponentBase):
+class ModificationDescriptionBase(object):
+    UNKNOWN_MODIFICATION_ACCESSION = "MS:1001460"
+
+    def _resolve_name_accession(self, name):
+        try:
+            mod, cv = self.context.term(name, include_source=True)
+            self.name = mod["name"]
+            self.accession = mod['id']
+            self.known = True
+            self.reference = cv.id
+        except KeyError:
+            self.known = False
+            self.name = name
+            self.accession = self.UNKNOWN_MODIFICATION_ACCESSION
+            cv = self.context.get_vocabulary("PSI-MS")
+            if cv is None:
+                self.reference = 'PSI-MS'
+            else:
+                self.reference = cv.id
+
+    def _format_identity(self, xml_file):
+        if self.known:
+            self.context.param(
+                name=self.name, accession=self.accession,
+                ref=self.reference)(xml_file)
+        else:
+            self.context.param(
+                name="unknown modification",
+                accession=self.accession,
+                value=self.name,
+                ref=self.reference)(xml_file)
+
+
+class Modification(ComponentBase, ModificationDescriptionBase):
+
     def __init__(self, monoisotopic_mass_delta=None, location=None, name=None,
-                 id=None, known=True, params=None, context=NullMap, **kwargs):
+                 id=None, params=None, context=NullMap, **kwargs):
+        self.context = context
         params = self.prepare_params(params, **kwargs)
-        if id is None:
-            try:
-                mod = context.term(name)
-                self.name = mod["name"]
-                self.accession = mod['id']
-            except KeyError:
-                known = False
-                self.name = name
-                self.accession = "MS:1001460"
-        elif name is None:
-            try:
-                mod = context.term(id)
-                self.name = mod["name"]
-                self.accession = mod['id']
-            except KeyError:
-                known = False
-                self.name = id
-                self.accession = "MS:1001460"
+        if id is None and name is not None:
+            self._resolve_name_accession(name)
+        elif name is None and id is not None:
+            self._resolve_name_accession(id)
         else:
             warnings.warn("Unknown modification saved: %s" % monoisotopic_mass_delta)
             self.name = name
             self.accession = id
+            self.known = False
 
         self.element = _element(
             "Modification", monoisotopicMassDelta=monoisotopic_mass_delta,
             location=location)
-        self.context = context
         self.params = params
-        self.known = known
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=False):
             if self.accession is not None:
-                if self.known:
-                    self.context.param(
-                        name=self.name, accession=self.accession,
-                        ref=self.accession.split(":")[0])(xml_file)
-                else:
-                    psi_ms = self.context.get_vocabulary("PSI-MS")
-                    self.context.param(
-                        name="unknown modification",
-                        accession=self.accession,
-                        value=self.name,
-                        ref=psi_ms.id if psi_ms is not None else 'PSI-MS')(xml_file)
+                self._format_identity(xml_file)
             self.write_params(xml_file)
 
 
@@ -925,34 +935,42 @@ class SpecificityRules(ParameterContainer):
         super(SpecificityRules, self).__init__("SpecificityRules", params, context=context)
 
 
-class SearchModification(ComponentBase):
-    def __init__(self, mass_delta, fixed, residues, specificity=None,
-                 params=None, context=NullMap, **kwargs):
-        if params is None:
-            params = []
+class SearchModification(ComponentBase, ModificationDescriptionBase):
+    def __init__(self, mass_delta, fixed, residues, name=None,
+                 specificity=None, params=None, context=NullMap,
+                 **kwargs):
+        self.context = context
         if specificity is not None:
             if not isinstance(specificity, (tuple, list)):
                 specificity = [specificity]
             if not isinstance(specificity[0], SpecificityRules):
                 specificity = [
                     SpecificityRules(s, context=context) for s in specificity]
-        params.extend(kwargs.items())
-        self.params = params
+
+        if name is not None:
+            self._resolve_name_accession(name)
+        else:
+            self.name = None
+            self.accession = None
+            self.reference = None
+            self.known = None
+
+        self.params = self.prepare_params(params, **kwargs)
         self.mass_delta = mass_delta
         self.fixed = fixed
         self.residues = ''.join(residues)
         self.specificity = specificity
-        self.context = context
         self.element = _element(
             "SearchModification", fixedMod=fixed, massDelta=mass_delta,
             residues=self.residues)
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=False):
+            if self.name is not None:
+                self._format_identity(xml_file)
             self.write_params(xml_file)
             if self.specificity is not None:
-                with _element("SpecificityRules"):
-                    self.write_params(xml_file, self.specificity)
+                self.specificity.write(xml_file)
 
 
 class ProteinDetectionProtocol(ComponentBase):

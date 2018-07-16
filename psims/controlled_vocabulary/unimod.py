@@ -768,6 +768,8 @@ class Unimod(object):
                             raise KeyError(identifier)
                         mod = alt_name.modification
                     return mod
+            else:
+                raise KeyError(identifier)
 
     by_title = by_name = get
 
