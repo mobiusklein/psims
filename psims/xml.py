@@ -546,6 +546,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         self._begin()
         self.toplevel = element(self.writer, self.toplevel_tag())
         self.toplevel.__enter__()
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Closes the top-level tag, the XML formatter,

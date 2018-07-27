@@ -46,6 +46,7 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         with_id = 'id' in self.section_args
         self._context_manager = self.toplevel.begin(self.writer, with_id=with_id)
         self._context_manager.__enter__()
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         for param in self.params:
@@ -110,6 +111,7 @@ class SpectrumIdentficationListSection(DocumentSection):
         super(SpectrumIdentficationListSection, self).__enter__()
         if self.fragmentation_table:
             self.fragmentation_table.write(self.writer)
+        return self
 
 
 class ProteinDetectionListSection(DocumentSection):

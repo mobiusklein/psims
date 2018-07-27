@@ -94,9 +94,8 @@ def test_array_codec():
 
 
 def test_write(output_path, compressor):
-    f = MzMLWriter(compressor(output_path, 'wb'), close=True)
-    f.register("Software", 'psims')
-    with f:
+    with MzMLWriter(compressor(output_path, 'wb'), close=True) as f:
+        f.register("Software", 'psims')
         f.controlled_vocabularies()
         f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
             dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
