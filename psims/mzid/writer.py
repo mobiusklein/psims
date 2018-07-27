@@ -122,7 +122,8 @@ class ProteinDetectionListSection(DocumentSection):
         has_count_param = any(param.accession == 'MS:1002404' for param in self.params)
         if count is None and not has_count_param:
             warnings.warn("MS:1002404 \"count of identified proteins\" is missing."
-                          "Provide it as either a section parameter or as the \"count\" keyword argument")
+                          "Provide it as either a section parameter or as the \"count\" keyword argument",
+                          stacklevel=2)
         if count is not None and has_count_param:
             raise ValueError("MS:1002404 \"count of identified proteins\" was supplied both "
                              "as a parameter and as a keyword argument.")

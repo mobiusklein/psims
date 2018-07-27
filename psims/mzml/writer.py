@@ -88,7 +88,9 @@ class SpectrumListSection(DocumentSection):
                 self.section_args["defaultDataProcessingRef"] = list(
                     self.context["DataProcessing"].values())[0]
             except IndexError:
-                warnings.warn("No Data Processing method found. mzML file may not be fully standard-compliant")
+                warnings.warn(
+                    "No Data Processing method found. mzML file may not be fully standard-compliant",
+                    stacklevel=2)
 
 
 class ChromatogramListSection(DocumentSection):
@@ -107,7 +109,9 @@ class ChromatogramListSection(DocumentSection):
                 self.section_args["defaultDataProcessingRef"] = list(
                     self.context["DataProcessing"].values())[0]
             except IndexError:
-                warnings.warn("No Data Processing method found. mzML file may not be fully standard-compliant")
+                warnings.warn(
+                    "No Data Processing method found. mzML file may not be fully standard-compliant",
+                    stacklevel=2)
 
 
 class RunSection(DocumentSection):
@@ -273,7 +277,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             try:
                 data_processing_method = list(dp_map.keys())[0]
             except IndexError:
-                warnings.warn("No Data Processing method found. mzML file may not be fully standard-compliant")
+                warnings.warn(
+                    "No Data Processing method found. mzML file may not be fully standard-compliant",
+                    stacklevel=2)
         return SpectrumListSection(
             self.writer, self.context, count=count,
             data_processing_method=data_processing_method)

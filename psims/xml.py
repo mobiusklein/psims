@@ -1,6 +1,5 @@
 import os
 import shutil
-import warnings
 import re
 from contextlib import contextmanager
 import tempfile
@@ -525,7 +524,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         self.outfile = outfile
         self.compression = compression
         self.xmlfile = etree.xmlfile(outfile, encoding='utf-8', **kwargs)
-        self.writer = None
+        self._writer = None
         self.toplevel = None
         self._close = close
 
@@ -534,27 +533,51 @@ class XMLDocumentWriter(XMLWriterMixin):
             return (self.outfile, 'close')
         return bool(self._close)
 
-    def _begin(self):
+    @property
+    def writer(self):
+        if self._writer is None:
+            raise ValueError(
+                "The writer hasn't been started yet. Either use the object as a context manager"
+                " or call the begin() method")
+        return self._writer
+
+    @writer.setter
+    def writer(self, value):
+        self._writer = value
+
+    def begin(self):
         """Writes the doctype and starts the low-level writing machinery
         """
-        self.outfile.write(b'<?xml version="1.0" encoding="utf-8"?>')
+        if self._has_begun():
+            return
         self.writer = self.xmlfile.__enter__()
+        self.writer.write_declaration()
+        self.toplevel = element(self.writer, self.toplevel_tag())
+        self.toplevel.__enter__()
+
+    def _has_begun(self):
+        return self.toplevel is not None
 
     def __enter__(self):
         """Begins writing, opening the top-level tag
         """
-        self._begin()
-        self.toplevel = element(self.writer, self.toplevel_tag())
-        self.toplevel.__enter__()
+        self.begin()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Closes the top-level tag, the XML formatter,
         and the file itself.
         """
+        self.end(exc_type, exc_value, traceback)
+
+    def end(self, exc_type=None, exc_value=None, traceback=None):
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
         self.xmlfile.__exit__(exc_type, exc_value, traceback)
+        try:
+            self.flush()
+        except Exception:
+            pass
         if self._should_close():
             self.close()
 

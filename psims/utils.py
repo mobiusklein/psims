@@ -1,6 +1,5 @@
 from lxml import etree
 from six import add_metaclass, string_types as basestring
-from gzip import GzipFile
 
 try:
     from collections import Iterable, Mapping
@@ -29,9 +28,8 @@ def pretty_xml(path, outpath=None, encoding=b'utf-8'):
         opener = compression.get(path)
         outstream = opener(outpath, 'wb')
     with outstream:
-        outstream.write(b'<?xml version="1.0" encoding="' + encoding + b'"?>\n')
         outstream.write(
-            etree.tostring(tree, pretty_print=True))
+            etree.tostring(tree, pretty_print=True, encoding=encoding))
 
 
 def simple_repr(self):  # pragma: no cover
