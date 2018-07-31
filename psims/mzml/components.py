@@ -110,12 +110,11 @@ class SourceFile(ComponentBase):
     def __init__(self, location=None, name=None, id=None, params=None, context=NullMap, **kwargs):
         if params is None:
             params = []
-        params.extend(kwargs.items())
+        self.context = context
+        self.params = self.prepare_params(params, **kwargs)
         self.location = location
         self.name = name
         self.element = _element("sourceFile", location=location, id=id, name=name)
-        self.params = params
-        self.context = context
         context["SourceFile"][id] = self.element.id
 
     def write(self, xml_file):
