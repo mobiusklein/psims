@@ -367,7 +367,7 @@ class SpectrumIdentificationResult(ComponentBase):
             "SpectrumIdentificationResult", spectraData_ref=context["SpectraData"][spectra_data_id],
             spectrumID=spectrum_id, id=id)
         self.context = context
-        self.context
+        self.context["SpectrumIdentificationResult"][id] = self.element.id
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
