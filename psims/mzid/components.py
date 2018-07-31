@@ -367,6 +367,7 @@ class SpectrumIdentificationResult(ComponentBase):
             "SpectrumIdentificationResult", spectraData_ref=context["SpectraData"][spectra_data_id],
             spectrumID=spectrum_id, id=id)
         self.context = context
+        self.context
 
     def write(self, xml_file):
         with self.element.element(xml_file, with_id=True):
@@ -530,6 +531,57 @@ class Measure(ComponentBase):
             self.context.param(self.param)(xml_file)
 
     common_measures = ["product ion %s" % s for s in ("m/z", "intensity", "m/z error")]
+
+
+class MassTable(ComponentBase):
+    def __init__(self, id, ms_level, residues=None, ambiguous_residues=None,
+                 name=None, params=None, context=NullMap, **kwargs):
+        if residues is None:
+            residues = []
+        if ambiguous_residues is None:
+            ambiguous_residues = []
+
+        self.context = context
+        self.residues = [Residue.ensure(r, context=context) for r in ensure_iterable(residues)]
+        self.ambiguous_residues = [AmbiguousResidue.ensure(r, context=context)
+                                   for r in ensure_iterable(ambiguous_residues)]
+        self.name = name
+        self.ms_level = list(map(lambda x: str(int(x)), ensure_iterable(ms_level)))
+        self.element = _element("MassTable", id=id, msLevel=' '.join(self.ms_level))
+        if self.name is not None:
+            self.element.attrs['name'] = str(self.name)
+        self.context['MassTable'][id] = self.element.id
+        self.params = self.prepare_params(params, **kwargs)
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=True):
+            for residue in self.residues:
+                residue.write(xml_file)
+            for residue in self.ambiguous_residues:
+                residue.write(xml_file)
+            self.write_params(xml_file)
+
+
+class Residue(ComponentBase):
+    def __init__(self, mass, code, context=NullMap):
+        self.mass = float(mass)
+        self.code = str(code)
+        self.element = _element("Residue", mass=self.mass, code=self.code)
+
+    def write(self, xml_file):
+        self.element.write(xml_file, with_id=False)
+
+
+class AmbiguousResidue(ComponentBase):
+    def __init__(self, code, params=None, context=NullMap, **kwargs):
+        self.context = context
+        self.code = str(code)
+        self.params = self.prepare_params(params, **kwargs)
+        self.element = _element("AmbiguousResidue", code=self.code)
+
+    def write(self, xml_file):
+        with self.element(xml_file, with_id=False):
+            self.write_params(xml_file)
 
 
 class FragmentationTable(ComponentBase):
@@ -832,7 +884,7 @@ class Threshold(ComponentBase):
 class SpectrumIdentificationProtocol(ComponentBase):
     def __init__(self, search_type, analysis_software_id=1, id=1, additional_search_params=tuple(),
                  modification_params=tuple(), enzymes=tuple(), fragment_tolerance=None, parent_tolerance=None,
-                 threshold=None, filters=None, context=NullMap):
+                 threshold=None, filters=None, mass_tables=None, context=NullMap):
         self.context = context
         if threshold is None:
             threshold = Threshold(context=context)
@@ -882,6 +934,11 @@ class SpectrumIdentificationProtocol(ComponentBase):
                 temp.append(Filter(context=context, **filt))
         filters = temp
         self.filters = filters
+        if mass_tables is None:
+            mass_tables = []
+        else:
+            mass_tables = [MassTable.ensure(table, context=context) for table in ensure_iterable(mass_tables)]
+        self.mass_tables = mass_tables
         self.element = _element(
             "SpectrumIdentificationProtocol", id=id,
             analysisSoftware_ref=context['AnalysisSoftware'][analysis_software_id])
@@ -898,6 +955,8 @@ class SpectrumIdentificationProtocol(ComponentBase):
                 for mod in self.modification_params:
                     mod.write(xml_file)
             self.enzymes.write(xml_file)
+            for mass_table in self.mass_tables:
+                mass_table.write(xml_file)
             if self.fragment_tolerance is not None:
                 self.fragment_tolerance.write(xml_file)
             if self.parent_tolerance is not None:

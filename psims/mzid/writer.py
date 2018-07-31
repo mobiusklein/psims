@@ -277,7 +277,8 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     def spectrum_identification_protocol(self, search_type='ms-ms search', analysis_software_id=1, id=1,
                                          additional_search_params=None, enzymes=None, modification_params=None,
-                                         fragment_tolerance=None, parent_tolerance=None, threshold=None):
+                                         fragment_tolerance=None, parent_tolerance=None, threshold=None,
+                                         mass_table=None):
         enzymes = [self.Enzyme.ensure((s or {})) for s in ensure_iterable(enzymes)]
         modification_params = [self.SearchModification.ensure(
             (s or {})) for s in ensure_iterable(modification_params)]
