@@ -24,6 +24,10 @@ def _use_vendored_unimod_xml():
     return pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml")
 
 
+def _use_vendored_xlmod_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/XLMOD.obo")
+
+
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
@@ -34,6 +38,7 @@ fallback = {
      "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/uo.obo"): _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/pato.obo"): _use_vendored_pato_obo,
+    ("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo"): _use_vendored_xlmod_obo,
 }
 
 

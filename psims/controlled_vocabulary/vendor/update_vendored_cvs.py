@@ -12,7 +12,8 @@ registry = {
     "psi-ms.obo": "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo",
     "unit.obo": "http://ontologies.berkeleybop.org/uo.obo",
     'pato.obo': "http://ontologies.berkeleybop.org/pato.obo",
-    "unimod_tables.xml": "http://www.unimod.org/xml/unimod_tables.xml"
+    "unimod_tables.xml": "http://www.unimod.org/xml/unimod_tables.xml",
+    "XLMOD.obo": "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo",
 }
 
 

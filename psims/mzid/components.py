@@ -73,14 +73,20 @@ def _unimod_converter(modification):
 default_cv_list = [
     CV(
         id="PSI-MS",
-        uri=("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/psidev"
-             "/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"),
+        uri=("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"),
         full_name="PSI-MS"),
     CV(
         id="UO",
         uri="http://ontologies.berkeleybop.org/uo.obo",
         full_name="UNIT-ONTOLOGY"),
-    ProvidedCV(id="UNIMOD", uri="http://www.unimod.org/obo/unimod.obo", full_name="UNIMOD", converter=_unimod_converter)
+    ProvidedCV(
+        id="UNIMOD", uri="http://www.unimod.org/obo/unimod.obo",
+        full_name="UNIMOD",
+        converter=_unimod_converter),
+    CV(
+        id='XLMOD',
+        uri="https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo",
+        full_name='XLMOD')
 ]
 
 
