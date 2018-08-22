@@ -961,7 +961,9 @@ class SpectrumIdentificationProtocol(ComponentBase):
         special_processing_type_terms = cv['MS:1002489'].children
         special_processing_types = {t.id for t in special_processing_type_terms}
         for param in self.additional_search_params:
-            if param.accession in special_processing_types:
+            param = self.param(param)
+            accession = param.get('accession')
+            if accession in special_processing_types:
                 special_processing_instructions.append(param)
         if not special_processing_instructions:
             self.additional_search_params.insert(
