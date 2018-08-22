@@ -29,7 +29,7 @@ def pretty_xml(path, outpath=None, encoding=b'utf-8'):
         outstream = opener(outpath, 'wb')
     with outstream:
         outstream.write(
-            etree.tostring(tree, pretty_print=True, encoding=encoding))
+            etree.tostring(tree, pretty_print=True, encoding=encoding, xml_declaration=True))
 
 
 def simple_repr(self):  # pragma: no cover
