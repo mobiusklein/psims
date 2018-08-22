@@ -76,7 +76,9 @@ def test_write(output_path, compressor):
     assert n_peptide_evidence == len(list(reader.iterfind("PeptideEvidence")))
     n_spectrum_identification_results = len(spectrum_identification_list['identification_results'])
     reset()
-    assert n_spectrum_identification_results == len(list(reader.iterfind("SpectrumIdentificationResult")))
+    spectrum_identification_results = list(reader.iterfind("SpectrumIdentificationResult"))
+    assert n_spectrum_identification_results == len(spectrum_identification_results)
+    assert spectrum_identification_results[0]['scan start time'] != 0
     reset()
     protocol = next(reader.iterfind("SpectrumIdentificationProtocol"))
     mods = protocol['ModificationParams']['SearchModification']
@@ -84,6 +86,7 @@ def test_write(output_path, compressor):
     assert mods[0]['fixedMod']
     assert not mods[1]['fixedMod']
     assert "unknown modification" in mods[1]
+    reset()
     is_valid, schema = f.validate()
     assert is_valid, schema.error_log
     reset()

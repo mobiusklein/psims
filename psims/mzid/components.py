@@ -613,14 +613,17 @@ class FragmentationTable(ComponentBase):
 
 
 class SpectrumIdentificationList(ComponentBase):
-    def __init__(self, identification_results, id, fragmentation_table=None, context=NullMap):
+    def __init__(self, identification_results, id, fragmentation_table=None, params=None, context=NullMap, **kwargs):
         self.identification_results = identification_results
         self.fragmentation_table = fragmentation_table
         self.element = _element("SpectrumIdentificationList", xmlns=_xmlns, id=id)
-        context["SpectrumIdentificationList"][id] = self.element.id
+        self.context = context
+        self.context["SpectrumIdentificationList"][id] = self.element.id
+        self.params = self.prepare_params(params, **kwargs)
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):
+            self.write_params(xml_file)
             if self.fragmentation_table is not None:
                 self.fragmentation_table.write(xml_file)
             for identification_result in self.identification_results:
