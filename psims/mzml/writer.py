@@ -1,13 +1,12 @@
 import numbers
 import warnings
 
-from io import BytesIO
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 
 try:
-    from collections import Sequence, Mapping
+    from collections import Mapping
 except ImportError:
-    from collections.abc import Sequence, Mapping
+    from collections.abc import Mapping
 
 import numpy as np
 

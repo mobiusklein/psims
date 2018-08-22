@@ -875,9 +875,9 @@ class Threshold(ComponentBase):
     no_threshold = CVParam(accession="MS:1001494", ref="PSI-MS", name="no threshold")
 
     def __init__(self, params=None, context=NullMap, **kwargs):
+        self.context = context
         params = self.prepare_params(ensure_iterable(params), **kwargs)
         self.params = params
-        self.context = context
 
     def write(self, xml_file):
         with element(xml_file, "Threshold"):
@@ -888,67 +888,84 @@ class Threshold(ComponentBase):
 
 
 class SpectrumIdentificationProtocol(ComponentBase):
-    def __init__(self, search_type, analysis_software_id=1, id=1, additional_search_params=tuple(),
-                 modification_params=tuple(), enzymes=tuple(), fragment_tolerance=None, parent_tolerance=None,
+    def __init__(self, search_type, analysis_software_id=1, id=1, additional_search_params=None,
+                 modification_params=None, enzymes=None, fragment_tolerance=None, parent_tolerance=None,
                  threshold=None, filters=None, mass_tables=None, context=NullMap):
         self.context = context
         if threshold is None:
             threshold = Threshold(context=context)
         elif not isinstance(threshold, Threshold):
             threshold = Threshold(threshold, context=context)
-        if not isinstance(parent_tolerance, ParentTolerance):
-            if isinstance(parent_tolerance, NumberBase):
-                parent_tolerance = ParentTolerance(parent_tolerance)
-            elif isinstance(parent_tolerance, (tuple, list)):
-                parent_tolerance = ParentTolerance(*parent_tolerance)
-            elif parent_tolerance is None:
-                pass
-            else:
-                raise ValueError("Cannot infer ParentTolerance from %r" % (parent_tolerance,))
-        if not isinstance(fragment_tolerance, FragmentTolerance):
-            if isinstance(fragment_tolerance, NumberBase):
-                fragment_tolerance = FragmentTolerance(fragment_tolerance)
-            elif isinstance(fragment_tolerance, (tuple, list)):
-                fragment_tolerance = FragmentTolerance(*fragment_tolerance)
-            elif fragment_tolerance is None:
-                pass
-            else:
-                raise ValueError("Cannot infer FragmentTolerance from %r" % (fragment_tolerance,))
         if not isinstance(enzymes, Enzymes):
             enzymes = Enzymes(ensure_iterable(enzymes), context=context)
-        self.parent_tolerance = parent_tolerance
-        self.fragment_tolerance = fragment_tolerance
+        self.parent_tolerance = self._prepare_tolerance_type(parent_tolerance, ParentTolerance)
+        self.fragment_tolerance = self._prepare_tolerance_type(fragment_tolerance, FragmentTolerance)
         self.threshold = threshold
         self.enzymes = enzymes
+        self.search_type = search_type
+        self.modification_params = self._prepare_search_modifications(modification_params)
+        self.filters = self._prepare_filters(filters)
+        self.additional_search_params = self.prepare_params(additional_search_params)
+        self._check_search_type()
+        self._check_additional_search_params()
+        self.mass_tables = [MassTable.ensure(table, context=context) for table in ensure_iterable(mass_tables)]
+        self.element = _element(
+            "SpectrumIdentificationProtocol", id=id,
+            analysisSoftware_ref=context['AnalysisSoftware'][analysis_software_id])
+        self.context["SpectrumIdentificationProtocol"][id] = self.element.id
+
+    def _prepare_tolerance_type(self, tolerance, tolerance_class):
+        if not isinstance(tolerance, tolerance_class):
+            if isinstance(tolerance, NumberBase):
+                tolerance = tolerance_class(tolerance)
+            elif isinstance(tolerance, (tuple, list)):
+                tolerance = tolerance_class(*tolerance)
+            elif tolerance is None:
+                pass
+            else:
+                raise ValueError("Cannot infer %r from %r" % (tolerance_class.__name__, tolerance,))
+        return tolerance
+
+    def _prepare_search_modifications(self, search_modifications):
         temp = []
-        for mod in ensure_iterable(modification_params):
+        for mod in ensure_iterable(search_modifications):
             if isinstance(mod, SearchModification):
                 temp.append(mod)
             else:
                 temp.append(
                     SearchModification(
-                        context=context, **mod))
-        modification_params = temp
-        self.modification_params = modification_params
-        self.additional_search_params = self.prepare_params(additional_search_params)
-        self.search_type = search_type
+                        context=self.context, **mod))
+        search_modifications = temp
+        return search_modifications
+
+    def _prepare_filters(self, filters):
         temp = []
         for filt in ensure_iterable(filters):
             if isinstance(filt, Filter):
                 temp.append(filt)
             else:
-                temp.append(Filter(context=context, **filt))
-        filters = temp
-        self.filters = filters
-        if mass_tables is None:
-            mass_tables = []
-        else:
-            mass_tables = [MassTable.ensure(table, context=context) for table in ensure_iterable(mass_tables)]
-        self.mass_tables = mass_tables
-        self.element = _element(
-            "SpectrumIdentificationProtocol", id=id,
-            analysisSoftware_ref=context['AnalysisSoftware'][analysis_software_id])
-        self.context["SpectrumIdentificationProtocol"][id] = self.element.id
+                temp.append(Filter(context=self.context, **filt))
+        return temp
+
+    def _check_search_type(self):
+        cv = self.context.get_vocabulary("PSI-MS")
+        search_types = cv['MS:1001080'].children
+        search_type_param = self.context.param(self.search_type)
+        search_type = cv[search_type_param.name]
+        if search_type not in search_types:
+            warnings.warn("Search Type {} is not recognized.".format(search_type.name))
+
+    def _check_additional_search_params(self):
+        special_processing_instructions = []
+        cv = self.context.get_vocabulary("PSI-MS")
+        special_processing_type_terms = cv['MS:1002489'].children
+        special_processing_types = {t.id for t in special_processing_type_terms}
+        for param in self.additional_search_params:
+            if param.accession in special_processing_types:
+                special_processing_instructions.append(param)
+        if not special_processing_instructions:
+            self.additional_search_params.insert(
+                0, self.context.param('no special processing'))
 
     def write(self, xml_file):
         with self.element(xml_file, with_id=True):

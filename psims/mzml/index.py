@@ -157,7 +157,7 @@ class MzMLIndexer(HashingFileBuffer):
         return super(MzMLIndexer, self).write(data)
 
     def write_opening(self):
-        header = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+        header = (b'<?xml version=\'1.0\' encoding=\'utf-8\'?>\n'
                   b'<indexedmzML xmlns="http://psi.hupo.org/ms/mzml" '
                   b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
                   b' xsi:schemaLocation="http://psi.hupo.org/ms/mzml '

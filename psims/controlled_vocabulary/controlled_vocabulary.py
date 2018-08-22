@@ -68,25 +68,15 @@ class ControlledVocabulary(object):
             metadata = dict()
         self.version = version
         self.name = name
+        self._terms = dict()
         self.terms = terms
-        for term in terms.values():
-            term.vocabulary = self
-        self._names = {
-            v['name']: v for v in terms.values()
-        }
-        self._normalized = {
-            v['name'].lower(): v['name']
-            for v in terms.values()
-        }
-        self._synonyms = {}
-        for term in terms.values():
-            if term.get('synonym'):
-                for synonym in term.get('synonym'):
-                    self._synonyms[synonym.lower()] = term
         self.id = id
         self.metadata = metadata
 
     def __getitem__(self, key):
+        return self.query(key)
+
+    def query(self, key):
         try:
             return self.terms[key]
         except KeyError as e:
@@ -108,6 +98,43 @@ class ControlledVocabulary(object):
 
     def __iter__(self):
         return iter(self.terms)
+
+    @property
+    def terms(self):
+        return self._terms
+
+    @terms.setter
+    def terms(self, value):
+        self._terms = dict(value or {})
+        self._reindex()
+
+    def _reindex(self):
+        self._bind_terms()
+        self._build_names()
+        self._build_case_normalized()
+        self._build_synonyms()
+
+    def _build_names(self):
+        self._names = {
+            v['name']: v for v in self.terms.values()
+        }
+
+    def _bind_terms(self):
+        for term in self.terms.values():
+            term.vocabulary = self
+
+    def _build_synonyms(self):
+        self._synonyms = {}
+        for term in self.terms.values():
+            if term.get('synonym'):
+                for synonym in term.get('synonym'):
+                    self._synonyms[synonym.lower()] = term
+
+    def _build_case_normalized(self):
+        self._normalized = {
+            v['name'].lower(): v['name']
+            for v in self.terms.values()
+        }
 
     def keys(self):
         return self.terms.keys()

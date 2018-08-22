@@ -23,8 +23,8 @@ def output_path(request):
     def fin():
         try:
             os.remove(path)
-        except OSError:
-            pass
+        except OSError as e:
+            print(e)
     request.addfinalizer(fin)
     return path
 

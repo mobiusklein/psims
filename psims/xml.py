@@ -420,9 +420,10 @@ class CV(object):
         return cv
 
     def __getitem__(self, key):
-        if self._vocabulary is None:
-            self._vocabulary = self.load()
-        return self._vocabulary[key]
+        return self.vocabulary[key]
+
+    def query(self, *args, **kwargs):
+        return self.vocabulary.query(*args, **kwargs)
 
 
 class ProvidedCV(CV):
@@ -439,9 +440,10 @@ class ProvidedCV(CV):
         return cv
 
     def __getitem__(self, key):
-        if self._vocabulary is None:
-            self._vocabulary = self.load()
-        return self.converter(self._vocabulary[key])
+        return self.converter(super(ProvidedCV, self).__getitem__(key))
+
+    def query(self, *args, **kwargs):
+        return self.convert(super(ProvidedCV, self).query(*args, **kwargs))
 
 
 class XMLWriterMixin(object):

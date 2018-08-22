@@ -84,7 +84,10 @@ def test_write(output_path, compressor):
     assert mods[0]['fixedMod']
     assert not mods[1]['fixedMod']
     assert "unknown modification" in mods[1]
-    reader.close()
     is_valid, schema = f.validate()
     assert is_valid, schema.error_log
+    reset()
+    line = reader.readline()
+    assert line.startswith(b"""<?xml version='1.0' encoding='utf-8'?>""")
+    # reader.close()
     return f

@@ -775,6 +775,12 @@ class Unimod(object):
 
     __getitem__ = get
 
+    def infer(self, mass, amino_acid, mass_error=1e-6):
+        candidates = self.session.query(Modification).filter(
+            Modification.monoisotopic_mass.between(mass - mass_error, mass + mass_error)
+        ).join(Modification.specificities).filter(Specificity.amino_acid == amino_acid).all()
+        return candidates
+
     @property
     def mods(self):
         return self.session.query(Modification).all()

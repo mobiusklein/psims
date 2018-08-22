@@ -204,4 +204,7 @@ def test_write(output_path, compressor):
     assert 'index="0"' in content
     is_valid, schema = f.validate()
     assert is_valid, schema.error_log
+    reset()
+    line = reader.readline()
+    assert line.startswith(b"""<?xml version='1.0' encoding='utf-8'?>""")
     return f
