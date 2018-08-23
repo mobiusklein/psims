@@ -354,6 +354,7 @@ class ComponentBase(object):
     """
     is_open = False
     _entering = None
+    requires_id = True
 
     def __init__(self, *args, **kwargs):
         pass
@@ -369,17 +370,25 @@ class ComponentBase(object):
             raise AttributeError(key)
 
     def write(self, xml_file):
+        with self.begin(xml_file):
+            pass
+
+    def write_content(self, xml_file):
         raise NotImplementedError()
 
     @contextmanager
-    def begin(self, xml_file=None, with_id=True):
+    def begin(self, xml_file=None, with_id=None):
+        if with_id is None:
+            with_id = self.requires_id
         if xml_file is None:
             xml_file = getattr(self, "xml_file", None)
             if xml_file is None:
                 raise ValueError("xml_file must be provided if this component is not bound!")
-        self._entering = self.element(xml_file, with_id=with_id).__enter__()
         self.is_open = True
-        yield
+        with self.element.begin(xml_file, with_id=with_id):
+            self.write_content(xml_file)
+            yield
+        self.is_open = False
 
     def __call__(self, xml_file):
         self.write(xml_file)
