@@ -452,6 +452,8 @@ class ParameterContainer(ComponentBase):
     params : list
         The list of parameters to include
     """
+    requires_id = False
+
     def __init__(self, tag_name, params=None, element_args=None, context=NullMap, **kwargs):
         if element_args is None:
             element_args = dict()
@@ -461,14 +463,9 @@ class ParameterContainer(ComponentBase):
         self.context = context
         self.element = _element(tag_name, **element_args)
 
-    def write(self, xml_file):
-        with self.element(xml_file, with_id=False):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+    def write_content(self, xml_file):
+        self.write_params(xml_file)
 
 
 class IDParameterContainer(ParameterContainer):
-    def write(self, xml_file):
-        with self.element(xml_file, with_id=True):
-            for param in self.params:
-                self.context.param(param)(xml_file)
+    requires_id = True
