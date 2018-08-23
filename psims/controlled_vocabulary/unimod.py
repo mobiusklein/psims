@@ -737,7 +737,10 @@ class Unimod(object):
     def get(self, identifier, strict=True):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-            if isinstance(identifier, int):
+            is_explicit_accession = isinstance(identifier, basestring) and identifier.startswith("UNIMOD")
+            if isinstance(identifier, int) or is_explicit_accession:
+                if is_explicit_accession:
+                    identifier = int(identifier.replace("UNIMOD:", 1))
                 mod = self.session.query(Modification).get(identifier)
                 if mod is None:
                     raise KeyError(identifier)
