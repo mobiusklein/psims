@@ -1,9 +1,8 @@
 import re
 
 
-class Relationship(object):
-    def __init__(self, predicate, accession, comment=None):
-        self.predicate = predicate
+class SemanticEdge(object):
+    def __init__(self, accession, comment=None):
         self.accession = accession
         self.comment = comment
 
@@ -14,13 +13,33 @@ class Relationship(object):
             return self.accession == other
 
     def __ne__(self, other):
-        return not (self.accession == other.accession)
+        return not (self == other)
 
     def __repr__(self):
-        return "%s ! %s" % (self.accession, self.comment)
+        return "Reference(%r, %r)" % (self.accession, self.comment)
 
     def __hash__(self):
         return hash(self.accession)
+
+
+class Reference(SemanticEdge):
+    @classmethod
+    def fromstring(cls, string):
+        try:
+            accession, comment = map(lambda s: s.strip(), string.split("!"))
+            return cls(accession, comment)
+        except Exception:
+            return cls(string)
+
+
+class Relationship(SemanticEdge):
+    def __init__(self, predicate, accession, comment=None):
+        self.predicate = predicate
+        self.accession = accession
+        self.comment = comment
+
+    def __repr__(self):
+        return "%s ! %s" % (self.accession, self.comment)
 
     @classmethod
     def fromstring(cls, string):
