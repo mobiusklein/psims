@@ -9,8 +9,7 @@ from .obo import (
     OBOParser)
 
 from .entity import Entity
-from .reference import Reference
-from .relationship import Relationship
+from .relationship import Relationship, Reference
 
 
 __all__ = [

@@ -3,6 +3,13 @@ import zlib
 
 import numpy as np
 
+import six
+
+if six.PY2:
+    decode_base64 = base64.decodestring
+else:
+    decode_base64 = base64.decodebytes
+
 
 COMPRESSION_NONE = 'none'
 COMPRESSION_ZLIB = 'zlib'
@@ -69,7 +76,7 @@ def decode_array(bytestring, compression=COMPRESSION_NONE, dtype=np.float32):
         decoded_string = bytestring.encode("ascii")
     except AttributeError:
         decoded_string = bytestring
-    decoded_string = base64.decodestring(decoded_string)
+    decoded_string = decode_base64(decoded_string)
     if compression == COMPRESSION_NONE:
         decoded_string = decoded_string
     elif compression == COMPRESSION_ZLIB:

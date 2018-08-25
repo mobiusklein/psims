@@ -1,17 +1,15 @@
 
 import warnings
-from datetime import datetime
 try:
     from collections import Mapping, Iterable
 except ImportError:
     from collections.abc import Mapping, Iterable
 from numbers import Number
-import numpy as np
 from ..xml import _element, element, TagBase, CV
 from ..document import (
     ComponentBase as _ComponentBase,
     DocumentContext,
-    ComponentDispatcherBase,
+    XMLBindingDispatcherBase,
     ParameterContainer,
     IDParameterContainer)
 from .binary_encoding import dtype_to_encoding, compression_map, encode_array
@@ -33,7 +31,7 @@ _COMPONENT_NAMESPACE = 'mzml'
 _xmlns = 'http://psidev.info/psi/pi/mzML/1.1'
 
 
-class ComponentDispatcher(ComponentDispatcherBase):
+class ComponentDispatcher(XMLBindingDispatcherBase):
 
     def __init__(self, *args, **kwargs):
         super(
@@ -86,10 +84,11 @@ class GenericCollection(ComponentBase):
 class IDGenericCollection(GenericCollection):
 
     def __init__(self, tag_name, members, id, context=NullMap):
+        self.context = context
         self.members = members
         self.tag_name = tag_name
         self.element = _element(tag_name, id=id, count=len(self.members))
-        context[tag_name][id] = self.element.id
+        self.context[tag_name][id] = self.element.id
 
     def write_content(self, xml_file):
         for member in self.members:
@@ -263,28 +262,68 @@ class ScanSettingsList(GenericCollection):
 class ScanSettings(ComponentBase):
     requires_id = True
 
-    def __init__(self, id=None, source_file_references=None,
-                 target_list=None, params=None, context=NullMap):
-        if (source_file_references is None):
-            source_file_references = []
-        if (target_list is None):
+    def __init__(self, id=None, source_file_references=None, target_list=None, params=None, context=NullMap, **kwargs):
+        if target_list is None:
             target_list = []
-        if (params is None):
-            params = []
-        self.params = params
+        if not isinstance(target_list, TargetList):
+            target_list = TargetList(ensure_iterable(target_list), context=context)
+        self.context = context
+        self.params = self.prepare_params(params, **kwargs)
         self.source_file_references = source_file_references
         self.target_list = target_list
         self.element = _element('scanSettings', id=id)
-        self.id = self.element.id
-        self.context = context
-        context['ScanSettings'][id] = self.id
+        self.context['ScanSettings'][id] = self.element.id
+
+    def _prepare_source_file_reference(self):
+        temp = []
+        for ref in ensure_iterable(self.source_file_references):
+            if isinstance(ref, Mapping):
+                temp.append(SourceFileRef.ensure(ref, context=self.context))
+            elif isinstance(ref, SourceFileRef):
+                temp.append(ref)
+            else:
+                temp.append(SourceFileRef(ref, context=self.context))
+        self.source_file_references = temp
 
     def write_content(self, xml_file):
-        source_refs = GenericCollection('sourceFileRefList', [_element(
-            'sourceFileRef', ref=i) for i in self.source_file_references])
-        if len(source_refs):
-            source_refs.write(xml_file)
+        source_refs = self.source_file_references
+        if len(source_refs) > 0:
+            with xml_file.element("sourceFileRefList", count=len(source_refs)):
+                for ref in source_refs:
+                    xml_file.write(ref.element())
+        if self.target_list:
+            self.target_list.write(xml_file)
         self.write_params(xml_file)
+
+
+class SourceFileRef(ComponentBase):
+    requires_id = False
+
+    def __init__(self, source_file_id, context=NullMap):
+        self.source_file_id = source_file_id
+        self.context = context
+        self.ref = self.context['SourceFile'][self.source_file_id]
+        self.element = _element("sourceFileRef", ref=self.ref)
+
+    def write_content(self, xml_file):
+        pass
+
+
+class Target(ParameterContainer):
+    requires_id = False
+
+    def __init__(self, params, context=NullMap, **kwargs):
+        if (params is None):
+            params = []
+        params = self.prepare_params(params, **kwargs)
+        super(Target, self).__init__('target', params, context=context)
+
+
+class TargetList(GenericCollection):
+    def __init__(self, members, context=NullMap):
+        members = [Target.ensure(t, context=context) for t in members]
+        super(TargetList, self).__init__(
+            'targetList', members, context)
 
 
 class InstrumentConfigurationList(GenericCollection):
@@ -439,9 +478,9 @@ class ProcessingMethod(ParameterContainer):
         self.params = params
         self.context = context
 
-    def write(self, xml_file):
-        with self.element.element(xml_file, with_id=False):
-            self.write_params(xml_file)
+    # def write(self, xml_file):
+    #     with self.element.element(xml_file, with_id=False):
+    #         self.write_params(xml_file)
 
 
 class SpectrumList(ComponentBase):
@@ -582,7 +621,7 @@ class BinaryDataArray(ComponentBase):
     requires_id = False
 
     def __init__(self, binary, encoded_length, data_processing_reference=None,
-                 array_length=None, params=None, context=NullMap):
+                 array_length=None, params=None, context=NullMap, **kwargs):
         if (params is None):
             params = []
         self.encoded_length = encoded_length
@@ -590,7 +629,7 @@ class BinaryDataArray(ComponentBase):
         self._data_processing_reference = context[
             'DataProcessing'][data_processing_reference]
         self.array_length = array_length
-        self.params = params
+        self.params = self.prepare_params(params, **kwargs)
         self.binary = binary
         self.element = _element(
             'binaryDataArray',
@@ -598,6 +637,29 @@ class BinaryDataArray(ComponentBase):
             encodedLength=encoded_length,
             dataProcessingRef=self._data_processing_reference)
         self.context = context
+        self._array_type = None
+
+    def _find_array_type(self):
+        for param in self.params:
+            param = self.context.param(param)
+            if param.accession is None:
+                continue
+            try:
+                term = self.context.term(param.accession)
+            except KeyError:
+                continue
+            if term.is_of_type('MS:1000513'):
+                return term
+
+    @property
+    def array_type(self):
+        if self._array_type is None:
+            self._array_type = self._find_array_type()
+        return self._array_type
+
+    @array_type.setter
+    def array_type(self, value):
+        self._array_type = value
 
     def write_content(self, xml_file):
         self.write_params(xml_file)
@@ -858,7 +920,8 @@ class SelectedIon(ComponentBase):
     requires_id = False
 
     def __init__(self, selected_ion_mz, intensity=None,
-                 charge=None, params=None, context=NullMap):
+                 charge=None, params=None,
+                 intensity_unit='number of detector counts', context=NullMap):
         if (params is None):
             params = []
         self.selected_ion_mz = selected_ion_mz
@@ -867,16 +930,19 @@ class SelectedIon(ComponentBase):
         self.params = params
         self.element = _element('selectedIon')
         self.context = context
+        self.intensity_unit = intensity_unit
 
     def write_content(self, xml_file):
         if (self.selected_ion_mz is not None):
             self.context.param(
                 name='selected ion m/z',
-                value=self.selected_ion_mz)(xml_file)
+                value=self.selected_ion_mz,
+                unit_name='m/z')(xml_file)
         if (self.intensity is not None):
             self.context.param(
                 name='peak intensity',
-                value=self.intensity)(xml_file)
+                value=self.intensity,
+                unit_name=self.intensity_unit)(xml_file)
         if (self.charge is not None):
             if isinstance(self.charge, Number):
                 self.context.param(
@@ -1002,7 +1068,3 @@ class Organization(ComponentBase):
 
     def write_content(self, xml_file):
         xml_file.write(self.element.element())
-
-
-DEFAULT_PERSON = Person()
-DEFAULT_ORGANIZATION = Organization()

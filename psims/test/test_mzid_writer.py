@@ -57,7 +57,9 @@ def test_write(output_path, compressor):
                 with f.protein_detection_list(id=protein_detect_list['id'], count=len(
                         protein_detect_list['protein_ambiguity_groups'])):
                     for pag in protein_detect_list['protein_ambiguity_groups']:
-                        f.write_protein_ambiguity_group(**pag)
+                        a = f.protein_ambiguity_group(**pag)
+                        with a:
+                            pass
 
     try:
         f.format()
@@ -92,5 +94,5 @@ def test_write(output_path, compressor):
     reset()
     line = reader.readline()
     assert line.startswith(b"""<?xml version='1.0' encoding='utf-8'?>""")
-    # reader.close()
+    reader.close()
     return f

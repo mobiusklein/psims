@@ -1,3 +1,4 @@
+from collections import deque
 try:
     from collections import Mapping
 except ImportError:
@@ -46,6 +47,9 @@ class Entity(Mapping):
     def items(self):
         return self.data.items()
 
+    def setdefault(self, key, value):
+        self.data.setdefault(key, value)
+
     @property
     def definition(self):
         return self.data.get("def", '')
@@ -63,3 +67,13 @@ class Entity(Mapping):
     def __repr__(self):
         template = 'Entity({self.id!r}, {self.name!r}, {self.definition!r})'
         return template.format(self=self)
+
+    def is_of_type(self, tp):
+        tp = self.vocabulary[tp]
+        stack = deque([self])
+        while stack:
+            ref = stack.popright()
+            if ref == tp:
+                return True
+            stack.extend(ref.parent())
+        return False

@@ -13,13 +13,12 @@ import numpy as np
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
 from psims import compression
 
-from . import components
 from .components import (
     ComponentDispatcher, element,
     default_cv_list, MzML, InstrumentConfiguration)
 
 from .binary_encoding import (
-    encode_array, COMPRESSION_NONE, COMPRESSION_ZLIB,
+    encode_array, COMPRESSION_ZLIB,
     encoding_map, compression_map, dtype_to_encoding)
 
 from .utils import ensure_iterable
@@ -29,8 +28,10 @@ from .index import MzMLIndexer
 
 MZ_ARRAY = 'm/z array'
 INTENSITY_ARRAY = 'intensity array'
+DEFAULT_INTENSITY_UNIT = "number of detector counts"
 CHARGE_ARRAY = 'charge array'
 TIME_ARRAY = "time array"
+DEFAULT_TIME_UNIT = "minute"
 NON_STANDARD_ARRAY = 'non-standard data array'
 
 ARRAY_TYPES = [
@@ -156,11 +157,17 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     """
     toplevel_tag = MzML
 
-    def __init__(self, outfile, close=False, vocabularies=None, **kwargs):
+    DEFAULT_TIME_UNIT = DEFAULT_TIME_UNIT
+    DEFAULT_INTENSITY_UNIT = DEFAULT_INTENSITY_UNIT
+
+    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False, **kwargs):
         if vocabularies is None:
             vocabularies = []
         vocabularies = list(default_cv_list) + list(vocabularies)
-        ComponentDispatcher.__init__(self, vocabularies=vocabularies)
+        ComponentDispatcher.__init__(
+            self,
+            vocabularies=vocabularies,
+            missing_reference_is_error=missing_reference_is_error)
         XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
         self.spectrum_count = 0
         self.chromatogram_count = 0
@@ -172,7 +179,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             software_list = [self.Software.ensure(sw) for sw in ensure_iterable(software_list)]
         self.SoftwareList(software_list).write(self)
 
-    def file_description(self, file_contents=None, source_files=None, params=None):
+    def file_description(self, file_contents=None, source_files=None, contacts=None):
         """Writes the `<fileDescription>` section of the document using the
         provided parameters.
 
@@ -190,7 +197,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A list or other iterable of dict or :class:`.SourceFile`-like objects
             to be placed in the `<sourceFileList>` element
         """
-        fd = self.FileDescription(file_contents, [self.SourceFile(**sf) for sf in ensure_iterable(source_files)])
+        fd = self.FileDescription(
+            file_contents, [self.SourceFile.ensure(sf) for sf in ensure_iterable(source_files)],
+            contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
         fd.write(self.writer)
 
     def instrument_configuration_list(self, instrument_configurations=None):
@@ -288,11 +297,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             self.writer, self.context, count=count,
             data_processing_method=data_processing_method)
 
-    def write_spectrum(self, mz_array=None, intensity_array=None, charge_array=None, id=None,
-                       polarity='positive scan', centroided=True, precursor_information=None,
-                       scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
-                       encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
-                       instrument_configuration_id=None):
+    def spectrum(self, mz_array=None, intensity_array=None, charge_array=None, id=None,
+                 polarity='positive scan', centroided=True, precursor_information=None,
+                 scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
+                 encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
+                 instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
         if encoding is None:
             {MZ_ARRAY: np.float64}
         if params is None:
@@ -351,7 +360,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         if intensity_array is not None:
             intensity_array_tag = self._prepare_array(
                 intensity_array, encoding=encoding[INTENSITY_ARRAY], compression=compression,
-                array_type=INTENSITY_ARRAY)
+                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit})
             array_list.append(intensity_array_tag)
 
         if charge_array is not None:
@@ -369,8 +378,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         array_list_tag = self.BinaryDataArrayList(array_list)
 
         if precursor_information is not None:
-            precursor_list = self._prepare_precursor_information(
-                **precursor_information)
+            precursor_list = self._prepare_precursor_list(
+                precursor_information, intensity_unit=intensity_unit)
         else:
             precursor_list = None
 
@@ -378,7 +387,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             if isinstance(scan_start_time, numbers.Number):
                 scan_params.append({"name": "scan start time",
                                     "value": scan_start_time,
-                                    "unitName": 'minute'})
+                                    "unitName": DEFAULT_TIME_UNIT})
             else:
                 scan_params.append(scan_start_time)
         if self.default_instrument_configuration == instrument_configuration_id:
@@ -393,12 +402,28 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             index, array_list_tag, scan_list=scan_list, params=params, id=id,
             default_array_length=default_array_length,
             precursor_list=precursor_list)
+        return spectrum
+
+    def write_spectrum(self, mz_array=None, intensity_array=None, charge_array=None, id=None,
+                       polarity='positive scan', centroided=True, precursor_information=None,
+                       scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
+                       encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
+                       instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+        spectrum = self.spectrum(
+            mz_array=mz_array, intensity_array=intensity_array, charge_array=charge_array,
+            id=id, polarity=polarity, centroided=centroided, precursor_information=precursor_information,
+            scan_start_time=scan_start_time, params=params, compression=compression,
+            encoding=encoding, other_arrays=other_arrays, scan_params=scan_params,
+            scan_window_list=scan_window_list,
+            instrument_configuration_id=instrument_configuration_id,
+            intensity_unit=intensity_unit)
         spectrum.write(self.writer)
 
-    def write_chromatogram(self, time_array, intensity_array, id=None,
-                           chromatogram_type="selected ion current",
-                           precursor_information=None, params=None,
-                           compression=COMPRESSION_ZLIB, encoding=32, other_arrays=None):
+    def chromatogram(self, time_array, intensity_array, id=None,
+                     chromatogram_type="selected ion current",
+                     precursor_information=None, params=None,
+                     compression=COMPRESSION_ZLIB, encoding=32, other_arrays=None,
+                     intensity_unit=DEFAULT_INTENSITY_UNIT, time_unit=DEFAULT_TIME_UNIT):
         if params is None:
             params = []
         else:
@@ -416,7 +441,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         array_list = []
 
         if precursor_information is not None:
-            precursor = self._prepare_precursor_information(**precursor_information)[0]
+            precursor = self._prepare_precursor_list(
+                precursor_information, intensity_unit=intensity_unit)[0]
         else:
             precursor = None
 
@@ -424,13 +450,13 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         if time_array is not None:
             time_array_tag = self._prepare_array(
                 time_array, encoding=encoding[TIME_ARRAY], compression=compression,
-                array_type=TIME_ARRAY)
+                array_type={"name": TIME_ARRAY, "unit_name": time_unit})
             array_list.append(time_array_tag)
 
         if intensity_array is not None:
             intensity_array_tag = self._prepare_array(
                 intensity_array, encoding=encoding[INTENSITY_ARRAY], compression=compression,
-                array_type=INTENSITY_ARRAY)
+                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit})
             array_list.append(intensity_array_tag)
 
         for array_type, array in other_arrays:
@@ -447,6 +473,18 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             precursor=precursor,
             default_array_length=default_array_length,
             id=id, params=params)
+        return chromatogram
+
+    def write_chromatogram(self, time_array, intensity_array, id=None,
+                           chromatogram_type="selected ion current",
+                           precursor_information=None, params=None,
+                           compression=COMPRESSION_ZLIB, encoding=32, other_arrays=None,
+                           intensity_unit=DEFAULT_INTENSITY_UNIT, time_unit=DEFAULT_TIME_UNIT):
+        chromatogram = self.chromatogram(
+            time_array=time_array, intensity_array=intensity_array, id=id,
+            chromatogram_type=chromatogram_type, precursor_information=precursor_information,
+            params=params, compression=compression, encoding=encoding,
+            other_arrays=other_arrays, intensity_unit=intensity_unit, time_unit=time_unit)
         chromatogram.write(self.writer)
 
     def _prepare_array(self, array, encoding=32, compression=COMPRESSION_ZLIB,
@@ -477,8 +515,23 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             array_length=(len(array) if override_length else None),
             params=params)
 
+    def _prepare_precursor_list(self, precursors, intensity_unit=DEFAULT_INTENSITY_UNIT):
+        if isinstance(precursors, self.PrecursorList.type):
+            return precursors
+        elif isinstance(precursors, dict):
+            precursors = self.PrecursorList([self._prepare_precursor_information(
+                intensity_unit=intensity_unit, **precursors)])
+        else:
+            precursors = self.PrecursorList([
+                p if isinstance(p, self.Precursor.type)
+                else self._prepare_precursor_information(
+                    intensity_unit=intensity_unit, **p)
+                for p in ensure_iterable(precursors)])
+        return precursors
+
     def _prepare_precursor_information(self, mz, intensity, charge, scan_id, activation=None,
-                                       isolation_window_args=None, params=None):
+                                       isolation_window_args=None, params=None,
+                                       intensity_unit=DEFAULT_INTENSITY_UNIT):
         if params is None:
             params = []
         if activation is not None:
@@ -494,18 +547,13 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             activation=activation,
             isolation_window=isolation_window_tag,
             spectrum_reference=scan_id)
-        precursor_list = self.PrecursorList([precursor])
-        return precursor_list
+        return precursor
 
     def format(self, outfile=None, index=True, indexer=None):
         if indexer is None:
             indexer = MzMLIndexer
         if not index:
             return super(MzMLWriter, self).format(outfile=outfile)
-        # if self.outfile.closed:
-        #     fh = self.outfile.name
-        # else:
-        #     fh = self.outfile
         try:
             if self.outfile.isatty():
                 return

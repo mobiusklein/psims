@@ -71,7 +71,8 @@ class OBOParser(object):
                 relationships = [relationships]
             relationships = [Relationship.fromstring(r) for r in relationships]
             for rel in relationships:
-                entity[rel.predicate] = rel
+                entity.setdefault(rel.predicate, [])
+                entity[rel.predicate].append(rel)
         except KeyError:
             pass
         try:

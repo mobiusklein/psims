@@ -38,7 +38,6 @@ def test_multiple_parent_terms():
     assert len(term.parent()) > 1
 
 
-
 def test_cache_resolve_path():
     path = obo_cache.path_for(
         "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")

@@ -7,7 +7,8 @@ from .utils import add_metaclass, ensure_iterable, Mapping
 
 from .xml import (
     id_maker, CVParam, UserParam,
-    ParamGroupReference, _element)
+    ParamGroupReference, _element,
+    XMLWriterMixin)
 
 
 class ChildTrackingMeta(type):
@@ -27,11 +28,21 @@ class ChildTrackingMeta(type):
             return self._cache[None][name]
 
 
+class ReferentialIntegrityWarning(UserWarning):
+    pass
+
+
+class ReferentialIntegrityError(KeyError):
+    pass
+
+
 class SpecializedContextCache(OrderedDict):
-    def __init__(self, type_name):
+    def __init__(self, type_name, missing_reference_is_error=False):
         super(SpecializedContextCache, self).__init__()
         self.type_name = type_name
         self.bijection = dict()
+        self.preregistered = dict()
+        self.missing_reference_is_error = missing_reference_is_error
 
     def __getitem__(self, key):
         try:
@@ -40,12 +51,34 @@ class SpecializedContextCache(OrderedDict):
         except KeyError:
             if key is None:
                 return None
-            warnings.warn("No reference was found for %r in %s" % (key, self.type_name), stacklevel=3)
-            new_value = id_maker(self.type_name, key)
+            if self.missing_reference_is_error:
+                raise ReferentialIntegrityError(key)
+            else:
+                warnings.warn(
+                    "No reference was found for %r in %s" % (key, self.type_name),
+                    ReferentialIntegrityWarning,
+                    stacklevel=3)
+            if isinstance(key, int):
+                new_value = id_maker(self.type_name, key)
+            else:
+                new_value = key
             self[key] = new_value
             return new_value
 
+    def register(self, id):
+        if isinstance(id, int):
+            value = id_maker(self.type_name, id)
+        else:
+            value = str(id)
+        self[id] = value
+        self.preregistered[id] = value
+        return value
+
     def __setitem__(self, key, value):
+        if key in self and key not in self.preregistered:
+            warnings.warn(
+                "Overwriting existing value for %r with %r in store %s" % (
+                    key, value, self.type_name), ReferentialIntegrityWarning)
         super(SpecializedContextCache, self).__setitem__(key, value)
         self.bijection[value] = key
 
@@ -53,7 +86,14 @@ class SpecializedContextCache(OrderedDict):
         return '%s\n%s' % (self.type_name, dict.__repr__(self))
 
 
+class AmbiguousTermWarning(UserWarning):
+    pass
+
+
 class VocabularyResolver(object):
+    warn_on_ambiguous_missing_units = True
+    validate_units = True
+
     def __init__(self, vocabularies=None):
         self.vocabularies = vocabularies
 
@@ -127,15 +167,77 @@ class VocabularyResolver(object):
 
         if name is None:
             raise ValueError("Could not coerce parameter from %r, %r, %r" % (name, value, kwargs))
+        term = None
         if cv_ref is None:
+            query = accession if accession is not None else name
             for cv in self.vocabularies:
                 try:
-                    term = cv[name]
+                    term = cv[query]
                     name = term["name"]
                     accession = term["id"]
+                    if cv_ref is not None:
+                        raise ValueError(
+                            "Resolutions exist for the term denoted by %r, found in %s and %s" % (
+                                query, cv_ref, cv.id
+                            ))
                     cv_ref = cv.id
                 except KeyError:
-                    pass
+                    continue
+        if term is not None:
+            has_units = term.get("has_units", [])
+            if has_units:
+                if len(has_units) == 1:
+                    provided_unit_accession = kwargs.get("unit_accession")
+                    if provided_unit_accession is None:
+                        try:
+                            unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
+                            kwargs['unit_accession'] = unit_term.id
+                            kwargs['unit_name'] = unit_term.name
+                            kwargs['unit_cv_ref'] = unit_source.id
+                        except KeyError:
+                            pass
+                    elif self.validate_units:
+                        unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
+                        if (kwargs['unit_accession'] != unit_term.id or kwargs['unit_name'] != unit_term.name or
+                                kwargs['unit_cv_ref'] != unit_source.id):
+                            warnings.warn("Provided unit for %r does not match the permitted unit (%r, %r, %r)" % (
+                                name,
+                                (kwargs['unit_accession'], unit_term.id),
+                                (kwargs['unit_name'], unit_term.name),
+                                (kwargs['unit_cv_ref'], unit_source.id),
+                            ), stacklevel=3)
+                elif len(has_units) > 1:
+                    provided_unit_accession = kwargs.get("unit_accession")
+                    if provided_unit_accession is None:
+                        if self.warn_on_ambiguous_missing_units:
+                            warnings.warn(
+                                "Multiple unit options are possible for parameter %r but none were specified" % (
+                                    name),
+                                AmbiguousTermWarning,
+                                stacklevel=3
+                            )
+                        try:
+                            unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
+                            kwargs['unit_accession'] = unit_term.id
+                            kwargs['unit_name'] = unit_term.name
+                            kwargs['unit_cv_ref'] = unit_source.id
+                        except KeyError:
+                            pass
+                    elif self.validate_units:
+                        for t in has_units:
+                            unit_term, unit_source = self.term(t.accession, include_source=True)
+                            if (kwargs['unit_accession'] == unit_term.id and kwargs['unit_name'] == unit_term.name and
+                                    kwargs['unit_cv_ref'] == unit_source.id):
+                                break
+                        else:
+                            warnings.warn(
+                                "Provided unit for %r does not match any of the permitted units %r" % (
+                                    name,
+                                    ((kwargs['unit_accession'], kwargs['unit_name'], kwargs['unit_cv_ref']),
+                                     has_units)),
+                                stacklevel=3
+                            )
+
         if cv_ref is None:
             return UserParam(name=name, value=value, **kwargs)
         else:
@@ -177,9 +279,11 @@ class VocabularyResolver(object):
 
 
 class DocumentContext(dict, VocabularyResolver):
-    def __init__(self, vocabularies=None):
+
+    def __init__(self, vocabularies=None, missing_reference_is_error=False):
         dict.__init__(self)
         VocabularyResolver.__init__(self, vocabularies)
+        self.missing_reference_is_error = missing_reference_is_error
 
     def param_group_reference(self, id):
         # This is a inelegant, as ReferenceableParamGroup is not part document type
@@ -203,7 +307,8 @@ class DocumentContext(dict, VocabularyResolver):
         if not isinstance(key, str):
             if isinstance(key, (type, ReprBorrowingPartial)):
                 key = key.__name__
-        self[key] = SpecializedContextCache(key)
+        self[key] = SpecializedContextCache(
+            key, missing_reference_is_error=self.missing_reference_is_error)
         return self[key]
 
 
@@ -217,7 +322,6 @@ class ReprBorrowingPartial(partial):
     """
     def __init__(self, func, *args, **kwargs):
         self._func = func
-        # super(ReprBorrowingPartial, self).__init__(func, *args, **kwargs)
         update_wrapper(self, func)
 
     @property
@@ -239,6 +343,17 @@ class ReprBorrowingPartial(partial):
         return data
 
 
+class CallbackBindingPartial(ReprBorrowingPartial):
+
+    callback = None
+
+    def __call__(self, *args, **kwargs):
+        result = super(CallbackBindingPartial, self).__call__(*args, **kwargs)
+        if self.callback is not None:
+            self.callback(result)
+        return result
+
+
 class ComponentDispatcherBase(object):
     """
     A container for a :class:`DocumentContext` which provides
@@ -251,16 +366,31 @@ class ComponentDispatcherBase(object):
         The mapping responsible for managing the global
         state of all created components.
     """
-    def __init__(self, context=None, vocabularies=None, component_namespace=None):
+    _component_partial_type = CallbackBindingPartial
+
+    def __init__(self, context=None, vocabularies=None, component_namespace=None, missing_reference_is_error=False):
         if vocabularies is None:
             vocabularies = []
         if context is None:
-            context = DocumentContext(vocabularies=vocabularies)
+            context = DocumentContext(vocabularies=vocabularies, missing_reference_is_error=missing_reference_is_error)
         else:
             if vocabularies is not None:
                 context.vocabularies.extend(vocabularies)
         self.component_namespace = component_namespace
         self.context = context
+
+    def _prepare_bind_arguments(self):
+        return {'context': self.context}
+
+    def _post_constructor(self, component):
+        pass
+
+    def _dispatch_component(self, name):
+        component = ChildTrackingMeta.resolve_component(self.component_namespace, name)
+        tp = self._component_partial_type(component, **self._prepare_bind_arguments())
+        tp.context = self.context
+        tp.callback = self._post_constructor
+        return tp
 
     def __getattr__(self, name):
         """
@@ -279,9 +409,7 @@ class ComponentDispatcherBase(object):
             A partially parameterized instance constructor for
             the :class:`ComponentBase` type requested.
         """
-        component = ChildTrackingMeta.resolve_component(self.component_namespace, name)
-        tp = ReprBorrowingPartial(component, context=self.context)
-        tp.context = self.context
+        tp = self._dispatch_component(name)
         return tp
 
     def ensure_component(self, data, tp):
@@ -309,11 +437,7 @@ class ComponentDispatcherBase(object):
         str
             The constructed reference id
         """
-        if isinstance(id, int):
-            value = id_maker(entity_type, id)
-        else:
-            value = str(id)
-        self.context[entity_type][id] = value
+        value = self.context[entity_type].register(id)
         return value
 
     @property
@@ -335,6 +459,13 @@ class ComponentDispatcherBase(object):
     def get_vocabulary(self, *args, **kwargs):
         return self.context.get_vocabulary(*args, **kwargs)
 
+
+class XMLBindingDispatcherBase(ComponentDispatcherBase):
+
+    def _post_constructor(self, component):
+        component.writer = self.writer
+
+
 # ------------------------------------------
 # Base Component Definitions
 
@@ -352,9 +483,9 @@ class ComponentBase(object):
     Forwards any missing attribute requests to :attr:`element` for resolution
     against's the XML tag's attributes.
     """
-    is_open = False
-    _entering = None
+    _context_manager = None
     requires_id = True
+    writer = None
 
     def __init__(self, *args, **kwargs):
         pass
@@ -376,19 +507,43 @@ class ComponentBase(object):
     def write_content(self, xml_file):
         raise NotImplementedError()
 
+    def bind(self, writer):
+        if isinstance(writer, XMLWriterMixin):
+            writer = writer.writer
+        self.writer = writer
+        return self
+
+    def is_bound(self):
+        return self.writer is not None
+
     @contextmanager
     def begin(self, xml_file=None, with_id=None):
         if with_id is None:
             with_id = self.requires_id
         if xml_file is None:
-            xml_file = getattr(self, "xml_file", None)
+            xml_file = getattr(self, "writer", None)
             if xml_file is None:
-                raise ValueError("xml_file must be provided if this component is not bound!")
-        self.is_open = True
+                raise ValueError("xml_file must be provided if this component is not bound to a writer!")
         with self.element.begin(xml_file, with_id=with_id):
             self.write_content(xml_file)
             yield
-        self.is_open = False
+
+    def __enter__(self):
+        if not self.is_bound():
+            raise ValueError(
+                "A component not bound to an XMLWriter cannot be used as a context manager directly. "
+                "Call the `bind` method first with an ")
+        begun = self.begin()
+        self._context_manager = begun
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # because of the interactions of the @contextmanager decorator,
+        # the context manager will exit itself and does not need to be
+        # explicitly cleared here.
+        print(self._context_manager)
+        self._context_manager = None
+        pass
 
     def __call__(self, xml_file):
         self.write(xml_file)
@@ -437,6 +592,14 @@ class ComponentBase(object):
                 cv_params.append(param)
         for param in (references + cv_params + user_params):
             param(xml_file)
+
+    @classmethod
+    def ensure(cls, obj, **kwargs):
+        if isinstance(obj, cls):
+            return obj
+        else:
+            kwargs.update(obj)
+            return cls(**kwargs)
 
 
 class ParameterContainer(ComponentBase):

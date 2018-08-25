@@ -155,7 +155,7 @@ class TagBase(object):
         elif isinstance(_id, int):
             self._id_number = _id
             self._id_string = None
-        elif isinstance(_id, basestring):
+        else:
             self._id_number = None
             self._id_string = _id
         self.is_open = False

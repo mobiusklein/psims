@@ -12,7 +12,7 @@ from ..xml import (
     ProvidedCV, sanitize_id)
 from ..document import (
     ComponentBase as _ComponentBase, NullMap,
-    ComponentDispatcherBase, ParameterContainer)
+    XMLBindingDispatcherBase, ParameterContainer)
 from .utils import ensure_iterable
 from lxml import etree
 AUTO = object()
@@ -46,7 +46,7 @@ class MzIdentML(TagBase):
 _COMPONENT_NAMESPACE = 'mzid'
 
 
-class ComponentDispatcher(ComponentDispatcherBase):
+class ComponentDispatcher(XMLBindingDispatcherBase):
 
     def __init__(self, *args, **kwargs):
         super(ComponentDispatcher, self).__init__(
@@ -504,8 +504,10 @@ class Measure(ComponentBase):
 
     def write_content(self, xml_file):
         self.context.param(self.param)(xml_file)
-    common_measures = [('product ion %s' % s)
-                       for s in ('m/z', 'intensity', 'm/z error')]
+
+    common_measures = [({'name': 'product ion %s' % s, 'unit_name': u})
+                       for s, u in (('m/z', 'm/z'), ('intensity', 'number of detector counts'), (
+                                    'm/z error', 'm/z'))]
 
 
 class MassTable(ComponentBase):
@@ -1132,8 +1134,11 @@ class SpectrumIdentification(ComponentBase):
             x] for x in (spectra_data_ids_used or [])]
         self.search_database_ids_used = [context['SearchDatabase'][
             x] for x in (search_database_ids_used or [])]
-        self.element = _element('SpectrumIdentification', id=id, spectrumIdentificationList_ref=context['SpectrumIdentificationList'][
-                                spectrum_identification_list_id], spectrumIdentificationProtocol_ref=context['SpectrumIdentificationProtocol'][spectrum_identification_protocol_id])
+        self.element = _element(
+            'SpectrumIdentification', id=id,
+            spectrumIdentificationList_ref=context['SpectrumIdentificationList'][spectrum_identification_list_id],
+            spectrumIdentificationProtocol_ref=context['SpectrumIdentificationProtocol'][
+                spectrum_identification_protocol_id])
         self.context = context
         context['SpectrumIdentification'] = self.element.id
 
@@ -1156,8 +1161,11 @@ class ProteinDetection(ComponentBase):
         self.protein_detection_list_id = protein_detection_list_id
         self.protein_detection_protocol_id = protein_detection_protocol_id
         self.context = context
-        self.element = _element('ProteinDetection', id=id, proteinDetectionProtocol_ref=context['ProteinDetectionProtocol'][
-                                protein_detection_protocol_id], proteinDetectionList_ref=context['ProteinDetectionList'][protein_detection_list_id])
+        self.element = _element(
+            'ProteinDetection', id=id,
+            proteinDetectionProtocol_ref=context['ProteinDetectionProtocol'][
+                protein_detection_protocol_id],
+            proteinDetectionList_ref=context['ProteinDetectionList'][protein_detection_list_id])
 
     def write_content(self, xml_file):
         for sid in self.spectrum_identification_ids_used:
@@ -1283,20 +1291,15 @@ class Organization(ComponentBase):
             _element('Parent', organization_ref=self.parent).write(xml_file)
 
 
-DEFAULT_PERSON = Person()
-DEFAULT_ORGANIZATION = Organization()
-
-
 class AuditCollection(ComponentBase):
     requires_id = False
 
     def __init__(self, persons=None, organizations=None, context=NullMap):
-        if (persons is None):
-            persons = (DEFAULT_PERSON,)
-        if (organizations is None):
-            organizations = (DEFAULT_ORGANIZATION,)
-        self.persons = persons
-        self.organizations = organizations
+        self.context = context
+        self.persons = [
+            Person.ensure(p, context=context) for p in ensure_iterable(persons)]
+        self.organizations = [
+            Organization.ensure(o, context=context) for o in ensure_iterable(organizations)]
         self.element = _element("AuditCollection", xmlns=_xmlns)
 
     def write_content(self, xml_file):

@@ -330,14 +330,9 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     def write_spectrum_identification_result(self, spectrum_id, id, spectra_data_id=1,
                                              identifications=None, params=None, **kwargs):
-        el = self.SpectrumIdentificationResult(
-            spectra_data_id=spectra_data_id,
-            spectrum_id=spectrum_id,
-            id=id,
-            params=params,
-            identifications=(self.spectrum_identification_item(**(s or {}))
-                             if isinstance(s, Mapping) else self.SpectrumIdentificationItem.ensure(s)
-                             for s in ensure_iterable(identifications)), **kwargs)
+        el = self.spectrum_identification_result(
+            spectrum_id=spectrum_id, id=id, spectra_data_id=spectra_data_id,
+            identifications=identifications, params=params, **kwargs)
         el.write(self.writer)
 
     def spectrum_identification_result(self, spectrum_id, id, spectra_data_id=1, identifications=None,
@@ -363,6 +358,20 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ion_types=ion_types, calculated_mass_to_charge=calculated_mass_to_charge,
             params=ensure_iterable(params), pass_threshold=pass_threshold, rank=rank,
             **kwargs)
+
+    def write_spectrum_identification_item(self, experimental_mass_to_charge,
+                                           charge_state, peptide_id, peptide_evidence_id, score, id,
+                                           calculated_mass_to_charge=None, calculated_pi=None,
+                                           ion_types=None, params=None, pass_threshold=True, rank=1,
+                                           **kwargs):
+        item = self.SpectrumIdentificationItem(
+            experimental_mass_to_charge=experimental_mass_to_charge,
+            charge_state=charge_state, peptide_id=peptide_id,
+            peptide_evidence_ids=peptide_evidence_id, score=score, id=id,
+            ion_types=ion_types, calculated_mass_to_charge=calculated_mass_to_charge,
+            params=ensure_iterable(params), pass_threshold=pass_threshold, rank=rank,
+            **kwargs)
+        item.write(self.writer)
 
     def protein_detection_list(self, id, count=None, params=None, **kwargs):
         return ProteinDetectionListSection(
@@ -395,8 +404,20 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             pass_threshold=pass_threshold, name=name, params=params, **kwargs)
         return el
 
+    def write_protein_detection_hypothesis(self, db_sequence_id, id, peptide_hypotheses,
+                                           pass_threshold=True, name=None, params=None, **kwargs):
+        el = self.protein_detection_hypothesis(
+            db_sequence_id, id, peptide_hypotheses,
+            pass_threshold, name, params, **kwargs)
+        el.write(self.writer)
+
     def peptide_hypothesis(self, peptide_evidence_id, spectrum_identification_ids, params=None,
                            **kwargs):
         el = self.PeptideHypothesis(
             peptide_evidence_id, spectrum_identification_ids, params=params, **kwargs)
         return el
+
+    def write_peptide_hypothesis(self, peptide_evidence_id, spectrum_identification_ids, params=None, **kwargs):
+        el = self.peptide_hypothesis(
+            peptide_evidence_id, spectrum_identification_ids, params, **kwargs)
+        el.write(self.writer)
