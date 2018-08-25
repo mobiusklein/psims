@@ -552,9 +552,7 @@ class ComponentBase(object):
         # because of the interactions of the @contextmanager decorator,
         # the context manager will exit itself and does not need to be
         # explicitly cleared here.
-        print(self._context_manager)
         self._context_manager = None
-        pass
 
     def __call__(self, xml_file):
         self.write(xml_file)
