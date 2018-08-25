@@ -147,9 +147,45 @@ class VocabularyResolver(object):
                     kwargs.setdefault("unit_accession", unit_accession)
                 if unit_cv_ref is not None:
                     kwargs.setdefault("unit_cv_ref", unit_cv_ref)
-        unit_name = kwargs.get("unit_name")
-        unit_accession = kwargs.get("unit_accession")
-        unit_ref = kwargs.get('unit_cv_ref')
+
+        self._resolve_units(kwargs)
+        if name is None:
+            raise ValueError("Could not coerce parameter from %r, %r, %r" % (name, value, kwargs))
+        term = None
+        if cv_ref is None:
+            query = accession if accession is not None else name
+            cv_ref, name, accession = self._resolve_cv_ref(query, name, accession)
+        if term is not None:
+            self._validate_units(term, kwargs, name)
+
+        if cv_ref is None:
+            return UserParam(name=name, value=value, **kwargs)
+        else:
+            kwargs.setdefault("ref", cv_ref)
+            kwargs.setdefault("accession", accession)
+            return CVParam(name=name, value=value, **kwargs)
+
+    def _resolve_cv_ref(self, query, name, accession):
+        cv_ref = None
+        for cv in self.vocabularies:
+            try:
+                term = cv[query]
+                name = term["name"]
+                accession = term["id"]
+                if cv_ref is not None:
+                    raise ValueError(
+                        "Resolutions exist for the term denoted by %r, found in %s and %s" % (
+                            query, cv_ref, cv.id
+                        ))
+                cv_ref = cv.id
+            except KeyError:
+                continue
+        return cv_ref, name, accession
+
+    def _resolve_units(self, state):
+        unit_name = state.get("unit_name")
+        unit_accession = state.get("unit_accession")
+        unit_ref = state.get('unit_cv_ref')
         if unit_name is not None or unit_accession is not None:
             if unit_accession is not None:
                 unit_term, source = self.term(unit_accession, include_source=True)
@@ -161,89 +197,64 @@ class VocabularyResolver(object):
                 unit_name = unit_term.name
                 unit_accession = unit_term.id
                 unit_ref = source.id
-            kwargs['unit_name'] = unit_name
-            kwargs['unit_accession'] = unit_accession
-            kwargs['unit_cv_ref'] = unit_ref
+            state['unit_name'] = unit_name
+            state['unit_accession'] = unit_accession
+            state['unit_cv_ref'] = unit_ref
 
-        if name is None:
-            raise ValueError("Could not coerce parameter from %r, %r, %r" % (name, value, kwargs))
-        term = None
-        if cv_ref is None:
-            query = accession if accession is not None else name
-            for cv in self.vocabularies:
-                try:
-                    term = cv[query]
-                    name = term["name"]
-                    accession = term["id"]
-                    if cv_ref is not None:
-                        raise ValueError(
-                            "Resolutions exist for the term denoted by %r, found in %s and %s" % (
-                                query, cv_ref, cv.id
-                            ))
-                    cv_ref = cv.id
-                except KeyError:
-                    continue
-        if term is not None:
-            has_units = term.get("has_units", [])
-            if has_units:
-                if len(has_units) == 1:
-                    provided_unit_accession = kwargs.get("unit_accession")
-                    if provided_unit_accession is None:
-                        try:
-                            unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
-                            kwargs['unit_accession'] = unit_term.id
-                            kwargs['unit_name'] = unit_term.name
-                            kwargs['unit_cv_ref'] = unit_source.id
-                        except KeyError:
-                            pass
-                    elif self.validate_units:
+    def _validate_units(self, term, state, name):
+        has_units = term.get("has_units", [])
+        if has_units:
+            if len(has_units) == 1:
+                provided_unit_accession = state.get("unit_accession")
+                if provided_unit_accession is None:
+                    try:
                         unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
-                        if (kwargs['unit_accession'] != unit_term.id or kwargs['unit_name'] != unit_term.name or
-                                kwargs['unit_cv_ref'] != unit_source.id):
-                            warnings.warn("Provided unit for %r does not match the permitted unit (%r, %r, %r)" % (
+                        state['unit_accession'] = unit_term.id
+                        state['unit_name'] = unit_term.name
+                        state['unit_cv_ref'] = unit_source.id
+                    except KeyError:
+                        pass
+                elif self.validate_units:
+                    unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
+                    if (state['unit_accession'] != unit_term.id or state['unit_name'] != unit_term.name or
+                            state['unit_cv_ref'] != unit_source.id):
+                        warnings.warn("Provided unit for %r does not match the permitted unit (%r, %r, %r)" % (
+                            name,
+                            (state['unit_accession'], unit_term.id),
+                            (state['unit_name'], unit_term.name),
+                            (state['unit_cv_ref'], unit_source.id),
+                        ), stacklevel=4)
+            elif len(has_units) > 1:
+                provided_unit_accession = state.get("unit_accession")
+                if provided_unit_accession is None:
+                    if self.warn_on_ambiguous_missing_units:
+                        warnings.warn(
+                            "Multiple unit options are possible for parameter %r but none were specified" % (
+                                name),
+                            AmbiguousTermWarning,
+                            stacklevel=4
+                        )
+                    try:
+                        unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
+                        state['unit_accession'] = unit_term.id
+                        state['unit_name'] = unit_term.name
+                        state['unit_cv_ref'] = unit_source.id
+                    except KeyError:
+                        pass
+                elif self.validate_units:
+                    for t in has_units:
+                        unit_term, unit_source = self.term(t.accession, include_source=True)
+                        if (state['unit_accession'] == unit_term.id and state['unit_name'] == unit_term.name and
+                                state['unit_cv_ref'] == unit_source.id):
+                            break
+                    else:
+                        warnings.warn(
+                            "Provided unit for %r does not match any of the permitted units %r" % (
                                 name,
-                                (kwargs['unit_accession'], unit_term.id),
-                                (kwargs['unit_name'], unit_term.name),
-                                (kwargs['unit_cv_ref'], unit_source.id),
-                            ), stacklevel=3)
-                elif len(has_units) > 1:
-                    provided_unit_accession = kwargs.get("unit_accession")
-                    if provided_unit_accession is None:
-                        if self.warn_on_ambiguous_missing_units:
-                            warnings.warn(
-                                "Multiple unit options are possible for parameter %r but none were specified" % (
-                                    name),
-                                AmbiguousTermWarning,
-                                stacklevel=3
-                            )
-                        try:
-                            unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
-                            kwargs['unit_accession'] = unit_term.id
-                            kwargs['unit_name'] = unit_term.name
-                            kwargs['unit_cv_ref'] = unit_source.id
-                        except KeyError:
-                            pass
-                    elif self.validate_units:
-                        for t in has_units:
-                            unit_term, unit_source = self.term(t.accession, include_source=True)
-                            if (kwargs['unit_accession'] == unit_term.id and kwargs['unit_name'] == unit_term.name and
-                                    kwargs['unit_cv_ref'] == unit_source.id):
-                                break
-                        else:
-                            warnings.warn(
-                                "Provided unit for %r does not match any of the permitted units %r" % (
-                                    name,
-                                    ((kwargs['unit_accession'], kwargs['unit_name'], kwargs['unit_cv_ref']),
-                                     has_units)),
-                                stacklevel=3
-                            )
-
-        if cv_ref is None:
-            return UserParam(name=name, value=value, **kwargs)
-        else:
-            kwargs.setdefault("ref", cv_ref)
-            kwargs.setdefault("accession", accession)
-            return CVParam(name=name, value=value, **kwargs)
+                                ((state['unit_accession'], state['unit_name'], state['unit_cv_ref']),
+                                 has_units)),
+                            stacklevel=4
+                        )
 
     def term(self, name, include_source=False):
         deferred = None
