@@ -28,6 +28,25 @@ def synonym_parser(text):
 
 
 class OBOParser(object):
+    """Parser for an :title-reference:`OBO` [OBO]_ file that constructs a semantic graph.
+
+    Attributes
+    ----------
+    current_term : dict
+        The current term being parsed
+    handle : file
+        The file stream to read from
+    header : defaultdict(list)
+        Store the header information from the OBO file
+    terms : dict
+        Maps term id to :class:`~.Entity` objects
+
+    References
+    ----------
+    OBO
+        http://owlcollab.github.io/oboformat/doc/GO.format.obo-1_2.html
+    """
+
     def __init__(self, handle):
         self.handle = handle
         self.terms = {}
@@ -53,6 +72,12 @@ class OBOParser(object):
         return parse_xsdtype(xref_string)
 
     def pack(self):
+        """Pack the currently collected OBO entry into an :class:`~.Entity`.
+
+        Returns
+        -------
+        :class:`~.Entity`
+        """
         if self.current_term is None:
             return
         entity = Entity(self, **{k: v[0] if len(v) == 1 else v for k, v in self.current_term.items()})
@@ -98,6 +123,9 @@ class OBOParser(object):
         self.current_term = None
 
     def _connect_parents(self):
+        """Walk the semantic graph up the parent hierarchy, binding child
+        to parent through ``is_a`` :class:`~.Reference` connections.
+        """
         for term in self.terms.values():
             try:
                 if isinstance(term.is_a, Reference):
@@ -118,6 +146,9 @@ class OBOParser(object):
         }
 
     def parse(self):
+        """Iteratively parse a binary file stream for an OBO file into a
+        semantic graph.
+        """
         in_header = True
         for line in self.handle.readlines():
             line = line.decode('utf-8')
