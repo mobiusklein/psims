@@ -3,7 +3,7 @@ from .controlled_vocabulary import (
 
 
 from . import unimod
-from .unimod import load as load_unimod
+from .unimod import load as load_unimod, UNIMODEntity
 
 from .obo import (
     OBOParser)
@@ -15,5 +15,5 @@ from .relationship import Relationship, Reference
 __all__ = [
     "ControlledVocabulary", "obo_cache", "OBOCache", "OBOParser",
     "obo_cache", "load_psims", "unimod", "load_unimod",
-    "Entity", "Reference", "Relationship"
+    "Entity", "UNIMODEntity", "Reference", "Relationship"
 ]

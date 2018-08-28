@@ -13,7 +13,7 @@ from ..document import (
     ParameterContainer,
     IDParameterContainer)
 from .binary_encoding import dtype_to_encoding, compression_map, encode_array
-from .utils import ensure_iterable
+from .utils import ensure_iterable, basestring
 
 
 class MzML(TagBase):
@@ -337,12 +337,12 @@ class InstrumentConfiguration(ComponentBase):
     requires_id = True
 
     def __init__(self, id, component_list=None, params=None,
-                 software_reference=None, context=NullMap):
+                 software_reference=None, context=NullMap, **kwargs):
         if (params is None):
             params = []
         if (not isinstance(component_list, ComponentList)):
             component_list = ComponentList(component_list, context=context)
-        self.params = params
+        self.params = self.prepare_params(params, **kwargs)
         self.software_reference = software_reference
         self._software_reference = context['Software'][software_reference]
         self.component_list = component_list
@@ -397,7 +397,10 @@ class Source(ParameterContainer):
             dict(
                 order=order),
             context=context)
-        self.order = order
+        try:
+            self.order = int(order)
+        except (ValueError, TypeError):
+            self.order = order
 
 
 class Analyzer(ParameterContainer):
@@ -477,10 +480,6 @@ class ProcessingMethod(ParameterContainer):
             softwareRef=self._software_reference)
         self.params = params
         self.context = context
-
-    # def write(self, xml_file):
-    #     with self.element.element(xml_file, with_id=False):
-    #         self.write_params(xml_file)
 
 
 class SpectrumList(ComponentBase):
@@ -795,7 +794,7 @@ class ScanWindow(ComponentBase):
 class IsolationWindow(ComponentBase):
     requires_id = False
 
-    def __init__(self, lower, target, upper, params=None, context=NullMap):
+    def __init__(self, lower=None, target=None, upper=None, params=None, context=NullMap, **kwargs):
         if (params is None):
             params = []
         self.target = target
@@ -803,27 +802,30 @@ class IsolationWindow(ComponentBase):
         self.upper = upper
         self.element = _element('isolationWindow')
         self.context = context
-        self.params = params
+        self.params = self.prepare_params(params, **kwargs)
 
     def write_content(self, xml_file):
-        self.context.param(
-            name='isolation window target m/z',
-            value=self.target,
-            unit_name='m/z',
-            unit_accession='MS:1000040',
-            unit_cv_ref='MS')(xml_file)
-        self.context.param(
-            name='isolation window lower offset',
-            value=self.lower,
-            unit_name='m/z',
-            unit_accession='MS:1000040',
-            unit_cv_ref='MS')(xml_file)
-        self.context.param(
-            name='isolation window upper offset',
-            value=self.upper,
-            unit_name='m/z',
-            unit_accession='MS:1000040',
-            unit_cv_ref='MS')(xml_file)
+        if self.target is not None:
+            self.context.param(
+                name='isolation window target m/z',
+                value=self.target,
+                unit_name='m/z',
+                unit_accession='MS:1000040',
+                unit_cv_ref='MS')(xml_file)
+        if self.lower is not None:
+            self.context.param(
+                name='isolation window lower offset',
+                value=self.lower,
+                unit_name='m/z',
+                unit_accession='MS:1000040',
+                unit_cv_ref='MS')(xml_file)
+        if self.upper is not None:
+            self.context.param(
+                name='isolation window upper offset',
+                value=self.upper,
+                unit_name='m/z',
+                unit_accession='MS:1000040',
+                unit_cv_ref='MS')(xml_file)
         self.write_params(xml_file)
 
 
@@ -948,9 +950,9 @@ class SelectedIon(ComponentBase):
                 self.context.param(
                     name='charge state', value=int(
                         self.charge))(xml_file)
-            elif isinstance(self.charge, Iterable):
-                self.context.param(name='charge state', value=' '.join(
-                    map(str, self.charge)))(xml_file)
+            elif isinstance(self.charge, Iterable) and not isinstance(self.charge, basestring):
+                for value in self.charge:
+                    self.context.param(name='possible charge state', value=value)(xml_file)
             else:
                 warnings.warn(
                     ('Invalid charge state provided (%r)' %

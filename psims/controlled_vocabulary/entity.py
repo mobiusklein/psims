@@ -4,6 +4,8 @@ try:
 except ImportError:
     from collections.abc import Mapping
 
+from psims.utils import ensure_iterable
+
 
 class Entity(Mapping):
     def __init__(self, vocabulary=None, **attributes):
@@ -69,11 +71,14 @@ class Entity(Mapping):
         return template.format(self=self)
 
     def is_of_type(self, tp):
-        tp = self.vocabulary[tp]
+        try:
+            tp = self.vocabulary[tp]
+        except KeyError:
+            return False
         stack = deque([self])
         while stack:
-            ref = stack.popright()
+            ref = stack.pop()
             if ref == tp:
                 return True
-            stack.extend(ref.parent())
+            stack.extend(ensure_iterable(ref.parent()))
         return False

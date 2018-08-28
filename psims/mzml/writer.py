@@ -210,9 +210,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 instrument_configurations)]
         self.InstrumentConfigurationList(configs).write(self)
 
-    def data_processing_list(self, processing_methods=None):
+    def data_processing_list(self, data_processing=None):
         methods = [
-            self.DataProcessing.ensure(dp) for dp in ensure_iterable(processing_methods)]
+            self.DataProcessing.ensure(dp) for dp in ensure_iterable(data_processing)]
         self.DataProcessingList(methods).write(self)
 
     def reference_param_group_list(self, groups=None):

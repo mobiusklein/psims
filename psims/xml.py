@@ -440,10 +440,10 @@ class ProvidedCV(CV):
         return cv
 
     def __getitem__(self, key):
-        return self.converter(super(ProvidedCV, self).__getitem__(key))
+        return self.converter(super(ProvidedCV, self).__getitem__(key), self)
 
     def query(self, *args, **kwargs):
-        return self.convert(super(ProvidedCV, self).query(*args, **kwargs))
+        return self.convert(super(ProvidedCV, self).query(*args, **kwargs), self)
 
 
 class XMLWriterMixin(object):
@@ -603,10 +603,16 @@ class XMLDocumentWriter(XMLWriterMixin):
         cvlist.write(self.writer)
 
     def close(self):
-        self.outfile.close()
+        try:
+            self.outfile.close()
+        except AttributeError:
+            pass
 
     def flush(self):
-        self.outfile.flush()
+        try:
+            self.outfile.flush()
+        except AttributeError:
+            self.writer.flush()
 
     def format(self, outfile=None):
         """Pretty-prints the contents of the file.
@@ -623,36 +629,64 @@ class XMLDocumentWriter(XMLWriterMixin):
                 return
         except (AttributeError, ValueError):
             pass
+
+        # Maybe we can seek to the beginning and open the stream for reading and writing?
         if outfile is None:
             use_temp = True
             handle = tempfile.NamedTemporaryFile(delete=False)
         else:
             handle = open(outfile, 'wb')
+
         try:
-            pretty_xml(self.outfile.name, handle.name)
+            outfile_name = self.outfile.name
+        except AttributeError:
+            outfile_name = self.outfile
+        try:
+            try:
+                pretty_xml(outfile_name, handle.name)
+            except AttributeError:
+                try:
+                    pretty_xml(outfile_name, handle.name)
+                except Exception as e:
+                    print(e)
         except MemoryError:
             pass
 
         if use_temp:
             handle.close()
-            os.remove(self.outfile.name)
             try:
-                shutil.move(handle.name, self.outfile.name)
-            except IOError as e:
-                if e.errno == 13:
-                    try:
-                        time.sleep(3)
-                        shutil.move(handle.name, self.outfile.name)
-                    except IOError:
-                        print(
-                            "Could not obtain write-permission for original\
-                             file name. Formatted XML document located at \"%s\"" % (
-                                handle.name))
+                os.remove(outfile_name)
+                try:
+                    shutil.move(handle.name, outfile_name)
+                except IOError as e:
+                    if e.errno == 13:
+                        try:
+                            time.sleep(3)
+                            shutil.move(handle.name, outfile_name)
+                        except IOError:
+                            print(
+                                "Could not obtain write-permission for original\
+                                 file name. Formatted XML document located at \"%s\"" % (
+                                    handle.name))
+            except (AttributeError, TypeError):
+                try:
+                    self.outfile.seek(0)
+                    with open(handle.name, 'rb') as fh:
+                        chunk_size = int(2 ** 16)
+                        chunk = fh.read(chunk_size)
+                        while chunk:
+                            self.outfile.write(chunk)
+                            chunk = fh.read(chunk_size)
+                except AttributeError as e:
+                    print("Could not format document", e)
 
     def validate(self):
         prev = None
         try:
-            fname = (self.outfile.name)
+            if isinstance(self.outfile, basestring):
+                fname = self.outfile
+            else:
+                fname = self.outfile.name
         except AttributeError:
             if hasattr(self.outfile, 'seek'):
                 prev = self.outfile.tell()

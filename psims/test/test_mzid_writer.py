@@ -7,7 +7,7 @@ from psims.test import mzid_data
 from psims.test.utils import output_path as output_path, compressor
 
 
-def test_write(output_path, compressor):
+def test_write(output_path):
     software = mzid_data.software
     spectra_data = mzid_data.spectra_data
     search_database = mzid_data.search_database
@@ -23,10 +23,10 @@ def test_write(output_path, compressor):
     analysis = mzid_data.analysis
     source_file = mzid_data.source_file
 
-    f = MzIdentMLWriter(compressor(output_path, 'wb'), close=True)
+    f = MzIdentMLWriter(output_path, close=True)
     with f:
         f.controlled_vocabularies()
-        f.providence(software=software)
+        f.provenance(software=software)
         f.register("SpectraData", spectra_data['id'])
         f.register("SearchDatabase", search_database['id'])
         f.register("SpectrumIdentificationList", spectrum_identification_list["id"])
@@ -52,8 +52,17 @@ def test_write(output_path, compressor):
             f.inputs(source_file, search_database, spectra_data)
             with f.analysis_data():
                 with f.spectrum_identification_list(id=spectrum_identification_list['id']):
-                    for result in spectrum_identification_list['identification_results']:
-                        f.write_spectrum_identification_result(**result)
+                    for result_ in spectrum_identification_list['identification_results']:
+                        result = dict(result_)
+                        identifications = result.pop("identifications")
+                        result = f.spectrum_identification_result(**result)
+                        assert result._context_manager is None
+                        with result:
+                            assert result._context_manager is not None
+                            assert result._is_open
+                            for item in identifications:
+                                f.write_spectrum_identification_item(**item)
+
                 with f.protein_detection_list(id=protein_detect_list['id'], count=len(
                         protein_detect_list['protein_ambiguity_groups'])):
                     for pag in protein_detect_list['protein_ambiguity_groups']:
@@ -67,7 +76,7 @@ def test_write(output_path, compressor):
     except OSError:
         pass
     opener = compression.get(output_path)
-    assert opener == compressor
+    # assert opener == compressor
     reader = mzid.read(opener(output_path, 'rb'), read_schema=False)
 
     def reset():

@@ -10,7 +10,7 @@ from .components import (
     MzIdentML,
     ComponentDispatcher, etree, common_units, element, _element,
     default_cv_list, CVParam, UserParam,
-    _xmlns, AUTO, DEFAULT_ORGANIZATION_ID, DEFAULT_CONTACT_ID)
+    AUTO, DEFAULT_ORGANIZATION_ID, DEFAULT_CONTACT_ID)
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
@@ -33,6 +33,7 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.params = self.prepare_params(self.params)
         self.toplevel = None
         self._context_manager = None
+        self.xmlns = kwargs.get('xmlns')
 
     def _create_element(self):
         if self.toplevel is None:
@@ -59,49 +60,53 @@ class InputsSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(InputsSection, self).__init__(
             "Inputs", writer, parent_context,
-            xmlns=_xmlns)
+            **kwargs)
 
 
 class AnalysisProtocolCollectionSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(AnalysisProtocolCollectionSection, self).__init__(
             "AnalysisProtocolCollection", writer, parent_context,
-            xmlns=_xmlns)
+            **kwargs)
 
 
 class AnalysisSampleCollectionSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(AnalysisSampleCollectionSection, self).__init__(
             "AnalysisSampleCollection", writer, parent_context,
-            xmlns=_xmlns)
+            **kwargs)
 
 
 class SequenceCollectionSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(SequenceCollectionSection, self).__init__(
-            "SequenceCollection", writer, parent_context, xmlns=_xmlns)
+            "SequenceCollection", writer, parent_context, **kwargs)
 
 
 class AnalysisCollectionSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(AnalysisCollectionSection, self).__init__(
-            "AnalysisCollection", writer, parent_context, xmlns=_xmlns)
+            "AnalysisCollection", writer, parent_context, **kwargs)
 
 
 class DataCollectionSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(DataCollectionSection, self).__init__(
-            "DataCollection", writer, parent_context, xmlns=_xmlns)
+            "DataCollection", writer, parent_context, **kwargs)
 
 
 class AnalysisDataSection(DocumentSection):
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(AnalysisDataSection, self).__init__(
-            "AnalysisData", writer, parent_context, xmlns=_xmlns)
+            "AnalysisData", writer, parent_context, **kwargs)
 
 
 class SpectrumIdentficationListSection(DocumentSection):
-    def __init__(self, writer, parent_context, section_args=None, **kwargs):
+    def __init__(self, writer, parent_context, section_args=None, num_sequences_searched=0, **kwargs):
+        if section_args is None:
+            section_args = dict()
+        if num_sequences_searched is not None:
+            section_args['numSequencesSearched'] = num_sequences_searched
         super(SpectrumIdentficationListSection, self).__init__(
             "SpectrumIdentificationList",
             writer, parent_context, section_args=section_args, **kwargs)
@@ -171,6 +176,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         ComponentDispatcher.__init__(self, vocabularies=vocabularies)
         XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
         self.version = version
+        self.xmlns = MzIdentML.attr_version_map[version]['xmlns']
 
     def toplevel_tag(self):
         return MzIdentML(version=self.version)
@@ -182,9 +188,13 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         cvlist = self.CVList(self.vocabularies)
         cvlist.write(self.writer)
 
-    def providence(self, software=tuple(), owner=tuple(), organization=tuple(), provider=None):
+    def providence(self, *args, **kwargs):
+        warnings.warn("Method renamed to `provenance`")
+        self.provenance(*args, **kwargs)
+
+    def provenance(self, software=tuple(), owner=tuple(), organization=tuple(), provider=None):
         """
-        Write the analysis providence section, a top-level segment of the MzIdentML document
+        Write the analysis provenance section, a top-level segment of the MzIdentML document
 
         This section should be written early on to register the list of software used in this
         analysis
@@ -199,24 +209,26 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A dictionary specifying a :class:`Organization` instance. If missing, a default organization will
             be created
         """
-        organization = [self.Organization.ensure(o or {}) for o in ensure_iterable(organization)]
-        owner = [self.Person.ensure(o or {}) for o in ensure_iterable(owner)]
-        software = [self.AnalysisSoftware.ensure(s or {})
-                    for s in ensure_iterable(software)]
+        organization = self.Organization.ensure_all(organization)
+        owner = self.Person.ensure_all(owner)
+        software = self.AnalysisSoftware.ensure_all(software)
 
         if not owner and not organization:
             affiliation = DEFAULT_ORGANIZATION_ID
             self.register("Organization", affiliation)
-            owner = [self.Person(affiliation=affiliation)]
+            owner = [self.Person(affiliations=[affiliation])]
             organization = [self.Organization(id=affiliation)]
 
-        self.GenericCollection("AnalysisSoftwareList",
-                               software).write(self.writer)
+        asl = self.AnalysisSoftwareList(software)
+        asl.write(self.writer)
         if owner:
             owner_id = owner[0].id
         else:
             owner_id = None
-        self.Provider(contact=owner_id).write(self.writer)
+        if not provider:
+            self.Provider(contact=owner_id).write(self.writer)
+        else:
+            self.Provider.ensure(provider or {}).write(self.writer)
         self.AuditCollection(owner, organization).write(self.writer)
 
     def inputs(self, source_files=tuple(), search_databases=tuple(), spectra_data=tuple()):
@@ -231,27 +243,16 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                     spectra_data).write(self.writer)
 
     def analysis_protocol_collection(self):
-        return AnalysisProtocolCollectionSection(self.writer, self.context)
+        return AnalysisProtocolCollectionSection(self.writer, self.context, xmlns=self.xmlns)
 
     def sequence_collection(self):
-        return SequenceCollectionSection(self.writer, self.context)
+        return SequenceCollectionSection(self.writer, self.context, xmlns=self.xmlns)
 
     def analysis_collection(self):
-        return AnalysisCollectionSection(self.writer, self.context)
+        return AnalysisCollectionSection(self.writer, self.context, xmlns=self.xmlns)
 
     def data_collection(self):
-        return DataCollectionSection(self.writer, self.context)
-
-    def _sequence_collection(self, db_sequences=tuple(), peptides=tuple(), peptide_evidence=tuple()):
-        db_sequences = (self.DBSequence.ensure((s or {}))
-                        for s in ensure_iterable(db_sequences))
-        peptides = (self.Peptide.ensure((s or {}))
-                    for s in ensure_iterable(peptides))
-        peptide_evidence = (self.PeptideEvidence.ensure((s or {}))
-                            for s in ensure_iterable(peptide_evidence))
-
-        self.SequenceCollection(db_sequences, peptides,
-                                peptide_evidence).write(self.writer)
+        return DataCollectionSection(self.writer, self.context, xmlns=self.xmlns)
 
     def write_db_sequence(self, accession, sequence=None, id=None, search_database_id=1, params=None, **kwargs):
         el = self.DBSequence(
@@ -312,21 +313,14 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         protocol.write(self.writer)
 
     def analysis_data(self):
-        return AnalysisDataSection(self.writer, self.context)
+        return AnalysisDataSection(self.writer, self.context, xmlns=self.xmlns)
 
-    def _spectrum_identification_list(self, id, identification_results=None, measures=None):
+    def spectrum_identification_list(self, id, measures=None, num_sequences_searched=0):
         if measures is None:
             measures = self.FragmentationTable()
-        converting = (self.spectrum_identification_result(**(s or {}))
-                      for s in ensure_iterable(identification_results))
-        self.SpectrumIdentificationList(
-            id=id, identification_results=converting,
-            fragmentation_table=measures).write(self.writer)
-
-    def spectrum_identification_list(self, id, measures=None):
-        if measures is None:
-            measures = self.FragmentationTable()
-        return SpectrumIdentficationListSection(self.writer, self.context, id=id, fragmentation_table=measures)
+        return SpectrumIdentficationListSection(
+            self.writer, self.context, id=id, fragmentation_table=measures,
+            num_sequences_searched=num_sequences_searched, xmlns=self.xmlns)
 
     def write_spectrum_identification_result(self, spectrum_id, id, spectra_data_id=1,
                                              identifications=None, params=None, **kwargs):
@@ -375,7 +369,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     def protein_detection_list(self, id, count=None, params=None, **kwargs):
         return ProteinDetectionListSection(
-            self.writer, self.context, id=id, count=count, params=params, **kwargs)
+            self.writer, self.context, id=id, count=count, params=params, xmlns=self.xmlns, **kwargs)
 
     def write_protein_ambiguity_group(self, protein_detection_hypotheses, id, pass_threshold=True,
                                       params=None, **kwargs):

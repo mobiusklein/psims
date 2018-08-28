@@ -1,8 +1,10 @@
 import warnings
 import re
+
 from collections import Counter
 
 from lxml import etree
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, object_session
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -14,6 +16,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from six import string_types as basestring
+
+from psims.utils import KeyToAttrProxy
+from .entity import Entity
+
 
 try:
     has_pyteomics = True
@@ -513,6 +519,10 @@ class Modification(Base, HasFullNameMixin):
                     inst.notes.append(model_note)
         return inst
 
+    @property
+    def name(self):
+        return self.ex_code_name
+
 
 class MiscNotesModifications(Base):
     __tablename__ = "MiscNotesModifications"
@@ -738,9 +748,16 @@ class Unimod(object):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=sa_exc.SAWarning)
             is_explicit_accession = isinstance(identifier, basestring) and identifier.startswith("UNIMOD")
+            try:
+                # At least one Modification has an empty string code_name or ex_code_name, causing
+                # this fuzzy finder function to happily respond to that record
+                if identifier == "":
+                    raise KeyError(identifier)
+            except (TypeError, ValueError):
+                pass
             if isinstance(identifier, int) or is_explicit_accession:
                 if is_explicit_accession:
-                    identifier = int(identifier.replace("UNIMOD:", 1))
+                    identifier = int(identifier.replace("UNIMOD:", ''))
                 mod = self.session.query(Modification).get(identifier)
                 if mod is None:
                     raise KeyError(identifier)
@@ -794,3 +811,23 @@ class Unimod(object):
 
 def load(path=None):
     return Unimod(path)
+
+
+class UNIMODEntity(Entity):
+
+    def is_of_type(self, tp):
+        try:
+            if tp.startswith('UNIMOD'):
+                return True
+            return False
+        except AttributeError:
+            if isinstance(tp, UNIMODEntity):
+                return True
+
+    @classmethod
+    def converter(cls, modification, vocabulary):
+        data = dict(KeyToAttrProxy(modification))
+        data['id'] = 'UNIMOD:%s' % modification.id
+        data['name'] = modification.ex_code_name
+        data['_object'] = modification
+        return cls(vocabulary, **data)

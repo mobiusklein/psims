@@ -131,7 +131,7 @@ class VocabularyResolver(object):
             unit_accession = mapping.pop("unit_accession", None) or mapping.pop("unitAccession", None)
             unit_cv_ref = mapping.pop('unit_cv_ref', None) or mapping.pop('unitCvRef', None)
             name = mapping.pop('name', None)
-            if name is None:
+            if name is None and accession is None:
                 if len(mapping) == 1:
                     name, value = tuple(mapping.items())[0]
                 else:
@@ -149,7 +149,7 @@ class VocabularyResolver(object):
                     kwargs.setdefault("unit_cv_ref", unit_cv_ref)
 
         self._resolve_units(kwargs)
-        if name is None:
+        if name is None and accession is None:
             raise ValueError("Could not coerce parameter from %r, %r, %r" % (name, value, kwargs))
         term = None
         if cv_ref is None:
@@ -353,6 +353,9 @@ class ReprBorrowingPartial(partial):
                 raise ValueError("Cannot bind a component from another context")
         return data
 
+    def ensure_all(self, objs):
+        return [self.ensure(obj or {}) for obj in ensure_iterable(objs)]
+
 
 class CallbackBindingPartial(ReprBorrowingPartial):
 
@@ -387,6 +390,7 @@ class ComponentDispatcherBase(object):
         else:
             if vocabularies is not None:
                 context.vocabularies.extend(vocabularies)
+        self.type_cache = dict()
         self.component_namespace = component_namespace
         self.context = context
 
@@ -396,9 +400,29 @@ class ComponentDispatcherBase(object):
     def _post_constructor(self, component):
         pass
 
+    def _update_component_namespace(self, tp=None):
+        return {}
+
+    def _locate_component(self, name):
+        try:
+            tp = self.type_cache[name]
+        except KeyError:
+            tp_template = ChildTrackingMeta.resolve_component(self.component_namespace, name)
+            new_tp = type(tp_template.__name__, (tp_template, ), self._update_component_namespace(tp_template))
+            try:
+                new_tp.__module__ = tp_template.__module__
+            except AttributeError:
+                pass
+            try:
+                new_tp.__qualname__ = tp_template.__qualname__
+            except AttributeError:
+                pass
+            tp = self._component_partial_type(new_tp, **self._prepare_bind_arguments())
+            self.type_cache[name] = tp
+        return tp
+
     def _dispatch_component(self, name):
-        component = ChildTrackingMeta.resolve_component(self.component_namespace, name)
-        tp = self._component_partial_type(component, **self._prepare_bind_arguments())
+        tp = self._locate_component(name)
         tp.context = self.context
         tp.callback = self._post_constructor
         return tp
@@ -494,7 +518,12 @@ class ComponentBase(object):
     Forwards any missing attribute requests to :attr:`element` for resolution
     against's the XML tag's attributes.
     """
+
+    # in any sane world, these would be initialized in a constructor but
+    # would require substantial work to add the super-call to all constructors.
     _context_manager = None
+    _is_open = False
+    _after_queue = None
     requires_id = True
     writer = None
 
@@ -510,6 +539,11 @@ class ComponentBase(object):
             return self.element.attrs[key]
         except KeyError:
             raise AttributeError(key)
+
+    def after(self, callback):
+        if self._after_queue is None:
+            self._after_queue = []
+        self._after_queue.append(callback)
 
     def write(self, xml_file):
         with self.begin(xml_file):
@@ -535,9 +569,14 @@ class ComponentBase(object):
             xml_file = getattr(self, "writer", None)
             if xml_file is None:
                 raise ValueError("xml_file must be provided if this component is not bound to a writer!")
+        self._is_open = True
         with self.element.begin(xml_file, with_id=with_id):
             self.write_content(xml_file)
             yield
+            self._is_open = False
+            if self._after_queue:
+                for callback in self._after_queue:
+                    callback(xml_file)
 
     def __enter__(self):
         if not self.is_bound():
@@ -546,12 +585,13 @@ class ComponentBase(object):
                 "Call the `bind` method first with an ")
         begun = self.begin()
         self._context_manager = begun
-        return self
+        # actually execute the code in `begin` now
+        self._context_manager.__enter__()
+        return self._context_manager
 
     def __exit__(self, exc_type, exc_value, traceback):
-        # because of the interactions of the @contextmanager decorator,
-        # the context manager will exit itself and does not need to be
-        # explicitly cleared here.
+        # execute all instructions post-yield of begin
+        self._context_manager.__exit__(exc_type, exc_value, traceback)
         self._context_manager = None
 
     def __call__(self, xml_file):
@@ -609,6 +649,10 @@ class ComponentBase(object):
         else:
             kwargs.update(obj)
             return cls(**kwargs)
+
+    @classmethod
+    def ensure_all(cls, objs, **kwargs):
+        return [cls.ensure(obj or {}, **kwargs) for obj in ensure_iterable(objs)]
 
 
 class ParameterContainer(ComponentBase):
