@@ -102,7 +102,7 @@ class AnalysisDataSection(DocumentSection):
 
 
 class SpectrumIdentficationListSection(DocumentSection):
-    def __init__(self, writer, parent_context, section_args=None, num_sequences_searched=0, **kwargs):
+    def __init__(self, writer, parent_context, section_args=None, num_sequences_searched=0, name=None, **kwargs):
         if section_args is None:
             section_args = dict()
         if num_sequences_searched is not None:
@@ -315,12 +315,12 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def analysis_data(self):
         return AnalysisDataSection(self.writer, self.context, xmlns=self.xmlns)
 
-    def spectrum_identification_list(self, id, measures=None, num_sequences_searched=0):
+    def spectrum_identification_list(self, id, measures=None, num_sequences_searched=0, **kwargs):
         if measures is None:
             measures = self.FragmentationTable()
         return SpectrumIdentficationListSection(
             self.writer, self.context, id=id, fragmentation_table=measures,
-            num_sequences_searched=num_sequences_searched, xmlns=self.xmlns)
+            num_sequences_searched=num_sequences_searched, xmlns=self.xmlns, **kwargs)
 
     def write_spectrum_identification_result(self, spectrum_id, id, spectra_data_id=1,
                                              identifications=None, params=None, **kwargs):

@@ -656,6 +656,11 @@ class ComponentBase(object):
         for param in (references + cv_params + user_params):
             param(xml_file)
 
+    def element_attrs(self, **kwargs):
+        for key, value in kwargs.items():
+            if value is not None:
+                self.element.attrs[key] = value
+
     @classmethod
     def ensure(cls, obj, **kwargs):
         if isinstance(obj, cls):

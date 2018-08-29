@@ -136,11 +136,12 @@ class SourceFile(ComponentBase):
     requires_id = True
 
     def __init__(self, location, file_format=None, id=None,
-                 external_format=None, params=None, context=NullMap, **kwargs):
+                 external_format=None, params=None, name=None, context=NullMap, **kwargs):
         self.params = self.prepare_params(params, **kwargs)
         self.external_format = external_format
         self.file_format = file_format
         self.element = _element('SourceFile', location=location, id=id)
+        self.element_attrs(name=name)
         self.context = context
         context['SourceFile'][id] = self.element.id
 
@@ -193,7 +194,7 @@ class SpectraData(ComponentBase):
     requires_id = True
 
     def __init__(self, location, file_format=None, spectrum_id_format=None,
-                 id=None, external_format=None, params=None, context=NullMap, **kwargs):
+                 id=None, external_format=None, params=None, name=None, context=NullMap, **kwargs):
         self.params = self.prepare_params(params, **kwargs)
         self.external_format = external_format
         self.file_format = file_format
@@ -201,6 +202,7 @@ class SpectraData(ComponentBase):
         self.element = _element('SpectraData', id=id, location=location)
         context['SpectraData'][id] = self.element.id
         self.context = context
+        self.element_attrs(name=name)
 
     def write_content(self, xml_file):
         if self.file_format is not None:
@@ -239,7 +241,7 @@ class DBSequence(ComponentBase):
     requires_id = True
 
     def __init__(self, accession, sequence=None, id=None,
-                 search_database_id=1, params=None, context=NullMap, **kwargs):
+                 search_database_id=1, params=None, name=None, context=NullMap, **kwargs):
         self.sequence = sequence
         self.search_database_ref = context[
             'SearchDatabase'][search_database_id]
@@ -254,6 +256,7 @@ class DBSequence(ComponentBase):
         self.params = params
         context['DBSequence'][id] = self.element.id
         self.context = context
+        self.element_attrs(name=name)
 
     def write_content(self, xml_file):
         if (self.sequence is not None):
@@ -266,7 +269,7 @@ class Peptide(ComponentBase):
     requires_id = True
 
     def __init__(self, peptide_sequence, id, modifications=None, substitutions=None,
-                 params=None, context=NullMap, **kwargs):
+                 params=None, name=None, context=NullMap, **kwargs):
         params = self.prepare_params(params, **kwargs)
         self.context = context
         self.peptide_sequence = peptide_sequence
@@ -275,6 +278,7 @@ class Peptide(ComponentBase):
                               for sub in ensure_iterable(substitutions)]
         self.params = params
         self.element = _element('Peptide', id=id)
+        self.element_attrs(name=name)
         context['Peptide'][id] = self.element.id
         self.context = context
 
@@ -409,7 +413,7 @@ class SpectrumIdentificationResult(ComponentBase):
     requires_id = True
 
     def __init__(self, spectra_data_id, spectrum_id, id=None,
-                 identifications=None, params=None, context=NullMap, **kwargs):
+                 identifications=None, params=None, name=None, context=NullMap, **kwargs):
         if (identifications is None):
             identifications = []
         self.params = self.prepare_params(params, **kwargs)
@@ -418,6 +422,7 @@ class SpectrumIdentificationResult(ComponentBase):
                                 'SpectraData'][spectra_data_id], spectrumID=spectrum_id, id=id)
         self.context = context
         self.context['SpectrumIdentificationResult'][id] = self.element.id
+        self.element_attrs(name=name)
 
     def write_content(self, xml_file):
         for item in self.identifications:
@@ -510,6 +515,7 @@ class SpectrumIdentificationItem(ComponentBase):
         context['SpectrumIdentificationItem'][id] = self.element.id
         self.context = context
         self.ion_types = self.prepare_ion_types(ion_types)
+        self.element_attrs(name=name)
 
     def prepare_ion_types(self, ion_types):
         mappings = []
@@ -608,7 +614,7 @@ class SpectrumIdentificationList(ComponentBase):
     requires_id = True
 
     def __init__(self, identification_results, id,
-                 fragmentation_table=None, params=None, context=NullMap, **kwargs):
+                 fragmentation_table=None, params=None, context=NullMap, name=None, **kwargs):
         self.identification_results = identification_results
         self.fragmentation_table = fragmentation_table
         self.element = _element(
@@ -616,6 +622,7 @@ class SpectrumIdentificationList(ComponentBase):
         self.context = context
         self.context['SpectrumIdentificationList'][id] = self.element.id
         self.params = self.prepare_params(params, **kwargs)
+        self.element_attrs(name=name)
 
     def write_content(self, xml_file):
         self.write_params(xml_file)
@@ -948,7 +955,8 @@ class SpectrumIdentificationProtocol(ComponentBase):
 
     def __init__(self, search_type, analysis_software_id=1, id=1, additional_search_params=None,
                  modification_params=None, enzymes=None, fragment_tolerance=None, parent_tolerance=None,
-                 threshold=None, filters=None, mass_tables=None, database_translation=None, context=NullMap):
+                 threshold=None, filters=None, mass_tables=None, database_translation=None, name=None,
+                 context=NullMap):
         self.context = context
         if (threshold is None):
             threshold = Threshold(context=context)
@@ -979,6 +987,7 @@ class SpectrumIdentificationProtocol(ComponentBase):
         self.element = _element('SpectrumIdentificationProtocol', id=id, analysisSoftware_ref=context[
                                 'AnalysisSoftware'][analysis_software_id])
         self.context['SpectrumIdentificationProtocol'][id] = self.element.id
+        self.element_attrs(name=name)
 
     def _prepare_tolerance_type(self, tolerance, tolerance_class):
         if (not isinstance(tolerance, tolerance_class)):
@@ -1095,6 +1104,7 @@ class TranslationTable(ComponentBase):
         self.element = _element('TranslationTable', id=id)
         self.context['TranslationTable'][id] = self.element.id
         self.params = self.prepare_params(params, **kwargs)
+        self.element_attrs(name=name)
 
     def write_content(self, xml_file):
         self.write_params(xml_file)
@@ -1215,7 +1225,7 @@ class SpectrumIdentification(ComponentBase):
 
     def __init__(self, spectra_data_ids_used=None, search_database_ids_used=None,
                  spectrum_identification_list_id=1, spectrum_identification_protocol_id=1,
-                 id=1, activity_date=None, context=NullMap):
+                 id=1, activity_date=None, name=None, context=NullMap):
         self.spectra_data_ids_used = [context['SpectraData'][
             x] for x in (spectra_data_ids_used or [])]
         self.search_database_ids_used = [context['SearchDatabase'][
@@ -1225,8 +1235,7 @@ class SpectrumIdentification(ComponentBase):
             spectrumIdentificationList_ref=context['SpectrumIdentificationList'][spectrum_identification_list_id],
             spectrumIdentificationProtocol_ref=context['SpectrumIdentificationProtocol'][
                 spectrum_identification_protocol_id])
-        if activity_date is not None:
-            self.element.attrs['activityDate'] = activity_date
+        self.element_attrs(name=name, activityDate=activity_date)
         self.context = context
         self.context['SpectrumIdentification'][id] = self.element.id
 

@@ -522,10 +522,13 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
 
-    def __init__(self, outfile, close=False, compression=None, **kwargs):
+    def __init__(self, outfile, close=False, compression=None, encoding=None, **kwargs):
+        if encoding is None:
+            encoding = 'utf-8'
         self.outfile = outfile
         self.compression = compression
-        self.xmlfile = etree.xmlfile(outfile, encoding='utf-8', **kwargs)
+        self.encoding = encoding
+        self.xmlfile = etree.xmlfile(outfile, encoding=encoding, **kwargs)
         self._writer = None
         self.toplevel = None
         self._close = close

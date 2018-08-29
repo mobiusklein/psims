@@ -23,6 +23,9 @@ class LoggingProxy(object):
         if self.logger is not None:
             self.logger(message)
 
+    def __call__(self, message):
+        self.log(message)
+
     def disable(self):
         self.logger = None
 
@@ -32,7 +35,7 @@ log.enable()
 
 
 def differ(a, b):
-    if type(a) != type(b):
+    if issubclass(type(a), type(b)):
         return False
     if isinstance(a, dict):
         return dict_diff(a, b)
@@ -63,7 +66,7 @@ def dict_diff(a, b):
             bparams.append((key, value))
     aparams.sort()
     bparams.sort()
-    if (a.keys()) != (b.keys()):
+    if sorted(a.keys(), key=str) != sorted(b.keys(), key=str):
         return False
     for akey, avalue in a.items():
         for bkey, bvalue in b.items():
