@@ -35,7 +35,7 @@ log.enable()
 
 
 def differ(a, b):
-    if issubclass(type(a), type(b)):
+    if not issubclass(type(a), type(b)):
         return False
     if isinstance(a, dict):
         return dict_diff(a, b)
