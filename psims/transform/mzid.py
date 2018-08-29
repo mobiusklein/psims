@@ -340,7 +340,10 @@ class MzIdentMLTranslater(object):
     def _format_spectrum_identification_protocol(self, sip):
         d = dict(sip)
         d['additional_search_params'] = d.pop("AdditionalSearchParams", [])
-        d['enzymes'] = map(self._format_enzyme, ensure_iterable(d.pop("Enzymes", {}).get("Enzyme", {})))
+        enzymes = d.pop("Enzymes", {})
+        d['enzymes'] = self.writer.Enzymes(
+            map(self._format_enzyme, ensure_iterable(enzymes.get("Enzyme", {}))),
+            independent=enzymes.get("independent"))
         d['modification_params'] = map(
             self._format_search_modification, ensure_iterable(
                 d.pop('ModificationParams', {}).get("SearchModification", [])))
