@@ -44,7 +44,10 @@ def differ(a, b):
     elif isinstance(a, float):
         return abs(a - b) < 1e-3
     elif isinstance(a, cvstr):
-        return a.accession.lower() == b.accession.lower()
+        if a.accession is not None:
+            return a.accession.lower() == b.accession.lower()
+        else:
+            return a == b
     elif isinstance(a, np.ndarray):
         return np.allclose(a, b)
     else:
