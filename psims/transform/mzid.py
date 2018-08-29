@@ -1,5 +1,3 @@
-from __future__ import print_function
-import sys
 import re
 
 from pyteomics import mzid
@@ -9,16 +7,15 @@ from psims.utils import ensure_iterable
 from psims.mzid import MzIdentMLWriter
 
 
+from .utils import log
+
+
 N = float('inf')
 K = 1000
 
 
 def identity(x):
     return x
-
-
-def log(message):
-    print(message, file=sys.stderr)
 
 
 class MzIdentMLParser(mzid.MzIdentML):
@@ -34,7 +31,7 @@ class MzIdentMLParser(mzid.MzIdentML):
         self.seek(0)
 
 
-class MzIdentMLTransformer(object):
+class MzIdentMLTranslater(object):
     def _uncamel(self, name):
         temp = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         return re.sub('([a-z0-9])([A-Z])', r'\1_\2', temp).lower()
@@ -96,7 +93,7 @@ class MzIdentMLTransformer(object):
                 d.pop(key)
         return params
 
-    def __init__(self, input_stream, output_stream, transformer, transform_description):
+    def __init__(self, input_stream, output_stream):
         self.input_stream = input_stream
         self.output_stream = output_stream
         self.reader = MzIdentMLParser(input_stream, retrieve_refs=False, iterative=True)
@@ -248,7 +245,7 @@ class MzIdentMLTransformer(object):
             elif term.is_of_type("MS:1002508"):
                 crosslinking_donor_or_receiver = {"name": term.name, 'accession': term.id, 'value': int(value)}
                 term_dict.pop(key)
-            elif term.is_of_type("XLMOD:00002"):
+            elif term.is_of_type("XLMOD:00001") or term.is_of_type("XLMOD:00002"):
                 d['name'] = term.name
                 has_identity = True
                 term_dict.pop(key)

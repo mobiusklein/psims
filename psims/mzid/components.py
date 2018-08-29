@@ -32,6 +32,12 @@ class MzIdentML(TagBase):
         'xsi:schemaLocation': 'http://psidev.info/psi/pi/mzIdentML/1.1 ../../schema/mzIdentML1.1.0.xsd'
     }
 
+    v1_1_1_type_attrs = {
+        'xmlns': 'http://psidev.info/psi/pi/mzIdentML/1.1.1',
+        'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+        'xsi:schemaLocation': 'http://psidev.info/psi/pi/mzIdentML/1.1.1 ../../schema/mzIdentML1.1.1.xsd'
+    }
+
     v1_2_0_type_attrs = {
         'xmlns': 'http://psidev.info/psi/pi/mzIdentML/1.2',
         'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
@@ -40,6 +46,7 @@ class MzIdentML(TagBase):
 
     attr_version_map = {
         "1.1.0": v1_1_0_type_attrs,
+        "1.1.1": v1_1_1_type_attrs,
         "1.2.0": v1_2_0_type_attrs,
     }
 
@@ -633,7 +640,7 @@ class ProteinDetectionList(ComponentBase):
 
     def __init__(self, ambiguity_groups=None, count=AUTO,
                  id=1, params=None, context=NullMap, **kwargs):
-        self.ambiguity_groups = ambiguity_groups
+        self.ambiguity_groups = ensure_iterable(ambiguity_groups)
         self.element = _element('ProteinDetectionList', id=id)
         self.count = count
         self.params = self.prepare_params(params, **kwargs)
@@ -671,7 +678,7 @@ class PeptideHypothesis(ComponentBase):
         self.params = params
         self.peptide_evidence_id = peptide_evidence_id
         self._peptide_evidence_id = self.context['PeptideEvidence'][peptide_evidence_id]
-        self.spectrum_identification_ids = spectrum_identification_ids
+        self.spectrum_identification_ids = ensure_iterable(spectrum_identification_ids)
         self._spectrum_identification_ids = [
             self.context['SpectrumIdentificationItem'][spectrum_identification_id]
             for spectrum_identification_id in self.spectrum_identification_ids

@@ -3,6 +3,8 @@ from pyteomics.auxiliary import cvquery
 
 from psims import MzMLWriter
 
+from .utils import log
+
 
 class MzMLReader(mzml.MzML):
 
@@ -211,9 +213,13 @@ class ScanTransformer(object):
             with writer.run(id="transformation_run"):
                 with writer.spectrum_list(len(self.reader._offset_index)):
                     self.reader.reset()
+                    i = 0
                     for spectrum in self.reader.iterfind("spectrum"):
                         spectrum = self.transform(spectrum)
                         self.writer.write_spectrum(**self._format_spectrum(spectrum))
+                        i += 1
+                        if i % 1000 == 0:
+                            log("Handled %d spectra" % (i, ))
 
         self.output_stream.seek(0)
         writer.format()
