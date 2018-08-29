@@ -327,6 +327,7 @@ class MzIdentMLTranslater(object):
             d.update(crosslinking_donor_or_receiver)
         elif crosslinking_donor_or_receiver:
             params.append(crosslinking_donor_or_receiver)
+        # return d
         return self.writer.SearchModification.ensure(d)
 
     def _format_tolerance(self, tol, tp):

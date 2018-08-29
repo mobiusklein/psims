@@ -1151,6 +1151,8 @@ class SearchModification(ComponentBase, ModificationDescriptionBase):
     def __init__(self, mass_delta, fixed, residues, name=None, accession=None, value=None,
                  specificity=None, params=None, context=NullMap, **kwargs):
         self.context = context
+        if value is None:
+            value = ''
         specificity = ensure_iterable(specificity)
         if (specificity):
             if (not isinstance(specificity, (tuple, list))):
@@ -1167,7 +1169,7 @@ class SearchModification(ComponentBase, ModificationDescriptionBase):
             self.accession = None
             self.reference = None
             self.known = None
-        self.value = value or ""
+        self.value = value
         self.params = self.prepare_params(params, **kwargs)
         self.mass_delta = mass_delta
         self.fixed = fixed

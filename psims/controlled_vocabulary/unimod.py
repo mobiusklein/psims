@@ -828,6 +828,6 @@ class UNIMODEntity(Entity):
     def converter(cls, modification, vocabulary):
         data = dict(KeyToAttrProxy(modification))
         data['id'] = 'UNIMOD:%s' % modification.id
-        data['name'] = modification.ex_code_name
+        data['name'] = modification.ex_code_name or modification.code_name or modification.full_name
         data['_object'] = modification
         return cls(vocabulary, **data)
