@@ -165,6 +165,10 @@ class MzMLIndexer(HashingFileBuffer):
         self.write(header)
 
     def embed_source(self):
+        try:
+            self.source.seek(0)
+        except AttributeError:
+            pass
         tree = etree.parse(self.source)
         content = etree.tostring(tree, pretty_print=True).splitlines()
         for line in content:

@@ -284,7 +284,11 @@ class ModificationDescriptionBase(object):
 
     def _resolve_name_accession(self, name):
         try:
-            (mod, cv) = self.context.term(name, include_source=True)
+            try:
+                (mod, cv) = self.context.term(name, include_source=True)
+            except TypeError:
+                p = self.context.param(name)
+                (mod, cv) = self.context.term(p.accession, include_source=True)
             self.name = mod['name']
             self.accession = mod['id']
             self.known = True
@@ -305,7 +309,7 @@ class ModificationDescriptionBase(object):
     def _format_identity(self, xml_file):
         if self.known:
             self.context.param(
-                name=self.name, accession=self.accession, ref=self.reference)(xml_file)
+                name=self.name, accession=self.accession, ref=self.reference, value=self.value)(xml_file)
         else:
             self.context.param(name='unknown modification', accession=self.accession,
                                value=self.name, ref=self.reference)(xml_file)
@@ -314,17 +318,21 @@ class ModificationDescriptionBase(object):
 class Modification(ComponentBase, ModificationDescriptionBase):
     requires_id = False
 
-    def __init__(self, monoisotopic_mass_delta=None, location=None, name=None, id=None, params=None,
-                 residues=None, context=NullMap, **kwargs):
+    def __init__(self, monoisotopic_mass_delta=None, location=None, name=None, accession=None, params=None,
+                 residues=None, value=None, context=NullMap, **kwargs):
         self.context = context
-
-        if id == self.UNKNOWN_MODIFICATION_ACCESSION and name is not None:
+        self.accession = accession
+        self.name = name
+        self.value = value or ""
+        self.params = self.prepare_params(params, **kwargs)
+        self.known = True
+        if accession == self.UNKNOWN_MODIFICATION_ACCESSION and name is not None:
             self.name = name
             self._make_unknown()
-        elif ((id is None) and (name is not None)):
+        elif ((accession is None) and (name is not None)):
             self._resolve_name_accession(name)
-        elif ((name is None) and (id is not None)):
-            self._resolve_name_accession(id)
+        elif (accession is not None):
+            self._resolve_name_accession(accession)
         else:
             warnings.warn(('Unknown modification saved: %s' %
                            monoisotopic_mass_delta))
@@ -334,7 +342,6 @@ class Modification(ComponentBase, ModificationDescriptionBase):
             'Modification', monoisotopicMassDelta=monoisotopic_mass_delta, location=location)
         if self.residues is not None:
             self.element.attrs['residues'] = ''.join(map(str, self.residues))
-        self.params = self.prepare_params(params, **kwargs)
 
     def write_content(self, xml_file):
         if (self.accession is not None):
@@ -732,8 +739,12 @@ class ProteinAmbiguityGroup(ComponentBase):
         self.context = context
         self.element = _element('ProteinAmbiguityGroup', id=id)
         self.context['ProteinAmbiguityGroup'][id] = self.element.id
+        self._check_threshold()
+
+    def _check_threshold(self):
         if self.pass_threshold is not None:
-            self.add_param({"name": 'protein group passes threshold', "value": self.pass_threshold})
+            if not (self.has_param("protein group passes threshold")):
+                self.add_param({"name": 'protein group passes threshold', "value": self.pass_threshold})
 
     def write_content(self, xml_file):
         for protein in self.protein_detection_hypotheses:
@@ -741,7 +752,7 @@ class ProteinAmbiguityGroup(ComponentBase):
         self.after(self.write_params)
 
 
-class DataCollection(GenericCollection, ):
+class DataCollection(GenericCollection):
 
     def __init__(self, inputs, analysis_data, context=NullMap):
         super(DataCollection, self).__init__(
@@ -815,8 +826,9 @@ class Enzyme(ComponentBase):
                  min_distance=None, n_term_gain=None, c_term_gain=None, params=None, context=NullMap, **kwargs):
         self.name = name
         if (site_regexp is None):
-            term = context.term(name)
             try:
+                p = context.param(name)
+                term = context.term(p.name)
                 regex_ref = term['has_regexp']
                 regex_ent = context.term(regex_ref)
                 regex = regex_ent['name']
@@ -1116,10 +1128,10 @@ class SpecificityRules(ParameterContainer):
             'SpecificityRules', params, context=context)
 
 
-class SearchModification(ComponentBase, ModificationDescriptionBase, ):
+class SearchModification(ComponentBase, ModificationDescriptionBase):
     requires_id = False
 
-    def __init__(self, mass_delta, fixed, residues, name=None,
+    def __init__(self, mass_delta, fixed, residues, name=None, accession=None, value=None,
                  specificity=None, params=None, context=NullMap, **kwargs):
         self.context = context
         specificity = ensure_iterable(specificity)
@@ -1129,13 +1141,16 @@ class SearchModification(ComponentBase, ModificationDescriptionBase, ):
             if (not isinstance(specificity[0], SpecificityRules)):
                 specificity = [SpecificityRules.ensure(
                     s, context=context) for s in specificity]
-        if (name is not None):
+        if (accession is not None):
+            self._resolve_name_accession(accession)
+        elif (name is not None):
             self._resolve_name_accession(name)
         else:
             self.name = None
             self.accession = None
             self.reference = None
             self.known = None
+        self.value = value or ""
         self.params = self.prepare_params(params, **kwargs)
         self.mass_delta = mass_delta
         self.fixed = fixed
@@ -1145,12 +1160,12 @@ class SearchModification(ComponentBase, ModificationDescriptionBase, ):
             'SearchModification', fixedMod=fixed, massDelta=mass_delta, residues=self.residues)
 
     def write_content(self, xml_file):
-        if (self.name is not None):
-            self._format_identity(xml_file)
-        self.write_params(xml_file)
         if (self.specificity):
             for spec in self.specificity:
                 spec.write(xml_file)
+        if (self.name is not None):
+            self._format_identity(xml_file)
+        self.write_params(xml_file)
 
 
 class ProteinDetectionProtocol(ComponentBase):
@@ -1242,6 +1257,8 @@ class ProteinDetection(ComponentBase):
                      spectrumIdentificationList_ref=sid).write(xml_file)
 
 
+# ---- Auditing and Provenance --------
+
 DEFAULT_CONTACT_ID = 'PERSON_DOC_OWNER'
 DEFAULT_ORGANIZATION_ID = 'ORG_DOC_OWNER'
 
@@ -1297,9 +1314,10 @@ class AnalysisSoftware(ComponentBase):
         self.customization = customization
 
     def write_content(self, xml_file):
-        with element(xml_file, 'ContactRole', contact_ref=self.contact):
-            with element(xml_file, 'Role'):
-                self.write_params(xml_file, self.prepare_params(self.role))
+        if self.role:
+            with element(xml_file, 'ContactRole', contact_ref=self.contact):
+                with element(xml_file, 'Role'):
+                    self.write_params(xml_file, self.prepare_params(self.role))
         with element(xml_file, 'SoftwareName'):
             name_param = self.context.param(name=self.name)
             if isinstance(name_param, UserParam):
@@ -1352,10 +1370,10 @@ class Person(ComponentBase):
                              for affiliation in ensure_iterable(affiliations)]
 
     def write_content(self, xml_file):
+        self.write_params(xml_file)
         if self.affiliations:
             for affiliation in self.affiliations:
                 _element('Affiliation', organization_ref=affiliation).write(xml_file)
-        self.write_params(xml_file)
 
 
 class Organization(ComponentBase):

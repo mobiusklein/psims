@@ -3,14 +3,13 @@ import pytest
 from io import BytesIO
 
 from psims import document
-from psims.mzid import writer, components
+from psims.mzml import writer, components
 from .utils import output_path
-
 
 
 def test_repr_borrow():
     buffer = BytesIO()
-    f = writer.MzIdentMLWriter(buffer)
+    f = writer.MzMLWriter(buffer)
 
     with f:
         f.controlled_vocabularies()
@@ -29,7 +28,7 @@ def test_referential_integrity():
 
 
 def test_xmlwriter(output_path):
-    f = writer.MzIdentMLWriter(output_path)
+    f = writer.MzMLWriter(output_path)
     with f:
         pass
     f.close()
@@ -41,7 +40,7 @@ def test_xmlwriter(output_path):
         pass
 
     buffer = BytesIO()
-    f = writer.MzIdentMLWriter(buffer)
+    f = writer.MzMLWriter(buffer)
     with f:
         f.write("Spam")
     f.format()

@@ -1,3 +1,5 @@
+from __future__ import print_function
+import sys
 import re
 
 from pyteomics import mzid
@@ -8,6 +10,15 @@ from psims.mzid import MzIdentMLWriter
 
 
 N = float('inf')
+K = 1000
+
+
+def identity(x):
+    return x
+
+
+def log(message):
+    print(message, file=sys.stderr)
 
 
 class MzIdentMLParser(mzid.MzIdentML):
@@ -39,13 +50,49 @@ class MzIdentMLTransformer(object):
         params = []
         for key, value in list(d.items()):
             if hasattr(key, 'accession'):
-                params.append({
-                    "name": key, "value": value
-                })
-                if hasattr(value, 'unit_info'):
-                    params[-1]['unit_name'] = value.unit_info
-                if key.accession:
-                    params[-1]['accession'] = key.accession
+                accession = key.accession
+                value_type = identity
+                if accession:
+                    term = self.writer.term(accession)
+                    try:
+                        value_type = term.value_type
+                    except KeyError:
+                        pass
+                if isinstance(value, list):
+                    value_list = value
+                    for value in value_list:
+                        unit = None
+                        if hasattr(value, 'unit_info'):
+                            unit = value.unit_info
+                        try:
+                            cast_value = value_type(value)
+                        except ValueError:
+                            cast_value = value
+                        param = {
+                            "name": key, "value": cast_value
+                        }
+                        if accession:
+                            param['accession'] = accession
+                        if unit:
+                            param['unit_name'] = unit
+                        params.append(param)
+                else:
+                    unit = None
+                    if hasattr(value, 'unit_info'):
+                        unit = value.unit_info
+                    try:
+                        cast_value = value_type(value)
+                    except ValueError:
+                        cast_value = value
+                    param = {
+                        "name": key, "value": cast_value
+                    }
+                    if accession:
+                        param['accession'] = accession
+                    if unit:
+                        param['unit_name'] = unit
+                    params.append(param)
+
                 d.pop(key)
         return params
 
@@ -62,6 +109,7 @@ class MzIdentMLTransformer(object):
         pass
 
     def copy_provenance(self):
+        log("Copying Provenance Information")
         self.reader.reset()
         try:
             analysis_software_list = next(self.reader.iterfind("AnalysisSoftwareList"))
@@ -126,6 +174,7 @@ class MzIdentMLTransformer(object):
         return self.writer.AuditCollection(person, organization)
 
     def copy_sequence_collection(self):
+        log("Copying Sequence Collection")
         writer = self.writer
         reader = self.reader
         with writer.sequence_collection():
@@ -134,6 +183,8 @@ class MzIdentMLTransformer(object):
             for db_seq in map(self._format_db_sequence, reader.iterfind("dBSequence")):
                 i += 1
                 db_seq.write(self.writer)
+                if i % K == 0:
+                    log("Copied %d dBSequences" % i)
                 if i > N:
                     break
 
@@ -142,6 +193,8 @@ class MzIdentMLTransformer(object):
             for peptide in map(self._format_peptide, reader.iterfind("Peptide")):
                 i += 1
                 peptide.write(self.writer)
+                if i % K == 0:
+                    log("Copied %d Peptides" % i)
                 if i > N:
                     break
 
@@ -150,6 +203,8 @@ class MzIdentMLTransformer(object):
             for peptide_ev in map(self._format_peptide_evidence, reader.iterfind("PeptideEvidence")):
                 i += 1
                 peptide_ev.write(self.writer)
+                if i % K == 0:
+                    log("Copied %d PeptideEvidence" % i)
                 if i > N:
                     break
 
@@ -173,15 +228,35 @@ class MzIdentMLTransformer(object):
         d['monoisotopic_mass_delta'] = temp.pop("monoisotopicMassDelta", None)
         d['residues'] = temp.pop("residues", None)
         term_dict = cvquery(temp)
+        crosslinking_donor_or_receiver = None
+        has_identity = False
+        params = []
+        d['params'] = params
+
         for key, value in list(term_dict.items()):
             term = self.writer.term(key)
             if term.is_of_type('UNIMOD:0'):
                 d['name'] = term.name
+                has_identity = True
                 term_dict.pop(key)
             elif term.is_of_type("MS:1001460"):
                 d['name'] = value
-                d['id'] = "MS:1001460"
+                d['accession'] = "MS:1001460"
                 term_dict.pop(key)
+                has_identity = True
+            # crosslinking donor
+            elif term.is_of_type("MS:1002508"):
+                crosslinking_donor_or_receiver = {"name": term.name, 'accession': term.id, 'value': int(value)}
+                term_dict.pop(key)
+            elif term.is_of_type("XLMOD:00002"):
+                d['name'] = term.name
+                has_identity = True
+                term_dict.pop(key)
+
+        if not has_identity and crosslinking_donor_or_receiver:
+            d.update(crosslinking_donor_or_receiver)
+        elif crosslinking_donor_or_receiver:
+            params.append(crosslinking_donor_or_receiver)
         return self.writer.Modification.ensure(d)
 
     def _format_substitution(self, sub):
@@ -213,32 +288,48 @@ class MzIdentMLTransformer(object):
     def _format_enzyme(self, enz):
         d = dict(enz)
         d['name'] = d.pop("EnzymeName", None)
-        d['site_regexp'] = d.pop('SiteRegexp')
+        d['site_regexp'] = d.pop('SiteRegexp', None)
         d['missed_cleavages'] = d.pop("missedCleavages", 0)
         self._translate_keys(d, ["minDistance", "semiSpecific", "nTermGain", "cTermGain"])
         return self.writer.Enzyme.ensure(d)
 
     def _format_search_modification(self, mod):
-        d = dict(mod)
-        d['fixed'] = d.pop("fixedMod", False)
-        d['mass_delta'] = d.pop("massDelta")
-        d['specificity'] = d.pop('SpecificityRules', [])
-        term_dict = cvquery(d)
-        if len(term_dict) == 1:
-            d['name'] = list(term_dict)[0]
-            try:
-                d.pop(list(term_dict.values())[0], None)
-            except (KeyError, TypeError):
-                pass
-        else:
-            for key, value in list(term_dict.items()):
-                term = self.writer.term(key)
-                if term.is_of_type('UNIMOD:0'):
-                    d['name'] = term.name
-                    term_dict.pop(key)
-                elif term.is_of_type("MS:1001460"):
-                    d['name'] = {"name": key, "value": value}
-                    term_dict.pop(key)
+        temp = dict(mod)
+        d = dict()
+        d['fixed'] = temp.pop("fixedMod", False)
+        d['mass_delta'] = temp.pop("massDelta")
+        d['specificity'] = temp.pop('SpecificityRules', [])
+        d['residues'] = temp.pop("residues")
+        term_dict = cvquery(temp)
+        crosslinking_donor_or_receiver = None
+        has_identity = False
+        params = []
+        d['params'] = params
+
+        for key, value in list(term_dict.items()):
+            term = self.writer.term(key)
+            if term.is_of_type('UNIMOD:0'):
+                d['name'] = term.name
+                has_identity = True
+                term_dict.pop(key)
+            elif term.is_of_type("MS:1001460"):
+                d['name'] = value
+                d['accession'] = "MS:1001460"
+                term_dict.pop(key)
+                has_identity = True
+            # crosslinking donor
+            elif term.is_of_type("MS:1002508"):
+                crosslinking_donor_or_receiver = {"name": term.name, 'accession': term.id, 'value': int(value)}
+                term_dict.pop(key)
+            elif term.is_of_type("XLMOD:00001") or term.is_of_type("XLMOD:00002"):
+                d['name'] = term.name
+                has_identity = True
+                term_dict.pop(key)
+
+        if not has_identity and crosslinking_donor_or_receiver:
+            d.update(crosslinking_donor_or_receiver)
+        elif crosslinking_donor_or_receiver:
+            params.append(crosslinking_donor_or_receiver)
         return self.writer.SearchModification.ensure(d)
 
     def _format_tolerance(self, tol, tp):
@@ -271,6 +362,7 @@ class MzIdentMLTransformer(object):
         return self.writer.ProteinDetectionProtocol.ensure(d)
 
     def copy_analysis_protocol_collection(self):
+        log("Copying Protocols")
         self.reader.reset()
         apc = next(self.reader.iterfind("AnalysisProtocolCollection", retrieve_refs=False))
         protocols = []
@@ -302,6 +394,7 @@ class MzIdentMLTransformer(object):
         return self.writer.ProteinDetection.ensure(d)
 
     def copy_inputs(self):
+        log("Copying Inputs")
         self.reader.reset()
         inputs = next(self.reader.iterfind('Inputs'))
         source_files = map(self._format_source_file, ensure_iterable(inputs.get("SourceFile")))
@@ -339,6 +432,7 @@ class MzIdentMLTransformer(object):
         return self.writer.SearchDatabase.ensure(d)
 
     def copy_analysis_data(self):
+        log("Copying Analysis Data")
         reader = self.reader
         writer = self.writer
         with writer.analysis_data():
@@ -355,6 +449,8 @@ class MzIdentMLTransformer(object):
                                     self._format_spectrum_identification_item,
                                     spectrum_id_result['SpectrumIdentificationItem']):
                                 item.write(self.writer)
+                        if i % K == 0:
+                            log("Copied %d SpectrumIdentificationResults" % i)
                         if i > N:
                             break
 
@@ -382,6 +478,8 @@ class MzIdentMLTransformer(object):
                             j += 1
                             if j > N:
                                 break
+                        if i % K == 0:
+                            log("Copied %d ProteinAmbiguityGroups" % i)
                         if i > N:
                             break
 

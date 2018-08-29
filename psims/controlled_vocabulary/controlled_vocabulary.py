@@ -86,10 +86,17 @@ class ControlledVocabulary(object):
                 try:
                     return self._names[self.normalize_name(key)]
                 except KeyError as e2:
+                    lower_key = key.lower()
                     try:
-                        return self._synonyms[key.lower()]
+                        return self._synonyms[lower_key]
                     except KeyError:
-                        raise KeyError("%s and %s were not found." % (e, e2))
+                        try:
+                            return self.terms[lower_key]
+                        except KeyError:
+                            err = KeyError("%s and %s were not found." % (e, e2))
+                            # suppress intense Py3 exception chain without using raise-from syntax
+                            err.__cause__ = None
+                            raise err
 
     def __repr__(self):
         template = ("{self.__class__.__name__}(terms={size}, id={self.id}, "

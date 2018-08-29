@@ -617,6 +617,20 @@ class ComponentBase(object):
         params.extend(kwargs.items())
         return params
 
+    def has_param(self, query, params=None):
+        if params is None:
+            params = self.params
+        query_param = self.context.term(query)
+        for param in params:
+            try:
+                param = self.context.param(param)
+                term = self.context.term(param.accession)
+                if term.id == query_param.id:
+                    return True
+            except KeyError:
+                continue
+        return False
+
     def add_param(self, param):
         if isinstance(param, list):
             self.params.extend(param)
