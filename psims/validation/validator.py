@@ -12,7 +12,7 @@ def get_xsd(name):
 schemas = {
     'mzML': ('mzML1.1.0.xsd'),
     'indexedmzML': ('mzML1.1.2_idx.xsd'),
-    'MzIdentML': ('mzIdentML1.2.0.xsd'),
+    # 'MzIdentML': ('mzIdentML1.2.0.xsd'),
     "http://psidev.info/psi/pi/mzIdentML/1.1 ../schema/mzIdentML1.1.0.xsd": ("mzIdentML1.1.0.xsd"),
     "http://psidev.info/psi/pi/mzIdentML/1.1.1 ../schema/mzIdentML1.1.1.xsd": ("mzIdentML1.1.1.xsd"),
     "http://psidev.info/psi/pi/mzIdentML/1.2 ../schema/mzIdentML1.2.0.xsd": ("mzIdentML1.2.0.xsd"),
