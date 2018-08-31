@@ -208,8 +208,8 @@ class MzMLTransformer(object):
                 precursor_information.setdefault("intensity", None)
                 precursor_information.setdefault("charge", None)
                 precursor_information['params'] = ion.items()
-                precursor_information['activation'] = prec.get('activation', {}).items()
-                precursor_information['isolation_window_args'] = prec.get("isolationWindow", {})
+                precursor_information['activation'] = (prec.get('activation', {}).items())
+                precursor_information['isolation_window_args'] = prec.get("isolationWindow", None)
                 precursor_list.append(precursor_information)
 
         else:

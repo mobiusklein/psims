@@ -535,11 +535,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                                        intensity_unit=DEFAULT_INTENSITY_UNIT):
         if params is None:
             params = []
-        if activation is not None:
+        if activation:
             activation = self.Activation(activation)
         ion = self.SelectedIon(mz, intensity, charge, params=params)
         ion_list = self.SelectedIonList([ion])
-        if isolation_window_args is not None:
+        if isolation_window_args:
             isolation_window_tag = self.IsolationWindow(**isolation_window_args)
         else:
             isolation_window_tag = None
