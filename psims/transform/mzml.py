@@ -180,7 +180,7 @@ class MzMLTransformer(object):
             while i < n:
                 lo = scan_window_list[i]
                 hi = scan_window_list[i + 1]
-                windows.append((lo, hi))
+                windows.append((lo['value'], hi['value']))
                 i += 2
             spec_data['scan_window_list'] = windows
 
