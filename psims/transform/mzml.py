@@ -6,27 +6,27 @@ from psims import MzMLWriter
 from .utils import log
 
 
-class MzMLReader(mzml.MzML):
+class MzMLParser(mzml.MzML):
 
     def _handle_param(self, element, **kwargs):
         try:
             element.attrib["value"]
         except KeyError:
             element.attrib["value"] = ""
-        return super(MzMLReader, self)._handle_param(element, **kwargs)
+        return super(MzMLParser, self)._handle_param(element, **kwargs)
 
     def reset(self):
-        super(MzMLReader, self).reset()
+        super(MzMLParser, self).reset()
         self.seek(0)
 
 
-class ScanTransformer(object):
+class MzMLTransformer(object):
     def __init__(self, input_stream, output_stream, transform, transform_description=None):
         self.input_stream = input_stream
         self.output_stream = output_stream
         self.transform = transform
         self.transform_description = transform_description
-        self.reader = MzMLReader(input_stream, iterative=True)
+        self.reader = MzMLParser(input_stream, iterative=True)
         self.writer = MzMLWriter(output_stream)
         self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary
 
@@ -75,9 +75,9 @@ class ScanTransformer(object):
         software_list = next(self.reader.iterfind("softwareList"))
         software_list = software_list.get("software", [])
         software_list.append({
-            "id": "psims-example-ScanTransformer",
+            "id": "psims-example-MzMLTransformer",
             "params": [
-                self.writer.param("custom unreleased software tool", "psims-example-ScanTransformer"),
+                self.writer.param("custom unreleased software tool", "psims-example-MzMLTransformer"),
             ]
         })
         self.writer.software_list(software_list)
@@ -88,11 +88,11 @@ class ScanTransformer(object):
         # include transformation description here
         data_processing = self._format_data_processing()
         data_processing.append({
-            "id": "psims-example-ScanTransformer-processing",
+            "id": "psims-example-MzMLTransformer-processing",
             "processing_methods": [
                 {
                     "order": 1,
-                    "software_reference": "psims-example-ScanTransformer",
+                    "software_reference": "psims-example-MzMLTransformer",
                     "params": ([self.transform_description] if self.transform_description else []
                                ) + ['conversion to mzML'],
                 }
@@ -147,6 +147,7 @@ class ScanTransformer(object):
                     params[-1]['unit_name'] = value.unit_info
 
         scan_params = []
+        scan_window_list = []
         for key, value in list(term_dict.items()):
             try:
                 term = self.psims_cv[key]
@@ -165,6 +166,23 @@ class ScanTransformer(object):
                     if hasattr(value, 'unit_info'):
                         params[-1]['unit_name'] = value.unit_info
                 term_dict.pop(key)
+            elif term.is_of_type("selection window attribute"):
+                scan_window_list.append(
+                    {"name": term.id, "value": value})
+                if hasattr(value, 'unit_info'):
+                    scan_window_list[-1]['unit_name'] = value.unit_info
+
+        scan_window_list.sort(key=lambda x: x['value'])
+        if len(scan_window_list) % 2 == 0:
+            windows = []
+            i = 0
+            n = len(scan_window_list)
+            while i < n:
+                lo = scan_window_list[i]
+                hi = scan_window_list[i + 1]
+                windows.append((lo, hi))
+                i += 2
+            spec_data['scan_window_list'] = windows
 
         spec_data['params'] = params
         spec_data['scan_params'] = scan_params

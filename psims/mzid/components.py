@@ -1260,7 +1260,7 @@ class ProteinDetection(ComponentBase):
             proteinDetectionProtocol_ref=context['ProteinDetectionProtocol'][
                 protein_detection_protocol_id],
             proteinDetectionList_ref=context['ProteinDetectionList'][protein_detection_list_id],
-            name=name, activityDate=activityDate)
+            name=name, activityDate=activity_date)
         self.context['ProteinDetection'][id] = self.element.id
 
     def write_content(self, xml_file):
