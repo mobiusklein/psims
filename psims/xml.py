@@ -375,13 +375,14 @@ class ParamGroupReference(TagBase):
 
 
 class CV(object):
-    def __init__(self, full_name, id, uri, version=None, **kwargs):
+    def __init__(self, full_name, id, uri, version=None, resolver=None, **kwargs):
         self.full_name = full_name
         self.id = id
         self.uri = uri
         self._version = version
         self.options = kwargs
         self._vocabulary = None
+        self.resolver = None
 
     @property
     def version(self):
@@ -399,12 +400,13 @@ class CV(object):
         return self._vocabulary
 
     def load(self, handle=None):
+        resolver = self.resolver or controlled_vocabulary.obo_cache
         if handle is None:
             try:
-                fp = controlled_vocabulary.obo_cache.resolve(self.uri)
+                fp = resolver.resolve(self.uri)
                 cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
             except ValueError:
-                fp = controlled_vocabulary.obo_cache.fallback(self.uri)
+                fp = resolver.fallback(self.uri)
                 if fp is not None:
                     cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
                 else:
@@ -432,7 +434,13 @@ class ProvidedCV(CV):
         super(ProvidedCV, self).__init__(id=id, uri=uri, **kwargs)
 
     def load(self, handle=None):
-        cv = controlled_vocabulary.obo_cache.resolve(self.uri)
+        resolver = self.resolver or controlled_vocabulary.obo_cache
+        try:
+            cv = resolver.resolve(self.uri)
+        except ValueError:
+            cv = resolver.fallback(self.uri)
+            if cv is None:
+                raise LookupError(self.uri)
         try:
             cv.id = self.id
         except Exception:
@@ -441,9 +449,6 @@ class ProvidedCV(CV):
 
     def __getitem__(self, key):
         return self.converter(super(ProvidedCV, self).__getitem__(key), self)
-
-    def query(self, *args, **kwargs):
-        return self.convert(super(ProvidedCV, self).query(*args, **kwargs), self)
 
 
 class XMLWriterMixin(object):
@@ -586,7 +591,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         if self._should_close():
             self.close()
 
-    def controlled_vocabularies(self, vocabularies=None):
+    def controlled_vocabularies(self):
         """Write out the `<cvList>` element and all its children,
         including both this format's default controlled vocabularies
         and those passed as arguments to this method.this
@@ -599,9 +604,6 @@ class XMLDocumentWriter(XMLWriterMixin):
             A list of additional ControlledVocabulary objects
             which will be used to construct `<cv>` elements
         """
-        if vocabularies is None:
-            vocabularies = []
-        self.vocabularies.extend(vocabularies)
         cvlist = self.CVList(self.vocabularies)
         cvlist.write(self.writer)
 

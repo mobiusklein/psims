@@ -1405,12 +1405,14 @@ class Organization(ComponentBase):
         self.element = _element('Organization', name=name, id=id)
         self.context = context
         self.context['Organization'][id] = self.element.id
-        self.parent = self.context['Organization'][parent]
+        self.parent = parent
+        if parent:
+            self._parent = self.context['Organization'][parent]
 
     def write_content(self, xml_file):
         self.write_params(xml_file)
         if (self.parent is not None):
-            _element('Parent', organization_ref=self.parent).write(xml_file)
+            _element('Parent', organization_ref=self._parent).write(xml_file)
 
 
 class AuditCollection(ComponentBase):

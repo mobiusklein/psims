@@ -3,6 +3,7 @@ from collections import defaultdict, OrderedDict
 from functools import partial, update_wrapper
 from contextlib import contextmanager
 
+from .controlled_vocabulary import obo_cache, ControlledVocabulary
 from .utils import add_metaclass, ensure_iterable, Mapping
 
 from .xml import (
@@ -50,6 +51,9 @@ class SpecializedContextCache(OrderedDict):
             return item
         except KeyError:
             if key is None:
+                warnings.warn(
+                    "A reference key should not be \"None\"", ReferentialIntegrityWarning,
+                    stacklevel=3)
                 return None
             if self.missing_reference_is_error:
                 raise ReferentialIntegrityError(key)
@@ -61,11 +65,13 @@ class SpecializedContextCache(OrderedDict):
             if isinstance(key, int):
                 new_value = id_maker(self.type_name, key)
             else:
-                new_value = key
+                new_value = str(key)
             self[key] = new_value
             return new_value
 
     def register(self, id):
+        if id is None:
+            return None
         if isinstance(id, int):
             value = id_maker(self.type_name, id)
         else:
@@ -94,8 +100,17 @@ class VocabularyResolver(object):
     warn_on_ambiguous_missing_units = True
     validate_units = True
 
-    def __init__(self, vocabularies=None):
-        self.vocabularies = vocabularies
+    def __init__(self, vocabularies=None, vocabulary_resolver=None):
+        if vocabularies is None:
+            vocabularies = []
+        if vocabulary_resolver is None:
+            vocabulary_resolver = obo_cache
+        self.vocabulary_resolver = vocabulary_resolver
+        self.vocabularies = list(map(self._bind_vocabulary, vocabularies))
+
+    def _bind_vocabulary(self, cv):
+        cv.resolver = self.vocabulary_resolver
+        return cv
 
     def get_vocabulary(self, id):
         for vocab in self.vocabularies:
@@ -291,9 +306,9 @@ class VocabularyResolver(object):
 
 class DocumentContext(dict, VocabularyResolver):
 
-    def __init__(self, vocabularies=None, missing_reference_is_error=False):
+    def __init__(self, vocabularies=None, vocabulary_resolver=None, missing_reference_is_error=False):
         dict.__init__(self)
-        VocabularyResolver.__init__(self, vocabularies)
+        VocabularyResolver.__init__(self, vocabularies, vocabulary_resolver)
         self.missing_reference_is_error = missing_reference_is_error
 
     def param_group_reference(self, id):
@@ -382,11 +397,14 @@ class ComponentDispatcherBase(object):
     """
     _component_partial_type = CallbackBindingPartial
 
-    def __init__(self, context=None, vocabularies=None, component_namespace=None, missing_reference_is_error=False):
+    def __init__(self, context=None, vocabularies=None, vocabulary_resolver=None, component_namespace=None,
+                 missing_reference_is_error=False):
         if vocabularies is None:
             vocabularies = []
         if context is None:
-            context = DocumentContext(vocabularies=vocabularies, missing_reference_is_error=missing_reference_is_error)
+            context = DocumentContext(
+                vocabularies=vocabularies, vocabulary_resolver=vocabulary_resolver,
+                missing_reference_is_error=missing_reference_is_error)
         else:
             if vocabularies is not None:
                 context.vocabularies.extend(vocabularies)

@@ -34,13 +34,17 @@ log = LoggingProxy()
 log.enable()
 
 
+def key_fn(x):
+    return (getattr(x, 'accession', None), str(x))
+
+
 def differ(a, b):
     if not issubclass(type(a), type(b)):
         return False
     if isinstance(a, dict):
         return dict_diff(a, b)
     elif isinstance(a, (list, tuple)):
-        return all(differ(ai, bi) for ai, bi in zip(sorted(a), sorted(b)))
+        return seq_diff(a, b)
     elif isinstance(a, float):
         return abs(a - b) < 1e-3
     elif isinstance(a, cvstr):
@@ -52,6 +56,20 @@ def differ(a, b):
         return np.allclose(a, b)
     else:
         return a == b
+
+
+def seq_diff(a, b):
+    a = sorted(a, key=key_fn)
+    b = sorted(b, key=key_fn)
+    if len(a) != len(b):
+        print("Size Difference", len(a), '!=', len(b))
+        return False
+    for i in range(len(a)):
+        ai, bi = a[i], b[i]
+        if not differ(ai, bi):
+            print("Position %d\n, %r != %r" % (i, ai, bi))
+            return False
+    return True
 
 
 def dict_diff(a, b):

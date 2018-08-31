@@ -165,6 +165,7 @@ def test_write(output_path, compressor):
     spec = next(reader)
     assert "negative scan" in spec
     assert spec['ms level'] == 2
+    assert "sourceFileRef" not in spec
     scan_list_struct = spec['scanList']
     reference = None
     for scan in scan_list_struct.get("scan", []):

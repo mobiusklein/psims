@@ -160,13 +160,14 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     DEFAULT_TIME_UNIT = DEFAULT_TIME_UNIT
     DEFAULT_INTENSITY_UNIT = DEFAULT_INTENSITY_UNIT
 
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False, **kwargs):
+    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False, vocabulary_resolver=None, **kwargs):
         if vocabularies is None:
             vocabularies = []
         vocabularies = list(default_cv_list) + list(vocabularies)
         ComponentDispatcher.__init__(
             self,
             vocabularies=vocabularies,
+            vocabulary_resolver=vocabulary_resolver,
             missing_reference_is_error=missing_reference_is_error)
         XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
         self.spectrum_count = 0

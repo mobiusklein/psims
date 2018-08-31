@@ -344,7 +344,8 @@ class InstrumentConfiguration(ComponentBase):
             component_list = ComponentList(component_list, context=context)
         self.params = self.prepare_params(params, **kwargs)
         self.software_reference = software_reference
-        self._software_reference = context['Software'][software_reference]
+        if software_reference is not None:
+            self._software_reference = context['Software'][software_reference]
         self.component_list = component_list
         self.element = _element('instrumentConfiguration', id=id)
         self.context = context
@@ -515,14 +516,18 @@ class Spectrum(ComponentBase):
         self.binary_data_list = binary_data_list
         self.scan_list = scan_list
         self.data_processing_reference = data_processing_reference
-        self._data_processing_reference = context[
-            'DataProcessing'][data_processing_reference]
+        if data_processing_reference is not None:
+            self._data_processing_reference = context['DataProcessing'][data_processing_reference]
+        else:
+            self._data_processing_reference = None
         self.precursor_list = precursor_list
         self.product_list = product_list
         self.default_array_length = default_array_length
         self.source_file_reference = source_file_reference
-        self._source_file_reference = context[
-            'SourceFile'][source_file_reference]
+        if source_file_reference is not None:
+            self._source_file_reference = context['SourceFile'][source_file_reference]
+        else:
+            self._source_file_reference = None
         self.element = _element(
             'spectrum',
             id=id,

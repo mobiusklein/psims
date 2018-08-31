@@ -1,12 +1,12 @@
 format-version: 1.2
-data-version: release/2018-08-09
+data-version: release/2018-08-29
 ontology: xlmod
-date: 09:08:2018 15:25
+date: 29:08:2018 13:38
 saved-by: Gerhard Mayer
 auto-generated-by: OBO-Edit 2.3.1
 default-namespace: xlmod
-remark: version: 1.1.6
-remark: coverage: cross-linking reagents, cross-linker related post-translational modifications, and derivatization reagents for GC-MS
+remark: version: 1.1.7
+remark: coverage: cross-linking reagents, cross-linker related post-translational modifications, and derivatization reagents for GC-MS and LC-MS
 remark: creator: Lutz Fischer <lfischer <-at-> staffmail.ed.ac.uk>
 remark: creator: Alexander Leitner <leitner <-at-> imsb.biol.ethz.ch>
 remark: creator: Nils Hoffmann <nils.hoffmann <-at-> isas.de>
@@ -18,66 +18,82 @@ remark: To view a copy of this license, visit https://creativecommons.org/licens
 id: part_of
 name: part_of
 is_transitive: true
+def: "The basic part of relationship indicating a top-level branch of this ontology." [OBO:defs]
 
 [Typedef]
 id: is_activatable
 name: is_activatable
+def: "Indicates how the cross-linking reagent can be activated." [OBO:defs]
 
 [Typedef]
 id: is_analog_of
 name: is_analog_of
+def: "Indicates biochemical analogues of nucleobases, nucleosides or amino acids." [OBO:defs]
 
 [Typedef]
 id: is_cleavable
 name: is_cleavable
+def: "Indicates that the cross-linking reagent is cleavable." [OBO:defs]
 
 [Typedef]
 id: is_labelled
 name: is_labelled
+def: "Indicates that the cross-linking or derivatization reagent has an isotopic label." [OBO:defs]
 
 [Typedef]
 id: is_partially_reacted
 name: is_partially_reacted
+def: "Specifies the type of the cross-linker related chemical modification." [OBO:defs]
 
 [Typedef]
 id: is_reactive_with
 name: is_reactive_with
+def: "Indicates the chemical group that can react with the cross-linking or derivatization reagent." [OBO:defs]
 
 [Typedef]
 id: is_side_product_of
 name: is_side_product_of
+def: "Indicates the cross-linking reagent from which the chemical modification is derived." [OBO:defs]
 
 [Typedef]
 id: has_handle
 name: has_handle
+def: "Indicates that the cross-linking reagent has a handle that can be used for detection/identification, enrichment or purification." [OBO:defs]
 
 [Typedef]
 id: has_click_enabled_linker
 name: has_click_enabled_linker
+def: "Indicates that the cross-linking reagent has a linker that can be enabled by click chemistry." [OBO:defs]
 
 [Typedef]
 id: has_neutral_loss_reporter
 name: has_neutral_loss_reporter
+def: "Indicates that the cross-linking reagent has a neutral loss reporter." [OBO:defs]
 
 [Typedef]
 id: has_property
 name: has_property
+def: "Indicates a property of a cross-linking or derivatization reagent." [OBO:defs]
 
 [Typedef]
 id: has_chromophore
 name: has_chromophore
+def: "Indicates that the derivatization reagent can be detected by the specified chromophore." [OBO:defs]
 
 [Typedef]
 id: has_electrophore
 name: has_electrophore
+def: "Indicates that the derivatization reagent can be detected by the specified electrophore." [OBO:defs]
 
 [Typedef]
 id: has_fluorophore
 name: has_fluorophore
+def: "Indicates that the derivatization reagent can be detected by the specified fluorophore." [OBO:defs]
 
 [Typedef]
 id: has_reactive_group
 name: has_reactive_group
+def: "Indicates that the cross-linking or derivatization reagent has the specified reactive group." [OBO:defs]
 
 [Term]
 id: xlmod:00000
@@ -1276,7 +1292,7 @@ is_a: xlmod:00100 ! reactive group
 relationship: is_reactive_with xlmod:00028 ! amine reactive
 
 [Term]
-id: xlmod:00167
+id: xlmod:00168
 name: benzyl bromide reactive group
 def: "A benzyl bromide (C6H5CH2Br) reactive group." [PMID:21557289]
 synonym: "Bn-Br" EXACT []
@@ -1287,7 +1303,7 @@ relationship: is_reactive_with xlmod:06509 ! phenol reactive
 relationship: is_reactive_with xlmod:06521 ! phosphate reactive
 
 [Term]
-id: xlmod:00168
+id: xlmod:00169
 name: benzoyl bromide
 def: "A benzoyl bromide (C6H5COBr) reactive group." [PMID:21557289]
 synonym: "Bz-Br" EXACT []
@@ -6525,7 +6541,7 @@ def: "Pentafluorobenzyl bromide." [CAS:1765-40-8, PubChem_Compound:74484, MDL:MF
 synonym: "PFBBr" EXACT []
 is_a: xlmod:06020 ! arylation reagent
 is_a: xlmod:06010 ! LCMS derivatization reagent
-relationship: has_reactive_group xlmod:00167 ! benzyl bromide reactive group
+relationship: has_reactive_group xlmod:00168 ! benzyl bromide reactive group
 relationship: is_reactive_with xlmod:06504 ! nitrosamine reactive
 relationship: is_reactive_with xlmod:06505 ! sulfonamide reactive
 
@@ -6543,7 +6559,7 @@ name: benzylbromide
 def: "Benzylbromide." [CAS:100-39-0, PubChem_Compound:7498, ChemSpiderID:13851576, ChemicalBookNo:CB6761035, DOI:10.5772/33098]
 synonym: "BnBr" EXACT []
 is_a: xlmod:06020 ! arylation reagent
-relationship: has_reactive_group xlmod:00167 ! benzyl bromide reactive group
+relationship: has_reactive_group xlmod:00168 ! benzyl bromide reactive group
 
 [Term]
 id: xlmod:07005
@@ -7289,7 +7305,7 @@ id: xlmod:07100
 name: 2,3,5,6-Tetrafluoro-4-ethanol(trifluoromethyl)benzyl bromide
 def: "2,3,5,6-Tetrafluoro-4-ethanol(trifluoromethyl)benzyl bromide." [CAS:76437-40-6, PubChem_Compound:127137, ChemSpiderID:112859, ChemicalBookNo:CB1682115]
 is_a: xlmod:06002 ! alkylation reagent
-relationship: has_reactive_group xlmod:00167 ! benzyl bromide reactive group
+relationship: has_reactive_group xlmod:00168 ! benzyl bromide reactive group
 
 [Term]
 id: xlmod:07101
@@ -7334,7 +7350,7 @@ id: xlmod:07108
 name: 4-Bromobenzyl bromide
 def: "4-Bromobenzyl bromide." [CAS:589-15-1, PubChem_Compound:68527, ChemSpiderID:61802, ChemicalBookNo:CB8313784]
 is_a: xlmod:06020 ! arylation reagent
-relationship: has_reactive_group xlmod:00167 ! benzyl bromide reactive group
+relationship: has_reactive_group xlmod:00168 ! benzyl bromide reactive group
 
 [Term]
 id: xlmod:07109
@@ -7859,7 +7875,7 @@ synonym: "4-NBB" EXACT []
 synonym: "p-nitrobenzyl bromide" EXACT []
 is_a: xlmod:06020 ! arylation reagent
 is_a: xlmod:06010 ! LCMS derivatization reagent
-relationship: has_reactive_group xlmod:00167 ! benzyl bromide reactive group
+relationship: has_reactive_group xlmod:00168 ! benzyl bromide reactive group
 
 [Term]
 id: xlmod:09049
@@ -8363,7 +8379,6 @@ id: xlmod:09104
 name: 4-methylpiperazine acetyl succinimide
 def: "4-methylpiperazine acetyl succinimide." [PMID:22575224]
 synonym: "MPAS" EXACT []
-is_a: xlmod:00101 ! NHS ester
 is_a: xlmod:06010 ! LCMS derivatization reagent
 relationship: has_reactive_group xlmod:00101 ! NHS ester
 relationship: is_reactive_with xlmod:00028 ! primary amine reactive
@@ -8374,7 +8389,6 @@ id: xlmod:09105
 name: deuterium labelled 4-methylpiperazine acetyl succinimide
 def: "Deuterium labelled 4-methylpiperazine acetyl succinimide." [PMID:22575224]
 synonym: "MPAS-d3" EXACT []
-is_a: xlmod:00101 ! NHS ester
 is_a: xlmod:06010 ! LCMS derivatization reagent
 relationship: has_reactive_group xlmod:00101 ! NHS ester
 relationship: is_labelled xlmod:00010 ! deuterium labelled
@@ -8386,7 +8400,6 @@ id: xlmod:09106
 name: 4-methylpiperadinebutyryl succinimide
 def: "4-methylpiperadinebutyryl succinimide." [PMID:22575224]
 synonym: "MPBS" EXACT []
-is_a: xlmod:00101 ! NHS ester
 is_a: xlmod:06010 ! LCMS derivatization reagent
 relationship: has_reactive_group xlmod:00101 ! NHS ester
 relationship: is_reactive_with xlmod:00028 ! primary amine reactive
@@ -8397,7 +8410,6 @@ id: xlmod:09107
 name: deuterium labelled 4-methylpiperadinebutyryl succinimide
 def: "Deuterium labelled 4-methylpiperadinebutyryl succinimide." [PMID:22575224]
 synonym: "MPBS-d3" EXACT []
-is_a: xlmod:00101 ! NHS ester
 is_a: xlmod:06010 ! LCMS derivatization reagent
 relationship: has_reactive_group xlmod:00101 ! NHS ester
 relationship: is_labelled xlmod:00010 ! deuterium labelled
@@ -8409,7 +8421,6 @@ id: xlmod:09108
 name: dimethylaminobutyryl succinimide
 def: "Dimethylaminobutyryl succinimide." [PMID:22575224]
 synonym: "DMABS" EXACT []
-is_a: xlmod:00101 ! NHS ester
 is_a: xlmod:06010 ! LCMS derivatization reagent
 relationship: has_reactive_group xlmod:00101 ! NHS ester
 relationship: is_reactive_with xlmod:00028 ! primary amine reactive
@@ -8420,7 +8431,6 @@ id: xlmod:09109
 name: deuterium labelled dimethylaminobutyryl succinimide
 def: "Deuterium labelled dimethylaminobutyryl succinimide." [PMID:22575224]
 synonym: "DMABS-d3" EXACT []
-is_a: xlmod:00101 ! NHS ester
 is_a: xlmod:06010 ! LCMS derivatization reagent
 relationship: has_reactive_group xlmod:00101 ! NHS ester
 relationship: is_labelled xlmod:00010 ! deuterium labelled
@@ -10122,4 +10132,3 @@ synonym: "TNBSA" EXACT []
 synonym: "Picrylsulfonic acid" EXACT []
 is_a: xlmod:06010 ! LCMS derivatization reagent
 relationship: is_reactive_with xlmod:00028 ! primary amine reactive
-

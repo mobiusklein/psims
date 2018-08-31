@@ -227,6 +227,9 @@ class OBOCache(object):
             f = None
         return f
 
+    def has_custom_resolver(self, uri):
+        return uri in self.resolvers
+
     def resolve(self, uri):
         if uri in self.resolvers:
             return self.resolvers[uri](self)
@@ -316,3 +319,12 @@ def load_uo():
 def load_pato():
     cv = obo_cache.resolve("http://ontologies.berkeleybop.org/pato.obo")
     return ControlledVocabulary.from_obo(cv)
+
+
+def load_xlmod():
+    cv = obo_cache.resolve("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo")
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_unimod():
+    return obo_cache.resolve("http://www.unimod.org/obo/unimod.obo")

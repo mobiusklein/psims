@@ -17,14 +17,45 @@ synonym_scopes = {
 }
 
 
+def _synonym_parser(text):
+    state = None
+    quoted_chars = []
+    scopes = []
+    scope_chars = []
+    references = []
+    for c in text:
+        if c == "\"":
+            if state is None:
+                state = "quote_open"
+            elif state == 'quote_open':
+                state = "quote_close"
+            else:
+                raise ValueError("Quote after quoted text!")
+        else:
+            if state == "quote_open":
+                quoted_chars.append(c)
+            elif state == "quote_close":
+                if c == " ":
+                    state = 'scope'
+                else:
+                    raise ValueError("Expected space before scope")
+            elif state == 'scope':
+                if c == ' ':
+                    scopes.append(''.join(scope_chars))
+                    scope_chars = []
+                elif c == '[':
+                    state = 'references'
+                else:
+                    scope_chars.append(c)
+            elif state == 'references':
+                if c != ']':
+                    references.append(c)
+    return ''.join(quoted_chars), scopes, ''.join(references)
+
+
 def synonym_parser(text):
-    original = text
-    if text.endswith("]"):
-        text = text.rsplit("[", 1)[0].rstrip()
-    synonym, scope = text.rsplit(" ", 1)
-    if scope not in synonym_scopes:
-        warnings.warn("Non-standardized Synonym Scope %s for %s" % (scope, original))
-    return synonym.strip()[1:-1]
+    synonym, scopes, references = _synonym_parser(text)
+    return synonym
 
 
 class OBOParser(object):

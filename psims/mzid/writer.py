@@ -170,23 +170,19 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     context : :class:`.DocumentContext`
     """
 
-    def __init__(self, outfile, close=False, vocabularies=None, version='1.2.0', **kwargs):
+    def __init__(self, outfile, close=False, vocabularies=None,  missing_reference_is_error=False,
+                 vocabulary_resolver=None, version='1.2.0', **kwargs):
         if vocabularies is None:
             vocabularies = list(default_cv_list)
-        ComponentDispatcher.__init__(self, vocabularies=vocabularies)
+        ComponentDispatcher.__init__(
+            self, vocabularies=vocabularies, missing_reference_is_error=missing_reference_is_error,
+            vocabulary_resolver=vocabulary_resolver)
         XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
         self.version = version
         self.xmlns = MzIdentML.attr_version_map[version]['xmlns']
 
     def toplevel_tag(self):
         return MzIdentML(version=self.version)
-
-    def controlled_vocabularies(self, vocabularies=None):
-        if vocabularies is None:
-            vocabularies = []
-        self.vocabularies.extend(vocabularies)
-        cvlist = self.CVList(self.vocabularies)
-        cvlist.write(self.writer)
 
     def providence(self, *args, **kwargs):
         warnings.warn("Method renamed to `provenance`")
