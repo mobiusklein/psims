@@ -181,8 +181,6 @@ class VocabularyResolver(object):
             self._validate_units(term, kwargs, name)
 
         if cv_ref is None:
-            import IPython
-            IPython.embed()
             return UserParam(name=name, value=value, **kwargs)
         else:
             kwargs.setdefault("ref", cv_ref)
@@ -238,7 +236,7 @@ class VocabularyResolver(object):
                         state['unit_name'] = unit_term.name
                         state['unit_cv_ref'] = unit_source.id
                     except KeyError as ex:
-                        print(ex)
+                        pass
                 elif self.validate_units:
                     unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
                     if (state['unit_accession'] != unit_term.id or state['unit_name'] != unit_term.name or
