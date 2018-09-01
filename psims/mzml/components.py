@@ -630,8 +630,11 @@ class BinaryDataArray(ComponentBase):
             params = []
         self.encoded_length = encoded_length
         self.data_processing_reference = data_processing_reference
-        self._data_processing_reference = context[
-            'DataProcessing'][data_processing_reference]
+        if data_processing_reference:
+            self._data_processing_reference = context[
+                'DataProcessing'][data_processing_reference]
+        else:
+            self._data_processing_reference = None
         self.array_length = array_length
         self.params = self.prepare_params(params, **kwargs)
         self.binary = binary
@@ -978,8 +981,11 @@ class Chromatogram(ComponentBase):
         self.precursor = precursor
         self.product = product
         self.data_processing_reference = data_processing_reference
-        self._data_processing_reference = context[
-            'DataProcessing'][data_processing_reference]
+        if data_processing_reference:
+            self._data_processing_reference = context[
+                'DataProcessing'][data_processing_reference]
+        else:
+            self._data_processing_reference = None
         self.element = _element(
             'chromatogram',
             id=id,

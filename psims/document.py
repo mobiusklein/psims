@@ -52,7 +52,7 @@ class SpecializedContextCache(OrderedDict):
         except KeyError:
             if key is None:
                 warnings.warn(
-                    "A reference key should not be \"None\"", ReferentialIntegrityWarning,
+                    "A reference key for %s should not be \"None\"" % (self.type_name, ), ReferentialIntegrityWarning,
                     stacklevel=3)
                 return None
             if self.missing_reference_is_error:

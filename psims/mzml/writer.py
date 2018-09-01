@@ -294,6 +294,14 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             data_processing_method=data_processing_method)
 
     def chromatogram_list(self, count, data_processing_method=None):
+        if data_processing_method is None:
+            dp_map = self.context['DataProcessing']
+            try:
+                data_processing_method = list(dp_map.keys())[0]
+            except IndexError:
+                warnings.warn(
+                    "No Data Processing method found. mzML file may not be fully standard-compliant",
+                    stacklevel=2)
         return ChromatogramListSection(
             self.writer, self.context, count=count,
             data_processing_method=data_processing_method)

@@ -33,8 +33,11 @@ class MzMLTransformer(object):
 
     def _format_referenceable_param_groups(self):
         self.reader.reset()
-        param_list = next(self.reader.iterfind("referenceableParamGroupList", recursive=True, retrive_refs=False))
-        param_groups = ensure_iterable(param_list.get("referenceableParamGroup", []))
+        try:
+            param_list = next(self.reader.iterfind("referenceableParamGroupList", recursive=True, retrive_refs=False))
+            param_groups = ensure_iterable(param_list.get("referenceableParamGroup", []))
+        except StopIteration:
+            param_groups = []
         return [self.writer.ReferenceableParamGroup.ensure(d) for d in param_groups]
 
     def _format_instrument_configuration(self):
@@ -80,8 +83,9 @@ class MzMLTransformer(object):
         source_files = file_description.get("sourceFileList").get('sourceFile')
         self.writer.file_description(file_description.get("fileContent", {}).items(), source_files)
 
-        self.writer.reference_param_group_list(
-            self._format_referenceable_param_groups())
+        param_groups = self._format_referenceable_param_groups()
+        if param_groups:
+            self.writer.reference_param_group_list(reference_param_group_list)
 
         self.reader.reset()
         software_list = next(self.reader.iterfind("softwareList"))
