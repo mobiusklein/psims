@@ -391,8 +391,9 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                                     "unitName": DEFAULT_TIME_UNIT})
             else:
                 scan_params.append(scan_start_time)
-        if self.default_instrument_configuration == instrument_configuration_id:
-            instrument_configuration_id = None
+        # The spec says this is optional, but the validator calls this a must
+        # if self.default_instrument_configuration == instrument_configuration_id:
+        #     instrument_configuration_id = None
         scan = self.Scan(scan_window_list=scan_window_list, params=scan_params,
                          instrument_configuration_ref=instrument_configuration_id)
         scan_list = self.ScanList([scan], params=["no combination"])
@@ -506,7 +507,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         params = []
         if array_type is not None:
             params.append(array_type)
-            if array_type not in ARRAY_TYPES:
+            if isinstance(array_type, Mapping):
+                array_type_ = array_type['name']
+            else:
+                array_type_ = array_type
+            if array_type_ not in ARRAY_TYPES:
                 params.append(NON_STANDARD_ARRAY)
         params.append(compression_map[compression])
         params.append(dtype_to_encoding[dtype])

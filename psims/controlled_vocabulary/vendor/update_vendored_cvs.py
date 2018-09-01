@@ -14,6 +14,8 @@ registry = {
     'pato.obo': "http://ontologies.berkeleybop.org/pato.obo",
     "unimod_tables.xml": "http://www.unimod.org/xml/unimod_tables.xml",
     "XLMOD.obo": "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo",
+    # appears to reject automated download
+    # "bto.obo": "http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
 }
 
 

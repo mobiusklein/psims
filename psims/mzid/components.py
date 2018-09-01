@@ -432,7 +432,7 @@ class IonType(ComponentBase):
     requires_id = False
 
     def __init__(self, series, indices, charge_state,
-                 measures=None, context=NullMap):
+                 measures=None, params=None, context=NullMap, **kwargs):
         if (measures is None):
             measures = dict()
         self.context = context
@@ -440,13 +440,15 @@ class IonType(ComponentBase):
         self.measures = measures
         self.element = _element('IonType', charge=charge_state, index=' '.join(
             [str(int(i)) for i in ensure_iterable(indices)]))
+        self.params = self.prepare_params(params, **kwargs)
 
     def write_content(self, xml_file):
-        self.context.param(self.series)(xml_file)
         for (measure, values) in self.measures.items():
             el = _element('FragmentArray', measure_ref=self.context['Measure'][
                           measure], values=' '.join([str(float(i)) for i in values]))
             el.write(xml_file)
+        self.context.param(self.series)(xml_file)
+        self.write_params(xml_file)
 
     all_ion_types = [
         'frag: a ion', 'frag: a ion - H2O', 'frag: a ion - NH3',

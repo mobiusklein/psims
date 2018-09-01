@@ -163,17 +163,26 @@ class VocabularyResolver(object):
                 if unit_cv_ref is not None:
                     kwargs.setdefault("unit_cv_ref", unit_cv_ref)
 
+        if name == 'ref' and value is not None and cv_ref is None and not kwargs:
+            return self.param_group_reference(value)
+
         self._resolve_units(kwargs)
         if name is None and accession is None:
             raise ValueError("Could not coerce parameter from %r, %r, %r" % (name, value, kwargs))
         term = None
         if cv_ref is None:
             query = accession if accession is not None else name
-            cv_ref, name, accession = self._resolve_cv_ref(query, name, accession)
+            cv_ref, name, accession, term = self._resolve_cv_ref(query, name, accession)
+        else:
+            cv = self.get_vocabulary(cv_ref)
+            query = accession if accession is not None else name
+            term = cv[query]
         if term is not None:
             self._validate_units(term, kwargs, name)
 
         if cv_ref is None:
+            import IPython
+            IPython.embed()
             return UserParam(name=name, value=value, **kwargs)
         else:
             kwargs.setdefault("ref", cv_ref)
@@ -182,6 +191,7 @@ class VocabularyResolver(object):
 
     def _resolve_cv_ref(self, query, name, accession):
         cv_ref = None
+        term = None
         for cv in self.vocabularies:
             try:
                 term = cv[query]
@@ -195,7 +205,7 @@ class VocabularyResolver(object):
                 cv_ref = cv.id
             except KeyError:
                 continue
-        return cv_ref, name, accession
+        return cv_ref, name, accession, term
 
     def _resolve_units(self, state):
         unit_name = state.get("unit_name")
@@ -227,8 +237,8 @@ class VocabularyResolver(object):
                         state['unit_accession'] = unit_term.id
                         state['unit_name'] = unit_term.name
                         state['unit_cv_ref'] = unit_source.id
-                    except KeyError:
-                        pass
+                    except KeyError as ex:
+                        print(ex)
                 elif self.validate_units:
                     unit_term, unit_source = self.term(has_units[0].accession, include_source=True)
                     if (state['unit_accession'] != unit_term.id or state['unit_name'] != unit_term.name or

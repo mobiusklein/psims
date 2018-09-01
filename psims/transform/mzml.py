@@ -2,6 +2,7 @@ from pyteomics import mzml
 from pyteomics.auxiliary import cvquery
 
 from psims import MzMLWriter
+from psims.utils import ensure_iterable
 
 from .utils import log
 
@@ -30,11 +31,19 @@ class MzMLTransformer(object):
         self.writer = MzMLWriter(output_stream)
         self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary
 
+    def _format_referenceable_param_groups(self):
+        self.reader.reset()
+        param_list = next(self.reader.iterfind("referenceableParamGroupList", recursive=True, retrive_refs=False))
+        param_groups = ensure_iterable(param_list.get("referenceableParamGroup", []))
+        return [self.writer.ReferenceableParamGroup.ensure(d) for d in param_groups]
+
     def _format_instrument_configuration(self):
         self.reader.reset()
         configuration_list = next(self.reader.iterfind("instrumentConfigurationList", recursive=True))
         configurations = []
         for config_dict in configuration_list.get("instrumentConfiguration", []):
+            # import IPython
+            # IPython.embed()
             components = []
             for key, members in config_dict.pop('componentList', {}).items():
                 if key not in ("source", "analyzer", "detector"):
@@ -70,6 +79,9 @@ class MzMLTransformer(object):
         file_description = next(self.reader.iterfind("fileDescription"))
         source_files = file_description.get("sourceFileList").get('sourceFile')
         self.writer.file_description(file_description.get("fileContent", {}).items(), source_files)
+
+        self.writer.reference_param_group_list(
+            self._format_referenceable_param_groups())
 
         self.reader.reset()
         software_list = next(self.reader.iterfind("softwareList"))
@@ -164,7 +176,7 @@ class MzMLTransformer(object):
                 else:
                     scan_params.append({"name": term.id, "value": value})
                     if hasattr(value, 'unit_info'):
-                        params[-1]['unit_name'] = value.unit_info
+                        scan_params[-1]['unit_name'] = value.unit_info
                 term_dict.pop(key)
             elif term.is_of_type("selection window attribute"):
                 scan_window_list.append(
