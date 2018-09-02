@@ -6,13 +6,16 @@ try:
 except ImportError:
     from collections.abc import Mapping
 
+
+from psims.xml import XMLWriterMixin, XMLDocumentWriter
+from psims.utils import TableStateMachine
+
 from .components import (
     MzIdentML,
     ComponentDispatcher, etree, common_units, element, _element,
     default_cv_list, CVParam, UserParam,
     AUTO, DEFAULT_ORGANIZATION_ID, DEFAULT_CONTACT_ID)
 
-from psims.xml import XMLWriterMixin, XMLDocumentWriter
 
 from .utils import ensure_iterable
 
@@ -180,6 +183,26 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
         self.version = version
         self.xmlns = MzIdentML.attr_version_map[version]['xmlns']
+        self.state_machine = TableStateMachine([
+            ("start", ['analysis_software_list', 'provider', 'audit_collection', 'analysis_sample_collection',
+                       'sequence_collection', 'analysis_collection']),
+            ('analysis_software_list', [
+                'provider', 'audit_collection', 'analysis_sample_collection', 'sequence_collection',
+                'analysis_collection']),
+            ('provider', ['audit_collection', 'analysis_sample_collection',
+                          'sequence_collection', 'analysis_collection']),
+            ('audit_collection', ['analysis_sample_collection', 'sequence_collection', 'analysis_collection']),
+            ('analysis_sample_collection', ['sequence_collection', 'analysis_collection']),
+            ('sequence_collection', ['analysis_collection']),
+            ('analysis_collection', ['analysis_protocol_collection']),
+            ('analysis_protocol_collection', ['data_collection']),
+            ('data_collection', ['inputs']),
+            ('inputs', ['analysis_data']),
+            ('analysis_data', ['spectrum_identification_list']),
+            ('spectrum_identification_list', ['spectrum_identification_list', 'protein_detection_list']),
+            ('protein_detection_list', ['bibliography']),
+            ('bibliography', []),
+            ], 'start')
 
     def toplevel_tag(self):
         return MzIdentML(version=self.version)
@@ -205,6 +228,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A dictionary specifying a :class:`Organization` instance. If missing, a default organization will
             be created
         """
+        self.state_machine.transition('audit_collection')
         organization = self.Organization.ensure_all(organization)
         owner = self.Person.ensure_all(owner)
         software = self.AnalysisSoftware.ensure_all(software)
@@ -228,6 +252,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.AuditCollection(owner, organization).write(self.writer)
 
     def inputs(self, source_files=tuple(), search_databases=tuple(), spectra_data=tuple()):
+        self.state_machine.transition('inputs')
         source_files = [self.SourceFile.ensure(s or {})
                         for s in ensure_iterable(source_files)]
         search_databases = [self.SearchDatabase.ensure(
@@ -239,16 +264,33 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                     spectra_data).write(self.writer)
 
     def analysis_protocol_collection(self):
+        self.state_machine.transition('analysis_protocol_collection')
         return AnalysisProtocolCollectionSection(self.writer, self.context, xmlns=self.xmlns)
 
     def sequence_collection(self):
+        self.state_machine.transition('sequence_collection')
         return SequenceCollectionSection(self.writer, self.context, xmlns=self.xmlns)
 
     def analysis_collection(self):
+        self.state_machine.transition('analysis_collection')
         return AnalysisCollectionSection(self.writer, self.context, xmlns=self.xmlns)
 
     def data_collection(self):
+        self.state_machine.transition('data_collection')
         return DataCollectionSection(self.writer, self.context, xmlns=self.xmlns)
+
+    def analysis_sample_collection(self):
+        self.state_machine.transition('analysis_sample_collection')
+        return AnalysisSampleCollectionSection(self.writer, self.context, xmlns=self.xmlns)
+
+    def sample(self, id, name=None, contacts=None, sub_samples=None, params=None, **kwargs):
+        sample = self.Sample(
+            id=id, name=name, contacts=contacts, sub_samples=sub_samples, params=params, **kwargs)
+        return sample
+
+    def write_sample(self, id, name=None, contacts=None, sub_samples=None, params=None, **kwargs):
+        sample = self.sample(id=id, name=name, contacts=contacts, sub_samples=sub_samples, params=params, **kwargs)
+        sample.write(self)
 
     def write_db_sequence(self, accession, sequence=None, id=None, search_database_id=1, params=None, **kwargs):
         el = self.DBSequence(
@@ -309,9 +351,11 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         protocol.write(self.writer)
 
     def analysis_data(self):
+        self.state_machine.transition('analysis_data')
         return AnalysisDataSection(self.writer, self.context, xmlns=self.xmlns)
 
     def spectrum_identification_list(self, id, measures=None, num_sequences_searched=0, **kwargs):
+        self.state_machine.transition('spectrum_identification_list')
         if measures is None:
             measures = self.FragmentationTable()
         return SpectrumIdentficationListSection(
@@ -364,6 +408,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         item.write(self.writer)
 
     def protein_detection_list(self, id, count=None, params=None, **kwargs):
+        self.state_machine.transition('protein_detection_list')
         return ProteinDetectionListSection(
             self.writer, self.context, id=id, count=count, params=params, xmlns=self.xmlns, **kwargs)
 

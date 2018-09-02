@@ -11,6 +11,7 @@ except ImportError:
 import numpy as np
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
+from psims.utils import TableStateMachine
 from psims import compression
 
 from .components import (
@@ -173,8 +174,26 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.spectrum_count = 0
         self.chromatogram_count = 0
         self.default_instrument_configuration = None
+        self.state_machine = TableStateMachine([
+            ("start", ['file_description', 'reference_param_group_list', 'sample_list', 'software_list',
+                       'instrument_configuration_list', 'data_processing_list', 'run']),
+            # "controlled_vocabularies",
+            ("file_description", ['reference_param_group_list', 'sample_list', 'software_list',
+                                  'instrument_configuration_list', 'data_processing_list', 'run']),
+            ("reference_param_group_list", ['sample_list', 'software_list',
+                                            'instrument_configuration_list', 'data_processing_list', 'run']),
+            ("sample_list", ['software_list', 'instrument_configuration_list', 'data_processing_list', 'run']),
+            ("software_list", ['instrument_configuration_list', 'data_processing_list', 'run']),
+            # "scan_settings_list",
+            ("instrument_configuration_list", ['data_processing_list', 'run']),
+            ("data_processing_list", ['run']),
+            ("run", ['spectrum_list', 'chromatogram_list']),
+            ('spectrum_list', ['chromatogram_list']),
+            ('chromatogram_list', [])
+        ])
 
     def software_list(self, software_list):
+        self.state_machine.transition("software_list")
         n = len(software_list)
         if n:
             software_list = [self.Software.ensure(sw) for sw in ensure_iterable(software_list)]
@@ -198,12 +217,14 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A list or other iterable of dict or :class:`.SourceFile`-like objects
             to be placed in the `<sourceFileList>` element
         """
+        self.state_machine.transition("file_description")
         fd = self.FileDescription(
             file_contents, [self.SourceFile.ensure(sf) for sf in ensure_iterable(source_files)],
             contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
         fd.write(self.writer)
 
     def instrument_configuration_list(self, instrument_configurations=None):
+        self.state_machine.transition("instrument_configuration_list")
         configs = [
             self.InstrumentConfiguration.ensure(ic) if not isinstance(
                 ic, InstrumentConfiguration) else ic
@@ -212,16 +233,19 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.InstrumentConfigurationList(configs).write(self)
 
     def data_processing_list(self, data_processing=None):
+        self.state_machine.transition("data_processing_list")
         methods = [
             self.DataProcessing.ensure(dp) for dp in ensure_iterable(data_processing)]
         self.DataProcessingList(methods).write(self)
 
     def reference_param_group_list(self, groups=None):
+        self.state_machine.transition("reference_param_group_list")
         groups = [
             self.ReferenceableParamGroup.ensure(g) for g in ensure_iterable(groups)]
         self.ReferenceableParamGroupList(groups).write(self)
 
     def sample_list(self, samples):
+        self.state_machine.transition("sample_list")
         for i, sample in enumerate(samples):
             sample_id = sample.get('id')
             sample_name = sample.get("name")
@@ -264,6 +288,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         -------
         RunSection
         """
+        self.state_machine.transition("run")
         kwargs = {}
         if start_time is not None:
             kwargs['startTimeStamp'] = start_time
@@ -281,6 +306,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             sample=sample, **kwargs)
 
     def spectrum_list(self, count, data_processing_method=None):
+        self.state_machine.transition('spectrum_list')
         if data_processing_method is None:
             dp_map = self.context['DataProcessing']
             try:
@@ -294,6 +320,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             data_processing_method=data_processing_method)
 
     def chromatogram_list(self, count, data_processing_method=None):
+        self.state_machine.transition('chromatogram_list')
         if data_processing_method is None:
             dp_map = self.context['DataProcessing']
             try:
@@ -334,7 +361,6 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             # create new variable to capture in closure
             _encoding = encoding
             encoding = defaultdict(lambda: _encoding)
-
         if polarity is not None:
             if isinstance(polarity, int):
                 if polarity > 0:

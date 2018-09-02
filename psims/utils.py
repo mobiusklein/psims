@@ -1,3 +1,4 @@
+import warnings
 from functools import total_ordering
 
 from lxml import etree
@@ -7,6 +8,8 @@ try:
     from collections import Iterable, Mapping
 except ImportError:
     from collections.abc import Iterable, Mapping
+
+from collections import OrderedDict
 
 from psims import compression
 
@@ -148,3 +151,89 @@ class KeyToAttrProxy(object):
 
     def __len__(self):
         return len(self.keys())
+
+
+class StateSpaceBase(object):
+    def validate(self, start, end):
+        raise NotImplementedError()
+
+    def next_states(self, current):
+        raise NotImplementedError()
+
+
+class StateTable(StateSpaceBase):
+    def __init__(self, table):
+        self.table = OrderedDict(table)
+
+    def validate(self, start, end):
+        options = self.table[start]
+        return end in options
+
+    def next_states(self, current):
+        try:
+            return list(self.table[start])
+        except KeyError:
+            return []
+
+    def __getitem__(self, i):
+        return list(self.table.items())[i]
+
+    def __len__(self):
+        return len(self.states)
+
+
+class StateTransitionWarning(Warning):
+    pass
+
+
+class StateMachineBase(object):
+    def __init__(self, current_state):
+        self._current_state = None
+        self._previous_state = None
+        self.current_state = current_state
+
+    def transition(self, state):
+        is_valid = self.states.validate(self.current_state, state)
+        self.current_state = state
+        if not is_valid:
+            self.transition_error()
+        return is_valid
+
+    @property
+    def current_state(self):
+        return self._current_state
+
+    @current_state.setter
+    def current_state(self, value):
+        self._previous_state = self.current_state
+        self._current_state = value
+
+    @property
+    def previous_state(self):
+        return self._previous_state
+
+    def expects_state(self, state):
+        is_valid = self.current_state == state
+        if not is_valid:
+            self.expects_error(state)
+        return is_valid
+
+    def expects_error(self, state):
+        warnings.warn(
+            ("Action expected {state!r} but current state is {self.current_state!r}").format(
+                self=self, state=state), StateTransitionWarning)
+
+    def transition_error(self):
+        next_states = self.states.next_states(self.previous_state)
+        warnings.warn(
+            ("Transition from {self.previous_state!r} to {self.current_state!r} is"
+             " not valid. Expected one of {next_states!r}").format(self=self, next_states=next_states),
+            StateTransitionWarning)
+
+
+class TableStateMachine(StateMachineBase):
+    def __init__(self, state_table, current_state=None):
+        self.states = StateTable(state_table)
+        super(TableStateMachine, self).__init__(current_state)
+        if current_state is None:
+            self.current_state = self.states[0][0]

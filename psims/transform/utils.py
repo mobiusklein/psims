@@ -46,7 +46,7 @@ def differ(a, b):
     elif isinstance(a, (list, tuple)):
         return seq_diff(a, b)
     elif isinstance(a, float):
-        return abs(a - b) < 1e-3
+        return abs(a - b) < 1e-2
     elif isinstance(a, cvstr):
         if a.accession is not None:
             return a.accession.lower() == b.accession.lower()
@@ -58,18 +58,17 @@ def differ(a, b):
         return a == b
 
 
-def seq_diff(a, b):
-    a = sorted(a, key=key_fn)
-    b = sorted(b, key=key_fn)
-    if len(a) != len(b):
-        print("Size Difference", len(a), '!=', len(b))
+def seq_diff(source, test):
+    source = list(source)
+    test = list(test)
+    if len(source) != len(test):
         return False
-    for i in range(len(a)):
-        ai, bi = a[i], b[i]
-        if not differ(ai, bi):
-            print("Position %d\n, %r != %r" % (i, ai, bi))
-            return False
-    return True
+    for s in source:
+        for i, t in enumerate(list(test)):
+            if differ(s, t):
+                test.pop(i)
+                break
+    return len(test) == 0
 
 
 def dict_diff(a, b):
@@ -99,4 +98,8 @@ def dict_diff(a, b):
                     print(akey, avalue, '!=', bvalue)
                     return False
                 break
-    return differ(aparams, bparams)
+
+    param_diff = seq_diff(aparams, bparams)
+    if not param_diff:
+        print("Parameters Differ")
+    return param_diff

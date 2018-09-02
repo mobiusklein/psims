@@ -723,7 +723,7 @@ software = [{'name': 'My Generic Software',
              'uri': 'https://www.github.com/',
              'version': '1.2.0rc'}]
 
-spectrum_id_protocol = {'enzymes': [{'missed_cleavages': 1, 'name': 'trypsin'}],
+spectrum_id_protocol = {'enzymes': [{'missed_cleavages': 1, 'name': 'trypsin', 'id': 1}],
                         'modification_params': [
                         {'fixed': True,
                          'mass_delta': 57.021465,

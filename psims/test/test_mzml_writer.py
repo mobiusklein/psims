@@ -120,8 +120,8 @@ def test_write(output_path, compressor):
         ])
         f.data_processing_list([
             f.DataProcessing(processing_methods=[
-                dict(order=0, software_reference='psims', params=['Conversion to mzML'])
-            ])
+                dict(order=0, software_reference='psims', params=['Conversion to mzML']),
+            ], id=1)
         ])
         with f.run(id='test'):
             with f.spectrum_list(count=2):

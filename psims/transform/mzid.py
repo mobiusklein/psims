@@ -223,6 +223,7 @@ class MzIdentMLTranslater(object):
         d = dict()
         d['location'] = temp.pop("location", None)
         d['monoisotopic_mass_delta'] = temp.pop("monoisotopicMassDelta", None)
+        d['avg_mass_delta'] = temp.pop("avgMassDelta", None)
         d['residues'] = temp.pop("residues", None)
         term_dict = cvquery(temp)
         crosslinking_donor_or_receiver = None
@@ -331,6 +332,8 @@ class MzIdentMLTranslater(object):
         return self.writer.SearchModification.ensure(d)
 
     def _format_tolerance(self, tol, tp):
+        if not tol:
+            return None
         term_dict = cvquery(tol)
         value = term_dict.get('MS:1001413')
         low = {"accession": 'MS:1001413', "value": value, 'unit_name': getattr(value, 'unit_info', None)}

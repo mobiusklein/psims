@@ -90,7 +90,7 @@ def sanitize_id(string):
 NO_TRACK = object()
 
 
-class CountedType(type):
+class ElementType(type):
     """A metaclass to keep a count of the number of times
     an instance of each derived class is created.
     """
@@ -99,7 +99,6 @@ class CountedType(type):
     def __new__(cls, name, parents, attrs):
         new_type = type.__new__(cls, name, parents, attrs)
         tag_name = attrs.get("tag_name")
-        new_type.counter = staticmethod(make_counter())
         if attrs.get("_track") is NO_TRACK:
             return new_type
         if not hasattr(cls, "_cache"):
@@ -132,7 +131,7 @@ def attrencode(o):
         return text_type(o)
 
 
-@add_metaclass(CountedType)
+@add_metaclass(ElementType)
 class TagBase(object):
 
     type_attrs = {}
@@ -149,7 +148,7 @@ class TagBase(object):
         # flag won't be propagated. `_force_id` preserves this.
         self._force_id = True
         if _id is None:
-            self._id_number = self.counter()
+            self._id_number = None
             self._id_string = None
             self._force_id = False
         elif isinstance(_id, int):
@@ -177,7 +176,8 @@ class TagBase(object):
             raise KeyError(key)
 
     def keys(self):
-        yield "id"
+        if self.id is not None:
+            yield "id"
         for key in self.attrs:
             yield key
 
@@ -186,7 +186,7 @@ class TagBase(object):
 
     @property
     def id(self):
-        if self._id_string is None:
+        if self._id_string is None and self._id_number is not None:
             self._id_string = id_maker(self.tag_name, self._id_number)
         return self._id_string
 
@@ -194,6 +194,8 @@ class TagBase(object):
         with_id = with_id or self._force_id
         attrs = {k: attrencode(v) for k, v in self.attrs.items() if v is not None}
         if with_id:
+            if self.id is None:
+                raise ValueError("Required id for %r but id was None" % (self,))
             attrs['id'] = self.id
         if xml_file is None:
             return etree.Element(self.tag_name, **attrs)
@@ -263,7 +265,7 @@ def _make_tag_type(name, **attrs):
 
 def _element(_tag_name, *args, **kwargs):
     try:
-        eltype = CountedType._cache[_tag_name]
+        eltype = ElementType._cache[_tag_name]
     except KeyError:
         eltype = _make_tag_type(_tag_name)
     return eltype(*args, **kwargs)

@@ -328,7 +328,7 @@ class Modification(ComponentBase, ModificationDescriptionBase):
     requires_id = False
 
     def __init__(self, monoisotopic_mass_delta=None, location=None, name=None, accession=None, params=None,
-                 residues=None, value=None, context=NullMap, **kwargs):
+                 residues=None, value=None, avg_mass_delta=None, context=NullMap, **kwargs):
         self.context = context
         self.accession = accession
         self.name = name
@@ -348,7 +348,8 @@ class Modification(ComponentBase, ModificationDescriptionBase):
             self._make_unknown()
         self.residues = residues
         self.element = _element(
-            'Modification', monoisotopicMassDelta=monoisotopic_mass_delta, location=location)
+            'Modification', monoisotopicMassDelta=monoisotopic_mass_delta, location=location,
+            avgMassDelta=avg_mass_delta)
         if self.residues is not None:
             self.element.attrs['residues'] = ''.join(map(str, self.residues))
 
@@ -704,7 +705,7 @@ class ProteinDetectionHypothesis(ComponentBase):
     requires_id = True
 
     def __init__(self, id, db_sequence_id, peptide_hypotheses, pass_threshold=True,
-                 leading=True, params=None, name=None, context=NullMap, **kwargs):
+                 leading=None, params=None, name=None, context=NullMap, **kwargs):
         params = self.prepare_params(params, **kwargs)
         self.db_sequence_id = db_sequence_id
         self.pass_threshold = pass_threshold
@@ -718,12 +719,31 @@ class ProteinDetectionHypothesis(ComponentBase):
         if (name is not None):
             self.element.attrs['name'] = name
         self.context['ProteinDetectionHypothesis'][id] = self.element.id
-        if (self.leading is None):
-            pass
-        elif self.leading:
-            self.add_param('leading protein')
-        else:
-            self.add_param('non-leading protein')
+        if self.leading is not None:
+            self._check_group_status()
+
+    def _check_group_status(self):
+        candidates = []
+        has_leading = False
+        has_non_leading = False
+        for param in self.params:
+            param = self.context.param(param)
+            if param.accession is None:
+                continue
+            try:
+                term = self.context.term(param.accession)
+            except KeyError:
+                continue
+            if term.is_of_type('MS:1001101'):
+                candidates.append(term)
+            if term.id == 'MS:1002401':
+                has_leading = True
+            elif term.id == 'MS:1002402':
+                has_non_leading = True
+        if self.leading and not has_leading:
+            self.add_param("MS:1002401")
+        elif not self.leading and not has_non_leading:
+            self.add_param("MS:1002402")
 
     def _coerce_peptide_hypotheses(self, peptides):
         out = []
@@ -1188,7 +1208,7 @@ class ProteinDetectionProtocol(ComponentBase):
     requires_id = True
 
     def __init__(self, id=1, params=None, analysis_software_id=1,
-                 threshold=None, context=NullMap, **kwargs):
+                 threshold=None, name=None, context=NullMap, **kwargs):
         if (threshold is None):
             threshold = Threshold(context=context)
         elif (not isinstance(threshold, Threshold)):
@@ -1199,7 +1219,7 @@ class ProteinDetectionProtocol(ComponentBase):
         self.params = params
         self.analysis_software_id = analysis_software_id
         self.element = _element('ProteinDetectionProtocol', id=id, analysisSoftware_ref=context[
-                                'AnalysisSoftware'][analysis_software_id])
+                                'AnalysisSoftware'][analysis_software_id], name=name)
         self.context['ProteinDetectionProtocol'][id] = self.element.id
 
     def write_content(self, xml_file):

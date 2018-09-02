@@ -85,7 +85,7 @@ class MzMLTransformer(object):
 
         param_groups = self._format_referenceable_param_groups()
         if param_groups:
-            self.writer.reference_param_group_list(reference_param_group_list)
+            self.writer.reference_param_group_list(param_groups)
 
         self.reader.reset()
         software_list = next(self.reader.iterfind("softwareList"))
@@ -116,6 +116,63 @@ class MzMLTransformer(object):
         })
         self.writer.data_processing_list(data_processing)
 
+    def _format_scan(self, scan):
+        scan_params = []
+        scan_window_list = []
+        scan_start_time = None
+
+        temp = scan.copy()
+
+        for key, value in list(temp.items()):
+            if not hasattr(key, 'accession'):
+                continue
+            accession = key.accession
+            if accession == '' or accession is None:
+                scan_params.append({key: value})
+                if hasattr(value, 'unit_info'):
+                    scan_params[-1]['unit_name'] = value.unit_info
+                temp.pop(key)
+                continue
+            term = self.psims_cv[accession]
+            if term.is_of_type("scan attribute"):
+                if term.name == 'scan start time':
+                    scan_start_time = {
+                        "name": term.id, "value": value, "unit_name": getattr(value, 'unit_info', None)
+                    }
+                else:
+                    scan_params.append({"name": term.id, "value": value})
+                    if hasattr(value, 'unit_info'):
+                        scan_params[-1]['unit_name'] = value.unit_info
+                temp.pop(key)
+        temp = temp.get('scanWindowList', {}).get('scanWindow', [{}])[0].copy()
+        for key, value in list(temp.items()):
+            if not hasattr(key, 'accession'):
+                continue
+            accession = key.accession
+            term = self.psims_cv[accession]
+            if term.is_of_type("selection window attribute"):
+                scan_window_list.append(
+                    {"name": term.id, "value": value})
+                if hasattr(value, 'unit_info'):
+                    scan_window_list[-1]['unit_name'] = value.unit_info
+                temp.pop(key)
+
+        scan_window_list.sort(key=lambda x: x['value'])
+        if len(scan_window_list) % 2 == 0:
+            windows = []
+            i = 0
+            n = len(scan_window_list)
+            while i < n:
+                lo = scan_window_list[i]
+                hi = scan_window_list[i + 1]
+                windows.append((lo['value'], hi['value']))
+                i += 2
+            scan_window_list = windows
+        else:
+            scan_window_list = []
+
+        return scan_start_time, scan_params, scan_window_list
+
     def _format_spectrum(self, spectrum):
         spec_data = dict()
         spec_data["mz_array"] = spectrum.pop("m/z array", None)
@@ -134,74 +191,37 @@ class MzMLTransformer(object):
         params = []
         term_dict = cvquery(spectrum)
 
-        try:
-            spec_data['polarity'] = spectrum.pop("positive scan")
-        except KeyError:
-            try:
-                spec_data['polarity'] = spectrum.pop("negative scan")
-            except KeyError:
-                # don't know the polarity
-                pass
+        if "positive scan" in spectrum:
+            spec_data['polarity'] = 1
+        elif "negative scan" in spectrum:
+            spec_data['polarity'] = -1
+        else:
+            spec_data['polarity'] = None
 
-        # strain out all the spectrm attribute parameters
-        for key, value in list(term_dict.items()):
-            try:
-                term = self.psims_cv[key]
-            except KeyError:
+        temp = spectrum.copy()
+        for key, value in list(temp.items()):
+            if not hasattr(key, 'accession'):
                 continue
-            if term.is_of_type("spectrum attribute"):
+            accession = key.accession
+            if accession == '' or accession is None:
+                params.append({key: value})
+                if hasattr(value, 'unit_info'):
+                    params[-1]['unit_name'] = value.unit_info
+                temp.pop(key)
+            term = self.psims_cv[accession]
+            if term.is_of_type("spectrum representation"):
+                spec_data["centroided"] = term.id == "MS:1000127"
+                temp.pop(key)
+            elif term.is_of_type("spectrum attribute"):
                 params.append({"name": term.id, "value": value})
                 if hasattr(value, 'unit_info'):
                     params[-1]['unit_name'] = value.unit_info
-                term_dict.pop(key)
-        for key, value in spectrum.items():
-            if not hasattr(key, 'accession'):
-                continue
-            elif not key.accession:
-                params.append({"name": key, "value": value})
-                if hasattr(value, 'unit_info'):
-                    params[-1]['unit_name'] = value.unit_info
+                temp.pop(key)
 
-        scan_params = []
-        scan_window_list = []
-        for key, value in list(term_dict.items()):
-            try:
-                term = self.psims_cv[key]
-            except KeyError:
-                continue
-
-            if term.is_of_type("spectrum representation"):
-                spec_data["centroided"] = term.id == "MS:1000127"
-            elif term.is_of_type("scan attribute"):
-                if term.name == 'scan start time':
-                    spec_data['scan_start_time'] = {
-                        "name": term.id, "value": value, "unit_name": getattr(value, 'unit_info', None)
-                    }
-                else:
-                    scan_params.append({"name": term.id, "value": value})
-                    if hasattr(value, 'unit_info'):
-                        scan_params[-1]['unit_name'] = value.unit_info
-                term_dict.pop(key)
-            elif term.is_of_type("selection window attribute"):
-                scan_window_list.append(
-                    {"name": term.id, "value": value})
-                if hasattr(value, 'unit_info'):
-                    scan_window_list[-1]['unit_name'] = value.unit_info
-
-        scan_window_list.sort(key=lambda x: x['value'])
-        if len(scan_window_list) % 2 == 0:
-            windows = []
-            i = 0
-            n = len(scan_window_list)
-            while i < n:
-                lo = scan_window_list[i]
-                hi = scan_window_list[i + 1]
-                windows.append((lo['value'], hi['value']))
-                i += 2
-            spec_data['scan_window_list'] = windows
+        spec_data["scan_start_time"], spec_data['scan_params'], spec_data["scan_window_list"] = self._format_scan(
+            spectrum.get("scanList", {}).get('scan', [{}])[0])
 
         spec_data['params'] = params
-        spec_data['scan_params'] = scan_params
 
         precursors = spectrum.get("precursorList", {}).get("precursor")
         if precursors:
