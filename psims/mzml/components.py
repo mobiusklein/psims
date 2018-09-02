@@ -262,7 +262,7 @@ class ScanSettingsList(GenericCollection):
 class ScanSettings(ComponentBase):
     requires_id = True
 
-    def __init__(self, id=None, source_file_references=None, target_list=None, params=None, context=NullMap, **kwargs):
+    def __init__(self, id, source_file_references=None, target_list=None, params=None, context=NullMap, **kwargs):
         if target_list is None:
             target_list = []
         if not isinstance(target_list, TargetList):

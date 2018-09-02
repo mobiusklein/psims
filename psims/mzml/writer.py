@@ -156,12 +156,12 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     spectrum_count : int
         A count of the number of spectrums written
     """
-    toplevel_tag = MzML
 
     DEFAULT_TIME_UNIT = DEFAULT_TIME_UNIT
     DEFAULT_INTENSITY_UNIT = DEFAULT_INTENSITY_UNIT
 
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False, vocabulary_resolver=None, **kwargs):
+    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+                 vocabulary_resolver=None, id=None, accession=None, **kwargs):
         if vocabularies is None:
             vocabularies = []
         vocabularies = list(default_cv_list) + list(vocabularies)
@@ -171,26 +171,28 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             vocabulary_resolver=vocabulary_resolver,
             missing_reference_is_error=missing_reference_is_error)
         XMLDocumentWriter.__init__(self, outfile, close, **kwargs)
+        self.id = id
+        self.accession = accession
         self.spectrum_count = 0
         self.chromatogram_count = 0
         self.default_instrument_configuration = None
         self.state_machine = TableStateMachine([
-            ("start", ['file_description', 'reference_param_group_list', 'sample_list', 'software_list',
-                       'instrument_configuration_list', 'data_processing_list', 'run']),
+            ("start", ['file_description', ]),
             # "controlled_vocabularies",
-            ("file_description", ['reference_param_group_list', 'sample_list', 'software_list',
-                                  'instrument_configuration_list', 'data_processing_list', 'run']),
-            ("reference_param_group_list", ['sample_list', 'software_list',
-                                            'instrument_configuration_list', 'data_processing_list', 'run']),
-            ("sample_list", ['software_list', 'instrument_configuration_list', 'data_processing_list', 'run']),
-            ("software_list", ['instrument_configuration_list', 'data_processing_list', 'run']),
-            # "scan_settings_list",
-            ("instrument_configuration_list", ['data_processing_list', 'run']),
+            ("file_description", ['reference_param_group_list', 'sample_list', 'software_list']),
+            ("reference_param_group_list", ['sample_list', 'software_list']),
+            ("sample_list", ['software_list', ]),
+            ("software_list", ["scan_settings_list", 'instrument_configuration_list']),
+            ("scan_settings_list", ['instrument_configuration_list', ]),
+            ("instrument_configuration_list", ['data_processing_list']),
             ("data_processing_list", ['run']),
             ("run", ['spectrum_list', 'chromatogram_list']),
             ('spectrum_list', ['chromatogram_list']),
             ('chromatogram_list', [])
         ])
+
+    def toplevel_tag(self):
+        return MzML(id=self.id, accession=self.accession)
 
     def software_list(self, software_list):
         self.state_machine.transition("software_list")
@@ -247,24 +249,28 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def sample_list(self, samples):
         self.state_machine.transition("sample_list")
         for i, sample in enumerate(samples):
-            sample_id = sample.get('id')
-            sample_name = sample.get("name")
+            if isinstance(sample, Mapping):
+                sample_id = sample.get('id')
+                sample_name = sample.get("name")
 
-            if sample_id is None and sample_name is not None:
-                sample_id = "%s_%d_id" % (sample_name, i)
-            elif sample_id is not None and sample_name is None:
-                sample_name = str(sample_id)
-            elif sample_id is sample_name is None:
-                sample_id = "sample_%d_id" % (i,)
-                sample_name = "sample_%d" % (i,)
-            sample['id'] = sample_id
-            sample['name'] = sample_name
+                if sample_id is None and sample_name is not None:
+                    sample_id = "%s_%d_id" % (sample_name, i)
+                elif sample_id is not None and sample_name is None:
+                    sample_name = str(sample_id)
+                elif sample_id is sample_name is None:
+                    sample_id = "sample_%d_id" % (i,)
+                    sample_name = "sample_%d" % (i,)
+                sample['id'] = sample_id
+                sample['name'] = sample_name
 
-        sample_entries = [
-            self.Sample(**sample) for sample in samples
-        ]
+        sample_entries = self.Sample.ensure_all(samples)
 
         self.SampleList(sample_entries).write(self)
+
+    def scan_settings_list(self, scan_settings):
+        self.state_machine.transition("scan_settings_list")
+        scan_settings = self.ScanSettings.ensure_all(scan_settings)
+        self.ScanSettingsList(scan_settings).write(self)
 
     def run(self, id=None, instrument_configuration=None, source_file=None, start_time=None, sample=None):
         """Begins the `<run>` section of the document, describing a single
@@ -338,6 +344,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                  scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                  encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                  instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+        self.state_machine.expects_state("spectrum_list")
         if encoding is None:
             {MZ_ARRAY: np.float64}
         if params is None:
@@ -460,6 +467,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                      precursor_information=None, params=None,
                      compression=COMPRESSION_ZLIB, encoding=32, other_arrays=None,
                      intensity_unit=DEFAULT_INTENSITY_UNIT, time_unit=DEFAULT_TIME_UNIT):
+        self.state_machine.expects_state("chromatogram_list")
         if params is None:
             params = []
         else:
