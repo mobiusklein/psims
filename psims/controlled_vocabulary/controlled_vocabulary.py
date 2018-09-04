@@ -93,10 +93,13 @@ class ControlledVocabulary(object):
                         try:
                             return self.terms[lower_key]
                         except KeyError:
-                            err = KeyError("%s and %s were not found." % (e, e2))
-                            # suppress intense Py3 exception chain without using raise-from syntax
-                            err.__cause__ = None
-                            raise err
+                            try:
+                                return self._obsolete_names[lower_key]
+                            except KeyError:
+                                err = KeyError("%s and %s were not found." % (e, e2))
+                                # suppress intense Py3 exception chain without using raise-from syntax
+                                err.__cause__ = None
+                                raise err
 
     def __repr__(self):
         template = ("{self.__class__.__name__}(terms={size}, id={self.id}, "
@@ -124,6 +127,11 @@ class ControlledVocabulary(object):
     def _build_names(self):
         self._names = {
             v['name']: v for v in self.terms.values()
+            if not v.get("is_obsolete", False)
+        }
+        self._obsolete_names = {
+            v['name'].lower(): v for v in self.terms.values()
+            if v.get("is_obsolete", False)
         }
 
     def _bind_terms(self):
