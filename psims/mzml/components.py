@@ -1,10 +1,11 @@
-
+import os
 import warnings
 try:
     from collections import Mapping, Iterable
 except ImportError:
     from collections.abc import Mapping, Iterable
 from numbers import Number
+from ..utils import checksum_file
 from ..xml import _element, element, TagBase, CV
 from ..document import (
     ComponentBase as _ComponentBase,
@@ -14,6 +15,12 @@ from ..document import (
     IDParameterContainer)
 from .binary_encoding import dtype_to_encoding, compression_map, encode_array
 from .utils import ensure_iterable, basestring
+
+
+try:
+    FileNotFoundError
+except Exception as e:
+    FileNotFoundError = OSError
 
 
 class MzML(TagBase):
@@ -131,6 +138,25 @@ class SourceFile(ComponentBase):
             id=id,
             name=name)
         context['SourceFile'][id] = self.element.id
+
+    @property
+    def path(self):
+        return os.path.join([self.location, self.name])
+
+    def is_local(self):
+        path = self.path
+        if path.startswith("file:///"):
+            path = path.replace("file:///", '', 1)
+        return os.path.exists(path)
+
+    def checksum(self, digest='sha-1'):
+        if not self.is_local():
+            raise FileNotFoundError("Can't checksum %r, file not found")
+        path = self.path
+        if path.startswith("file:///"):
+            path = path.replace("file:///", '', 1)
+        checksum = checksum_file(path, digest)
+        return self.context.param(name=digest, value=checksum)
 
     def write_content(self, xml_file):
         self.write_params(xml_file)

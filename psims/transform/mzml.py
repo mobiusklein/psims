@@ -1,5 +1,4 @@
 from pyteomics import mzml
-from pyteomics.auxiliary import cvquery
 
 from psims import MzMLWriter
 from psims.utils import ensure_iterable
@@ -21,8 +20,14 @@ class MzMLParser(mzml.MzML):
         self.seek(0)
 
 
+def identity(x):
+    return x
+
+
 class MzMLTransformer(object):
-    def __init__(self, input_stream, output_stream, transform, transform_description=None):
+    def __init__(self, input_stream, output_stream, transform=None, transform_description=None):
+        if transform is None:
+            transform = identity
         self.input_stream = input_stream
         self.output_stream = output_stream
         self.transform = transform
@@ -189,7 +194,6 @@ class MzMLTransformer(object):
 
         spec_data['id'] = spectrum["id"]
         params = []
-        term_dict = cvquery(spectrum)
 
         if "positive scan" in spectrum:
             spec_data['polarity'] = 1

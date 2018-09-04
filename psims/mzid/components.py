@@ -1,4 +1,4 @@
-
+import os
 import warnings
 import operator
 import re
@@ -11,7 +11,7 @@ from itertools import chain
 from lxml import etree
 
 from psims.controlled_vocabulary import UNIMODEntity
-from ..utils import SimpleVersion
+from ..utils import SimpleVersion, checksum_file
 from ..xml import (
     _element, element, TagBase,
     CVParam, UserParam, CV,
@@ -23,6 +23,12 @@ from ..document import (
 from .utils import ensure_iterable
 
 AUTO = object()
+
+
+try:
+    FileNotFoundError
+except Exception as e:
+    FileNotFoundError = OSError
 
 
 class MzIdentML(TagBase):
@@ -132,7 +138,29 @@ class IDGenericCollection(GenericCollection):
 # ---- Input File Description ---------
 
 
-class SourceFile(ComponentBase):
+class _FileDescriptionBase(object):
+
+    @property
+    def path(self):
+        return self.location
+
+    def is_local(self):
+        path = self.path
+        if path.startswith("file:///"):
+            path = path.replace("file:///", '', 1)
+        return os.path.exists(path)
+
+    def checksum(self, digest='sha-1'):
+        if not self.is_local():
+            raise FileNotFoundError("Can't checksum %r, file not found")
+        path = self.path
+        if path.startswith("file:///"):
+            path = path.replace("file:///", '', 1)
+        checksum = checksum_file(path, digest)
+        return self.context.param(name=digest, value=checksum)
+
+
+class SourceFile(ComponentBase, _FileDescriptionBase):
     requires_id = True
 
     def __init__(self, location, file_format=None, id=None,
@@ -154,7 +182,7 @@ class SourceFile(ComponentBase):
         self.write_params(xml_file)
 
 
-class SearchDatabase(ComponentBase):
+class SearchDatabase(ComponentBase, _FileDescriptionBase):
     requires_id = True
 
     def __init__(self, name, file_format=None, location=None, id=None, external_format=None,
@@ -189,7 +217,7 @@ class SearchDatabase(ComponentBase):
         self.write_params(xml_file)
 
 
-class SpectraData(ComponentBase):
+class SpectraData(ComponentBase, _FileDescriptionBase):
     requires_id = True
 
     def __init__(self, location, file_format=None, spectrum_id_format=None,

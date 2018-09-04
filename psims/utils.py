@@ -1,4 +1,6 @@
 import warnings
+import hashlib
+
 from functools import total_ordering
 
 from lxml import etree
@@ -20,6 +22,17 @@ def ensure_iterable(obj):
     if not isinstance(obj, Iterable) or isinstance(obj, basestring) or isinstance(obj, Mapping):
         return [obj]
     return obj
+
+
+def checksum_file(path, hash_type='sha-1'):
+    digestor = hashlib.new(hash_type)
+    with open(path, 'rb') as fh:
+        chunk_size = 2 ** 16
+        chunk = fh.read(chunk_size)
+        while chunk:
+            digestor.update(chunk)
+            chunk = fh.read(chunk_size)
+    return digestor.hexdigest()
 
 
 def pretty_xml(path, outpath=None, encoding=b'utf-8'):
@@ -171,7 +184,7 @@ class StateTable(StateSpaceBase):
 
     def next_states(self, current):
         try:
-            return list(self.table[start])
+            return list(self.table[current])
         except KeyError:
             return []
 
