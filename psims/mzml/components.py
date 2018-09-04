@@ -442,7 +442,10 @@ class Analyzer(ParameterContainer):
             dict(
                 order=order),
             context=context)
-        self.order = order
+        try:
+            self.order = int(order)
+        except (ValueError, TypeError):
+            self.order = order
 
 
 class Detector(ParameterContainer):
@@ -457,7 +460,10 @@ class Detector(ParameterContainer):
             dict(
                 order=order),
             context=context)
-        self.order = order
+        try:
+            self.order = int(order)
+        except (ValueError, TypeError):
+            self.order = order
 
 
 class DataProcessingList(GenericCollection):
