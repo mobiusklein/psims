@@ -1,5 +1,4 @@
 import re
-
 from six import text_type
 
 xsd_pattern = re.compile(r"(?:value-type:)?xsd\\?:([^\"]+)")
