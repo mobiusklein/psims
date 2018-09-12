@@ -173,7 +173,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     context : :class:`.DocumentContext`
     """
 
-    def __init__(self, outfile, close=False, vocabularies=None,  missing_reference_is_error=False,
+    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, version='1.2.0', **kwargs):
         if vocabularies is None:
             vocabularies = list(default_cv_list)
@@ -184,8 +184,10 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.version = version
         self.xmlns = MzIdentML.attr_version_map[version]['xmlns']
         self.state_machine = TableStateMachine([
-            ("start", ['analysis_software_list', 'provider', 'audit_collection', 'analysis_sample_collection',
-                       'sequence_collection', 'analysis_collection']),
+            ("start", ['controlled_vocabularies']),
+            ("controlled_vocabularies",
+                ['analysis_software_list', 'provider', 'audit_collection', 'analysis_sample_collection',
+                 'sequence_collection', 'analysis_collection'])
             ('analysis_software_list', [
                 'provider', 'audit_collection', 'analysis_sample_collection', 'sequence_collection',
                 'analysis_collection']),
@@ -202,10 +204,20 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ('spectrum_identification_list', ['spectrum_identification_list', 'protein_detection_list']),
             ('protein_detection_list', ['bibliography']),
             ('bibliography', []),
-            ], 'start')
+        ], 'start')
 
     def toplevel_tag(self):
         return MzIdentML(version=self.version)
+
+    def controlled_vocabularies(self):
+        """Write out the `<cvList>` element and all its children,
+        including both this format's default controlled vocabularies
+        and those passed as arguments to this method.this
+
+        This method requires writing to have begun.
+        """
+        self.state_machine.transition("controlled_vocabularies")
+        super(MzIdentMLWriter, self).controlled_vocabularies()
 
     def providence(self, *args, **kwargs):
         warnings.warn("Method renamed to `provenance`")

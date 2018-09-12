@@ -133,6 +133,27 @@ def attrencode(o):
 
 @add_metaclass(ElementType)
 class TagBase(object):
+    """Represent a single XML element with arbitrary attributes.
+
+    Mocks the :class:`Mapping` interface
+
+    Attributes
+    ----------
+    attrs : dict
+        The attributes of the element. :meth:`__getattr__` falls back
+        to querying :attr:`attrs`, trying both requested name and ``camelCase``
+        versions of the name
+    is_open : bool
+        Whether the element has been opened as a context manager
+    tag_name : str
+        The name of the element
+    text : str
+        The body text of the element
+    type_attrs : dict
+        Attributes common to all elements of this type
+    id : str
+        The @id attribute of the element.
+    """
 
     type_attrs = {}
 
@@ -191,6 +212,30 @@ class TagBase(object):
         return self._id_string
 
     def element(self, xml_file=None, with_id=False):
+        """Create an XML element using either a materialized :class:`lxml.etree.Element`
+        if ``xml_file`` is :const:`None` or the ephemeral context manager element
+        :class:`lxml.etree._FileWriterElement`.
+
+        The element will be constructed with all attributes in :attr:`attrs` where the
+        value is not :const:`None`.
+
+        Parameters
+        ----------
+        xml_file : :class:`XMLWriterMixin`, optional
+            The XML writer to build the element for
+        with_id : bool, optional
+            Whether to require the ID attribute be present and rendered
+
+        Returns
+        -------
+        :class:`lxml.etree.Element` or :class:`lxml.etree._FileWriterElement`
+            Description
+
+        Raises
+        ------
+        ValueError
+            Description
+        """
         with_id = with_id or self._force_id
         attrs = {k: attrencode(v) for k, v in self.attrs.items() if v is not None}
         if with_id:
@@ -198,17 +243,32 @@ class TagBase(object):
                 raise ValueError("Required id for %r but id was None" % (self,))
             attrs['id'] = self.id
         if xml_file is None:
-            return etree.Element(self.tag_name, **attrs)
+            elt = etree.Element(self.tag_name, **attrs)
+            if self.text:
+                elt.text = self.text
+            return elt
         else:
             return xml_file.element(self.tag_name, **attrs)
 
     def write(self, xml_file, with_id=False):
+        """Write this element to file
+
+        Parameters
+        ----------
+        xml_file : :class:`XMLWriterMixin`
+            The XML writer to build the element for
+        with_id : bool, optional
+            Whether to require the ID attribute be present and rendered
+
+        See Also
+        --------
+        :meth:`element`
+        """
         el = self.element(with_id=with_id)
         xml_file.write(el)
 
     def bind(self, xml_file):
         self._xml_file = xml_file
-        self._context_manager = None
 
     @contextmanager
     def begin(self, xml_file, with_id=False):
@@ -218,6 +278,8 @@ class TagBase(object):
         self.is_open = False
 
     def __call__(self, xml_file=None, with_id=False):
+        """Alias of :meth:`element`
+        """
         return self.element(xml_file, with_id)
 
     def __repr__(self):
@@ -264,6 +326,24 @@ def _make_tag_type(name, **attrs):
 
 
 def _element(_tag_name, *args, **kwargs):
+    """Construct a subclass instance of :class:`TagBase` with the given
+    tag name. All other arguments are forwarded to the :class:`TagBase`
+    constructor
+
+    Parameters
+    ----------
+    _tag_name : str
+        The name of the tag type to create
+    *args
+        Arbitrary arguments for the tag
+    **kwargs
+        Key word arguments for the tag
+
+    Returns
+    -------
+    :class:`TagBase`
+    """
+
     try:
         eltype = ElementType._cache[_tag_name]
     except KeyError:
@@ -272,6 +352,21 @@ def _element(_tag_name, *args, **kwargs):
 
 
 def element(xml_file, _tag_name, *args, **kwargs):
+    """Construct and immediately write a subclass instance of
+    :class:`TagBase` with the given tag name. All other arguments
+    are forwarded to the :class:`TagBase` constructor
+
+    Parameters
+    ----------
+    xml_file : :class:`XMLWriterMixin`
+        The XML writer to write to
+    _tag_name : str
+        The name of the tag type to create
+    *args
+        Arbitrary arguments for the tag
+    **kwargs
+        Key word arguments for the tag
+    """
     with_id = kwargs.pop("with_id", False)
     if isinstance(_tag_name, basestring):
         el = _element(_tag_name, *args, **kwargs)
@@ -281,6 +376,13 @@ def element(xml_file, _tag_name, *args, **kwargs):
 
 
 class CVParam(TagBase):
+    """Represents a ``<cvParam />``
+
+    .. note::
+        This element holds additional data or annotation. Only controlled values
+        are allowed here
+    """
+
     tag_name = "cvParam"
     _track = NO_TRACK
 
@@ -361,6 +463,21 @@ class CVParam(TagBase):
 
 
 class UserParam(CVParam):
+    """Represents a ``<userParam />`` element
+
+    .. note::
+        Uncontrolled user parameters (essentially allowing free text). Before
+        using these, one should verify whether there is an appropriate CV term
+        available, and if so, use the CV term instead
+
+    Attributes
+    ----------
+    accession : TYPE
+        Description
+    tag_name : str
+        Description
+    """
+
     tag_name = "userParam"
     accession = None
 
@@ -377,6 +494,35 @@ class ParamGroupReference(TagBase):
 
 
 class CV(object):
+    """Represent a Controlled Vocabulary associated with the current document.
+
+    The controlled vocabulary referenced must specify a URI that will be used
+    to either download the definitions from, to be matched to a cache of pre-built
+    vocabularies, or to be matched with a set of special resolution rules for
+    handled by the :attr:`resolver`.
+
+    This object acts as a lazy-loading proxy for
+    :class:`~.controlled_vocabulary.ControlledVocabulary`.
+
+    Attributes
+    ----------
+    full_name : str
+        The full name of the controlled vocabulary, which may or may not
+        be identical to the :attr:`id`
+    id : str
+        A short unique identifier for the controlled vocabulary
+    options : :class:`dict`
+        Additional information that may be used during resolution
+    resolver : :class:`~.VocabularyResolver`
+        The resolver which will handle all requests for this controlled vocabulary
+    uri : str
+        The location where the definition can be found
+    version : str
+        The version of the vocabulary resolved
+    vocabulary : :class:`~.ControlledVocabulary`
+        The parsed term graph defining this vocabulary
+    """
+
     def __init__(self, full_name, id, uri, version=None, resolver=None, **kwargs):
         self.full_name = full_name
         self.id = id
@@ -402,6 +548,25 @@ class CV(object):
         return self._vocabulary
 
     def load(self, handle=None):
+        """Load the vocabulary definition from source
+
+        Assumes that the definition is in OBO format
+
+        Parameters
+        ----------
+        handle : file-like, optional
+            An optional file handle which can be read from directly.
+
+        Returns
+        -------
+        :class:`~.ControlledVocabulary`
+            The parsed vocabulary
+
+        Raises
+        ------
+        KeyError
+            When all fallback mechanisms fail, a KeyError is raised
+        """
         resolver = self.resolver or controlled_vocabulary.obo_cache
         if handle is None:
             try:
@@ -412,7 +577,7 @@ class CV(object):
                 if fp is not None:
                     cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
                 else:
-                    raise LookupError(self.uri)
+                    raise KeyError(self.uri)
         else:
             cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle)
         try:
@@ -431,6 +596,17 @@ class CV(object):
 
 
 class ProvidedCV(CV):
+    """A wrapper around another object that provides the same basic interface
+    as :class:`CV` from that object, provided through the :attr:`converter`
+    function
+
+    Attributes
+    ----------
+    converter : Callable
+        A function that converts elements of the provided vocabulary into
+        something matching the :class:`~.controlled_vocabulary.Entity` interface.
+    """
+
     def __init__(self, id, uri, converter=identity, **kwargs):
         self.converter = converter
         super(ProvidedCV, self).__init__(id=id, uri=uri, **kwargs)
@@ -529,11 +705,10 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
 
-    def __init__(self, outfile, close=False, compression=None, encoding=None, **kwargs):
+    def __init__(self, outfile, close=False, encoding=None, **kwargs):
         if encoding is None:
             encoding = 'utf-8'
         self.outfile = outfile
-        self.compression = compression
         self.encoding = encoding
         self.xmlfile = etree.xmlfile(outfile, encoding=encoding, **kwargs)
         self._writer = None
@@ -583,6 +758,8 @@ class XMLDocumentWriter(XMLWriterMixin):
         self.end(exc_type, exc_value, traceback)
 
     def end(self, exc_type=None, exc_value=None, traceback=None):
+        """Ends the XML document, and flushes and closes the file
+        """
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
         self.xmlfile.__exit__(exc_type, exc_value, traceback)
@@ -599,12 +776,6 @@ class XMLDocumentWriter(XMLWriterMixin):
         and those passed as arguments to this method.this
 
         This method requires writing to have begun.
-
-        Parameters
-        ----------
-        vocabularies : list of ControlledVocabulary, optional
-            A list of additional ControlledVocabulary objects
-            which will be used to construct `<cv>` elements
         """
         cvlist = self.CVList(self.vocabularies)
         cvlist.write(self.writer)
@@ -624,7 +795,7 @@ class XMLDocumentWriter(XMLWriterMixin):
     def format(self, outfile=None):
         """Pretty-prints the contents of the file.
 
-        Uses a tempfile.NamedTemporaryFile to receive
+        Uses a :class:`tempfile.NamedTemporaryFile` to receive
         the formatted XML content, removes the
         original file, and moves the temporary file
         to the original file's name.
@@ -688,6 +859,23 @@ class XMLDocumentWriter(XMLWriterMixin):
                     print("Could not format document", e)
 
     def validate(self):
+        """Attempt to perform XSD validation on the XML document
+        this writer wrote
+
+        Returns
+        -------
+        bool:
+            Whether or not the document was valid
+
+        lxml.etree.XMLSchema:
+            The schema object where errors are logged
+
+        Raises
+        ------
+        TypeError
+            When the file cannot be recovered from the writer object,
+            a :class:`TypeError` is thrown
+        """
         prev = None
         try:
             if isinstance(self.outfile, basestring):

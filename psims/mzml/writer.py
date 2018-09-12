@@ -177,8 +177,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.chromatogram_count = 0
         self.default_instrument_configuration = None
         self.state_machine = TableStateMachine([
-            ("start", ['file_description', ]),
-            # "controlled_vocabularies",
+            ("start", ['controlled_vocabularies', ]),
+            ("controlled_vocabularies", ['file_description', ])
             ("file_description", ['reference_param_group_list', 'sample_list', 'software_list']),
             ("reference_param_group_list", ['sample_list', 'software_list']),
             ("sample_list", ['software_list', ]),
@@ -194,7 +194,29 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def toplevel_tag(self):
         return MzML(id=self.id, accession=self.accession)
 
+    def controlled_vocabularies(self):
+        """Write out the `<cvList>` element and all its children,
+        including both this format's default controlled vocabularies
+        and those passed as arguments to this method.this
+
+        This method requires writing to have begun.
+        """
+        self.state_machine.transition("controlled_vocabularies")
+        super(MzMLWriter, self).controlled_vocabularies()
+
     def software_list(self, software_list):
+        """Writes the ``<softwareList>`` section of the document using the provided
+        parameters.
+
+        .. note::
+            List and descriptions of software used to acquire and/or process the
+            data in this mzML file
+
+        Parameters
+        ----------
+        software_list : list
+            A list or other iterable of :class:`dict` or :class:`~.Software`-like objects
+        """
         self.state_machine.transition("software_list")
         n = len(software_list)
         if n:
@@ -202,10 +224,8 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.SoftwareList(software_list).write(self)
 
     def file_description(self, file_contents=None, source_files=None, contacts=None):
-        """Writes the `<fileDescription>` section of the document using the
-        provided parameters.
+        r"""Writes the ``<fileDescription>`` section of the document.
 
-        From the specification:
         .. note::
             Information pertaining to the entire mzML file (i.e. not specific
             to any part of the data set) is stored here.
@@ -213,11 +233,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         Parameters
         ----------
         file_contents : list, optional
-            A list or other iterable of str, dict, or *Param-types which will
-            be placed in the `<fileContent>` element.
-        source_files : list, optional
-            A list or other iterable of dict or :class:`.SourceFile`-like objects
-            to be placed in the `<sourceFileList>` element
+            A list or other iterable of :class:`str`, :class:`dict`, or \*Param-types which will
+            be placed in the ``<fileContent>`` element.
+        source_files : list
+            A list or other iterable of dict or :class:`~.SourceFile`-like objects
+            to be placed in the ``<sourceFileList>`` element
         """
         self.state_machine.transition("file_description")
         fd = self.FileDescription(
@@ -225,7 +245,20 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
         fd.write(self.writer)
 
-    def instrument_configuration_list(self, instrument_configurations=None):
+    def instrument_configuration_list(self, instrument_configurations):
+        """Writes the ``<instrumentConfigurationList>`` section of the document.
+
+        .. note::
+            List and descriptions of instrument configurations. At least one instrument configuration MUST
+            be specified, even if it is only to specify that the instrument is unknown. In that case, the
+            "instrument model" term is used to indicate the unknown instrument in the instrumentConfiguration
+
+        Parameters
+        ----------
+        instrument_configurations : list
+            A list or other iterable of :class:`dict` or :class:`~.InstrumentConfiguration`-like
+            objects
+        """
         self.state_machine.transition("instrument_configuration_list")
         configs = [
             self.InstrumentConfiguration.ensure(ic) if not isinstance(
@@ -235,6 +268,13 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.InstrumentConfigurationList(configs).write(self)
 
     def data_processing_list(self, data_processing=None):
+        """Writes the ``<dataProcessingList>`` section of the document.
+
+        Parameters
+        ----------
+        data_processing : None, optional
+            Description
+        """
         self.state_machine.transition("data_processing_list")
         methods = [
             self.DataProcessing.ensure(dp) for dp in ensure_iterable(data_processing)]

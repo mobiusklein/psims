@@ -705,7 +705,7 @@ class BinaryDataArray(ComponentBase):
         self.binary.write(xml_file)
 
     @classmethod
-    def from_array(cls, data_array, compression=None, params=None, context=None):
+    def from_array(cls, data_array, compression=None, data_processing_reference=None, params=None, context=None):
         if (params is None):
             params = []
         if (context is None):
@@ -724,6 +724,7 @@ class BinaryDataArray(ComponentBase):
             binary,
             encoded_length,
             array_length=array_length,
+            data_processing_reference=data_processing_reference,
             params=params,
             context=context)
         return inst

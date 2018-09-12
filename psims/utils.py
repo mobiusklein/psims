@@ -17,6 +17,24 @@ from psims import compression
 
 
 def ensure_iterable(obj):
+    """Ensure ``obj`` is either a sequential iterable object that is not a
+    string type.
+
+        1. If ``obj`` is :const:`None` return an empty :class:`tuple`.
+        2. If ``obj`` is an instance of :class:`str`, :class:`bytes`, or :class:`Mapping`,
+           or not :class:`Iterable` return a list containing ``obj``
+        3. Return ``obj``
+
+    Parameters
+    ----------
+    obj : object
+        The object to ensure iterability of
+
+    Returns
+    -------
+    :class:`Sequence`
+        Returns either ``obj`` or a wrapepr around ``obj``
+    """
     if obj is None:
         return tuple()
     if not isinstance(obj, Iterable) or isinstance(obj, basestring) or isinstance(obj, Mapping):
@@ -25,6 +43,21 @@ def ensure_iterable(obj):
 
 
 def checksum_file(path, hash_type='sha-1'):
+    """Calculate the cryptographic hash checksum of the given file
+    path
+
+    Parameters
+    ----------
+    path : :class:`str`
+        The path to the file to checksum
+    hash_type : str, optional
+        The name of the hash type to use. Defaults to sha-1
+
+    Returns
+    -------
+    :class:`bytes`
+        The hexdigest checksum of the file specified
+    """
     digestor = hashlib.new(hash_type)
     with open(path, 'rb') as fh:
         chunk_size = 2 ** 16
@@ -36,6 +69,22 @@ def checksum_file(path, hash_type='sha-1'):
 
 
 def pretty_xml(path, outpath=None, encoding=b'utf-8'):
+    """Format an XML document using :func:`lxml.etree.tostring` with
+    ``pretty_print=True``.
+
+    Attempts to do the right thing when given file paths and
+    seekable file objects.
+
+    Parameters
+    ----------
+    path : :class:`str` or file-like
+        The file to format. If file-like, it will attempt to seek to the beginning
+    outpath : :class:`str` or file-like, optional
+        The place to write the formatted file to. If missing it will attempt to overrwrite
+        the input path
+    encoding : bytes, optional
+        The encoding of the XML document to write out. Defaults to UTF-8
+    """
     try:
         path.seek(0)
     except AttributeError:
@@ -84,6 +133,22 @@ def simple_repr(self):  # pragma: no cover
 
 @total_ordering
 class SimpleVersion(object):
+    """A simple representation of a versioning system with a three part verison
+    of the form "major"."minor"."patch".
+
+    Used to represent different schema versions and to make schema version comparison
+    simpler.
+
+    Attributes
+    ----------
+    major : int
+        Major version
+    minor : int
+        Minor version
+    patch : int
+        Patch version
+    """
+
     def __init__(self, major=0, minor=0, patch=0):
         self.major = major
         self.minor = minor
@@ -138,6 +203,16 @@ class SimpleVersion(object):
 
 
 class KeyToAttrProxy(object):
+    """Proxies requests for keys through :meth:`__getitem__` into
+    calls to :meth:`__getattr__` and mock most methods of the :class:`Mapping`
+    interface for objects with a :attr:`__dict__`
+
+    Attributes
+    ----------
+    source : object
+        The object to proxy
+    """
+
     def __init__(self, source):
         self.source = source
 
@@ -175,6 +250,15 @@ class StateSpaceBase(object):
 
 
 class StateTable(StateSpaceBase):
+    """A simple state transition table that maps a current
+    state to a list of valid new states
+
+    Attributes
+    ----------
+    table : OrderedDict
+        The mapping from current state to next states
+    """
+
     def __init__(self, table):
         self.table = OrderedDict(table)
 
@@ -200,15 +284,44 @@ class StateTransitionWarning(Warning):
 
 
 class StateMachineBase(object):
+    """A base class implementing the logic for
+    handling state transitions, state checking,
+    and error reporting when an invalid transition
+    or failed check occurs
+
+    Attributes
+    ----------
+    current_state : object
+        The current state
+    enabled : bool
+        Whether or not to warn about invalid actions
+    """
+
     def __init__(self, current_state):
         self._current_state = None
         self._previous_state = None
         self.current_state = current_state
+        self.enabled = True
 
     def transition(self, state):
+        """Move from the current state to the specified state.
+
+        If the transition was invalid and warnings are enabled,
+        this will call :meth:`transition_error`
+
+        Parameters
+        ----------
+        state : object
+            The state to transition to
+
+        Returns
+        -------
+        bool
+            Whether or not the transition was valid
+        """
         is_valid = self.states.validate(self.current_state, state)
         self.current_state = state
-        if not is_valid:
+        if not is_valid and self.enabled:
             self.transition_error()
         return is_valid
 
@@ -226,17 +339,44 @@ class StateMachineBase(object):
         return self._previous_state
 
     def expects_state(self, state):
+        """Check whether the current state matches the expected
+        state
+
+        If the expectation was invalid and warnings are enabled,
+        this will call :meth:`expects_error`
+
+
+        Parameters
+        ----------
+        state : object
+            The expected state
+
+        Returns
+        -------
+        bool
+            Whether or not the states matched.
+        """
         is_valid = self.current_state == state
-        if not is_valid:
+        if not is_valid and self.enabled:
             self.expects_error(state)
         return is_valid
 
     def expects_error(self, state):
+        """Warns that the expectation of `state` was invalid
+
+        Parameters
+        ----------
+        state : object
+            The expected state
+        """
         warnings.warn(
             ("Action expected {state!r} but current state is {self.current_state!r}").format(
                 self=self, state=state), StateTransitionWarning)
 
     def transition_error(self):
+        """Warn that the last transition was invalid, and list
+        the set of valid transitions.
+        """
         next_states = self.states.next_states(self.previous_state)
         warnings.warn(
             ("Transition from {self.previous_state!r} to {self.current_state!r} is"
@@ -245,6 +385,16 @@ class StateMachineBase(object):
 
 
 class TableStateMachine(StateMachineBase):
+    """An implementation of :class:`StateMachineBase` which
+    uses a :class:`StateTable` to represent the set of transtions
+    allowed.
+
+    Attributes
+    ----------
+    states : :class:`StateTable`
+        The valid transitions
+    """
+
     def __init__(self, state_table, current_state=None):
         self.states = StateTable(state_table)
         super(TableStateMachine, self).__init__(current_state)
