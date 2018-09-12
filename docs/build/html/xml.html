@@ -1,0 +1,197 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Basic XML Components &#8212; psims  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="mzml/index.html" />
+    <link rel="prev" title="Welcome to psims’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-psims.xml">
+<span id="basic-xml-components"></span><h1>Basic XML Components<a class="headerlink" href="#module-psims.xml" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="psims.xml.TagBase">
+<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">TagBase</code><span class="sig-paren">(</span><em>tag_name=None</em>, <em>text=''</em>, <em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#TagBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.TagBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent a single XML element with arbitrary attributes.</p>
+<p>Mocks the <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code> interface</p>
+<dl class="attribute">
+<dt id="psims.xml.TagBase.attrs">
+<code class="descname">attrs</code><a class="headerlink" href="#psims.xml.TagBase.attrs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – The attributes of the element. <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__()</span></code> falls back
+to querying <a class="reference internal" href="#psims.xml.TagBase.attrs" title="psims.xml.TagBase.attrs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">attrs</span></code></a>, trying both requested name and <code class="docutils literal notranslate"><span class="pre">camelCase</span></code>
+versions of the name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.TagBase.is_open">
+<code class="descname">is_open</code><a class="headerlink" href="#psims.xml.TagBase.is_open" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – Whether the element has been opened as a context manager</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.TagBase.tag_name">
+<code class="descname">tag_name</code><a class="headerlink" href="#psims.xml.TagBase.tag_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – The name of the element</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.TagBase.text">
+<code class="descname">text</code><a class="headerlink" href="#psims.xml.TagBase.text" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – The body text of the element</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.TagBase.type_attrs">
+<code class="descname">type_attrs</code><a class="headerlink" href="#psims.xml.TagBase.type_attrs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – Attributes common to all elements of this type</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.TagBase.id">
+<code class="descname">id</code><a class="headerlink" href="#psims.xml.TagBase.id" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – The &#64;id attribute of the element.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="psims.xml.XMLWriterMixin">
+<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">XMLWriterMixin</code><a class="reference internal" href="_modules/psims/xml.html#XMLWriterMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLWriterMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>A mixin class to provide methods for writing
+XML elements and aggregate Components.</p>
+<dl class="attribute">
+<dt id="psims.xml.XMLWriterMixin.verbose">
+<code class="descname">verbose</code><a class="headerlink" href="#psims.xml.XMLWriterMixin.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – Controls debug printing</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.XMLWriterMixin.writer">
+<code class="descname">writer</code><a class="headerlink" href="#psims.xml.XMLWriterMixin.writer" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>lxml.etree._IncrementalFileWriter</em> – The low-level XML writer used by <code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="psims.xml.XMLDocumentWriter">
+<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">XMLDocumentWriter</code><span class="sig-paren">(</span><em>outfile</em>, <em>close=False</em>, <em>encoding=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>A base class for types which are used to
+write complete XML documents.</p>
+<dl class="attribute">
+<dt id="psims.xml.XMLDocumentWriter.outfile">
+<code class="descname">outfile</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.outfile" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>file</em> – A writable file object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.XMLDocumentWriter.toplevel">
+<code class="descname">toplevel</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.toplevel" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TagBase</em> – The top-level XML tag</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.XMLDocumentWriter.xmlfile">
+<code class="descname">xmlfile</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.xmlfile" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>lxml.etree.xmlfile</em> – The XML formatter</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.XMLDocumentWriter.writer">
+<code class="descname">writer</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.writer" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>lxml.etree._IncrementalFileWriter</em> – The low-level XML writer used by <a class="reference internal" href="#psims.xml.XMLDocumentWriter.xmlfile" title="psims.xml.XMLDocumentWriter.xmlfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">psims</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic XML Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mzml/components.html">Components of mzML</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to psims’s documentation!</a></li>
+      <li>Next: <a href="mzml/index.html" title="next chapter">&lt;no title&gt;</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Joshua Klein.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/xml.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

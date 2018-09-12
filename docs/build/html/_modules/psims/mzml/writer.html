@@ -1,0 +1,755 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>psims.mzml.writer &#8212; psims  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for psims.mzml.writer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Mapping</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="k">import</span> <span class="n">Mapping</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">psims.xml</span> <span class="k">import</span> <span class="n">XMLWriterMixin</span><span class="p">,</span> <span class="n">XMLDocumentWriter</span>
+<span class="kn">from</span> <span class="nn">psims.utils</span> <span class="k">import</span> <span class="n">TableStateMachine</span>
+<span class="kn">from</span> <span class="nn">psims</span> <span class="k">import</span> <span class="n">compression</span>
+
+<span class="kn">from</span> <span class="nn">.components</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">ComponentDispatcher</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span>
+    <span class="n">default_cv_list</span><span class="p">,</span> <span class="n">MzML</span><span class="p">,</span> <span class="n">InstrumentConfiguration</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.binary_encoding</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">encode_array</span><span class="p">,</span> <span class="n">COMPRESSION_ZLIB</span><span class="p">,</span>
+    <span class="n">encoding_map</span><span class="p">,</span> <span class="n">compression_map</span><span class="p">,</span> <span class="n">dtype_to_encoding</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ensure_iterable</span>
+
+<span class="kn">from</span> <span class="nn">.index</span> <span class="k">import</span> <span class="n">MzMLIndexer</span>
+
+
+<span class="n">MZ_ARRAY</span> <span class="o">=</span> <span class="s1">&#39;m/z array&#39;</span>
+<span class="n">INTENSITY_ARRAY</span> <span class="o">=</span> <span class="s1">&#39;intensity array&#39;</span>
+<span class="n">DEFAULT_INTENSITY_UNIT</span> <span class="o">=</span> <span class="s2">&quot;number of detector counts&quot;</span>
+<span class="n">CHARGE_ARRAY</span> <span class="o">=</span> <span class="s1">&#39;charge array&#39;</span>
+<span class="n">TIME_ARRAY</span> <span class="o">=</span> <span class="s2">&quot;time array&quot;</span>
+<span class="n">DEFAULT_TIME_UNIT</span> <span class="o">=</span> <span class="s2">&quot;minute&quot;</span>
+<span class="n">NON_STANDARD_ARRAY</span> <span class="o">=</span> <span class="s1">&#39;non-standard data array&#39;</span>
+
+<span class="n">ARRAY_TYPES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;m/z array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;intensity array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;charge array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;signal to noise array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;time array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;wavelength array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;flow rate array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pressure array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;temperature array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;mean drift time array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;mean charge array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;resolution array&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;baseline array&#39;</span>
+<span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">DocumentSection</span><span class="p">(</span><span class="n">ComponentDispatcher</span><span class="p">,</span> <span class="n">XMLWriterMixin</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span> <span class="n">section_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">section_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">section_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">section_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DocumentSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent_context</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section</span> <span class="o">=</span> <span class="n">section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">writer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span> <span class="o">=</span> <span class="n">section_args</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span> <span class="o">=</span> <span class="n">element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">SpectrumListSection</span><span class="p">(</span><span class="n">DocumentSection</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span> <span class="n">section_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SpectrumListSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="s2">&quot;spectrumList&quot;</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span> <span class="n">section_args</span><span class="o">=</span><span class="n">section_args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">data_processing_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="s2">&quot;data_processing_method&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">[</span><span class="s2">&quot;defaultDataProcessingRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span>
+                <span class="s2">&quot;DataProcessing&quot;</span><span class="p">][</span><span class="n">data_processing_method</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">[</span><span class="s2">&quot;defaultDataProcessingRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;DataProcessing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;No Data Processing method found. mzML file may not be fully standard-compliant&quot;</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ChromatogramListSection</span><span class="p">(</span><span class="n">DocumentSection</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span> <span class="n">section_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ChromatogramListSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="s2">&quot;chromatogramList&quot;</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span>
+            <span class="n">section_args</span><span class="o">=</span><span class="n">section_args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">data_processing_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="s2">&quot;data_processing_method&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">[</span><span class="s2">&quot;defaultDataProcessingRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span>
+                <span class="s2">&quot;DataProcessing&quot;</span><span class="p">][</span><span class="n">data_processing_method</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">[</span><span class="s2">&quot;defaultDataProcessingRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;DataProcessing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;No Data Processing method found. mzML file may not be fully standard-compliant&quot;</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RunSection</span><span class="p">(</span><span class="n">DocumentSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Describes a `&lt;run&gt;` tag. Implemented as a section to provide a more</span>
+<span class="sd">    expressive API</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span> <span class="n">section_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RunSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span> <span class="n">section_args</span><span class="o">=</span><span class="n">section_args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">instrument_configuration_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="s2">&quot;instrument_configuration&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instrument_configuration_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">[</span><span class="s2">&quot;defaultInstrumentConfigurationRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span>
+                <span class="s2">&quot;InstrumentConfiguration&quot;</span><span class="p">][</span><span class="n">instrument_configuration_name</span><span class="p">]</span>
+        <span class="n">source_file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;source_file&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source_file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">[</span><span class="s2">&quot;defaultSourceFileRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span>
+                <span class="s2">&quot;SourceFile&quot;</span><span class="p">][</span><span class="n">source_file_name</span><span class="p">]</span>
+        <span class="n">sample_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span><span class="p">[</span><span class="s2">&quot;sampleRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;Sample&#39;</span><span class="p">][</span><span class="n">sample_id</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="MzMLWriter"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter">[docs]</a><span class="k">class</span> <span class="nc">MzMLWriter</span><span class="p">(</span><span class="n">ComponentDispatcher</span><span class="p">,</span> <span class="n">XMLDocumentWriter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A high level API for generating mzML XML files from simple Python objects.</span>
+
+<span class="sd">    This class depends heavily on lxml&#39;s incremental file writing API which in turn</span>
+<span class="sd">    depends heavily on context managers. Almost all logic is handled inside a context</span>
+<span class="sd">    manager and in the context of a particular document. Since all operations assume</span>
+<span class="sd">    that they have access to a universal identity map for each element in the document,</span>
+<span class="sd">    that map is centralized in this class.</span>
+
+<span class="sd">    MzMLWriter inherits from :class:`.ComponentDispatcher`, giving it a :attr:`context`</span>
+<span class="sd">    attribute and access to all `Component` objects pre-bound to that context with attribute-access</span>
+<span class="sd">    notation.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chromatogram_count : int</span>
+<span class="sd">        A count of the number of chromatograms written</span>
+<span class="sd">    spectrum_count : int</span>
+<span class="sd">        A count of the number of spectrums written</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DEFAULT_TIME_UNIT</span> <span class="o">=</span> <span class="n">DEFAULT_TIME_UNIT</span>
+    <span class="n">DEFAULT_INTENSITY_UNIT</span> <span class="o">=</span> <span class="n">DEFAULT_INTENSITY_UNIT</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">vocabulary_resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">vocabularies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">vocabularies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vocabularies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">default_cv_list</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">vocabularies</span><span class="p">)</span>
+        <span class="n">ComponentDispatcher</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">vocabularies</span><span class="o">=</span><span class="n">vocabularies</span><span class="p">,</span>
+            <span class="n">vocabulary_resolver</span><span class="o">=</span><span class="n">vocabulary_resolver</span><span class="p">,</span>
+            <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="n">missing_reference_is_error</span><span class="p">)</span>
+        <span class="n">XMLDocumentWriter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accession</span> <span class="o">=</span> <span class="n">accession</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectrum_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chromatogram_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_instrument_configuration</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span> <span class="o">=</span> <span class="n">TableStateMachine</span><span class="p">([</span>
+            <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;controlled_vocabularies&#39;</span><span class="p">,</span> <span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;controlled_vocabularies&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;file_description&#39;</span><span class="p">,</span> <span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;file_description&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;reference_param_group_list&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_list&#39;</span><span class="p">,</span> <span class="s1">&#39;software_list&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;reference_param_group_list&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;sample_list&#39;</span><span class="p">,</span> <span class="s1">&#39;software_list&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;sample_list&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;software_list&#39;</span><span class="p">,</span> <span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;software_list&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;scan_settings_list&quot;</span><span class="p">,</span> <span class="s1">&#39;instrument_configuration_list&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;scan_settings_list&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;instrument_configuration_list&#39;</span><span class="p">,</span> <span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;instrument_configuration_list&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;data_processing_list&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;data_processing_list&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;spectrum_list&#39;</span><span class="p">,</span> <span class="s1">&#39;chromatogram_list&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s1">&#39;spectrum_list&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;chromatogram_list&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s1">&#39;chromatogram_list&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">toplevel_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">MzML</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">accession</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MzMLWriter.controlled_vocabularies"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.controlled_vocabularies">[docs]</a>    <span class="k">def</span> <span class="nf">controlled_vocabularies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write out the `&lt;cvList&gt;` element and all its children,</span>
+<span class="sd">        including both this format&#39;s default controlled vocabularies</span>
+<span class="sd">        and those passed as arguments to this method.this</span>
+
+<span class="sd">        This method requires writing to have begun.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;controlled_vocabularies&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MzMLWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">controlled_vocabularies</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MzMLWriter.software_list"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.software_list">[docs]</a>    <span class="k">def</span> <span class="nf">software_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">software_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the ``&lt;softwareList&gt;`` section of the document using the provided</span>
+<span class="sd">        parameters.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            List and descriptions of software used to acquire and/or process the</span>
+<span class="sd">            data in this mzML file</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        software_list : list</span>
+<span class="sd">            A list or other iterable of :class:`dict` or :class:`~.Software`-like objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;software_list&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">software_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">software_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Software</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">sw</span><span class="p">)</span> <span class="k">for</span> <span class="n">sw</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">software_list</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SoftwareList</span><span class="p">(</span><span class="n">software_list</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MzMLWriter.file_description"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.file_description">[docs]</a>    <span class="k">def</span> <span class="nf">file_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_contents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">contacts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Writes the ``&lt;fileDescription&gt;`` section of the document.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Information pertaining to the entire mzML file (i.e. not specific</span>
+<span class="sd">            to any part of the data set) is stored here.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        file_contents : list, optional</span>
+<span class="sd">            A list or other iterable of :class:`str`, :class:`dict`, or \*Param-types which will</span>
+<span class="sd">            be placed in the ``&lt;fileContent&gt;`` element.</span>
+<span class="sd">        source_files : list</span>
+<span class="sd">            A list or other iterable of dict or :class:`~.SourceFile`-like objects</span>
+<span class="sd">            to be placed in the ``&lt;sourceFileList&gt;`` element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;file_description&quot;</span><span class="p">)</span>
+        <span class="n">fd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FileDescription</span><span class="p">(</span>
+            <span class="n">file_contents</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SourceFile</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span> <span class="k">for</span> <span class="n">sf</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">source_files</span><span class="p">)],</span>
+            <span class="n">contacts</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Contact</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">contacts</span><span class="p">)])</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MzMLWriter.instrument_configuration_list"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.instrument_configuration_list">[docs]</a>    <span class="k">def</span> <span class="nf">instrument_configuration_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instrument_configurations</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the ``&lt;instrumentConfigurationList&gt;`` section of the document.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            List and descriptions of instrument configurations. At least one instrument configuration MUST</span>
+<span class="sd">            be specified, even if it is only to specify that the instrument is unknown. In that case, the</span>
+<span class="sd">            &quot;instrument model&quot; term is used to indicate the unknown instrument in the instrumentConfiguration</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instrument_configurations : list</span>
+<span class="sd">            A list or other iterable of :class:`dict` or :class:`~.InstrumentConfiguration`-like</span>
+<span class="sd">            objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;instrument_configuration_list&quot;</span><span class="p">)</span>
+        <span class="n">configs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">InstrumentConfiguration</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">ic</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">ic</span><span class="p">,</span> <span class="n">InstrumentConfiguration</span><span class="p">)</span> <span class="k">else</span> <span class="n">ic</span>
+            <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span>
+                <span class="n">instrument_configurations</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">InstrumentConfigurationList</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MzMLWriter.data_processing_list"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.data_processing_list">[docs]</a>    <span class="k">def</span> <span class="nf">data_processing_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_processing</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the ``&lt;dataProcessingList&gt;`` section of the document.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_processing : None, optional</span>
+<span class="sd">            Description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;data_processing_list&quot;</span><span class="p">)</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">DataProcessing</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">data_processing</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DataProcessingList</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">reference_param_group_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;reference_param_group_list&quot;</span><span class="p">)</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReferenceableParamGroup</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">groups</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ReferenceableParamGroupList</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sample_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;sample_list&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">sample_id</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+                <span class="n">sample_name</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sample_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">sample_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%d</span><span class="s2">_id&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sample_name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sample_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">sample_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="n">sample_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">sample_id</span> <span class="o">=</span> <span class="s2">&quot;sample_</span><span class="si">%d</span><span class="s2">_id&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,)</span>
+                    <span class="n">sample_name</span> <span class="o">=</span> <span class="s2">&quot;sample_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,)</span>
+                <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_id</span>
+                <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_name</span>
+
+        <span class="n">sample_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sample</span><span class="o">.</span><span class="n">ensure_all</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">SampleList</span><span class="p">(</span><span class="n">sample_entries</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">scan_settings_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_settings</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;scan_settings_list&quot;</span><span class="p">)</span>
+        <span class="n">scan_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ScanSettings</span><span class="o">.</span><span class="n">ensure_all</span><span class="p">(</span><span class="n">scan_settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ScanSettingsList</span><span class="p">(</span><span class="n">scan_settings</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MzMLWriter.run"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instrument_configuration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Begins the `&lt;run&gt;` section of the document, describing a single</span>
+<span class="sd">        sample run.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        id : str, optional</span>
+<span class="sd">            The unique identifier for this element</span>
+<span class="sd">        instrument_configuration : str, optional</span>
+<span class="sd">            The id string for the default `InstrumentConfiguration` for this</span>
+<span class="sd">            sample</span>
+<span class="sd">        source_file : str, optional</span>
+<span class="sd">            The id string for the source file used to produce this data</span>
+<span class="sd">        start_time : str, optional</span>
+<span class="sd">            A string encoding the date and time the sample was acquired</span>
+<span class="sd">        sample: str, optional</span>
+<span class="sd">            The id string for the sample used to produce this data</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RunSection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">start_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;startTimeStamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_time</span>
+        <span class="k">if</span> <span class="n">instrument_configuration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;InstrumentConfiguration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="n">instrument_configuration</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">instrument_configuration</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_instrument_configuration</span> <span class="o">=</span> <span class="n">instrument_configuration</span>
+        <span class="k">return</span> <span class="n">RunSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+            <span class="n">instrument_configuration</span><span class="o">=</span><span class="n">instrument_configuration</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="n">source_file</span><span class="p">,</span>
+            <span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">spectrum_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">data_processing_method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s1">&#39;spectrum_list&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_processing_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dp_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;DataProcessing&#39;</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data_processing_method</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dp_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;No Data Processing method found. mzML file may not be fully standard-compliant&quot;</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SpectrumListSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+            <span class="n">data_processing_method</span><span class="o">=</span><span class="n">data_processing_method</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">chromatogram_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">data_processing_method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s1">&#39;chromatogram_list&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_processing_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dp_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;DataProcessing&#39;</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data_processing_method</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dp_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;No Data Processing method found. mzML file may not be fully standard-compliant&quot;</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ChromatogramListSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+            <span class="n">data_processing_method</span><span class="o">=</span><span class="n">data_processing_method</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charge_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">polarity</span><span class="o">=</span><span class="s1">&#39;positive scan&#39;</span><span class="p">,</span> <span class="n">centroided</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">precursor_information</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">scan_start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_ZLIB</span><span class="p">,</span>
+                 <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">other_arrays</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_window_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">instrument_configuration_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">expects_state</span><span class="p">(</span><span class="s2">&quot;spectrum_list&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="p">{</span><span class="n">MZ_ARRAY</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scan_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scan_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scan_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">scan_params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">other_arrays</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">other_arrays</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">scan_window_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scan_window_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scan_window_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">scan_window_list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create new variable to capture in closure</span>
+            <span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_encoding</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">polarity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polarity</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">polarity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">polarity</span> <span class="o">=</span> <span class="s1">&#39;positive scan&#39;</span>
+                <span class="k">elif</span> <span class="n">polarity</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">polarity</span> <span class="o">=</span> <span class="s1">&#39;negative scan&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">polarity</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="s1">&#39;positive&#39;</span> <span class="ow">in</span> <span class="n">polarity</span><span class="p">:</span>
+                <span class="n">polarity</span> <span class="o">=</span> <span class="s1">&#39;positive scan&#39;</span>
+            <span class="k">elif</span> <span class="s1">&#39;negative&#39;</span> <span class="ow">in</span> <span class="n">polarity</span><span class="p">:</span>
+                <span class="n">polarity</span> <span class="o">=</span> <span class="s1">&#39;negative scan&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">polarity</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">polarity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span> <span class="ow">and</span> <span class="n">polarity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polarity</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">centroided</span><span class="p">:</span>
+            <span class="n">peak_mode</span> <span class="o">=</span> <span class="s2">&quot;centroid spectrum&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">peak_mode</span> <span class="o">=</span> <span class="s1">&#39;profile spectrum&#39;</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak_mode</span><span class="p">)</span>
+
+        <span class="n">array_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">default_array_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mz_array</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mz_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mz_array_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_array</span><span class="p">(</span>
+                <span class="n">mz_array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">[</span><span class="n">MZ_ARRAY</span><span class="p">],</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">array_type</span><span class="o">=</span><span class="n">MZ_ARRAY</span><span class="p">)</span>
+            <span class="n">array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mz_array_tag</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">intensity_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">intensity_array_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_array</span><span class="p">(</span>
+                <span class="n">intensity_array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">[</span><span class="n">INTENSITY_ARRAY</span><span class="p">],</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                <span class="n">array_type</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">INTENSITY_ARRAY</span><span class="p">,</span> <span class="s2">&quot;unit_name&quot;</span><span class="p">:</span> <span class="n">intensity_unit</span><span class="p">})</span>
+            <span class="n">array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intensity_array_tag</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">charge_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">charge_array_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_array</span><span class="p">(</span>
+                <span class="n">charge_array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">[</span><span class="n">CHARGE_ARRAY</span><span class="p">],</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                <span class="n">array_type</span><span class="o">=</span><span class="n">CHARGE_ARRAY</span><span class="p">)</span>
+            <span class="n">array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">charge_array_tag</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">array_type</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">other_arrays</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">array_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array type can&#39;t be None&quot;</span><span class="p">)</span>
+            <span class="n">array_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_array</span><span class="p">(</span>
+                <span class="n">array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">[</span><span class="n">array_type</span><span class="p">],</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">array_type</span><span class="o">=</span><span class="n">array_type</span><span class="p">,</span>
+                <span class="n">default_array_length</span><span class="o">=</span><span class="n">default_array_length</span><span class="p">)</span>
+            <span class="n">array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array_tag</span><span class="p">)</span>
+        <span class="n">array_list_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BinaryDataArrayList</span><span class="p">(</span><span class="n">array_list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">precursor_information</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">precursor_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_precursor_list</span><span class="p">(</span>
+                <span class="n">precursor_information</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">intensity_unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">precursor_list</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">scan_start_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scan_start_time</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+                <span class="n">scan_params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;scan start time&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">scan_start_time</span><span class="p">,</span>
+                                    <span class="s2">&quot;unitName&quot;</span><span class="p">:</span> <span class="n">DEFAULT_TIME_UNIT</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scan_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scan_start_time</span><span class="p">)</span>
+        <span class="c1"># The spec says this is optional, but the validator calls this a must</span>
+        <span class="c1"># if self.default_instrument_configuration == instrument_configuration_id:</span>
+        <span class="c1">#     instrument_configuration_id = None</span>
+        <span class="n">scan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Scan</span><span class="p">(</span><span class="n">scan_window_list</span><span class="o">=</span><span class="n">scan_window_list</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">scan_params</span><span class="p">,</span>
+                         <span class="n">instrument_configuration_ref</span><span class="o">=</span><span class="n">instrument_configuration_id</span><span class="p">)</span>
+        <span class="n">scan_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ScanList</span><span class="p">([</span><span class="n">scan</span><span class="p">],</span> <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;no combination&quot;</span><span class="p">])</span>
+
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrum_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectrum_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">(</span>
+            <span class="n">index</span><span class="p">,</span> <span class="n">array_list_tag</span><span class="p">,</span> <span class="n">scan_list</span><span class="o">=</span><span class="n">scan_list</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+            <span class="n">default_array_length</span><span class="o">=</span><span class="n">default_array_length</span><span class="p">,</span>
+            <span class="n">precursor_list</span><span class="o">=</span><span class="n">precursor_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">spectrum</span>
+
+    <span class="k">def</span> <span class="nf">write_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charge_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">polarity</span><span class="o">=</span><span class="s1">&#39;positive scan&#39;</span><span class="p">,</span> <span class="n">centroided</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">precursor_information</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">scan_start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_ZLIB</span><span class="p">,</span>
+                       <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">other_arrays</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_window_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">instrument_configuration_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">):</span>
+        <span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span><span class="p">(</span>
+            <span class="n">mz_array</span><span class="o">=</span><span class="n">mz_array</span><span class="p">,</span> <span class="n">intensity_array</span><span class="o">=</span><span class="n">intensity_array</span><span class="p">,</span> <span class="n">charge_array</span><span class="o">=</span><span class="n">charge_array</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">,</span> <span class="n">centroided</span><span class="o">=</span><span class="n">centroided</span><span class="p">,</span> <span class="n">precursor_information</span><span class="o">=</span><span class="n">precursor_information</span><span class="p">,</span>
+            <span class="n">scan_start_time</span><span class="o">=</span><span class="n">scan_start_time</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">other_arrays</span><span class="o">=</span><span class="n">other_arrays</span><span class="p">,</span> <span class="n">scan_params</span><span class="o">=</span><span class="n">scan_params</span><span class="p">,</span>
+            <span class="n">scan_window_list</span><span class="o">=</span><span class="n">scan_window_list</span><span class="p">,</span>
+            <span class="n">instrument_configuration_id</span><span class="o">=</span><span class="n">instrument_configuration_id</span><span class="p">,</span>
+            <span class="n">intensity_unit</span><span class="o">=</span><span class="n">intensity_unit</span><span class="p">)</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">chromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_array</span><span class="p">,</span> <span class="n">intensity_array</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">chromatogram_type</span><span class="o">=</span><span class="s2">&quot;selected ion current&quot;</span><span class="p">,</span>
+                     <span class="n">precursor_information</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_ZLIB</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">other_arrays</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">DEFAULT_TIME_UNIT</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">expects_state</span><span class="p">(</span><span class="s2">&quot;chromatogram_list&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create new variable to capture in closure</span>
+            <span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_encoding</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other_arrays</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">other_arrays</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">array_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">precursor_information</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">precursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_precursor_list</span><span class="p">(</span>
+                <span class="n">precursor_information</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">intensity_unit</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">precursor</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">default_array_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">time_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time_array_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_array</span><span class="p">(</span>
+                <span class="n">time_array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">[</span><span class="n">TIME_ARRAY</span><span class="p">],</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                <span class="n">array_type</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">TIME_ARRAY</span><span class="p">,</span> <span class="s2">&quot;unit_name&quot;</span><span class="p">:</span> <span class="n">time_unit</span><span class="p">})</span>
+            <span class="n">array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time_array_tag</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">intensity_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">intensity_array_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_array</span><span class="p">(</span>
+                <span class="n">intensity_array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">[</span><span class="n">INTENSITY_ARRAY</span><span class="p">],</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                <span class="n">array_type</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">INTENSITY_ARRAY</span><span class="p">,</span> <span class="s2">&quot;unit_name&quot;</span><span class="p">:</span> <span class="n">intensity_unit</span><span class="p">})</span>
+            <span class="n">array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intensity_array_tag</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">array_type</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">other_arrays</span><span class="p">:</span>
+            <span class="n">array_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_array</span><span class="p">(</span>
+                <span class="n">array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">[</span><span class="n">array_type</span><span class="p">],</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">array_type</span><span class="o">=</span><span class="n">array_type</span><span class="p">,</span>
+                <span class="n">default_array_length</span><span class="o">=</span><span class="n">default_array_length</span><span class="p">)</span>
+            <span class="n">array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array_tag</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chromatogram_type</span><span class="p">)</span>
+        <span class="n">array_list_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BinaryDataArrayList</span><span class="p">(</span><span class="n">array_list</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chromatogram_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chromatogram_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">chromatogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">binary_data_list</span><span class="o">=</span><span class="n">array_list_tag</span><span class="p">,</span>
+            <span class="n">precursor</span><span class="o">=</span><span class="n">precursor</span><span class="p">,</span>
+            <span class="n">default_array_length</span><span class="o">=</span><span class="n">default_array_length</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chromatogram</span>
+
+    <span class="k">def</span> <span class="nf">write_chromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_array</span><span class="p">,</span> <span class="n">intensity_array</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">chromatogram_type</span><span class="o">=</span><span class="s2">&quot;selected ion current&quot;</span><span class="p">,</span>
+                           <span class="n">precursor_information</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_ZLIB</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">other_arrays</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">DEFAULT_TIME_UNIT</span><span class="p">):</span>
+        <span class="n">chromatogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chromatogram</span><span class="p">(</span>
+            <span class="n">time_array</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">intensity_array</span><span class="o">=</span><span class="n">intensity_array</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+            <span class="n">chromatogram_type</span><span class="o">=</span><span class="n">chromatogram_type</span><span class="p">,</span> <span class="n">precursor_information</span><span class="o">=</span><span class="n">precursor_information</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span>
+            <span class="n">other_arrays</span><span class="o">=</span><span class="n">other_arrays</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">intensity_unit</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">time_unit</span><span class="p">)</span>
+        <span class="n">chromatogram</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_ZLIB</span><span class="p">,</span>
+                       <span class="n">array_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_array_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="n">_encoding</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">encoding_map</span><span class="p">[</span><span class="n">_encoding</span><span class="p">]</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">encoded_binary</span> <span class="o">=</span> <span class="n">encode_array</span><span class="p">(</span>
+            <span class="n">array</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">binary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Binary</span><span class="p">(</span><span class="n">encoded_binary</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">default_array_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">!=</span> <span class="n">default_array_length</span><span class="p">:</span>
+            <span class="n">override_length</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">override_length</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">array_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">array_type_</span> <span class="o">=</span> <span class="n">array_type</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">array_type_</span> <span class="o">=</span> <span class="n">array_type</span>
+            <span class="k">if</span> <span class="n">array_type_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ARRAY_TYPES</span><span class="p">:</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NON_STANDARD_ARRAY</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compression_map</span><span class="p">[</span><span class="n">compression</span><span class="p">])</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtype_to_encoding</span><span class="p">[</span><span class="n">dtype</span><span class="p">])</span>
+        <span class="n">encoded_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded_binary</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">BinaryDataArray</span><span class="p">(</span>
+            <span class="n">binary</span><span class="p">,</span> <span class="n">encoded_length</span><span class="p">,</span>
+            <span class="n">array_length</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="k">if</span> <span class="n">override_length</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_precursor_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precursors</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">precursors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PrecursorList</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">precursors</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">precursors</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">precursors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PrecursorList</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_prepare_precursor_information</span><span class="p">(</span>
+                <span class="n">intensity_unit</span><span class="o">=</span><span class="n">intensity_unit</span><span class="p">,</span> <span class="o">**</span><span class="n">precursors</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">precursors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PrecursorList</span><span class="p">([</span>
+                <span class="n">p</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Precursor</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_precursor_information</span><span class="p">(</span>
+                    <span class="n">intensity_unit</span><span class="o">=</span><span class="n">intensity_unit</span><span class="p">,</span> <span class="o">**</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">precursors</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">precursors</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_precursor_information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span> <span class="n">scan_id</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                       <span class="n">isolation_window_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                       <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">activation</span><span class="p">:</span>
+            <span class="n">activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="n">activation</span><span class="p">)</span>
+        <span class="n">ion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SelectedIon</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">ion_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SelectedIonList</span><span class="p">([</span><span class="n">ion</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">isolation_window_args</span><span class="p">:</span>
+            <span class="n">isolation_window_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">IsolationWindow</span><span class="p">(</span><span class="o">**</span><span class="n">isolation_window_args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">isolation_window_tag</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">precursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Precursor</span><span class="p">(</span>
+            <span class="n">ion_list</span><span class="p">,</span>
+            <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span>
+            <span class="n">isolation_window</span><span class="o">=</span><span class="n">isolation_window_tag</span><span class="p">,</span>
+            <span class="n">spectrum_reference</span><span class="o">=</span><span class="n">scan_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">precursor</span>
+
+<div class="viewcode-block" id="MzMLWriter.format"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indexer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">indexer</span> <span class="o">=</span> <span class="n">MzMLIndexer</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MzMLWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+                <span class="k">return</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">):</span>
+            <span class="n">fh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span>
+        <span class="n">opener</span> <span class="o">=</span> <span class="n">compression</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+        <span class="n">indexer</span> <span class="o">=</span> <span class="n">indexer</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">indexer</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+            <span class="n">indexer</span><span class="o">.</span><span class="n">overwrite</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">MemoryError</span><span class="p">:</span>
+            <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">psims</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml.html">Basic XML Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzml/components.html">Components of mzML</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Joshua Klein.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
