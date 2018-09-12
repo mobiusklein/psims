@@ -42,7 +42,7 @@ depends heavily on context managers. Almost all logic is handled inside a contex
 manager and in the context of a particular document. Since all operations assume
 that they have access to a universal identity map for each element in the document,
 that map is centralized in this class.</p>
-<p>MzMLWriter inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentDispatcher</span></code>, giving it a <code class="xref py py-attr docutils literal notranslate"><span class="pre">context</span></code>
+<p>MzMLWriter inherits from <a class="reference internal" href="components.html#psims.mzml.components.ComponentDispatcher" title="psims.mzml.components.ComponentDispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentDispatcher</span></code></a>, giving it a <code class="xref py py-attr docutils literal notranslate"><span class="pre">context</span></code>
 attribute and access to all <cite>Component</cite> objects pre-bound to that context with attribute-access
 notation.</p>
 <dl class="attribute">
@@ -54,7 +54,7 @@ notation.</p>
 <dl class="attribute">
 <dt id="psims.mzml.writer.MzMLWriter.spectrum_count">
 <code class="descname">spectrum_count</code><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.spectrum_count" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – A count of the number of spectrums written</p>
+<dd><p><em>int</em> – A count of the number of spectra written</p>
 </dd></dl>
 
 <dl class="method">
@@ -108,16 +108,46 @@ and those passed as arguments to this method.this</p>
 
 <dl class="method">
 <dt id="psims.mzml.writer.MzMLWriter.data_processing_list">
-<code class="descname">data_processing_list</code><span class="sig-paren">(</span><em>data_processing=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.data_processing_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.data_processing_list" title="Permalink to this definition">¶</a></dt>
+<code class="descname">data_processing_list</code><span class="sig-paren">(</span><em>data_processing</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.data_processing_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.data_processing_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;dataProcessingList&gt;</span></code> section of the document.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">List and descriptions of data processing applied to this data</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_processing</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a><em>, </em><em>optional</em>) – Description</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_processing</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.DataProcessing" title="psims.mzml.components.DataProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataProcessing</span></code></a>-like
+objects</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="psims.mzml.writer.MzMLWriter.element">
+<code class="descname">element</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct and immediately open a subclass instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code> with the given tag name. All other arguments
+are forwarded to the <code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code> constructor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tag type to create</li>
+<li><strong>*args</strong> – Arbitrary arguments for the tag</li>
+<li><strong>**kwargs</strong> – Key word arguments for the tag</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#psims.mzml.writer.MzMLWriter.element" title="psims.mzml.writer.MzMLWriter.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -142,7 +172,7 @@ to any part of the data set) is stored here.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>file_contents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>optional</em>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, or *Param-types which will
 be placed in the <code class="docutils literal notranslate"><span class="pre">&lt;fileContent&gt;</span></code> element.</li>
-<li><strong>source_files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of dict or <code class="xref py py-class docutils literal notranslate"><span class="pre">SourceFile</span></code>-like objects
+<li><strong>source_files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of dict or <a class="reference internal" href="components.html#psims.mzml.components.SourceFile" title="psims.mzml.components.SourceFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceFile</span></code></a>-like objects
 to be placed in the <code class="docutils literal notranslate"><span class="pre">&lt;sourceFileList&gt;</span></code> element</li>
 </ul>
 </td>
@@ -175,7 +205,22 @@ be specified, even if it is only to specify that the instrument is unknown. In t
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instrument_configurations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">InstrumentConfiguration</span></code>-like
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instrument_configurations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.InstrumentConfiguration" title="psims.mzml.components.InstrumentConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">InstrumentConfiguration</span></code></a>-like
+objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="psims.mzml.writer.MzMLWriter.reference_param_group_list">
+<code class="descname">reference_param_group_list</code><span class="sig-paren">(</span><em>groups</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.reference_param_group_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.reference_param_group_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;referenceableParamGroupList&gt;</span></code> section of the document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groups</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.ReferenceableParamGroup" title="psims.mzml.components.ReferenceableParamGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceableParamGroup</span></code></a>-like
 objects</td>
 </tr>
 </tbody>
@@ -237,10 +282,24 @@ sample</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="psims.mzml.writer.MzMLWriter.sample_list">
+<code class="descname">sample_list</code><span class="sig-paren">(</span><em>samples</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.sample_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.sample_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;sampleList&gt;</span></code> section of the document</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.Sample" title="psims.mzml.components.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a>-like
+objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="psims.mzml.writer.MzMLWriter.software_list">
 <code class="descname">software_list</code><span class="sig-paren">(</span><em>software_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.software_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.software_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;softwareList&gt;</span></code> section of the document using the provided
-parameters.</p>
+<dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;softwareList&gt;</span></code> section of the document.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">List and descriptions of software used to acquire and/or process the
@@ -250,7 +309,7 @@ data in this mzML file</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>software_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">Software</span></code>-like objects</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>software_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.Software" title="psims.mzml.components.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">Software</span></code></a>-like objects</td>
 </tr>
 </tbody>
 </table>
@@ -273,6 +332,20 @@ this writer wrote</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
 a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="psims.mzml.writer.MzMLWriter.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Either write a complete XML sub-tree or add free text to the file stream</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arg</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code>) – The entity to be written out.</td>
 </tr>
 </tbody>
 </table>

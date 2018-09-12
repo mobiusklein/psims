@@ -30,8 +30,268 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="components-of-mzml">
-<h1>Components of mzML<a class="headerlink" href="#components-of-mzml" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-psims.mzml.components">
+<span id="components-of-mzml"></span><h1>Components of mzML<a class="headerlink" href="#module-psims.mzml.components" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="psims.mzml.components.Activation">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Activation</code><span class="sig-paren">(</span><em>params</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Activation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Activation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Analyzer">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Analyzer</code><span class="sig-paren">(</span><em>order</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Analyzer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Binary">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Binary</code><span class="sig-paren">(</span><em>encoded_array</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Binary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Binary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.BinaryDataArray">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">BinaryDataArray</code><span class="sig-paren">(</span><em>binary</em>, <em>encoded_length</em>, <em>data_processing_reference=None</em>, <em>array_length=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.BinaryDataArrayList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">BinaryDataArrayList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArrayList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArrayList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.CVList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">CVList</code><span class="sig-paren">(</span><em>cv_list=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#CVList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.CVList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Chromatogram">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Chromatogram</code><span class="sig-paren">(</span><em>index</em>, <em>binary_data_list=None</em>, <em>precursor=None</em>, <em>product=None</em>, <em>default_array_length=None</em>, <em>data_processing_reference=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Chromatogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Chromatogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ComponentBase">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ComponentBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentBase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ComponentDispatcher">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ComponentDispatcher</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentDispatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentDispatcher" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ComponentList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ComponentList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Contact">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Contact</code><span class="sig-paren">(</span><em>params</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Contact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Contact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.DataProcessing">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">DataProcessing</code><span class="sig-paren">(</span><em>processing_methods=None</em>, <em>id=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.DataProcessing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.DataProcessingList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">DataProcessingList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessingList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.DataProcessingList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Detector">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Detector</code><span class="sig-paren">(</span><em>order</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Detector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Detector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.FileContent">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">FileContent</code><span class="sig-paren">(</span><em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#FileContent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.FileContent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.FileDescription">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">FileDescription</code><span class="sig-paren">(</span><em>content</em>, <em>source_files</em>, <em>contacts=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#FileDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.FileDescription" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.GenericCollection">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">GenericCollection</code><span class="sig-paren">(</span><em>tag_name</em>, <em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#GenericCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.GenericCollection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.IDGenericCollection">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">IDGenericCollection</code><span class="sig-paren">(</span><em>tag_name</em>, <em>members</em>, <em>id</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#IDGenericCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.IDGenericCollection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.InstrumentConfiguration">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">InstrumentConfiguration</code><span class="sig-paren">(</span><em>id</em>, <em>component_list=None</em>, <em>params=None</em>, <em>software_reference=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.InstrumentConfigurationList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">InstrumentConfigurationList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfigurationList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfigurationList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.IsolationWindow">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">IsolationWindow</code><span class="sig-paren">(</span><em>lower=None</em>, <em>target=None</em>, <em>upper=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#IsolationWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.IsolationWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.MzML">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">MzML</code><span class="sig-paren">(</span><em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#MzML"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.MzML" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Organization">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Organization</code><span class="sig-paren">(</span><em>name='name'</em>, <em>id='ORG_DOC_OWNER'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Organization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Organization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Person">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Person</code><span class="sig-paren">(</span><em>first_name='first_name'</em>, <em>last_name='last_name'</em>, <em>id='PERSON_DOC_OWNER'</em>, <em>affiliation='ORG_DOC_OWNER'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Person" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Precursor">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Precursor</code><span class="sig-paren">(</span><em>selected_ion_list</em>, <em>activation</em>, <em>isolation_window=None</em>, <em>spectrum_reference=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Precursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Precursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.PrecursorList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">PrecursorList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#PrecursorList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.PrecursorList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ProcessingMethod">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ProcessingMethod</code><span class="sig-paren">(</span><em>order</em>, <em>software_reference</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProcessingMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ProcessingMethod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Product">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Product</code><span class="sig-paren">(</span><em>isolation_window=None</em>, <em>spectrum_reference=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Product"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Product" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ProductList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ProductList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProductList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ProductList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ReferenceableParamGroup">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ReferenceableParamGroup</code><span class="sig-paren">(</span><em>params=None</em>, <em>id=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ReferenceableParamGroupList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ReferenceableParamGroupList</code><span class="sig-paren">(</span><em>members</em>, <em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroupList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroupList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Run">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>default_instrument_configuration_reference</em>, <em>spectrum_list=None</em>, <em>chromatogram_list=None</em>, <em>id=None</em>, <em>default_source_file_reference=None</em>, <em>sample_reference=None</em>, <em>start_time_stamp=None</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Sample">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Sample</code><span class="sig-paren">(</span><em>name</em>, <em>params=None</em>, <em>id=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Sample" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SampleList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SampleList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SampleList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SampleList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Scan">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Scan</code><span class="sig-paren">(</span><em>scan_window_list=None</em>, <em>instrument_configuration_ref=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Scan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ScanList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanList</code><span class="sig-paren">(</span><em>members</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ScanSettings">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanSettings</code><span class="sig-paren">(</span><em>id</em>, <em>source_file_references=None</em>, <em>target_list=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ScanSettingsList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanSettingsList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettingsList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanSettingsList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ScanWindow">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanWindow</code><span class="sig-paren">(</span><em>lower</em>, <em>upper</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.ScanWindowList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanWindowList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanWindowList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanWindowList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SelectedIon">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SelectedIon</code><span class="sig-paren">(</span><em>selected_ion_mz</em>, <em>intensity=None</em>, <em>charge=None</em>, <em>params=None</em>, <em>intensity_unit='number of detector counts'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SelectedIon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SelectedIon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SelectedIonList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SelectedIonList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SelectedIonList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SelectedIonList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Software">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Software</code><span class="sig-paren">(</span><em>id=None</em>, <em>version='0.0'</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Software"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Software" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SoftwareList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SoftwareList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SoftwareList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SoftwareList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Source">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Source</code><span class="sig-paren">(</span><em>order</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SourceFile">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFile</code><span class="sig-paren">(</span><em>location=None</em>, <em>name=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SourceFileList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFileList</code><span class="sig-paren">(</span><em>members</em>, <em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFileList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SourceFileRef">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFileRef</code><span class="sig-paren">(</span><em>source_file_id</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileRef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFileRef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Spectrum">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Spectrum</code><span class="sig-paren">(</span><em>index</em>, <em>binary_data_list=None</em>, <em>scan_list=None</em>, <em>precursor_list=None</em>, <em>product_list=None</em>, <em>default_array_length=None</em>, <em>source_file_reference=None</em>, <em>data_processing_reference=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Spectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.SpectrumList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SpectrumList</code><span class="sig-paren">(</span><em>members</em>, <em>default_data_processing_reference</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SpectrumList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SpectrumList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.Target">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Target</code><span class="sig-paren">(</span><em>params</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Target" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="psims.mzml.components.TargetList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">TargetList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#TargetList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.TargetList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 
 
