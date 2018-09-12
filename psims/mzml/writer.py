@@ -178,7 +178,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.default_instrument_configuration = None
         self.state_machine = TableStateMachine([
             ("start", ['controlled_vocabularies', ]),
-            ("controlled_vocabularies", ['file_description', ])
+            ("controlled_vocabularies", ['file_description', ]),
             ("file_description", ['reference_param_group_list', 'sample_list', 'software_list']),
             ("reference_param_group_list", ['sample_list', 'software_list']),
             ("sample_list", ['software_list', ]),

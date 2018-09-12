@@ -187,7 +187,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ("start", ['controlled_vocabularies']),
             ("controlled_vocabularies",
                 ['analysis_software_list', 'provider', 'audit_collection', 'analysis_sample_collection',
-                 'sequence_collection', 'analysis_collection'])
+                 'sequence_collection', 'analysis_collection']),
             ('analysis_software_list', [
                 'provider', 'audit_collection', 'analysis_sample_collection', 'sequence_collection',
                 'analysis_collection']),
