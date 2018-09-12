@@ -154,7 +154,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     chromatogram_count : int
         A count of the number of chromatograms written
     spectrum_count : int
-        A count of the number of spectrums written
+        A count of the number of spectra written
     """
 
     DEFAULT_TIME_UNIT = DEFAULT_TIME_UNIT
@@ -205,8 +205,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         super(MzMLWriter, self).controlled_vocabularies()
 
     def software_list(self, software_list):
-        """Writes the ``<softwareList>`` section of the document using the provided
-        parameters.
+        """Writes the ``<softwareList>`` section of the document.
 
         .. note::
             List and descriptions of software used to acquire and/or process the
@@ -267,28 +266,51 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 instrument_configurations)]
         self.InstrumentConfigurationList(configs).write(self)
 
-    def data_processing_list(self, data_processing=None):
+    def data_processing_list(self, data_processing):
         """Writes the ``<dataProcessingList>`` section of the document.
+
+        .. note::
+            List and descriptions of data processing applied to this data
 
         Parameters
         ----------
-        data_processing : None, optional
-            Description
+        data_processing : list
+            A list or other iterable of :class:`dict` or :class:`~.DataProcessing`-like
+            objects
+
         """
         self.state_machine.transition("data_processing_list")
         methods = [
             self.DataProcessing.ensure(dp) for dp in ensure_iterable(data_processing)]
         self.DataProcessingList(methods).write(self)
 
-    def reference_param_group_list(self, groups=None):
+    def reference_param_group_list(self, groups):
+        """Writes the ``<referenceableParamGroupList>`` section of the document.
+
+        Parameters
+        ----------
+        groups : list
+            A list or other iterable of :class:`dict` or :class:`~.ReferenceableParamGroup`-like
+            objects
+
+        """
         self.state_machine.transition("reference_param_group_list")
         groups = [
             self.ReferenceableParamGroup.ensure(g) for g in ensure_iterable(groups)]
         self.ReferenceableParamGroupList(groups).write(self)
 
     def sample_list(self, samples):
+        """Writes the ``<sampleList>`` section of the document
+
+        Parameters
+        ----------
+        samples : list
+            A list or other iterable of :class:`dict` or :class:`~.mzml.components.Sample`-like
+            objects
+
+        """
         self.state_machine.transition("sample_list")
-        for i, sample in enumerate(samples):
+        for i, sample in enumerate(ensure_iterable(samples)):
             if isinstance(sample, Mapping):
                 sample_id = sample.get('id')
                 sample_name = sample.get("name")

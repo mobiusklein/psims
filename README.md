@@ -1,6 +1,7 @@
 # psims
 Prototype work for a unified API for writing PSIMS standardized XML documents, currently just mzML and MzIdentML
 
+See the [Documenation](https://mobiusklein.github.io/psims) for more information
 
 ## mzML Minimal Example
 
