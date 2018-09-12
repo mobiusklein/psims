@@ -644,6 +644,23 @@ class XMLWriterMixin(object):
 
     @contextmanager
     def element(self, element_name, **kwargs):
+        """Construct and immediately open a subclass instance of
+        :class:`TagBase` with the given tag name. All other arguments
+        are forwarded to the :class:`TagBase` constructor.
+
+        Parameters
+        ----------
+        element_name: str
+            The name of the tag type to create
+        *args
+            Arbitrary arguments for the tag
+        **kwargs
+            Key word arguments for the tag
+
+        See Also
+        --------
+        :func:`element`
+        """
         if self.verbose:
             print("In XMLWriterMixin.element", element_name, kwargs)
         try:
@@ -664,6 +681,13 @@ class XMLWriterMixin(object):
                 raise
 
     def write(self, *args, **kwargs):
+        """Either write a complete XML sub-tree or add free text to the file stream
+
+        Parameters
+        ----------
+        arg: str or :class:`lxml.etree.Element`
+            The entity to be written out.
+        """
         if self.verbose:
             print(args[0])
         try:
