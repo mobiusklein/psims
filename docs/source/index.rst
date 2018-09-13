@@ -10,8 +10,9 @@ Welcome to psims's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   xml
-   mzml/index
+   mzML <mzml/index>
+   mzIdentML <mzid/index>
+   XML Utilities <xml>
 
 
 Indices and tables
