@@ -29,6 +29,8 @@ def _synonym_parser(text):
                 state = "quote_open"
             elif state == 'quote_open':
                 state = "quote_close"
+            elif state == 'trailing':
+                pass
             else:
                 raise ValueError("Quote after quoted text!")
         else:
@@ -50,6 +52,10 @@ def _synonym_parser(text):
             elif state == 'references':
                 if c != ']':
                     references.append(c)
+                else:
+                    state = 'trailing'
+            elif state == 'trailing':
+                pass
     return ''.join(quoted_chars), scopes, ''.join(references)
 
 

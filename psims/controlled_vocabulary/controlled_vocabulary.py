@@ -28,6 +28,14 @@ def _use_vendored_xlmod_obo():
     return pkg_resources.resource_stream(__name__, "vendor/XLMOD.obo")
 
 
+def _use_vendored_bto_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/bto.obo")
+
+
+def _use_vendored_go_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/go.obo")
+
+
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
@@ -39,6 +47,9 @@ fallback = {
     ("http://ontologies.berkeleybop.org/uo.obo"): _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/pato.obo"): _use_vendored_pato_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo"): _use_vendored_xlmod_obo,
+    ("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
+     ): _use_vendored_bto_obo,
+    "http://purl.obolibrary.org/obo/go.obo": _use_vendored_go_obo,
 }
 
 
@@ -66,6 +77,8 @@ class ControlledVocabulary(object):
     def __init__(self, terms, id=None, metadata=None, version=None, name=None):
         if metadata is None:
             metadata = dict()
+        if version is None:
+            version = 'unknown'
         self.version = version
         self.name = name
         self._terms = dict()
@@ -336,3 +349,13 @@ def load_xlmod():
 
 def load_unimod():
     return obo_cache.resolve("http://www.unimod.org/obo/unimod.obo")
+
+
+def load_bto():
+    cv = obo_cache.resolve("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO")
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_go():
+    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/go.obo")
+    return ControlledVocabulary.from_obo(cv)
