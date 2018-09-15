@@ -3,9 +3,9 @@ import re
 import hashlib
 
 try:
-    from urllib2 import urlopen
+    from urllib2 import urlopen, Request
 except ImportError:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, Request
 
 
 registry = {
@@ -14,8 +14,9 @@ registry = {
     'pato.obo': "http://ontologies.berkeleybop.org/pato.obo",
     "unimod_tables.xml": "http://www.unimod.org/xml/unimod_tables.xml",
     "XLMOD.obo": "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo",
-    # appears to reject automated download
-    # "bto.obo": "http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
+    # appears to reject automated download unless User-Agent is said
+    "bto.obo": "http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO",
+    "go.obo": "http://purl.obolibrary.org/obo/go.obo"
 }
 
 
@@ -38,7 +39,11 @@ for cv, url in registry.items():
                 read = current.read(2000)
             print("Checksum (MD5): %s" % old_hash.hexdigest())
 
-    f = urlopen(url)
+    rq = Request(url, headers={
+        'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like'
+                       ' Gecko) Chrome/68.0.3440.106 Safari/537.36')
+    })
+    f = urlopen(rq)
     code = None
     # The keepalive library monkey patches urllib2's urlopen and returns
     # an object with a different API. First handle the normal case, then
