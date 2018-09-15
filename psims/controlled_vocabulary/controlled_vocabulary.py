@@ -1,9 +1,9 @@
 import os
 import pkg_resources
 try:
-    from urllib2 import urlopen, URLError
+    from urllib2 import urlopen, URLError, Request
 except ImportError:
-    from urllib.request import urlopen, URLError
+    from urllib.request import urlopen, URLError, Request
 from .obo import OBOParser
 from . import unimod
 
@@ -177,6 +177,11 @@ class ControlledVocabulary(object):
         return self._normalized[name.lower()]
 
 
+DEFAULT_USER_AGENT = (
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like'
+    ' Gecko) Chrome/68.0.3440.106 Safari/537.36')
+
+
 class OBOCache(object):
     """A cache for retrieved ontology sources
 
@@ -195,11 +200,12 @@ class OBOCache(object):
         object.
     """
 
-    def __init__(self, cache_path='.obo_cache', enabled=True, resolvers=None):
+    def __init__(self, cache_path='.obo_cache', enabled=True, resolvers=None, user_agent_emulation=True):
         self._cache_path = None
         self.cache_path = cache_path
         self.enabled = enabled
         self.resolvers = resolvers or {}
+        self.user_agent_emulation = user_agent_emulation
 
     @property
     def cache_path(self):
@@ -221,7 +227,11 @@ class OBOCache(object):
 
     def _open_url(self, uri):
         try:
-            f = urlopen(uri)
+            headers = {}
+            if self.user_agent_emulation:
+                headers['User-Agent'] = DEFAULT_USER_AGENT
+            req = Request(uri, headers=headers)
+            f = urlopen(req)
             code = None
             # The keepalive library monkey patches urllib2's urlopen and returns
             # an object with a different API. First handle the normal case, then
