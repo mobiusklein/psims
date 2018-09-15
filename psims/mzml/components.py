@@ -763,6 +763,7 @@ class Scan(ComponentBase):
     requires_id = False
 
     def __init__(self, scan_window_list=None, instrument_configuration_ref=None,
+                 source_file_reference=None, spectrum_reference=None, external_spectrum_id=None,
                  params=None, context=NullMap, **kwargs):
         if (scan_window_list is None):
             scan_window_list = ScanWindowList([], context)
@@ -771,12 +772,21 @@ class Scan(ComponentBase):
         self.instrument_configuration_ref = instrument_configuration_ref
         self._instrument_configuration_ref = context['InstrumentConfiguration'].get(
             instrument_configuration_ref)
+        self.source_file_reference = source_file_reference
+        self._source_file_reference = None
+        if self.source_file_reference:
+            self._source_file_reference = context['SourceFile'][self.source_file_reference]
+
+        # these references make no sense given the document structure but they're in the spec?
+        self.spectrum_reference = spectrum_reference
+        self.external_spectrum_id = external_spectrum_id
+
         self.params = self.prepare_params(params, **kwargs)
         self.scan_window_list = scan_window_list
-        self.element = _element('scan')
-        if (self._instrument_configuration_ref is not None):
-            self.element.attrs[
-                'instrumentConfigurationRef'] = self._instrument_configuration_ref
+        self.element = _element(
+            'scan', instrumentConfigurationRef=self._instrument_configuration_ref,
+            externalSpectrumID=self.external_spectrum_id, sourceFileRef=self._source_file_reference,
+            spectrumRef=self.spectrum_reference)
         self.context = context
 
     def write_content(self, xml_file):
@@ -884,8 +894,8 @@ class PrecursorList(GenericCollection):
 class Precursor(ComponentBase):
     requires_id = False
 
-    def __init__(self, selected_ion_list, activation,
-                 isolation_window=None, spectrum_reference=None, context=NullMap):
+    def __init__(self, selected_ion_list, activation, isolation_window=None, spectrum_reference=None,
+                 source_file_reference=None, external_spectrum_id=None, context=NullMap):
         if (isolation_window is not None):
             if isinstance(isolation_window, (tuple, list)):
                 isolation_window = IsolationWindow(
@@ -896,10 +906,23 @@ class Precursor(ComponentBase):
         self.selected_ion_list = selected_ion_list
         self.activation = activation
         self.isolation_window = isolation_window
+
         self.spectrum_reference = spectrum_reference
-        self._spectrum_reference = context['Spectrum'][spectrum_reference]
+        self._spectrum_reference = None
+        if self.spectrum_reference:
+            self._spectrum_reference = context['Spectrum'][spectrum_reference]
+
+        self.source_file_reference = source_file_reference
+        self._source_file_reference = None
+        if self.source_file_reference:
+            self._source_file_reference = context['SourceFile'][self.source_file_reference]
+
+        self.external_spectrum_id = external_spectrum_id
+
         self.element = _element(
-            'precursor', spectrumRef=self._spectrum_reference)
+            'precursor', spectrumRef=self._spectrum_reference,
+            sourceFileRef=self._source_file_reference,
+            externalSpectrumID=self.external_spectrum_id)
         self.context = context
 
     def write_content(self, xml_file):
