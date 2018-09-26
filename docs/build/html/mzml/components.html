@@ -15,6 +15,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mzIdentML" href="../mzid/index.html" />
     <link rel="prev" title="Writing mzML Documents" href="writer.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -50,37 +51,47 @@
 <dl class="class">
 <dt id="psims.mzml.components.BinaryDataArray">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">BinaryDataArray</code><span class="sig-paren">(</span><em>binary</em>, <em>encoded_length</em>, <em>data_processing_reference=None</em>, <em>array_length=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArray" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The structure into which encoded binary data goes. Byte ordering is always little endian (Intel style). Computers using a different endian style must convert to/from little endian when writing/reading mzML</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.BinaryDataArrayList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">BinaryDataArrayList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArrayList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArrayList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List of binary data arrays.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.CVList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">CVList</code><span class="sig-paren">(</span><em>cv_list=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#CVList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.CVList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Container for one or more controlled vocabulary definitions.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Chromatogram">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Chromatogram</code><span class="sig-paren">(</span><em>index</em>, <em>binary_data_list=None</em>, <em>precursor=None</em>, <em>product=None</em>, <em>default_array_length=None</em>, <em>data_processing_reference=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Chromatogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Chromatogram" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="psims.mzml.components.ComponentBase">
-<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ComponentBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentBase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="psims.mzml.components.ComponentDispatcher">
-<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ComponentDispatcher</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentDispatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentDispatcher" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A single chromatogram.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ComponentList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ComponentList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List with the different components used in the mass spectrometer. At least one source, one mass analyzer and one detector need to be specified.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Contact">
@@ -90,12 +101,20 @@
 <dl class="class">
 <dt id="psims.mzml.components.DataProcessing">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">DataProcessing</code><span class="sig-paren">(</span><em>processing_methods=None</em>, <em>id=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.DataProcessing" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of the way in which a particular software was used.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.DataProcessingList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">DataProcessingList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessingList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.DataProcessingList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of data processing applied to this data.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Detector">
@@ -110,27 +129,29 @@
 <dl class="class">
 <dt id="psims.mzml.components.FileDescription">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">FileDescription</code><span class="sig-paren">(</span><em>content</em>, <em>source_files</em>, <em>contacts=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#FileDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.FileDescription" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="psims.mzml.components.GenericCollection">
-<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">GenericCollection</code><span class="sig-paren">(</span><em>tag_name</em>, <em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#GenericCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.GenericCollection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="psims.mzml.components.IDGenericCollection">
-<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">IDGenericCollection</code><span class="sig-paren">(</span><em>tag_name</em>, <em>members</em>, <em>id</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#IDGenericCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.IDGenericCollection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Information pertaining to the entire mzML file (i.e. not specific to any part of the data set) is stored here.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.InstrumentConfiguration">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">InstrumentConfiguration</code><span class="sig-paren">(</span><em>id</em>, <em>component_list=None</em>, <em>params=None</em>, <em>software_reference=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfiguration" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of a particular hardware configuration of a mass spectrometer. Each configuration must have one (and only one) of the three different components used for an analysis. For hybrid instruments, such as an LTQ-FT, there must be one configuration for each permutation of the components that is used in the document. For software configuration, use a ReferenceableParamGroup element.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.InstrumentConfigurationList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">InstrumentConfigurationList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfigurationList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfigurationList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of instrument configurations. At least one instrument configuration must be specified, even if it is only to specify that the instrument is unknown. In that case, the &quot;instrument model&quot; term is used to indicate the unknown instrument in the instrumentConfiguration.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.IsolationWindow">
@@ -140,87 +161,155 @@
 <dl class="class">
 <dt id="psims.mzml.components.MzML">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">MzML</code><span class="sig-paren">(</span><em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#MzML"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.MzML" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">This is the root element for the Proteomics Standards Initiative (PSI) mzML schema, which is intended to capture the use of a mass spectrometer, the data generated, and the initial processing of that data (to the level of the peak list).</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Organization">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Organization</code><span class="sig-paren">(</span><em>name='name'</em>, <em>id='ORG_DOC_OWNER'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Organization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Organization" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Organizations are entities like companies, universities, government agencies. Any additional information such as the address, email etc. should be supplied either as CV parameters or as user parameters. </p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Person">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Person</code><span class="sig-paren">(</span><em>first_name='first_name'</em>, <em>last_name='last_name'</em>, <em>id='PERSON_DOC_OWNER'</em>, <em>affiliation='ORG_DOC_OWNER'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Person" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A person's name and contact details. Any additional information such as the address, contact email etc. should be supplied using CV parameters or user parameters.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Precursor">
-<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Precursor</code><span class="sig-paren">(</span><em>selected_ion_list</em>, <em>activation</em>, <em>isolation_window=None</em>, <em>spectrum_reference=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Precursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Precursor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Precursor</code><span class="sig-paren">(</span><em>selected_ion_list</em>, <em>activation</em>, <em>isolation_window=None</em>, <em>spectrum_reference=None</em>, <em>source_file_reference=None</em>, <em>external_spectrum_id=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Precursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Precursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The method of precursor ion selection and activation</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.PrecursorList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">PrecursorList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#PrecursorList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.PrecursorList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of precursor isolations to the spectrum currently being described, ordered.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ProcessingMethod">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ProcessingMethod</code><span class="sig-paren">(</span><em>order</em>, <em>software_reference</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProcessingMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ProcessingMethod" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">This attributes allows a series of consecutive steps to be placed in the correct order.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Product">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Product</code><span class="sig-paren">(</span><em>isolation_window=None</em>, <em>spectrum_reference=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Product"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Product" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The method of product ion selection and activation in a precursor ion scan</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ProductList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ProductList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProductList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ProductList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of product isolations to the spectrum currently being described, ordered.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ReferenceableParamGroup">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ReferenceableParamGroup</code><span class="sig-paren">(</span><em>params=None</em>, <em>id=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroup" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A collection of CVParam and UserParam elements that can be referenced from elsewhere in this mzML document by using the 'paramGroupRef' element in that location to reference the 'id' attribute value of this element.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ReferenceableParamGroupList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ReferenceableParamGroupList</code><span class="sig-paren">(</span><em>members</em>, <em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroupList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroupList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Container for a list of referenceableParamGroups</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Run">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>default_instrument_configuration_reference</em>, <em>spectrum_list=None</em>, <em>chromatogram_list=None</em>, <em>id=None</em>, <em>default_source_file_reference=None</em>, <em>sample_reference=None</em>, <em>start_time_stamp=None</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A run in mzML should correspond to a single, consecutive and coherent set of scans on an instrument.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Sample">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Sample</code><span class="sig-paren">(</span><em>name</em>, <em>params=None</em>, <em>id=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Expansible description of the sample used to generate the dataset, named in sampleName.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.SampleList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SampleList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SampleList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SampleList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of samples.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Scan">
-<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Scan</code><span class="sig-paren">(</span><em>scan_window_list=None</em>, <em>instrument_configuration_ref=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Scan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Scan</code><span class="sig-paren">(</span><em>scan_window_list=None</em>, <em>instrument_configuration_ref=None</em>, <em>source_file_reference=None</em>, <em>spectrum_reference=None</em>, <em>external_spectrum_id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Scan" title="Permalink to this definition">¶</a></dt>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Scan or acquisition from original raw file used to create this peak list, as specified in sourceFile.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ScanList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanList</code><span class="sig-paren">(</span><em>members</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of scans.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ScanSettings">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanSettings</code><span class="sig-paren">(</span><em>id</em>, <em>source_file_references=None</em>, <em>target_list=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanSettings" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of the acquisition settings of the instrument prior to the start of the run.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ScanSettingsList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanSettingsList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettingsList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanSettingsList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List with the descriptions of the acquisition settings applied prior to the start of data acquisition.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.ScanWindow">
@@ -230,7 +319,11 @@
 <dl class="class">
 <dt id="psims.mzml.components.ScanWindowList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanWindowList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanWindowList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanWindowList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A range of m/z values over which the instrument scans and acquires a spectrum.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.SelectedIon">
@@ -240,17 +333,29 @@
 <dl class="class">
 <dt id="psims.mzml.components.SelectedIonList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SelectedIonList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SelectedIonList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SelectedIonList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The list of selected precursor ions.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Software">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Software</code><span class="sig-paren">(</span><em>id=None</em>, <em>version='0.0'</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Software"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Software" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Software information.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.SoftwareList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SoftwareList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SoftwareList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SoftwareList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of software used to acquire and/or process the data in this mzML file.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Source">
@@ -260,27 +365,47 @@
 <dl class="class">
 <dt id="psims.mzml.components.SourceFile">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFile</code><span class="sig-paren">(</span><em>location=None</em>, <em>name=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of the source file, including location and type.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.SourceFileList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFileList</code><span class="sig-paren">(</span><em>members</em>, <em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFileList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of the source files this mzML document was generated or derived from</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.SourceFileRef">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFileRef</code><span class="sig-paren">(</span><em>source_file_id</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileRef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFileRef" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">This attribute must reference the 'id' of the appropriate sourceFile.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Spectrum">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Spectrum</code><span class="sig-paren">(</span><em>index</em>, <em>binary_data_list=None</em>, <em>scan_list=None</em>, <em>precursor_list=None</em>, <em>product_list=None</em>, <em>default_array_length=None</em>, <em>source_file_reference=None</em>, <em>data_processing_reference=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Spectrum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The structure that captures the generation of a peak list (including the underlying acquisitions). Also describes some of the parameters for the mass spectrometer for a given acquisition (or list of acquisitions).</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.SpectrumList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SpectrumList</code><span class="sig-paren">(</span><em>members</em>, <em>default_data_processing_reference</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SpectrumList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SpectrumList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of spectra.</p>
+</div>
+</dl>
 
 <dl class="class">
 <dt id="psims.mzml.components.Target">
@@ -290,7 +415,11 @@
 <dl class="class">
 <dt id="psims.mzml.components.TargetList">
 <em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">TargetList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#TargetList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.TargetList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd></dd><div class="admonition">
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Target list (or 'inclusion list') configured prior to the run.</p>
+</div>
+</dl>
 
 </div>
 
@@ -312,17 +441,23 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../xml.html">Basic XML Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="writer.html">Writing mzML Documents</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Components of mzML</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">mzML</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mzid/index.html">mzIdentML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">&lt;no title&gt;</a><ul>
+  <li><a href="index.html">mzML</a><ul>
       <li>Previous: <a href="writer.html" title="previous chapter">Writing mzML Documents</a></li>
+      <li>Next: <a href="../mzid/index.html" title="next chapter">mzIdentML</a></li>
   </ul></li>
   </ul></li>
 </ul>

@@ -671,9 +671,11 @@
                 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">precursors</span><span class="p">)])</span>
         <span class="k">return</span> <span class="n">precursors</span>
 
-    <span class="k">def</span> <span class="nf">_prepare_precursor_information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span> <span class="n">scan_id</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">_prepare_precursor_information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span> <span class="n">spectrum_reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                        <span class="n">isolation_window_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                       <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">):</span>
+                                       <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">,</span> <span class="n">scan_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scan_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spectrum_reference</span> <span class="o">=</span> <span class="n">scan_id</span>
         <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">activation</span><span class="p">:</span>
@@ -688,10 +690,19 @@
             <span class="n">ion_list</span><span class="p">,</span>
             <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span>
             <span class="n">isolation_window</span><span class="o">=</span><span class="n">isolation_window_tag</span><span class="p">,</span>
-            <span class="n">spectrum_reference</span><span class="o">=</span><span class="n">scan_id</span><span class="p">)</span>
+            <span class="n">spectrum_reference</span><span class="o">=</span><span class="n">spectrum_reference</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">precursor</span>
 
 <div class="viewcode-block" id="MzMLWriter.format"><a class="viewcode-back" href="../../../mzml/writer.html#psims.mzml.writer.MzMLWriter.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indexer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pretty-prints the contents of the file and wrap in</span>
+<span class="sd">        an indexedmzML container, indexing ``&lt;spectrum&gt;`` and</span>
+<span class="sd">        ``&lt;chromatogram&gt;`` tags.</span>
+
+<span class="sd">        Uses a :class:`tempfile.NamedTemporaryFile` to receive</span>
+<span class="sd">        the formatted XML content, removes the</span>
+<span class="sd">        original file, and moves the temporary file</span>
+<span class="sd">        to the original file&#39;s name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">indexer</span> <span class="o">=</span> <span class="n">MzMLIndexer</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="p">:</span>
@@ -731,9 +742,10 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../xml.html">Basic XML Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../mzml/components.html">Components of mzML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 </ul>
 
 <div class="relations">

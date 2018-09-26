@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Components of mzML" href="components.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="index.html" />
+    <link rel="prev" title="mzML" href="index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -42,7 +42,7 @@ depends heavily on context managers. Almost all logic is handled inside a contex
 manager and in the context of a particular document. Since all operations assume
 that they have access to a universal identity map for each element in the document,
 that map is centralized in this class.</p>
-<p>MzMLWriter inherits from <a class="reference internal" href="components.html#psims.mzml.components.ComponentDispatcher" title="psims.mzml.components.ComponentDispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentDispatcher</span></code></a>, giving it a <code class="xref py py-attr docutils literal notranslate"><span class="pre">context</span></code>
+<p>MzMLWriter inherits from <a class="reference internal" href="../mzid/components.html#psims.mzid.components.ComponentDispatcher" title="psims.mzid.components.ComponentDispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentDispatcher</span></code></a>, giving it a <code class="xref py py-attr docutils literal notranslate"><span class="pre">context</span></code>
 attribute and access to all <cite>Component</cite> objects pre-bound to that context with attribute-access
 notation.</p>
 <dl class="attribute">
@@ -172,7 +172,7 @@ to any part of the data set) is stored here.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>file_contents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>optional</em>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, or *Param-types which will
 be placed in the <code class="docutils literal notranslate"><span class="pre">&lt;fileContent&gt;</span></code> element.</li>
-<li><strong>source_files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of dict or <a class="reference internal" href="components.html#psims.mzml.components.SourceFile" title="psims.mzml.components.SourceFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceFile</span></code></a>-like objects
+<li><strong>source_files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of dict or <a class="reference internal" href="../mzid/components.html#psims.mzid.components.SourceFile" title="psims.mzid.components.SourceFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceFile</span></code></a>-like objects
 to be placed in the <code class="docutils literal notranslate"><span class="pre">&lt;sourceFileList&gt;</span></code> element</li>
 </ul>
 </td>
@@ -184,7 +184,9 @@ to be placed in the <code class="docutils literal notranslate"><span class="pre"
 <dl class="method">
 <dt id="psims.mzml.writer.MzMLWriter.format">
 <code class="descname">format</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>index=True</em>, <em>indexer=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.format" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pretty-prints the contents of the file.</p>
+<dd><p>Pretty-prints the contents of the file and wrap in
+an indexedmzML container, indexing <code class="docutils literal notranslate"><span class="pre">&lt;spectrum&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&lt;chromatogram&gt;</span></code> tags.</p>
 <p>Uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">tempfile.NamedTemporaryFile</span></code> to receive
 the formatted XML content, removes the
 original file, and moves the temporary file
@@ -373,17 +375,22 @@ a <a class="reference external" href="https://docs.python.org/3/library/exceptio
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../xml.html">Basic XML Components</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing mzML Documents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Components of mzML</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">mzML</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mzid/index.html">mzIdentML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">&lt;no title&gt;</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">&lt;no title&gt;</a></li>
+  <li><a href="index.html">mzML</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">mzML</a></li>
       <li>Next: <a href="components.html" title="next chapter">Components of mzML</a></li>
   </ul></li>
   </ul></li>

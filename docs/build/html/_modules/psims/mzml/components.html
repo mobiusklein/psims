@@ -70,7 +70,7 @@
 <span class="n">_xmlns</span> <span class="o">=</span> <span class="s1">&#39;http://psidev.info/psi/pi/mzML/1.1&#39;</span>
 
 
-<div class="viewcode-block" id="ComponentDispatcher"><a class="viewcode-back" href="../../../mzml/components.html#psims.mzml.components.ComponentDispatcher">[docs]</a><span class="k">class</span> <span class="nc">ComponentDispatcher</span><span class="p">(</span><span class="n">XMLBindingDispatcherBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ComponentDispatcher</span><span class="p">(</span><span class="n">XMLBindingDispatcherBase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span>
@@ -78,11 +78,11 @@
             <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">component_namespace</span><span class="o">=</span><span class="n">_COMPONENT_NAMESPACE</span><span class="p">,</span>
             <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ComponentBase"><a class="viewcode-back" href="../../../mzml/components.html#psims.mzml.components.ComponentBase">[docs]</a><span class="k">class</span> <span class="nc">ComponentBase</span><span class="p">(</span><span class="n">_ComponentBase</span><span class="p">):</span>
-    <span class="n">component_namespace</span> <span class="o">=</span> <span class="n">_COMPONENT_NAMESPACE</span></div>
+<span class="k">class</span> <span class="nc">ComponentBase</span><span class="p">(</span><span class="n">_ComponentBase</span><span class="p">):</span>
+    <span class="n">component_namespace</span> <span class="o">=</span> <span class="n">_COMPONENT_NAMESPACE</span>
 
 
 <span class="n">default_cv_list</span> <span class="o">=</span> <span class="p">[</span>
@@ -98,7 +98,7 @@
 <span class="n">NullMap</span> <span class="o">=</span> <span class="n">DocumentContext</span><span class="p">(</span><span class="n">default_cv_list</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GenericCollection"><a class="viewcode-back" href="../../../mzml/components.html#psims.mzml.components.GenericCollection">[docs]</a><span class="k">class</span> <span class="nc">GenericCollection</span><span class="p">(</span><span class="n">ComponentBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">GenericCollection</span><span class="p">(</span><span class="n">ComponentBase</span><span class="p">):</span>
     <span class="n">requires_id</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">NullMap</span><span class="p">):</span>
@@ -117,10 +117,10 @@
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="IDGenericCollection"><a class="viewcode-back" href="../../../mzml/components.html#psims.mzml.components.IDGenericCollection">[docs]</a><span class="k">class</span> <span class="nc">IDGenericCollection</span><span class="p">(</span><span class="n">GenericCollection</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">IDGenericCollection</span><span class="p">(</span><span class="n">GenericCollection</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">NullMap</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
@@ -131,7 +131,7 @@
 
     <span class="k">def</span> <span class="nf">write_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_file</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
-            <span class="n">member</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span></div>
+            <span class="n">member</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="FileContent"><a class="viewcode-back" href="../../../mzml/components.html#psims.mzml.components.FileContent">[docs]</a><span class="k">class</span> <span class="nc">FileContent</span><span class="p">(</span><span class="n">ComponentBase</span><span class="p">):</span>
@@ -795,6 +795,7 @@
     <span class="n">requires_id</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_window_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instrument_configuration_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">source_file_reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spectrum_reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">external_spectrum_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">NullMap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">scan_window_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">scan_window_list</span> <span class="o">=</span> <span class="n">ScanWindowList</span><span class="p">([],</span> <span class="n">context</span><span class="p">)</span>
@@ -803,12 +804,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">instrument_configuration_ref</span> <span class="o">=</span> <span class="n">instrument_configuration_ref</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_instrument_configuration_ref</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;InstrumentConfiguration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">instrument_configuration_ref</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_file_reference</span> <span class="o">=</span> <span class="n">source_file_reference</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_source_file_reference</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_file_reference</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_source_file_reference</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;SourceFile&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_reference</span><span class="p">]</span>
+
+        <span class="c1"># these references make no sense given the document structure but they&#39;re in the spec?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectrum_reference</span> <span class="o">=</span> <span class="n">spectrum_reference</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">external_spectrum_id</span> <span class="o">=</span> <span class="n">external_spectrum_id</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scan_window_list</span> <span class="o">=</span> <span class="n">scan_window_list</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">_element</span><span class="p">(</span><span class="s1">&#39;scan&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_instrument_configuration_ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span>
-                <span class="s1">&#39;instrumentConfigurationRef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instrument_configuration_ref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">_element</span><span class="p">(</span>
+            <span class="s1">&#39;scan&#39;</span><span class="p">,</span> <span class="n">instrumentConfigurationRef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_instrument_configuration_ref</span><span class="p">,</span>
+            <span class="n">externalSpectrumID</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">external_spectrum_id</span><span class="p">,</span> <span class="n">sourceFileRef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_file_reference</span><span class="p">,</span>
+            <span class="n">spectrumRef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">spectrum_reference</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
 
     <span class="k">def</span> <span class="nf">write_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_file</span><span class="p">):</span>
@@ -916,8 +926,8 @@
 <div class="viewcode-block" id="Precursor"><a class="viewcode-back" href="../../../mzml/components.html#psims.mzml.components.Precursor">[docs]</a><span class="k">class</span> <span class="nc">Precursor</span><span class="p">(</span><span class="n">ComponentBase</span><span class="p">):</span>
     <span class="n">requires_id</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected_ion_list</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span>
-                 <span class="n">isolation_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spectrum_reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">NullMap</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected_ion_list</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span> <span class="n">isolation_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spectrum_reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">source_file_reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">external_spectrum_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">NullMap</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">isolation_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">isolation_window</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
                 <span class="n">isolation_window</span> <span class="o">=</span> <span class="n">IsolationWindow</span><span class="p">(</span>
@@ -928,10 +938,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_ion_list</span> <span class="o">=</span> <span class="n">selected_ion_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isolation_window</span> <span class="o">=</span> <span class="n">isolation_window</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">spectrum_reference</span> <span class="o">=</span> <span class="n">spectrum_reference</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_reference</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;Spectrum&#39;</span><span class="p">][</span><span class="n">spectrum_reference</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_reference</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrum_reference</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_reference</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;Spectrum&#39;</span><span class="p">][</span><span class="n">spectrum_reference</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_file_reference</span> <span class="o">=</span> <span class="n">source_file_reference</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_source_file_reference</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_file_reference</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_source_file_reference</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;SourceFile&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_reference</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">external_spectrum_id</span> <span class="o">=</span> <span class="n">external_spectrum_id</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">_element</span><span class="p">(</span>
-            <span class="s1">&#39;precursor&#39;</span><span class="p">,</span> <span class="n">spectrumRef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_reference</span><span class="p">)</span>
+            <span class="s1">&#39;precursor&#39;</span><span class="p">,</span> <span class="n">spectrumRef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_reference</span><span class="p">,</span>
+            <span class="n">sourceFileRef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_file_reference</span><span class="p">,</span>
+            <span class="n">externalSpectrumID</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">external_spectrum_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
 
     <span class="k">def</span> <span class="nf">write_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_file</span><span class="p">):</span>
@@ -1165,9 +1188,10 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../xml.html">Basic XML Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../mzml/components.html">Components of mzML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 </ul>
 
 <div class="relations">
