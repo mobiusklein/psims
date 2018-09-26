@@ -639,9 +639,11 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 for p in ensure_iterable(precursors)])
         return precursors
 
-    def _prepare_precursor_information(self, mz, intensity, charge, scan_id, activation=None,
+    def _prepare_precursor_information(self, mz, intensity, charge, spectrum_reference=None, activation=None,
                                        isolation_window_args=None, params=None,
-                                       intensity_unit=DEFAULT_INTENSITY_UNIT):
+                                       intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None):
+        if scan_id is not None:
+            spectrum_reference = scan_id
         if params is None:
             params = []
         if activation:
@@ -656,10 +658,19 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ion_list,
             activation=activation,
             isolation_window=isolation_window_tag,
-            spectrum_reference=scan_id)
+            spectrum_reference=spectrum_reference)
         return precursor
 
     def format(self, outfile=None, index=True, indexer=None):
+        """Pretty-prints the contents of the file and wrap in
+        an indexedmzML container, indexing ``<spectrum>`` and
+        ``<chromatogram>`` tags.
+
+        Uses a :class:`tempfile.NamedTemporaryFile` to receive
+        the formatted XML content, removes the
+        original file, and moves the temporary file
+        to the original file's name.
+        """
         if indexer is None:
             indexer = MzMLIndexer
         if not index:

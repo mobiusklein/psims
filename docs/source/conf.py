@@ -12,10 +12,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
+import os
+import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+sys.path.insert(0, os.path.abspath('./exts'))
 
 # -- Project information -----------------------------------------------------
 
@@ -45,6 +45,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
+    'xsd_description',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -74,6 +75,12 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+
+xsd_description_include_xsd_descriptions = True
+xsd_description_xsd_paths = [
+    '../psims/validation/xsd/mzML1.1.0.xsd',
+    '../psims/validation/xsd/mzIdentML1.2.0.xsd',
+]
 
 # -- Options for HTML output -------------------------------------------------
 

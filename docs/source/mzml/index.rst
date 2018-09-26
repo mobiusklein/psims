@@ -1,6 +1,9 @@
+mzML
+----
+
 .. toctree::
    :maxdepth: 2
-   :caption: MzML:
+   :caption: mzML:
 
    writer
    components

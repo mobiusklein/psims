@@ -1,10 +1,16 @@
 import warnings
 import hashlib
+import os
 
 from functools import total_ordering
 
 from lxml import etree
 from six import add_metaclass, string_types as basestring
+
+try:
+    import urlparse
+except ImportError:
+    from urllib import parse as urlparse
 
 try:
     from collections import Iterable, Mapping
@@ -40,6 +46,24 @@ def ensure_iterable(obj):
     if not isinstance(obj, Iterable) or isinstance(obj, basestring) or isinstance(obj, Mapping):
         return [obj]
     return obj
+
+
+def is_uri(string):
+    parsed = urlparse.urlparse(string)
+    # No protocol
+    if not parsed.scheme:
+        return False
+    # Windows drive path
+    elif len(parsed.scheme) == 1 and parsed.scheme.isalpha():
+        return False
+    return True
+
+
+def make_file_uri(path):
+    if os.path.isabs(path):
+        return "file:///" + path
+    else:
+        return "file://" + path
 
 
 def checksum_file(path, hash_type='sha-1'):
