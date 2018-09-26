@@ -13,6 +13,7 @@ Welcome to psims's documentation!
    mzML <mzml/index>
    mzIdentML <mzid/index>
    XML Utilities <xml>
+   Examples <examples>
 
 
 Indices and tables
