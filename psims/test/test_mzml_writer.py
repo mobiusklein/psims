@@ -104,7 +104,7 @@ def test_write(output_path, compressor):
         ])
         f.sample_list([sample])
         f.software_list([
-            f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'psims'])
+            f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'python-psims'])
         ])
         f.instrument_configuration_list([
             f.InstrumentConfiguration(id=1, component_list=f.ComponentList([

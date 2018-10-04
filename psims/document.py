@@ -613,7 +613,7 @@ class ComponentBase(object):
         if not self.is_bound():
             raise ValueError(
                 "A component not bound to an XMLWriter cannot be used as a context manager directly. "
-                "Call the `bind` method first with an ")
+                "Call the `bind` method first with an XMLWriter")
         begun = self.begin()
         self._context_manager = begun
         # actually execute the code in `begin` now

@@ -98,7 +98,7 @@ class MzMLTransformer(object):
         software_list.append({
             "id": "psims-example-MzMLTransformer",
             "params": [
-                self.writer.param("custom unreleased software tool", "psims-example-MzMLTransformer"),
+                self.writer.param("python-psims"),
             ]
         })
         self.writer.software_list(software_list)
