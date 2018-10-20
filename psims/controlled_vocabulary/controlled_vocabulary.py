@@ -12,6 +12,10 @@ def _use_vendored_psims_obo():
     return pkg_resources.resource_stream(__name__, "vendor/psi-ms.obo")
 
 
+def _use_vendored_psimod_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/psi-mod.obo")
+
+
 def _use_vendored_unit_obo():
     return pkg_resources.resource_stream(__name__, "vendor/unit.obo")
 
@@ -50,6 +54,7 @@ fallback = {
     ("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
      ): _use_vendored_bto_obo,
     "http://purl.obolibrary.org/obo/go.obo": _use_vendored_go_obo,
+    "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo": _use_vendored_psimod_obo,
 }
 
 
@@ -368,4 +373,9 @@ def load_bto():
 
 def load_go():
     cv = obo_cache.resolve("http://purl.obolibrary.org/obo/go.obo")
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_psimod():
+    cv = obo_cache.resolve("https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo")
     return ControlledVocabulary.from_obo(cv)

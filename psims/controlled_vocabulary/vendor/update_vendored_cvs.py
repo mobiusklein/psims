@@ -1,6 +1,7 @@
 import os
 import re
 import hashlib
+import sys
 
 try:
     from urllib2 import urlopen, Request
@@ -16,13 +17,20 @@ registry = {
     "XLMOD.obo": "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo",
     # appears to reject automated download unless User-Agent is set and is very large
     # "bto.obo": "http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO",
-    "go.obo": "http://purl.obolibrary.org/obo/go.obo"
+    "go.obo": "http://purl.obolibrary.org/obo/go.obo",
+    'psi-mod.obo': 'https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo',
 }
 
 
 storage_dir = os.path.dirname(__file__)
 
-for cv, url in registry.items():
+selected = sys.argv[1:]
+if selected:
+    workload = [(cv, registry[cv]) for cv in selected]
+else:
+    workload = registry.items()
+
+for cv, url in workload:
     print("Updating %s from %s" % (cv, url))
     path = os.path.join(storage_dir, cv)
     old_hash = hashlib.new("md5")
