@@ -16,7 +16,7 @@ from psims import compression
 
 from .components import (
     ComponentDispatcher, element,
-    default_cv_list, MzML, InstrumentConfiguration)
+    default_cv_list, MzML, InstrumentConfiguration, IndexedMzML)
 
 from .binary_encoding import (
     encode_array, COMPRESSION_ZLIB,
@@ -24,7 +24,7 @@ from .binary_encoding import (
 
 from .utils import ensure_iterable
 
-from .index import MzMLIndexer
+from .index import MzMLIndexer, IndexingStream
 
 
 MZ_ARRAY = 'm/z array'
@@ -136,7 +136,32 @@ class RunSection(DocumentSection):
             self.section_args["sampleRef"] = self.context['Sample'][sample_id]
 
 
-class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
+class IndexedmzMLSection(DocumentSection):
+    def __init__(self, writer, parent_context, indexer, section_args=None, **kwargs):
+        super(IndexedmzMLSection, self).__init__(
+            'indexedmzML', writer, parent_context, section_args=section_args,
+            **kwargs)
+        self.toplevel = None
+        self.inner = None
+        self.indexer = indexer
+
+    def __enter__(self):
+        self.toplevel = element(self.writer, IndexedMzML())
+        self.toplevel.__enter__()
+        self.inner = element(self.writer, MzML(**self.section_args))
+        self.inner.__enter__()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.inner.__exit__(exc_type, exc_value, traceback)
+        self.writer.flush()
+        self.write_index()
+        self.toplevel.__exit__(exc_type, exc_value, traceback)
+
+    def write_index(self):
+        self.indexer.to_xml(self)
+
+
+class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     """A high level API for generating mzML XML files from simple Python objects.
 
     This class depends heavily on lxml's incremental file writing API which in turn
@@ -202,7 +227,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         This method requires writing to have begun.
         """
         self.state_machine.transition("controlled_vocabularies")
-        super(MzMLWriter, self).controlled_vocabularies()
+        super(PlainMzMLWriter, self).controlled_vocabularies()
 
     def software_list(self, software_list):
         """Writes the ``<softwareList>`` section of the document.
@@ -661,33 +686,24 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             spectrum_reference=spectrum_reference)
         return precursor
 
-    def format(self, outfile=None, index=True, indexer=None):
-        """Pretty-prints the contents of the file and wrap in
-        an indexedmzML container, indexing ``<spectrum>`` and
-        ``<chromatogram>`` tags.
 
-        Uses a :class:`tempfile.NamedTemporaryFile` to receive
-        the formatted XML content, removes the
-        original file, and moves the temporary file
-        to the original file's name.
-        """
-        if indexer is None:
-            indexer = MzMLIndexer
-        if not index:
-            return super(MzMLWriter, self).format(outfile=outfile)
-        try:
-            if self.outfile.isatty():
-                return
-        except (AttributeError, ValueError):
-            pass
-        if hasattr(self.outfile, 'name'):
-            fh = self.outfile.name
-        else:
-            fh = self.outfile
-        opener = compression.get(fh)
-        indexer = indexer(fh)
-        try:
-            indexer.build()
-            indexer.overwrite(opener)
-        except MemoryError:
-            pass
+class IndexedMzMLWriter(PlainMzMLWriter):
+    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+                 vocabulary_resolver=None, id=None, accession=None, **kwargs):
+        outfile = IndexingStream(outfile)
+        super(IndexedMzMLWriter, self).__init__(
+            outfile, close, vocabularies, missing_reference_is_error, vocabulary_resolver,
+            id, accession, **kwargs)
+        self.index_builder = outfile
+
+    def toplevel_tag(self):
+        return IndexedmzMLSection(
+            self.writer, self.context, id=self.id, accession=self.accession,
+            indexer=self.index_builder)
+
+    def format(self, *args, **kwargs):
+        return
+
+
+MzMLWriter = IndexedMzMLWriter
+# MzMLWriter = PlainMzMLWriter

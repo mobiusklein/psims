@@ -1,7 +1,10 @@
 import re
 
+import io
 from io import BytesIO
 from collections import defaultdict, OrderedDict
+
+from six import string_types as basestring
 
 try:
     from collections import Sequence, Mapping
@@ -79,6 +82,12 @@ class TagIndexerBase(object):
                 ref_id, int(index_data)).encode('utf-8'))
         writer.write(b"    </index>\n")
 
+    def write_xml(self, writer):
+        with writer.element("index", name=self.name):
+            for ref_id, index_data in self.index.items():
+                with writer.element("offset", idRef=ref_id):
+                    writer.write(str(int(index_data)))
+
 
 class SpectrumIndexer(TagIndexerBase):
     def __init__(self):
@@ -97,6 +106,7 @@ class IndexList(Sequence):
         if indexers is None:
             indexers = []
         self.indexers = list(indexers)
+        self.tokenizer = self._make_tokenizer()
 
     def __len__(self):
         return len([ix for ix in self.indexers if len(ix) > 0])
@@ -127,8 +137,47 @@ class IndexList(Sequence):
         writer.write(b"  <indexListOffset>")
         writer.write("{:d}</indexListOffset>\n".format(offset).encode("utf-8"))
 
+    def write_index_list_xml(self, writer, distance):
+        offset = distance
+        n = len(self)
+        with writer.element("indexList", count=str(n)):
+            for index in self:
+                if len(index) > 0:
+                    index.write_xml(writer)
+        with writer.element("indexListOffset"):
+            writer.write(str(int(offset)))
+
     def add(self, indexer):
         self.indexers.append(indexer)
+        self.tokenizer = self._make_tokenizer()
+
+    def _make_tokenizer(self):
+        pattern = re.compile(b'(%s)' % b'|'.join([ix.pattern.pattern for ix in self]))
+        return pattern
+
+    def tokenize(self, b):
+        delim = b'<'
+        buff = b
+        started_with_delim = buff.startswith(delim)
+        parts = buff.split(delim)
+        tail = parts[-1]
+        front = parts[:-1]
+        i = 0
+        for part in front:
+            i += 1
+            if part == b"":
+                continue
+            if i == 1:
+                if started_with_delim:
+                    yield delim + part
+                else:
+                    yield part
+            else:
+                yield delim + part
+        if tail.strip() and i > 0:
+            yield delim + tail
+        else:
+            yield tail
 
 
 class HashingFileBuffer(object):
@@ -142,6 +191,80 @@ class HashingFileBuffer(object):
         self.accumulator += len(data)
         self.checksum.update(data)
         return self.accumulator
+
+
+class HashingStream(object):
+    def __init__(self, stream):
+        if isinstance(stream, basestring):
+            stream = open(stream, 'wb')
+        self.stream = stream
+        self._checksum = sha1()
+        self.accumulator = 0
+
+    def write(self, b):
+        self.stream.write(b)
+        self._checksum.update(b)
+        self.accumulator += len(b)
+        return len(b)
+
+    def flush(self):
+        self.stream.flush()
+
+    def close(self):
+        self.stream.close()
+
+    def writable(self):
+        return self.stream.writable()
+
+    @property
+    def name(self):
+        return self.stream.name
+
+    def checksum(self):
+        return self._checksum.hexdigest()
+
+
+class IndexingStream(HashingStream):
+    def __init__(self, stream):
+        super(IndexingStream, self).__init__(stream)
+        self.indices = IndexList()
+        self.indices.add(SpectrumIndexer())
+        self.indices.add(ChromatogramIndexer())
+
+    def write(self, data):
+        # import IPython
+        for line in self.indices.tokenize(data):
+            # if line.strip() and not line.endswith(">"):
+                # print(line[:100])
+                # IPython.embed()
+            self.indices.test(line, self.accumulator)
+            super(IndexingStream, self).write(line)
+
+    def _raw_write(self, data):
+        super(IndexingStream, self).write(data)
+
+    def write_index(self, index, name):
+        self.write("    <index name=\"{}\">\n".format(name).encode('utf-8'))
+        for ref_id, index_data in index.items():
+            self.write_offset(ref_id, index_data)
+        self.write(b"    </index>\n")
+
+    def write_index_list(self):
+        offset = self.accumulator
+        self.indices.write_index_list(self, offset)
+
+    def write_checksum(self):
+        self.write(b"  <fileChecksum>")
+        self.write(self.checksum().encode('utf-8'))
+        self.write(b"</fileChecksum>")
+
+    def to_xml(self, writer):
+        offset = self.accumulator
+        writer.flush()
+        self.indices.write_index_list_xml(writer, offset)
+        with writer.element("fileChecksum"):
+            writer.flush()
+            writer.write(self.checksum())
 
 
 class MzMLIndexer(HashingFileBuffer):
