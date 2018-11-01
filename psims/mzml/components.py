@@ -38,6 +38,17 @@ _COMPONENT_NAMESPACE = 'mzml'
 _xmlns = 'http://psidev.info/psi/pi/mzML/1.1'
 
 
+class IndexedMzML(TagBase):
+    type_attrs = {
+        "xmlns": "http://psi.hupo.org/ms/mzml",
+        'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
+        'xsi:schemaLocation': "http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd"
+    }
+
+    def __init__(self, **attrs):
+        super(IndexedMzML, self).__init__('indexedmzML', **attrs)
+
+
 class ComponentDispatcher(XMLBindingDispatcherBase):
 
     def __init__(self, *args, **kwargs):
