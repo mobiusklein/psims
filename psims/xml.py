@@ -2,6 +2,8 @@ import os
 import shutil
 import re
 from contextlib import contextmanager
+from collections import deque
+
 import tempfile
 import time
 from lxml import etree
@@ -702,6 +704,83 @@ class XMLWriterMixin(object):
             else:
                 raise
 
+    def flush(self):
+        self.writer.flush()
+
+
+class XMLFormattingStreamWriter(object):
+    """Wraps a writable stream with a layer emulating the
+     class:`lxml.etree.xmlfile` interface, save that it automatically
+     formats and indents the XML generated without requiring a separate
+     pass through the XML pretty printing processing
+
+    Attributes
+    ----------
+    indent_chars : str
+        The characters to indent with
+    indent_level : int
+        The current indentation level
+    stream : :class:`io.IOBase`
+        The stream to wrap
+    writer : :class:`lxml.etree._IncrementalFileWriter`
+        The actual XML writer
+    wrote_text_stack : :class:`collections.deque`
+        A stack to track if a layer wrote text in one of its children and should not
+        have its end tag written on a new line
+    xmlfile : :class:`lxml.etree.xmlfile`
+        The actual XML writer's controller
+    """
+
+    def __init__(self, stream, encoding=None, indent='  ', **kwargs):
+        self.stream = stream
+        self.xmlfile = etree.xmlfile(self.stream, encoding=encoding, buffered=False, **kwargs)
+        self.writer = None
+        self.indent_level = 0
+        self.indent_chars = indent
+        self.wrote_text_stack = deque()
+
+    def __enter__(self):
+        self.writer = self.xmlfile.__enter__()
+        return self
+
+    def __exit__(self, *args):
+        self.xmlfile.__exit__(*args)
+
+    def _indent_tag(self):
+        self.writer.write('\n' + (self.indent_chars * self.indent_level))
+
+    @contextmanager
+    def element(self, *args, **kwargs):
+        if self.indent_level > 0:
+            self._indent_tag()
+        elt = self.writer.element(*args, **kwargs)
+        elt.__enter__()
+        self.wrote_text_stack.append(False)
+        self.indent_level += 1
+        yield
+        self.indent_level -= 1
+        if not self.wrote_text_stack[-1]:
+            self._indent_tag()
+        elt.__exit__(None, None, None)
+        self.wrote_text_stack.pop()
+
+    def write(self, *args, **kwargs):
+        if isinstance(args[0], basestring):
+            self.wrote_text_stack[-1] = True
+        if not self.wrote_text_stack[-1]:
+            if self.indent_level > 0:
+                self._indent_tag()
+        self.writer.write(*args, **kwargs)
+
+    def flush(self):
+        self.writer.flush()
+
+    def write_doctype(self):
+        self.writer.write_doctype()
+
+    def write_declaration(self):
+        self.writer.write_declaration()
+
 
 class XMLDocumentWriter(XMLWriterMixin):
     """A base class for types which are used to
@@ -734,14 +813,14 @@ class XMLDocumentWriter(XMLWriterMixin):
             encoding = 'utf-8'
         self.outfile = outfile
         self.encoding = encoding
-        self.xmlfile = etree.xmlfile(outfile, encoding=encoding, **kwargs)
+        self.xmlfile = XMLFormattingStreamWriter(outfile, encoding=encoding, **kwargs)
         self._writer = None
         self.toplevel = None
         self._close = close
 
     def _should_close(self):
         if self._close is None:
-            return (self.outfile, 'close')
+            return hasattr(self.outfile, 'close')
         return bool(self._close)
 
     @property
@@ -763,7 +842,12 @@ class XMLDocumentWriter(XMLWriterMixin):
             return
         self.writer = self.xmlfile.__enter__()
         self.writer.write_declaration()
-        self.toplevel = element(self.writer, self.toplevel_tag())
+        toplevel = self.toplevel_tag()
+        if isinstance(toplevel, TagBase):
+            toplevel_element = element(self.writer, toplevel)
+        else:
+            toplevel_element = toplevel
+        self.toplevel = toplevel_element
         self.toplevel.__enter__()
 
     def _has_begun(self):
@@ -817,70 +901,16 @@ class XMLDocumentWriter(XMLWriterMixin):
             self.writer.flush()
 
     def format(self, outfile=None):
-        """Pretty-prints the contents of the file.
-
-        Uses a :class:`tempfile.NamedTemporaryFile` to receive
-        the formatted XML content, removes the
-        original file, and moves the temporary file
-        to the original file's name.
+        """This method is deprecated. Previously, the serialization
+        process did not indent the XML in-place and the lxml pretty printer
+        had to be invoked separately. With the addition of :class:`XMLFormattingStreamWriter`,
+        the XML stream is formatted in-place as it is being streamed to file.
         """
-        use_temp = False
-        # can't format a terminal stream
-        try:
-            if self.outfile.isatty():
-                return
-        except (AttributeError, ValueError):
-            pass
-
-        # Maybe we can seek to the beginning and open the stream for reading and writing?
-        if outfile is None:
-            use_temp = True
-            handle = tempfile.NamedTemporaryFile(delete=False)
-        else:
-            handle = open(outfile, 'wb')
-
-        try:
-            outfile_name = self.outfile.name
-        except AttributeError:
-            outfile_name = self.outfile
-        try:
-            try:
-                pretty_xml(outfile_name, handle.name)
-            except AttributeError:
-                try:
-                    pretty_xml(outfile_name, handle.name)
-                except Exception as e:
-                    print(e)
-        except MemoryError:
-            pass
-
-        if use_temp:
-            handle.close()
-            try:
-                os.remove(outfile_name)
-                try:
-                    shutil.move(handle.name, outfile_name)
-                except IOError as e:
-                    if e.errno == 13:
-                        try:
-                            time.sleep(3)
-                            shutil.move(handle.name, outfile_name)
-                        except IOError:
-                            print(
-                                "Could not obtain write-permission for original\
-                                 file name. Formatted XML document located at \"%s\"" % (
-                                    handle.name))
-            except (AttributeError, TypeError):
-                try:
-                    self.outfile.seek(0)
-                    with open(handle.name, 'rb') as fh:
-                        chunk_size = int(2 ** 16)
-                        chunk = fh.read(chunk_size)
-                        while chunk:
-                            self.outfile.write(chunk)
-                            chunk = fh.read(chunk_size)
-                except AttributeError as e:
-                    print("Could not format document", e)
+        import warnings
+        warnings.warn(
+            "This method is no longer necessary, XML is formatted automatically",
+            DeprecationWarning)
+        pass
 
     def validate(self):
         """Attempt to perform XSD validation on the XML document
