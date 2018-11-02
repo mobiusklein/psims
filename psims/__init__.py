@@ -18,6 +18,8 @@ from .version import version as __version__
 
 from .utils import (checksum_file, TableStateMachine)
 
+from . import compression
+
 
 __all__ = [
     "ControlledVocabulary", "OBOParser", "load_psims", "load_unimod",
@@ -27,6 +29,8 @@ __all__ = [
     "CHARGE_ARRAY", "mzml_components", "default_mzml_cv_list",
 
     "MzIdentMLWriter", "default_mzid_cv_list", "mzid_components",
+
+    "compression",
 
     "TableStateMachine", "checksum_file", "__version__"
 ]

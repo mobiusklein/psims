@@ -102,11 +102,21 @@ class ChromatogramIndexer(TagIndexerBase):
 
 
 class IndexList(Sequence):
+
+    """Wrap an arbitrary collection of :class:`TagIndexerBase`-derived
+    objects, and support building XML indices.
+
+    Attributes
+    ----------
+    indexers : list
+        A list of :class:`TagIndexerBase`-derived objects to use when
+        extracting indices from XML
+    """
+
     def __init__(self, indexers=None):
         if indexers is None:
             indexers = []
         self.indexers = list(indexers)
-        self.tokenizer = self._make_tokenizer()
 
     def __len__(self):
         return len([ix for ix in self.indexers if len(ix) > 0])
@@ -126,17 +136,6 @@ class IndexList(Sequence):
     def __call__(self, data, distance):
         return self.test(data, distance)
 
-    def write_index_list(self, writer, distance):
-        offset = distance
-        n = len(self)
-        writer.write("  <indexList count=\"{:d}\">\n".format(n).encode("utf-8"))
-        for index in self:
-            if len(index) > 0:
-                index.write(writer)
-        writer.write(b"  </indexList>\n")
-        writer.write(b"  <indexListOffset>")
-        writer.write("{:d}</indexListOffset>\n".format(offset).encode("utf-8"))
-
     def write_index_list_xml(self, writer, distance):
         offset = distance
         n = len(self)
@@ -149,48 +148,6 @@ class IndexList(Sequence):
 
     def add(self, indexer):
         self.indexers.append(indexer)
-        self.tokenizer = self._make_tokenizer()
-
-    def _make_tokenizer(self):
-        pattern = re.compile(b'(%s)' % b'|'.join([ix.pattern.pattern for ix in self]))
-        return pattern
-
-    def tokenize(self, b):
-        delim = b'<'
-        buff = b
-        started_with_delim = buff.startswith(delim)
-        parts = buff.split(delim)
-        tail = parts[-1]
-        front = parts[:-1]
-        i = 0
-        for part in front:
-            i += 1
-            if part == b"":
-                continue
-            if i == 1:
-                if started_with_delim:
-                    yield delim + part
-                else:
-                    yield part
-            else:
-                yield delim + part
-        if tail.strip() and i > 0:
-            yield delim + tail
-        else:
-            yield tail
-
-
-class HashingFileBuffer(object):
-    def __init__(self):
-        self.buffer = BytesIO()
-        self.checksum = sha1()
-        self.accumulator = 0
-
-    def write(self, data):
-        self.buffer.write(data)
-        self.accumulator += len(data)
-        self.checksum.update(data)
-        return self.accumulator
 
 
 class HashingStream(object):
@@ -231,12 +188,31 @@ class IndexingStream(HashingStream):
         self.indices.add(SpectrumIndexer())
         self.indices.add(ChromatogramIndexer())
 
+    def tokenize(self, buff):
+        delim = b'<'
+        started_with_delim = buff.startswith(delim)
+        parts = buff.split(delim)
+        tail = parts[-1]
+        front = parts[:-1]
+        i = 0
+        for part in front:
+            i += 1
+            if part == b"":
+                continue
+            if i == 1:
+                if started_with_delim:
+                    yield delim + part
+                else:
+                    yield part
+            else:
+                yield delim + part
+        if tail.strip() and i > 0:
+            yield delim + tail
+        else:
+            yield tail
+
     def write(self, data):
-        # import IPython
-        for line in self.indices.tokenize(data):
-            # if line.strip() and not line.endswith(">"):
-                # print(line[:100])
-                # IPython.embed()
+        for line in self.tokenize(data):
             self.indices.test(line, self.accumulator)
             super(IndexingStream, self).write(line)
 
@@ -265,74 +241,3 @@ class IndexingStream(HashingStream):
         with writer.element("fileChecksum"):
             writer.flush()
             writer.write(self.checksum())
-
-
-class MzMLIndexer(HashingFileBuffer):
-    def __init__(self, source, pretty=True):
-        self.source = source
-        super(MzMLIndexer, self).__init__()
-        self.indices = IndexList()
-        self.indices.add(SpectrumIndexer())
-        self.indices.add(ChromatogramIndexer())
-
-    def write(self, data):
-        self.indices.test(data, self.accumulator)
-        return super(MzMLIndexer, self).write(data)
-
-    def write_opening(self):
-        header = (b'<?xml version=\'1.0\' encoding=\'utf-8\'?>\n'
-                  b'<indexedmzML xmlns="http://psi.hupo.org/ms/mzml" '
-                  b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-                  b' xsi:schemaLocation="http://psi.hupo.org/ms/mzml '
-                  b'http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd">\n')
-        self.write(header)
-
-    def embed_source(self):
-        try:
-            self.source.seek(0)
-        except AttributeError:
-            pass
-        tree = etree.parse(self.source)
-        content = etree.tostring(tree, pretty_print=True).splitlines()
-        for line in content:
-            indented = b''.join((b'  ', line, b'\n'))
-            self.write(indented)
-
-    def write_index(self, index, name):
-        self.write("    <index name=\"{}\">\n".format(name).encode('utf-8'))
-        for ref_id, index_data in index.items():
-            self.write_offset(ref_id, index_data)
-        self.write(b"    </index>\n")
-
-    def write_index_list(self):
-        offset = self.accumulator
-        self.indices.write_index_list(self, offset)
-
-    def write_checksum(self):
-        self.write(b"  <fileChecksum>")
-        self.write(self.checksum.hexdigest().encode('utf-8'))
-        self.write(b"</fileChecksum>\n")
-
-    def write_closing(self):
-        self.write(b"</indexedmzML>")
-
-    def write_offset(self, ref_id, index_data):
-        self.write('      <offset idRef="{}">{:d}</offset>\n'.format(
-            ref_id, index_data).encode('utf-8'))
-
-    def build(self):
-        self.write_opening()
-        self.embed_source()
-        self.write_index_list()
-        self.write_checksum()
-        self.write_closing()
-
-    def overwrite(self, opener=None):
-        if opener is None:
-            opener = compression.get(self.source)
-        try:
-            self.source.seek(0)
-            fh = self.source
-        except AttributeError:
-            fh = opener(self.source, 'wb')
-        fh.write(self.buffer.getvalue())

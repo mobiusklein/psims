@@ -12,7 +12,6 @@ import numpy as np
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
 from psims.utils import TableStateMachine
-from psims import compression
 
 from .components import (
     ComponentDispatcher, element,
@@ -24,7 +23,7 @@ from .binary_encoding import (
 
 from .utils import ensure_iterable
 
-from .index import MzMLIndexer, IndexingStream
+from .index import IndexingStream
 
 
 MZ_ARRAY = 'm/z array'
