@@ -3,7 +3,7 @@ from pyteomics import mzml
 from psims import MzMLWriter
 from psims.utils import ensure_iterable
 
-from .utils import log
+from .utils import TransformerBase
 
 
 class MzMLParser(mzml.MzML):
@@ -24,7 +24,7 @@ def identity(x):
     return x
 
 
-class MzMLTransformer(object):
+class MzMLTransformer(TransformerBase):
     def __init__(self, input_stream, output_stream, transform=None, transform_description=None):
         if transform is None:
             transform = identity
@@ -36,7 +36,7 @@ class MzMLTransformer(object):
         self.writer = MzMLWriter(output_stream)
         self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary
 
-    def _format_referenceable_param_groups(self):
+    def format_referenceable_param_groups(self):
         self.reader.reset()
         try:
             param_list = next(self.reader.iterfind("referenceableParamGroupList", recursive=True, retrive_refs=False))
@@ -45,13 +45,11 @@ class MzMLTransformer(object):
             param_groups = []
         return [self.writer.ReferenceableParamGroup.ensure(d) for d in param_groups]
 
-    def _format_instrument_configuration(self):
+    def format_instrument_configuration(self):
         self.reader.reset()
         configuration_list = next(self.reader.iterfind("instrumentConfigurationList", recursive=True))
         configurations = []
         for config_dict in configuration_list.get("instrumentConfiguration", []):
-            # import IPython
-            # IPython.embed()
             components = []
             for key, members in config_dict.pop('componentList', {}).items():
                 if key not in ("source", "analyzer", "detector"):
@@ -69,7 +67,7 @@ class MzMLTransformer(object):
             configurations.append(configuration)
         return configurations
 
-    def _format_data_processing(self):
+    def format_data_processing(self):
         self.reader.reset()
         dpl = next(self.reader.iterfind("dataProcessingList", recursive=True))
         data_processing = []
@@ -88,40 +86,48 @@ class MzMLTransformer(object):
         source_files = file_description.get("sourceFileList").get('sourceFile')
         self.writer.file_description(file_description.get("fileContent", {}).items(), source_files)
 
-        param_groups = self._format_referenceable_param_groups()
+        param_groups = self.format_referenceable_param_groups()
         if param_groups:
             self.writer.reference_param_group_list(param_groups)
 
         self.reader.reset()
         software_list = next(self.reader.iterfind("softwareList"))
         software_list = software_list.get("software", [])
-        software_list.append({
-            "id": "psims-example-MzMLTransformer",
-            "params": [
-                self.writer.param("python-psims"),
-            ]
-        })
+        software_list.append(self._make_software())
         self.writer.software_list(software_list)
 
-        configurations = self._format_instrument_configuration()
+        configurations = self.format_instrument_configuration()
         self.writer.instrument_configuration_list(configurations)
 
         # include transformation description here
-        data_processing = self._format_data_processing()
-        data_processing.append({
-            "id": "psims-example-MzMLTransformer-processing",
+        data_processing = self.format_data_processing()
+        data_processing.append(self._make_data_processing_entry())
+        self.writer.data_processing_list(data_processing)
+
+    def _make_software(self):
+        description = {
+            "id": "psims-MzMLTransformer",
+            "params": [
+                self.writer.param("python-psims"),
+            ]
+        }
+        return description
+
+    def _make_data_processing_entry(self):
+        description = {
+            "id": "psims-MzMLTransformer-processing",
             "processing_methods": [
                 {
                     "order": 1,
-                    "software_reference": "psims-example-MzMLTransformer",
+                    "software_reference": "psims-MzMLTransformer",
                     "params": ([self.transform_description] if self.transform_description else []
                                ) + ['conversion to mzML'],
                 }
             ]
-        })
-        self.writer.data_processing_list(data_processing)
+        }
+        return description
 
-    def _format_scan(self, scan):
+    def format_scan(self, scan):
         scan_params = []
         scan_window_list = []
         scan_start_time = None
@@ -178,7 +184,7 @@ class MzMLTransformer(object):
 
         return scan_start_time, scan_params, scan_window_list
 
-    def _format_spectrum(self, spectrum):
+    def format_spectrum(self, spectrum):
         spec_data = dict()
         spec_data["mz_array"] = spectrum.pop("m/z array", None)
         spec_data["intensity_array"] = spectrum.pop("intensity array", None)
@@ -222,7 +228,7 @@ class MzMLTransformer(object):
                     params[-1]['unit_name'] = value.unit_info
                 temp.pop(key)
 
-        spec_data["scan_start_time"], spec_data['scan_params'], spec_data["scan_window_list"] = self._format_scan(
+        spec_data["scan_start_time"], spec_data['scan_params'], spec_data["scan_window_list"] = self.format_scan(
             spectrum.get("scanList", {}).get('scan', [{}])[0])
 
         spec_data['params'] = params
@@ -274,10 +280,10 @@ class MzMLTransformer(object):
                     i = 0
                     for spectrum in self.reader.iterfind("spectrum"):
                         spectrum = self.transform(spectrum)
-                        self.writer.write_spectrum(**self._format_spectrum(spectrum))
+                        self.writer.write_spectrum(**self.format_spectrum(spectrum))
                         i += 1
                         if i % 1000 == 0:
-                            log("Handled %d spectra" % (i, ))
+                            self.log("Handled %d spectra" % (i, ))
 
         self.output_stream.seek(0)
         writer.format()

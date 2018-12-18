@@ -6,8 +6,7 @@ from pyteomics.auxiliary import cvquery
 from psims.utils import ensure_iterable
 from psims.mzid import MzIdentMLWriter
 
-
-from .utils import log
+from .utils import TransformerBase
 
 
 N = float('inf')
@@ -31,7 +30,7 @@ class MzIdentMLParser(mzid.MzIdentML):
         self.seek(0)
 
 
-class MzIdentMLTranslater(object):
+class MzIdentMLTranslater(TransformerBase):
     def _uncamel(self, name):
         temp = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         return re.sub('([a-z0-9])([A-Z])', r'\1_\2', temp).lower()
@@ -106,7 +105,7 @@ class MzIdentMLTranslater(object):
         pass
 
     def copy_provenance(self):
-        log("Copying Provenance Information")
+        self.log("Copying Provenance Information")
         self.reader.reset()
         try:
             analysis_software_list = next(self.reader.iterfind("AnalysisSoftwareList"))
@@ -114,27 +113,27 @@ class MzIdentMLTranslater(object):
             analysis_software_list = []
 
         analysis_software_list = map(
-            self._format_analysis_software, analysis_software_list.get("AnalysisSoftware"))
+            self.format_analysis_software, analysis_software_list.get("AnalysisSoftware"))
 
         with self.writer.AnalysisSoftwareList(analysis_software_list):
             self.insert_software_record()
 
         try:
             self.reader.reset()
-            provider = self._format_provider(next(self.reader.iterfind("Provider")))
+            provider = self.format_provider(next(self.reader.iterfind("Provider")))
             provider.write(self.writer)
         except StopIteration:
             pass
 
         try:
             self.reader.reset()
-            audit_collection = self._format_autit_collection(
+            audit_collection = self.format_autit_collection(
                 next(self.reader.iterfind("AuditCollection")))
             audit_collection.write(self.writer.writer)
         except StopIteration:
             pass
 
-    def _format_analysis_software(self, software):
+    def format_analysis_software(self, software):
         d = {}
         d.update(software)
         d['name'] = d.pop('SoftwareName')
@@ -143,7 +142,7 @@ class MzIdentMLTranslater(object):
         d['contact'] = contact_role.get('contact_ref')
         return self.writer.AnalysisSoftware.ensure(d)
 
-    def _format_provider(self, provider):
+    def format_provider(self, provider):
         d = {}
         d.update(provider)
         contact_role = ensure_iterable(d.pop("ContactRole", {}))[0]
@@ -151,7 +150,7 @@ class MzIdentMLTranslater(object):
         d['contact'] = contact_role.get('contact_ref')
         return self.writer.Provider.ensure(d)
 
-    def _format_person(self, person):
+    def format_person(self, person):
         d = {}
         d.update(person)
         self._translate_keys(d, ['firstName', 'lastName', 'midInitials'])
@@ -159,66 +158,66 @@ class MzIdentMLTranslater(object):
                              if a.get('organization_ref') is not None]
         return self.writer.Person.ensure(d)
 
-    def _format_organization(self, organization):
+    def format_organization(self, organization):
         d = {}
         d.update(organization)
         d['parent'] = d.pop("Parent", {}).get("organization_ref")
         return self.writer.Organization.ensure(d)
 
-    def _format_autit_collection(self, audit_collection):
-        organization = map(self._format_organization, ensure_iterable(audit_collection.pop("Organization", None)))
-        person = map(self._format_person, ensure_iterable(audit_collection.pop("Person", None)))
+    def format_autit_collection(self, audit_collection):
+        organization = map(self.format_organization, ensure_iterable(audit_collection.pop("Organization", None)))
+        person = map(self.format_person, ensure_iterable(audit_collection.pop("Person", None)))
         return self.writer.AuditCollection(person, organization)
 
     def copy_sequence_collection(self):
-        log("Copying Sequence Collection")
+        self.log("Copying Sequence Collection")
         writer = self.writer
         reader = self.reader
         with writer.sequence_collection():
             reader.reset()
             i = 0
-            for db_seq in map(self._format_db_sequence, reader.iterfind("dBSequence")):
+            for db_seq in map(self.format_db_sequence, reader.iterfind("dBSequence")):
                 i += 1
                 db_seq.write(self.writer)
                 if i % K == 0:
-                    log("Copied %d dBSequences" % i)
+                    self.log("Copied %d dBSequences" % i)
                 if i > N:
                     break
 
             reader.reset()
             i = 0
-            for peptide in map(self._format_peptide, reader.iterfind("Peptide")):
+            for peptide in map(self.format_peptide, reader.iterfind("Peptide")):
                 i += 1
                 peptide.write(self.writer)
                 if i % K == 0:
-                    log("Copied %d Peptides" % i)
+                    self.log("Copied %d Peptides" % i)
                 if i > N:
                     break
 
             reader.reset()
             i = 0
-            for peptide_ev in map(self._format_peptide_evidence, reader.iterfind("PeptideEvidence")):
+            for peptide_ev in map(self.format_peptide_evidence, reader.iterfind("PeptideEvidence")):
                 i += 1
                 peptide_ev.write(self.writer)
                 if i % K == 0:
-                    log("Copied %d PeptideEvidence" % i)
+                    self.log("Copied %d PeptideEvidence" % i)
                 if i > N:
                     break
 
-    def _format_db_sequence(self, db_sequence):
+    def format_db_sequence(self, db_sequence):
         d = dict(db_sequence)
         d['search_database_id'] = d.pop("searchDatabase_ref")
         d['sequence'] = d.pop("Seq", None)
         return self.writer.DBSequence.ensure(d)
 
-    def _format_peptide(self, peptide):
+    def format_peptide(self, peptide):
         d = dict(peptide)
         d['peptide_sequence'] = d.pop("PeptideSequence")
-        d['modifications'] = map(self._format_modification, d.pop("Modification", []))
-        d['substitutions'] = map(self._format_substitution, d.pop("SubstitutionModification", []))
+        d['modifications'] = map(self.format_modification, d.pop("Modification", []))
+        d['substitutions'] = map(self.format_substitution, d.pop("SubstitutionModification", []))
         return self.writer.Peptide.ensure(d)
 
-    def _format_modification(self, mod):
+    def format_modification(self, mod):
         temp = dict(mod)
         d = dict()
         d['location'] = temp.pop("location", None)
@@ -257,12 +256,12 @@ class MzIdentMLTranslater(object):
             params.append(crosslinking_donor_or_receiver)
         return self.writer.Modification.ensure(d)
 
-    def _format_substitution(self, sub):
+    def format_substitution(self, sub):
         d = dict(sub)
         self._translate_keys(d, ["originalResidue", "replacementResidue", "monoisotopicMassDelta"])
         return self.writer.SubstitutionModification.ensure(d)
 
-    def _format_peptide_evidence(self, evidence):
+    def format_peptide_evidence(self, evidence):
         d = dict(evidence)
         d['peptide_id'] = d.pop("peptide_ref")
         d['db_sequence_id'] = d.pop("dBSequence_ref")
@@ -279,11 +278,11 @@ class MzIdentMLTranslater(object):
         analysis_collection = next(reader.iterfind("AnalysisCollection"))
         with self.writer.analysis_collection():
             for si in analysis_collection.get("SpectrumIdentification", []):
-                self._format_spectrum_identification(si).write(writer)
+                self.format_spectrum_identification(si).write(writer)
             for pi in ensure_iterable(analysis_collection.get("ProteinDetection", [])):
-                self._format_protein_detection(pi).write(writer)
+                self.format_protein_detection(pi).write(writer)
 
-    def _format_enzyme(self, enz):
+    def format_enzyme(self, enz):
         d = dict(enz)
         d['name'] = d.pop("EnzymeName", None)
         d['site_regexp'] = d.pop('SiteRegexp', None)
@@ -291,7 +290,7 @@ class MzIdentMLTranslater(object):
         self._translate_keys(d, ["minDistance", "semiSpecific", "nTermGain", "cTermGain"])
         return self.writer.Enzyme.ensure(d)
 
-    def _format_search_modification(self, mod):
+    def format_search_modification(self, mod):
         temp = dict(mod)
         d = dict()
         d['fixed'] = temp.pop("fixedMod", False)
@@ -331,7 +330,7 @@ class MzIdentMLTranslater(object):
         # return d
         return self.writer.SearchModification.ensure(d)
 
-    def _format_tolerance(self, tol, tp):
+    def format_tolerance(self, tol, tp):
         if not tol:
             return None
         term_dict = cvquery(tol)
@@ -341,24 +340,24 @@ class MzIdentMLTranslater(object):
         high = {"accession": 'MS:1001412', "value": value, 'unit_name': getattr(value, 'unit_info', None)}
         return tp(low, high)
 
-    def _format_spectrum_identification_protocol(self, sip):
+    def format_spectrum_identification_protocol(self, sip):
         d = dict(sip)
         d['additional_search_params'] = d.pop("AdditionalSearchParams", [])
         enzymes = d.pop("Enzymes", {})
         d['enzymes'] = self.writer.Enzymes(
-            map(self._format_enzyme, ensure_iterable(enzymes.get("Enzyme", []))),
+            map(self.format_enzyme, ensure_iterable(enzymes.get("Enzyme", []))),
             independent=enzymes.get("independent"))
         d['modification_params'] = map(
-            self._format_search_modification, ensure_iterable(
+            self.format_search_modification, ensure_iterable(
                 d.pop('ModificationParams', {}).get("SearchModification", [])))
         d['search_type'] = d.pop("SearchType", None)
-        d['parent_tolerance'] = self._format_tolerance(d.pop("ParentTolerance", {}), self.writer.ParentTolerance)
-        d['fragment_tolerance'] = self._format_tolerance(d.pop("FragmentTolerance", {}), self.writer.FragmentTolerance)
+        d['parent_tolerance'] = self.format_tolerance(d.pop("ParentTolerance", {}), self.writer.ParentTolerance)
+        d['fragment_tolerance'] = self.format_tolerance(d.pop("FragmentTolerance", {}), self.writer.FragmentTolerance)
         d['threshold'] = self._extract_params(d.pop("Threshold"))
         d['analysis_software_id'] = d.pop("analysisSoftware_ref")
         return self.writer.SpectrumIdentificationProtocol.ensure(d)
 
-    def _format_protein_detection_protocol(self, pdp):
+    def format_protein_detection_protocol(self, pdp):
         d = dict(pdp)
         d['threshold'] = self._extract_params(d.pop("Threshold"))
         d['analysis_software_id'] = d.pop("analysisSoftware_ref")
@@ -366,19 +365,19 @@ class MzIdentMLTranslater(object):
         return self.writer.ProteinDetectionProtocol.ensure(d)
 
     def copy_analysis_protocol_collection(self):
-        log("Copying Protocols")
+        self.log("Copying Protocols")
         self.reader.reset()
         apc = next(self.reader.iterfind("AnalysisProtocolCollection", retrieve_refs=False))
         protocols = []
         for sip in ensure_iterable(apc.get("SpectrumIdentificationProtocol", [])):
-            protocols.append(self._format_spectrum_identification_protocol(sip))
+            protocols.append(self.format_spectrum_identification_protocol(sip))
         for pdp in ensure_iterable(apc.get("ProteinDetectionProtocol", [])):
-            protocols.append(self._format_protein_detection_protocol(pdp))
+            protocols.append(self.format_protein_detection_protocol(pdp))
         with self.writer.analysis_protocol_collection():
             for protocol in protocols:
                 protocol.write(self.writer)
 
-    def _format_spectrum_identification(self, si):
+    def format_spectrum_identification(self, si):
         d = dict(si)
         self._translate_keys(d, ['activityDate'])
         d['spectrum_identification_list_id'] = d.pop("spectrumIdentificationList_ref")
@@ -387,7 +386,7 @@ class MzIdentMLTranslater(object):
         d['search_database_ids_used'] = [s['searchDatabase_ref'] for s in d.pop('SearchDatabaseRef', [])]
         return self.writer.SpectrumIdentification.ensure(d)
 
-    def _format_protein_detection(self, pi):
+    def format_protein_detection(self, pi):
         d = dict(pi)
         self._translate_keys(d, ['activityDate'])
         d['protein_detection_list_id'] = d.pop("proteinDetectionList_ref")
@@ -398,34 +397,34 @@ class MzIdentMLTranslater(object):
         return self.writer.ProteinDetection.ensure(d)
 
     def copy_inputs(self):
-        log("Copying Inputs")
+        self.log("Copying Inputs")
         self.reader.reset()
         inputs = next(self.reader.iterfind('Inputs'))
-        source_files = map(self._format_source_file, ensure_iterable(inputs.get("SourceFile")))
-        search_databases = map(self._format_search_database, ensure_iterable(inputs.get("SearchDatabase")))
-        spectra_data = map(self._format_spectra_data, ensure_iterable(inputs.get("SpectraData")))
+        source_files = map(self.format_source_file, ensure_iterable(inputs.get("SourceFile")))
+        search_databases = map(self.format_search_database, ensure_iterable(inputs.get("SearchDatabase")))
+        spectra_data = map(self.format_spectra_data, ensure_iterable(inputs.get("SpectraData")))
         self.writer.inputs(source_files, search_databases, spectra_data)
 
-    def _format_file_record(self, fr):
+    def format_file_record(self, fr):
         d = dict(fr)
-        file_format = d.pop("FileFormat", {})
-        format_type = self._extract_params(file_format)
+        fileformat = d.pop("FileFormat", {})
+        format_type = self._extract_params(fileformat)
         if format_type:
-            d['file_format'] = format_type[0]
-        d['external_format'] = d.pop("ExternalFormatDocumentation", None)
+            d['fileformat'] = format_type[0]
+        d['externalformat'] = d.pop("ExternalFormatDocumentation", None)
         return d
 
-    def _format_source_file(self, sf):
-        d = self._format_file_record(sf)
+    def format_source_file(self, sf):
+        d = self.format_file_record(sf)
         return self.writer.SourceFile.ensure(d)
 
-    def _format_spectra_data(self, sd):
-        d = self._format_file_record(sd)
+    def format_spectra_data(self, sd):
+        d = self.format_file_record(sd)
         self._translate_keys(d, ['SpectrumIDFormat'])
         return self.writer.SpectraData.ensure(d)
 
-    def _format_search_database(self, sd):
-        d = self._format_file_record(sd)
+    def format_search_database(self, sd):
+        d = self.format_file_record(sd)
         d['name'] = d.pop("DatabaseName", None)
         if isinstance(d['name'], dict):
             try:
@@ -436,7 +435,7 @@ class MzIdentMLTranslater(object):
         return self.writer.SearchDatabase.ensure(d)
 
     def copy_analysis_data(self):
-        log("Copying Analysis Data")
+        self.log("Copying Analysis Data")
         reader = self.reader
         writer = self.writer
         with writer.analysis_data():
@@ -447,14 +446,14 @@ class MzIdentMLTranslater(object):
                     i = 0
                     for spectrum_id_result in spectrum_identification_list.pop("SpectrumIdentificationResult", []):
                         i += 1
-                        result = self._format_spectrum_identification_result(spectrum_id_result)
+                        result = self.format_spectrum_identification_result(spectrum_id_result)
                         with result:
                             for item in map(
-                                    self._format_spectrum_identification_item,
+                                    self.format_spectrum_identification_item,
                                     spectrum_id_result['SpectrumIdentificationItem']):
                                 item.write(self.writer)
                         if i % K == 0:
-                            log("Copied %d SpectrumIdentificationResults" % i)
+                            self.log("Copied %d SpectrumIdentificationResults" % i)
                         if i > N:
                             break
 
@@ -466,15 +465,15 @@ class MzIdentMLTranslater(object):
                     i = 0
                     for pag in protein_detection_list.pop('ProteinAmbiguityGroup'):
                         i += 1
-                        result = self._format_protein_ambiguity_group(pag)
+                        result = self.format_protein_ambiguity_group(pag)
                         with result:
                             j = 0
                             for prot in pag['ProteinDetectionHypothesis']:
-                                result = self._format_protein_detection_hypothesis(prot)
+                                result = self.format_protein_detection_hypothesis(prot)
                                 with result:
                                     k = 0
                                     for pept in prot['PeptideHypothesis']:
-                                        result = self._format_peptide_detection_hypothesis(pept)
+                                        result = self.format_peptide_detection_hypothesis(pept)
                                         result.write(self.writer)
                                     k += 1
                                     if k > N:
@@ -483,11 +482,11 @@ class MzIdentMLTranslater(object):
                             if j > N:
                                 break
                         if i % K == 0:
-                            log("Copied %d ProteinAmbiguityGroups" % i)
+                            self.log("Copied %d ProteinAmbiguityGroups" % i)
                         if i > N:
                             break
 
-    def _format_spectrum_identification_result(self, sir):
+    def format_spectrum_identification_result(self, sir):
         d = dict(sir)
         self._translate_keys(d, ['spectrumID'])
         d['spectra_data_id'] = d.pop('spectraData_ref', None)
@@ -495,7 +494,7 @@ class MzIdentMLTranslater(object):
         d['params'] = self._extract_params(d)
         return self.writer.SpectrumIdentificationResult.ensure(d)
 
-    def _format_spectrum_identification_item(self, sii):
+    def format_spectrum_identification_item(self, sii):
         d = dict(sii)
         self._translate_keys(
             d, ('chargeState', 'passThreshold', 'experimentalMassToCharge', 'calculatedMassToCharge'))
@@ -504,14 +503,14 @@ class MzIdentMLTranslater(object):
         d['params'] = self._extract_params(d)
         return self.writer.SpectrumIdentificationItem.ensure(d)
 
-    def _format_protein_ambiguity_group(self, pag):
+    def format_protein_ambiguity_group(self, pag):
         d = dict(pag)
         d.pop("ProteinDetectionHypothesis", [])
         d['protein_detection_hypotheses'] = []
         d['params'] = self._extract_params(d)
         return self.writer.ProteinAmbiguityGroup.ensure(d)
 
-    def _format_protein_detection_hypothesis(self, prot):
+    def format_protein_detection_hypothesis(self, prot):
         d = dict(prot)
         d['db_sequence_id'] = d.pop("dBSequence_ref")
         d.pop("PeptideHypothesis", [])
@@ -520,7 +519,7 @@ class MzIdentMLTranslater(object):
         d['params'] = self._extract_params(d)
         return self.writer.ProteinDetectionHypothesis.ensure(d)
 
-    def _format_peptide_detection_hypothesis(self, pept):
+    def format_peptide_detection_hypothesis(self, pept):
         d = dict(pept)
         d['peptide_evidence_id'] = d.pop("peptideEvidence_ref")
         d['spectrum_identification_ids'] = [

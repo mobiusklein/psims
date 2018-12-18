@@ -34,6 +34,17 @@ log = LoggingProxy()
 log.enable()
 
 
+class TransformerBase(object):
+    def log(self, *message):
+        log(', '.join(map(str, message)))
+
+    def __enter__(self):
+        return self.writer.__enter__()
+
+    def __exit__(self, *args, **kwargs):
+        self.writer.__exit__(*args, **kwargs)
+
+
 def key_fn(x):
     return (getattr(x, 'accession', None), str(x))
 
