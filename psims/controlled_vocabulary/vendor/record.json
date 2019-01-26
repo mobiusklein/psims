@@ -8,8 +8,8 @@
     "version": "30:04:2018 17:00"
   }, 
   "go.obo": {
-    "checksum": "92b06271bfb047faec16f491dc517246", 
-    "version": "releases/2019-01-19"
+    "checksum": "5fb1e3eac510816e8fbcec2654619f12", 
+    "version": "releases/2019-01-24"
   }, 
   "pato.obo": {
     "checksum": "2c0227df2d26071d1067d3ec43fa5242", 
@@ -20,8 +20,8 @@
     "version": null
   }, 
   "psi-ms.obo": {
-    "checksum": "43c36717e3998a1029ac8da06f80a338", 
-    "version": "4.1.21"
+    "checksum": "753e4a501266bfab967b3c398571d595", 
+    "version": "4.1.22"
   }, 
   "unimod_tables.xml": {
     "checksum": "5a0af755e15add3ce35f8284f14618ec", 
