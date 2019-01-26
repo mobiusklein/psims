@@ -138,10 +138,6 @@ def test_write(output_path, compressor):
                         "scan_id": "scanId=1", "activation": ["collision-induced dissociation",
                                                               {"collision energy": 56.}]
                 }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
-    try:
-        f.format()
-    except OSError:
-        pass
 
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)

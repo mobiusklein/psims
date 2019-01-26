@@ -284,6 +284,3 @@ class MzMLTransformer(TransformerBase):
                         i += 1
                         if i % 1000 == 0:
                             self.log("Handled %d spectra" % (i, ))
-
-        self.output_stream.seek(0)
-        writer.format()

@@ -44,6 +44,11 @@ class MzIdentMLTranslater(TransformerBase):
 
     def _extract_params(self, d):
         params = []
+        if isinstance(d, str):
+            params.append({
+                "name": d, "accession": getattr(d, 'accession')
+            })
+            return params
         for key, value in list(d.items()):
             if hasattr(key, 'accession'):
                 accession = key.accession
@@ -538,8 +543,3 @@ class MzIdentMLTranslater(TransformerBase):
             with writer.data_collection():
                 self.copy_inputs()
                 self.copy_analysis_data()
-        try:
-            self.output_stream.seek(0)
-            self.writer.format()
-        except Exception:
-            pass

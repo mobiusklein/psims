@@ -1,4 +1,4 @@
 lxml
 sqlalchemy
-pyteomics
+pyteomics >= 4.0.1
 numpy

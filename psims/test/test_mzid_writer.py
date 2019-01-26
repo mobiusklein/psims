@@ -71,7 +71,6 @@ def test_write(output_path):
                             pass
 
     try:
-        f.format()
         f.close()
     except OSError:
         pass

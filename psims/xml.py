@@ -909,7 +909,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         import warnings
         warnings.warn(
             "This method is no longer necessary, XML is formatted automatically",
-            DeprecationWarning)
+            DeprecationWarning, level=2)
         pass
 
     def validate(self):
