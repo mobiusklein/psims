@@ -576,7 +576,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         else:
             precursor = None
 
-        default_array_length = len(time_array)
+        default_array_length = len(time_array) if time_array is not None else 0
         if time_array is not None:
             time_array_tag = self._prepare_array(
                 time_array, encoding=encoding[TIME_ARRAY], compression=compression,
