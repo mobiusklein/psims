@@ -479,7 +479,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         params.append(peak_mode)
 
         array_list = []
-        default_array_length = len(mz_array)
+        default_array_length = len(mz_array) if mz_array is not None else 0
         if mz_array is not None:
             mz_array_tag = self._prepare_array(
                 mz_array, encoding=encoding[MZ_ARRAY], compression=compression, array_type=MZ_ARRAY)
