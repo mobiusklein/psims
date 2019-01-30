@@ -16,7 +16,8 @@ with MzMLWriter(open("out.mzML", 'wb')) as out:
     out.controlled_vocabularies()
     # Open the run and spectrum list sections
     with out.run(id="my_analysis"):
-        with out.spectrum_list(count=len(scans)):
+        spectrum_count = len(scans) + sum([len(products) for _, products in scans])
+        with out.spectrum_list(count=spectrum_count):
             for scan, products in scans:
                 # Write Precursor scan
                 out.write_spectrum(
