@@ -14,6 +14,8 @@ Welcome to psims's documentation!
    mzIdentML <mzid/index>
    XML Utilities <xml>
    Examples <examples>
+   
+   Transforming mzML <transform/mzml>
 
 
 Indices and tables

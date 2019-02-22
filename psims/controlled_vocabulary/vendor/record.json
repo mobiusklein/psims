@@ -8,8 +8,8 @@
     "version": "30:04:2018 17:00"
   }, 
   "go.obo": {
-    "checksum": "5fb1e3eac510816e8fbcec2654619f12", 
-    "version": "releases/2019-01-24"
+    "checksum": "d4a508c677e0847d75cc7f4178ad25ee", 
+    "version": "releases/2019-02-21"
   }, 
   "pato.obo": {
     "checksum": "2c0227df2d26071d1067d3ec43fa5242", 
@@ -28,7 +28,7 @@
     "version": null
   }, 
   "unit.obo": {
-    "checksum": "65bcbce8a4308190f7f7add554626051", 
-    "version": "releases/2018-03-24"
+    "checksum": "ea16d96ad879eee89ab0a646dc01e075", 
+    "version": "releases/2018-05-20"
   }
 }

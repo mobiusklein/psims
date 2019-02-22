@@ -25,13 +25,38 @@ def identity(x):
 
 
 class MzMLTransformer(TransformerBase):
-    def __init__(self, input_stream, output_stream, transform=None, transform_description=None):
+    """Reads an mzML file stream from :attr:`input_stream`, copying its metadata
+    to :attr:`output_stream`, and then copies its spectra, applying :attr:`transform`
+    to each spectrum object as it goes.
+
+    If :attr:`sort_by_by_scan_time` is :const:`True`, then prior to writing spectra,
+    a first pass will be made over the mzML file and the spectra will be written out
+    ordered by ``MS:1000016:"scan start time"``.
+
+    Attributes
+    ----------
+    input_stream : file-like
+        A byte stream from an mzML format data buffer
+    output_stream : file-like
+        A writable binary stream to copy the contents of :attr:`input_stream` into
+    sort_by_scan_time : :class:`bool`
+        Whether or not to sort spectra by scan time prior to writing
+    transform : :class:`Callable`, optional
+        A function to call on each spectrum, passed as a :class:`dict` object as
+        read by :class:`pyteomics.mzml.MzML`.
+    transform_description : :class:`str`
+        A description of the transformation to include in the written metadata
+    """
+
+    def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
+                 sort_by_scan_time=False):
         if transform is None:
             transform = identity
         self.input_stream = input_stream
         self.output_stream = output_stream
         self.transform = transform
         self.transform_description = transform_description
+        self.sort_by_scan_time = sort_by_scan_time
         self.reader = MzMLParser(input_stream, iterative=True)
         self.writer = MzMLWriter(output_stream)
         self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary
@@ -269,7 +294,24 @@ class MzMLTransformer(TransformerBase):
             pass
         return spec_data
 
+    def iterspectrum(self):
+        self.reader.reset()
+        if self.sort_by_scan_time:
+            time_map = dict()
+            self.log("Building Scan Time Map")
+            for spectrum in self.reader.iterfind("spectrum"):
+                time = self.reader._get_time(spectrum)
+                time_map[spectrum['id']] = time
+            self.reader.reset()
+            by_time = sorted(time_map.items(), key=lambda x: x[1])
+            generate = (self.reader.get_by_id(spectrum_id) for spectrum_id, _ in by_time)
+            return generate
+        else:
+            return self.reader.iterfind("spectrum")
+
     def write(self):
+        '''Write out the the transformed mzML file
+        '''
         writer = self.writer
         with writer:
             writer.controlled_vocabularies()
@@ -277,10 +319,8 @@ class MzMLTransformer(TransformerBase):
             with writer.run(id="transformation_run"):
                 with writer.spectrum_list(len(self.reader._offset_index)):
                     self.reader.reset()
-                    i = 0
-                    for spectrum in self.reader.iterfind("spectrum"):
-                        spectrum = self.transform(spectrum)
+                    for i, spectrum in enumerate(self.iterspectrum()):
+                        spectrum = self.transform(spectrum, 1)
                         self.writer.write_spectrum(**self.format_spectrum(spectrum))
-                        i += 1
                         if i % 1000 == 0:
                             self.log("Handled %d spectra" % (i, ))
