@@ -320,7 +320,7 @@ class MzMLTransformer(TransformerBase):
                 with writer.spectrum_list(len(self.reader._offset_index)):
                     self.reader.reset()
                     for i, spectrum in enumerate(self.iterspectrum()):
-                        spectrum = self.transform(spectrum, 1)
+                        spectrum = self.transform(spectrum)
                         self.writer.write_spectrum(**self.format_spectrum(spectrum))
                         if i % 1000 == 0:
                             self.log("Handled %d spectra" % (i, ))
