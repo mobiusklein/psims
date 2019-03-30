@@ -7,3 +7,7 @@ build/
 *egg-info
 .coverage
 *sublime*
+.vscode
+.pytest_cache
+.ipynb_checkpoints
+*.ipynb

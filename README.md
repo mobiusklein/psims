@@ -34,8 +34,8 @@ with MzMLWriter(open("out.mzML", 'wb')) as out:
                         id=prod.id, params=[
                             "MSn Spectrum",
                             {"ms level": 2},
-                            {"total ion current": sum(prod.intensity_array)}   
-                         ], 
+                            {"total ion current": sum(prod.intensity_array)}
+                         ],
                          # Include precursor information
                          precursor_information={
                             "mz": prod.precursor_mz,
@@ -44,3 +44,9 @@ with MzMLWriter(open("out.mzML", 'wb')) as out:
                             "scan_id": prod.precursor_scan_id
                          })
 ```
+
+## Citing
+
+If you use `psims` in an academic project, please cite:
+
+    Klein, J. A., & Zaia, J. (2018). psims - A declarative writer for mzML and mzIdentML for Python. Molecular & Cellular Proteomics, mcp.RP118.001070. https://doi.org/10.1074/mcp.RP118.001070
