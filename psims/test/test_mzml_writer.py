@@ -138,7 +138,6 @@ def test_write(output_path, compressor):
                         "scan_id": "scanId=1", "activation": ["collision-induced dissociation",
                                                               {"collision energy": 56.}]
                 }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
-
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)
     assert opener == compressor
@@ -191,6 +190,8 @@ def test_write(output_path, compressor):
     assert index_list[0]['name'] == 'spectrum'
     reset()
     spectrum_offsets = list(reader.iterfind("offset"))
+    for i, off in enumerate(spectrum_offsets):
+        assert "scanId=%d" % (i + 1) == off['idRef']
     offset = int(spectrum_offsets[0]['offset'])
     reader.seek(offset)
     bytestring = reader.read(100)
@@ -204,4 +205,5 @@ def test_write(output_path, compressor):
     reset()
     line = reader.readline()
     assert line.startswith(b"""<?xml version='1.0' encoding='utf-8'?>""")
+    reader.close()
     return f

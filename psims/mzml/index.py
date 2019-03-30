@@ -85,6 +85,10 @@ class TagIndexerBase(object):
     def write_xml(self, writer):
         with writer.element("index", name=self.name):
             for ref_id, index_data in self.index.items():
+                try:
+                    ref_id = ref_id.decode("utf8")
+                except AttributeError:
+                    pass
                 with writer.element("offset", idRef=ref_id):
                     writer.write(str(int(index_data)))
 
