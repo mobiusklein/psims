@@ -1,6 +1,8 @@
 import os
 import shutil
 import re
+import warnings
+
 from contextlib import contextmanager
 from collections import deque
 
@@ -870,7 +872,16 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
-        self.xmlfile.__exit__(exc_type, exc_value, traceback)
+        try:
+            self.xmlfile.__exit__(exc_type, exc_value, traceback)
+        except etree.SerialisationError as err:
+            # There seems to be a bug when `__exit__`ing xmlfile objects, usually
+            # when they get large see here: https://bugs.launchpad.net/lxml/+bug/1570388
+            # https://github.com/mobiusklein/psims/issues/7
+            if str(err).startswith('unknown error'):
+                warnings.warn("Error closing file: {}".format(err))
+            else:
+                raise
         try:
             self.flush()
         except Exception:
