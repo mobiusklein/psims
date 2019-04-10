@@ -536,6 +536,18 @@ class CV(object):
         self._vocabulary = None
         self.resolver = None
 
+    def __hash__(self):
+        return hash(self.uri)
+
+    def match(self, other):
+        return self.uri == other.uri and self.id == other.id and self.full_name == other.full_name
+
+    def __eq__(self, other):
+        return self.match(other) and self.version == other.version
+
+    def __ne__(self, other):
+        return not self == other
+
     @property
     def version(self):
         if self._version is None:
