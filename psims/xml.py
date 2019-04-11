@@ -517,7 +517,7 @@ class CVCollection(object):
             The controlled vocabulary reference
         """
         if cv.id in self.storage:
-            old = self.storage
+            old = self.storage[cv.id]
             warnings.warn(
                 "Replacing {cv.id} {old.version}@{old.uri} with {cv.version}@{cv.uri}".format(
                     cv=cv, old=old))
@@ -688,6 +688,13 @@ class CV(object):
 
     def query(self, *args, **kwargs):
         return self.vocabulary.query(*args, **kwargs)
+
+    def __repr__(self):
+        template = "{self.__class__.__name__}({self.full_name!r}, {self.id!r}, {self.uri!r}, {version!r})"
+        version = self._version
+        if version is None:
+            version = "?"
+        return template.format(self=self, version=version)
 
 
 class ProvidedCV(CV):
