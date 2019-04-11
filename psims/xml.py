@@ -4,7 +4,7 @@ import re
 import warnings
 
 from contextlib import contextmanager
-from collections import deque
+from collections import deque, OrderedDict
 
 import tempfile
 import time
@@ -495,6 +495,85 @@ class ParamGroupReference(TagBase):
 
     def __call__(self, *args, **kwargs):
         self.write(*args, **kwargs)
+
+
+class CVCollection(object):
+    """A partially unique collection of :class:`CV` objects.
+    """
+    def __init__(self, cvs=None):
+        self.storage = OrderedDict()
+        if cvs:
+            self.update(cvs)
+
+    def add(self, cv):
+        """Add `cv` to the collection.
+
+        If the :attr:`CV.id` is aleady present in the collection, a warning
+        will be issued.
+
+        Parameters
+        ----------
+        cv : :class:`CV`
+            The controlled vocabulary reference
+        """
+        if cv.id in self.storage:
+            old = self.storage
+            warnings.warn(
+                "Replacing {cv.id} {old.version}@{old.uri} with {cv.version}@{cv.uri}".format(
+                    cv=cv, old=old))
+        self.storage[cv.id] = cv
+        return self
+
+    def update(self, collection):
+        """Add each element of `collection` to `self`, calling :meth:`add` on each
+        element.
+
+        Parameters
+        ----------
+        collection : :class:`~.Iterable`
+            Any iterable collection of :class:`CV`
+
+        See Also
+        --------
+        :meth:`add`
+        """
+        for cv in collection:
+            self.add(cv)
+
+    append = add
+    extend = update
+
+    def copy(self):
+        """Create a copy of `self`
+
+        Returns
+        -------
+        :class:`CVCollection`
+        """
+        return self.__class__(self)
+
+    def __add__(self, other):
+        copy = self.copy()
+        copy.update(other)
+        return copy
+
+    def __iadd__(self, other):
+        self.update(other)
+        return self
+
+    def __getitem__(self, key):
+        return self.storage[key]
+
+    def __iter__(self):
+        return iter(self.storage.values())
+
+    def __len__(self):
+        return len(self.storage)
+
+    def __repr__(self):
+        template = "{self.__class__.__name__}({members})"
+        members = list(self)
+        return template.format(self=self, members=members)
 
 
 class CV(object):

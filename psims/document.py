@@ -8,7 +8,7 @@ from .utils import add_metaclass, ensure_iterable, Mapping
 
 from .xml import (
     id_maker, CVParam, UserParam,
-    ParamGroupReference, _element,
+    ParamGroupReference, _element, CVCollection,
     XMLWriterMixin)
 
 
@@ -111,7 +111,8 @@ class VocabularyResolver(object):
         if vocabulary_resolver is None:
             vocabulary_resolver = obo_cache
         self.vocabulary_resolver = vocabulary_resolver
-        self.vocabularies = list(map(self._bind_vocabulary, vocabularies))
+        self.vocabularies = CVCollection(
+            map(self._bind_vocabulary, vocabularies))
 
     def _bind_vocabulary(self, cv):
         cv.resolver = self.vocabulary_resolver
@@ -420,7 +421,7 @@ class ComponentDispatcherBase(object):
                 missing_reference_is_error=missing_reference_is_error)
         else:
             if vocabularies is not None:
-                context.vocabularies.extend(vocabularies)
+                context.vocabularies.update(vocabularies)
         self.type_cache = dict()
         self.component_namespace = component_namespace
         self.context = context
