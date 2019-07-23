@@ -663,7 +663,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 for p in ensure_iterable(precursors)])
         return precursors
 
-    def _prepare_precursor_information(self, mz, intensity, charge, spectrum_reference=None, activation=None,
+    def _prepare_precursor_information(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
                                        isolation_window_args=None, params=None,
                                        intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None):
         if scan_id is not None:
@@ -672,8 +672,11 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             params = []
         if activation:
             activation = self.Activation(activation)
-        ion = self.SelectedIon(mz, intensity, charge, params=params)
-        ion_list = self.SelectedIonList([ion])
+        if any((mz, intensity, charge)):
+            ion = self.SelectedIon(mz, intensity, charge, params=params)
+            ion_list = self.SelectedIonList([ion])
+        else:
+            ion_list = None
         if isolation_window_args:
             isolation_window_tag = self.IsolationWindow(**isolation_window_args)
         else:

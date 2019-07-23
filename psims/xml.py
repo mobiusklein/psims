@@ -1,27 +1,16 @@
-import os
-import shutil
 import re
 import warnings
 
 from contextlib import contextmanager
 from collections import deque, OrderedDict
 
-import tempfile
-import time
 from lxml import etree
-
-from . import controlled_vocabulary
-from .utils import pretty_xml
-from .validation import validate
 
 from six import string_types as basestring, add_metaclass, text_type
 
-
-try:
-    WindowsError
-    on_windows = True
-except NameError:
-    on_windows = False
+from . import controlled_vocabulary
+from .controlled_vocabulary import obj_to_xsdtype
+from .validation import validate
 
 
 def make_counter(start=1):
@@ -43,6 +32,7 @@ def make_counter(start=1):
     start = [start]
 
     def count_up():
+        '''A closure returning incrementally larger integers'''
         ret_val = start[0]
         start[0] += 1
         return ret_val
@@ -71,6 +61,9 @@ def camelize(name):
 
 
 def id_maker(type_name, id_number):
+    '''Generate a consistent ID that is unique within a document,
+    assuming `id_number` is unique within the tag type.
+    '''
     return "%s_%s" % (type_name.upper(), str(id_number))
 
 
@@ -100,16 +93,16 @@ class ElementType(type):
     """
     _cache = {}
 
-    def __new__(cls, name, parents, attrs):
-        new_type = type.__new__(cls, name, parents, attrs)
+    def __new__(mcs, name, parents, attrs):
+        new_type = type.__new__(mcs, name, parents, attrs)
         tag_name = attrs.get("tag_name")
         if attrs.get("_track") is NO_TRACK:
             return new_type
-        if not hasattr(cls, "_cache"):
-            cls._cache = dict()
-        cls._cache[name] = new_type
+        if not hasattr(mcs, "_cache"):
+            mcs._cache = dict()
+        mcs._cache[name] = new_type
         if tag_name is not None:
-            cls._cache[tag_name] = new_type
+            mcs._cache[tag_name] = new_type
         return new_type
 
 
@@ -379,12 +372,63 @@ def element(xml_file, _tag_name, *args, **kwargs):
     return el.element(xml_file=xml_file, with_id=with_id)
 
 
+class AttrProperty(object):
+    def __init__(self, name, transform=None):
+        if transform is None:
+            transform = self._default_transform
+        self.name = name
+        self.transform = transform
+
+    def _default_transform(self, value):
+        return value
+
+    def __get__(self, inst, cls=None):
+        return inst.attrs.get(self.name)
+
+    def __set__(self, inst, value):
+        inst.attrs[self.name] = self.transform(value)
+
+    def __delete__(self, inst):
+        try:
+            inst.attrs.pop(self.name)
+        except KeyError:
+            pass
+
+
+class XSDTypingProperty(AttrProperty):
+
+    def __get__(self, inst, cls=None):
+        value = inst.attrs.get(self.name)
+        xsdtype = obj_to_xsdtype(value)
+        if xsdtype:
+            inst.attrs['type'] = xsdtype
+        return value
+
+    def __set__(self, inst, value):
+        inst.attrs[self.name] = self.transform(value)
+        value = inst.attrs[self.name]
+        xsdtype = obj_to_xsdtype(value)
+        if xsdtype:
+            inst.attrs['type'] = xsdtype
+
+
+
 class CVParam(TagBase):
     """Represents a ``<cvParam />``
 
     .. note::
         This element holds additional data or annotation. Only controlled values
         are allowed here
+
+    Attributes
+    ----------
+    name: str
+        The human-readable name of the parameter
+    accession: str
+        The within-vocabulary unique identifier of the parameter
+    value: object
+        The value of the parameter, to be converted to text
+
     """
 
     tag_name = "cvParam"
@@ -430,25 +474,15 @@ class CVParam(TagBase):
         super(CVParam, self).__init__(self.tag_name, **attrs)
         self.patch_accession(accession, ref)
 
-    @property
-    def value(self):
-        return self.attrs.get("value")
+    value = AttrProperty("value")
+    ref = AttrProperty("cvRef")
+    name = AttrProperty("name")
+    accession = AttrProperty("accession")
 
-    @value.setter
-    def value(self, value):
-        self.attrs['value'] = value
+    unit_name = AttrProperty("unitName")
+    unit_accession = AttrProperty("unitAccession")
+    unit_cv_ref = AttrProperty("unitCvRef")
 
-    @property
-    def ref(self):
-        return self.attrs['cvRef']
-
-    @property
-    def name(self):
-        return self.attrs['name']
-
-    @property
-    def accession(self):
-        return self.attrs['accession']
 
     def __call__(self, *args, **kwargs):
         self.write(*args, **kwargs)
@@ -473,17 +507,19 @@ class UserParam(CVParam):
         Uncontrolled user parameters (essentially allowing free text). Before
         using these, one should verify whether there is an appropriate CV term
         available, and if so, use the CV term instead
-
-    Attributes
-    ----------
-    accession : TYPE
-        Description
-    tag_name : str
-        Description
     """
 
     tag_name = "userParam"
     accession = None
+
+    value = XSDTypingProperty('value')
+    type = AttrProperty('type')
+
+    def __init__(self, accession=None, name=None, ref=None, value=None, **attrs):
+        super(UserParam, self).__init__(
+            accession=accession, name=name, ref=ref, value=value, **attrs)
+        # get XSDTypingProperty to force property __get__
+        self.value
 
 
 class ParamGroupReference(TagBase):
@@ -680,7 +716,6 @@ class CV(object):
         except Exception:
             import traceback
             traceback.print_exc()
-            pass
         return cv
 
     def __getitem__(self, key):
@@ -906,7 +941,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         -------
         TagBase
         """
-        raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
+        return _element("xmldocument")
 
     def __init__(self, outfile, close=False, encoding=None, **kwargs):
         if encoding is None:
@@ -1015,11 +1050,9 @@ class XMLDocumentWriter(XMLWriterMixin):
         had to be invoked separately. With the addition of :class:`XMLFormattingStreamWriter`,
         the XML stream is formatted in-place as it is being streamed to file.
         """
-        import warnings
         warnings.warn(
             "This method is no longer necessary, XML is formatted automatically",
             DeprecationWarning, level=2)
-        pass
 
     def validate(self):
         """Attempt to perform XSD validation on the XML document

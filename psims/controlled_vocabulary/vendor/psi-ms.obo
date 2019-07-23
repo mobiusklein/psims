@@ -1,6 +1,6 @@
 format-version: 1.2
-data-version: 4.1.22
-date: 25:01:2019 14:27
+data-version: 4.1.27
+date: 06:06:2019 16:13
 saved-by: Gerhard Mayer
 auto-generated-by: OBO-Edit 2.3.1
 import: http://ontologies.berkeleybop.org/pato.obo
@@ -1639,9 +1639,9 @@ is_obsolete: true
 [Term]
 id: MS:1000235
 name: total ion current chromatogram
-def: "Chromatogram obtained by plotting the total ion current detected in each of a series of mass spectra recorded as a function of retention time." [PSI:MS]
+def: "Representation of the total ion current detected in each of a series of mass spectra versus time." [PSI:MS]
 synonym: "TIC chromatogram" EXACT []
-is_a: MS:1000810 ! mass chromatogram
+is_a: MS:1000810 ! ion current chromatogram
 
 [Term]
 id: MS:1000236
@@ -4325,27 +4325,27 @@ is_a: MS:1000026 ! detector type
 [Term]
 id: MS:1000625
 name: chromatogram
-def: "The representation of detector response versus time." [PSI:MS]
+def: "Representation of a chromatographic separation attribute measurement versus time." [PSI:MS]
 relationship: part_of MS:1001458 ! spectrum generation information
 
 [Term]
 id: MS:1000626
 name: chromatogram type
-def: "Broad category or type of a chromatogram." [PSI:MS]
+def: "Type of chromatogram measurement being represented." [PSI:MS]
 relationship: part_of MS:1000625 ! chromatogram
 
 [Term]
 id: MS:1000627
 name: selected ion current chromatogram
-def: "Chromatogram created by creating an array of the measurements of a specific single ion current at each time point." [PSI:MS]
+def: "Representation of an array of the measurements of a specific single ion current versus time." [PSI:MS]
 synonym: "SIC chromatogram" EXACT []
-is_a: MS:1000810 ! mass chromatogram
+is_a: MS:1000810 ! ion current chromatogram
 
 [Term]
 id: MS:1000628
 name: basepeak chromatogram
-def: "Chromatogram created by creating an array of the most intense peaks at each time point." [PSI:MS]
-is_a: MS:1000810 ! mass chromatogram
+def: "Representation of an array of the most intense peaks versus time." [PSI:MS]
+is_a: MS:1000810 ! ion current chromatogram
 
 [Term]
 id: MS:1000629
@@ -5600,15 +5600,15 @@ is_a: MS:1000808 ! chromatogram attribute
 
 [Term]
 id: MS:1000810
-name: mass chromatogram
-def: "A plot of the relative abundance of a beam or other collection of ions as a function of the retention time." [PSI:MS]
+name: ion current chromatogram
+def: "Representation of the current of ions versus time." [PSI:MS]
 is_a: MS:1000524 ! data file content
 is_a: MS:1000626 ! chromatogram type
 
 [Term]
 id: MS:1000811
 name: electromagnetic radiation chromatogram
-def: "The measurement of electromagnetic properties as a function of the retention time." [PSI:MS]
+def: "Representation of electromagnetic properties versus time." [PSI:MS]
 synonym: "EMR radiation chromatogram" EXACT []
 is_a: MS:1000524 ! data file content
 is_a: MS:1000626 ! chromatogram type
@@ -5616,13 +5616,13 @@ is_a: MS:1000626 ! chromatogram type
 [Term]
 id: MS:1000812
 name: absorption chromatogram
-def: "The measurement of light absorbed by the sample as a function of the retention time." [PSI:MS]
+def: "Representation of light absorbed by the sample versus time." [PSI:MS]
 is_a: MS:1000811 ! electromagnetic radiation chromatogram
 
 [Term]
 id: MS:1000813
 name: emission chromatogram
-def: "The measurement of light emitted by the sample as a function of the retention time." [PSI:MS]
+def: "Representation of light emitted by the sample versus time." [PSI:MS]
 is_a: MS:1000811 ! electromagnetic radiation chromatogram
 
 [Term]
@@ -5670,6 +5670,7 @@ def: "A data array of flow rate measurements." [PSI:MS]
 xref: binary-data-type:MS\:1000521 "32-bit float"
 xref: binary-data-type:MS\:1000523 "64-bit float"
 is_a: MS:1000513 ! binary data array
+relationship: has_units UO:0000271 ! microliters per minute
 
 [Term]
 id: MS:1000821
@@ -6525,9 +6526,9 @@ is_a: MS:1001011 ! search database details
 [Term]
 id: MS:1001016
 name: database version
-def: "OBSOLETE: Use attribute in mzIdentML instead. Version of the search database." [PSI:PI]
+def: "Version of the search database. In mzIdentML use the attribute instead." [PSI:PI]
+xref: value-type:xsd\:string "The allowed value-type for this CV term."
 is_a: MS:1001011 ! search database details
-is_obsolete: true
 
 [Term]
 id: MS:1001017
@@ -9311,24 +9312,24 @@ relationship: part_of MS:1001000 ! spectrum interpretation
 [Term]
 id: MS:1001472
 name: selected ion monitoring chromatogram
-def: "Chromatogram created by creating an array of the measurements of a selectively monitored ion at each time point." [PSI:MS]
+def: "Representation of an array of the measurements of a selectively monitored ion versus time." [PSI:MS]
 synonym: "SIM chromatogram" EXACT []
-is_a: MS:1000810 ! mass chromatogram
+is_a: MS:1000810 ! ion current chromatogram
 
 [Term]
 id: MS:1001473
 name: selected reaction monitoring chromatogram
-def: "Chromatogram created by creating an array of the measurements of a selectively monitored reaction at each time point." [PSI:MS]
+def: "Representation of an array of the measurements of a selectively monitored reaction versus time." [PSI:MS]
 synonym: "SRM chromatogram" EXACT []
-is_a: MS:1000810 ! mass chromatogram
+is_a: MS:1000810 ! ion current chromatogram
 
 [Term]
 id: MS:1001474
 name: consecutive reaction monitoring chromatogram
-def: "OBSOLETE Chromatogram created by creating an array of the measurements of a series of monitored reactions at each time point." [PSI:MS]
+def: "OBSOLETE Representation of an array of the measurements of a series of monitored reactions versus time." [PSI:MS]
 comment: This term was made obsolete because, by design, it can't be properly represented in mzML 1.1. CRM experiments must be represented in a spectrum-centric way.
 synonym: "CRM chromatogram" EXACT []
-is_a: MS:1000810 ! mass chromatogram
+is_a: MS:1000810 ! ion current chromatogram
 is_obsolete: true
 
 [Term]
@@ -14806,6 +14807,7 @@ is_a: MS:1002286 ! Trans-Proteomic Pipeline software
 id: MS:1002288
 name: iProphet
 def: "A program in the TPP that calculates distinct peptide probabilities based on several lines of corroborating evidence including search results from multiple search engines via the pepXML format." [PMID:21876204]
+synonym: "InterProphet" EXACT []
 is_a: MS:1002286 ! Trans-Proteomic Pipeline software
 
 [Term]
@@ -19522,6 +19524,94 @@ id: MS:1003009
 name: Shimadzu Biotech LCD format
 def: "Shimadzu Biotech LCD file format." [PSI:PI]
 is_a: MS:1000560 ! mass spectrometer file format 
+
+[Term]
+id: MS:1003010
+name: LPPtiger
+def: "Software for lipidome-specific prediction and identification of oxidized phospholipids from LC-MS datasets." [PMID:29123162]
+is_a: MS:1002964 ! lipidomics analysis software
+is_a: MS:1001457 ! data processing software
+
+[Term]
+id: MS:1003011
+name: pFind
+def: "Sequence-tag-based search engine pFind." [PMID:30295672]
+is_a: MS:1001456 ! analysis software
+
+[Term]
+id: MS:1003012
+name: KSDP score
+def: "Kernel mass spectral dot product scoring function." [PMID:15044235]
+is_a: MS:1001143 ! PSM-level search engine specific statistic
+relationship: has_order MS:1002108 ! higher score better
+
+[Term]
+id: MS:1003013
+name: i3tms
+def: "i3-tms search engine and data-analysis software." [PSI:PI]
+is_a: MS:1001456 ! analysis software
+
+[Term]
+id: MS:1003014
+name: MSFragger
+def: "A database search-based peptide identification tool." [PMID:28394336]
+is_a: MS:1001456 ! analysis software
+
+[Term]
+id: MS:1003015
+name: razor peptide
+def: "A peptide which is shared between protein groups and assigned to the protein group with the largest number of identified peptides." [PSI:PI]
+is_a: MS:1000860 ! peptide
+
+[Term]
+id: MS:1003016
+name: ProteinProphet:peptide weight
+def: "Fraction of peptide evidence attributable to a protein or a set of indistinguishable proteins." [PSI:PI]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
+is_a: MS:1002490 ! peptide-level scoring
+is_a: MS:1001153 ! search engine specific score
+relationship: has_order MS:1002108 ! higher score better
+relationship: has_domain MS:1002305 ! value between 0 and 1 inclusive
+
+[Term]
+id: MS:1003017
+name: ProteinProphet:peptide group weight
+def: "Fraction of peptide evidence attributable to a group of proteins." [PSI:PI]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
+is_a: MS:1002490 ! peptide-level scoring
+is_a: MS:1001153 ! search engine specific score
+relationship: has_order MS:1002108 ! higher score better
+relationship: has_domain MS:1002305 ! value between 0 and 1 inclusive
+
+[Term]
+id: MS:1003018
+name: Philosopher
+def: "General proteomics processing toolkit for shotgun proteomics." [https://philosopher.nesvilab.org/]
+is_a: MS:1001456 ! analysis software
+
+[Term]
+id: MS:1003019
+name: pressure chromatogram
+def: "Representation of chromatographic pressure versus time." [PSI:MS]
+is_a: MS:1000626 ! chromatogram type
+
+[Term]
+id: MS:1003020
+name: flow rate chromatogram
+def: "Representation of the chromatographic flow rate versus time." [PSI:MS]
+is_a: MS:1000626 ! chromatogram type
+
+[Term]
+id: MS:1003021
+name: Fixed modification
+def: "Post-translational modification which is assumed to be present at each instance of a residue type." [PSI:PI]
+is_a: MS:1001055 ! modification parameters
+
+[Term]
+id: MS:1003022
+name: Variable modification
+def: "Post-translational modification which may or may not be present at a residue type." [PSI:PI]
+is_a: MS:1001055 ! modification parameters
 
 [Term]
 id: PEFF:0000001

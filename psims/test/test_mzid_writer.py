@@ -97,6 +97,9 @@ def test_write(output_path):
     assert not mods[1]['fixedMod']
     assert "unknown modification" in mods[1]
     reset()
+    search_database = next(reader.iterfind("SearchDatabase"))
+    print(search_database)
+    reset()
     is_valid, schema = f.validate()
     assert is_valid, schema.error_log
     reset()

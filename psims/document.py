@@ -187,7 +187,8 @@ class VocabularyResolver(object):
             self._validate_units(term, kwargs, name)
 
         if cv_ref is None:
-            return UserParam(name=name, value=value, **kwargs)
+            user_param = UserParam(name=name, value=value, **kwargs)
+            return user_param
         else:
             kwargs.setdefault("ref", cv_ref)
             kwargs.setdefault("accession", accession)

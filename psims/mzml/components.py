@@ -937,10 +937,11 @@ class Precursor(ComponentBase):
         self.context = context
 
     def write_content(self, xml_file):
-        if (self.isolation_window is not None):
+        if self.isolation_window is not None:
             self.isolation_window.write(xml_file)
-        self.selected_ion_list.write(xml_file)
-        if (self.activation is not None):
+        if self.selected_ion_list is not None and self.selected_ion_list:
+            self.selected_ion_list.write(xml_file)
+        if self.activation is not None:
             self.activation.write(xml_file)
 
 
