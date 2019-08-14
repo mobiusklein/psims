@@ -1,9 +1,9 @@
 import os
 import warnings
 try:
-    from collections import Mapping, Iterable
-except ImportError:
     from collections.abc import Mapping, Iterable
+except ImportError:
+    from collections import Mapping, Iterable
 from numbers import Number
 from ..utils import checksum_file
 from ..xml import _element, element, TagBase, CV

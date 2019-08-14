@@ -2,9 +2,9 @@ import warnings
 from numbers import Number
 
 try:
-    from collections import Mapping
-except ImportError:
     from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter

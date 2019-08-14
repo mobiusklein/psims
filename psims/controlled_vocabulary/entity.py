@@ -1,8 +1,8 @@
 from collections import deque
 try:
-    from collections import Mapping
-except ImportError:
     from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 
 from psims.utils import ensure_iterable
 

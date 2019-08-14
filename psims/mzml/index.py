@@ -7,9 +7,9 @@ from collections import defaultdict, OrderedDict
 from six import string_types as basestring
 
 try:
-    from collections import Sequence, Mapping
-except ImportError:
     from collections.abc import Sequence, Mapping
+except ImportError:
+    from collections import Sequence, Mapping
 
 from hashlib import sha1
 
