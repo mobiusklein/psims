@@ -18,7 +18,7 @@ from .utils import ensure_iterable, basestring
 
 
 try:
-    FileNotFoundError
+    FileNotFoundError  # pylint: disable=used-before-assignment
 except Exception as e:
     FileNotFoundError = OSError
 
@@ -914,6 +914,10 @@ class Precursor(ComponentBase):
             elif isinstance(isolation_window, Mapping):
                 isolation_window = IsolationWindow(
                     context=context, **isolation_window)
+        if selected_ion_list is not None:
+            selected_ion_list = SelectedIonList(
+                [SelectedIon.ensure(si, context=context) for si in list(selected_ion_list)],
+                context=context)
         self.selected_ion_list = selected_ion_list
         self.activation = activation
         self.isolation_window = isolation_window

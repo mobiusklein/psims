@@ -22,8 +22,9 @@ from .binary_encoding import (
     encoding_map, compression_map, dtype_to_encoding)
 
 from .utils import ensure_iterable
-
 from .index import IndexingStream
+
+from .element_builder import ElementBuilder, ParamManagingProperty
 
 
 MZ_ARRAY = 'm/z array'
@@ -652,20 +653,35 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def _prepare_precursor_list(self, precursors, intensity_unit=DEFAULT_INTENSITY_UNIT):
         if isinstance(precursors, self.PrecursorList.type):
             return precursors
-        elif isinstance(precursors, dict):
+        elif isinstance(precursors, (dict)):
             precursors = self.PrecursorList([self._prepare_precursor_information(
                 intensity_unit=intensity_unit, **precursors)])
+        elif isinstance(precursors, PrecursorBuilder):
+            precursors = self.PrecursorList([self._prepare_precursor_information(
+                precursors,
+                intensity_unit=intensity_unit)])
         else:
-            precursors = self.PrecursorList([
-                p if isinstance(p, self.Precursor.type)
-                else self._prepare_precursor_information(
-                    intensity_unit=intensity_unit, **p)
-                for p in ensure_iterable(precursors)])
+            packaged = []
+            for p in ensure_iterable(precursors):
+                if isinstance(p, self.Precursor.type):
+                    packaged.append(p)
+                elif isinstance(p, dict):
+                    packaged.append(
+                        self._prepare_precursor_information(
+                            intensity_unit=intensity_unit, **p))
+                elif isinstance(p, PrecursorBuilder):
+                    packaged.append(
+                        self._prepare_precursor_information(
+                            p, intensity_unit=intensity_unit))
+            precursors = self.PrecursorList(packaged)
         return precursors
 
     def _prepare_precursor_information(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
                                        isolation_window_args=None, params=None,
-                                       intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None):
+                                       intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None, external_spectrum_id=None,
+                                       source_file_reference=None):
+        if isinstance(mz, PrecursorBuilder):
+            return self.Precursor(**mz.pack())
         if scan_id is not None:
             spectrum_reference = scan_id
         if params is None:
@@ -687,6 +703,78 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             isolation_window=isolation_window_tag,
             spectrum_reference=spectrum_reference)
         return precursor
+
+    def precursor_builder(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
+                          isolation_window_args=None, params=None,
+                          intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None,
+                          external_spectrum_id=None,
+                          source_file_reference=None):
+        if scan_id is None:
+            spectrum_reference = scan_id
+        inst = PrecursorBuilder(
+            self, spectrum_reference=spectrum_reference,
+            external_spectrum_id=external_spectrum_id)
+        if mz is not None or intensity is not None or charge is not None:
+            inst.selected_ion(
+                mz=mz, intensity=intensity, charge=charge,
+                intensity_unit=intensity_unit)
+        if isolation_window_args is None:
+            if isinstance(isolation_window_args, (tuple, list)):
+                isolation_window_args = {
+                    "lower": isolation_window_args[0],
+                    "target": isolation_window_args[1],
+                    "upper": isolation_window_args[2]}
+            inst.isolation_window(isolation_window_args)
+        if activation is not None:
+            inst.activation(activation)
+        return  inst
+
+
+class SelectedIonBuilder(ElementBuilder):
+    mz = ParamManagingProperty('selected_ion_mz', 0.0, aliases=['mz'])
+    charge = ParamManagingProperty('charge')
+    intensity = ParamManagingProperty('intensity', 0.0)
+    intensity_unit = ParamManagingProperty(
+        'intensity_unit', DEFAULT_INTENSITY_UNIT)
+
+
+class IsolationWindowBuilder(ElementBuilder):
+    lower = ParamManagingProperty('lower')
+    target = ParamManagingProperty('target')
+    upper = ParamManagingProperty('upper')
+
+
+class ActivationBuilder(ElementBuilder):
+    pass
+
+
+class PrecursorBuilder(ElementBuilder):
+    def __init__(self, source, binding=None, params=None, **kwargs):
+        super(PrecursorBuilder, self).__init__(
+            source, binding, params, **kwargs)
+
+    selected_ion_list = ParamManagingProperty("selected_ion_list", list)
+    _isolation_window = ParamManagingProperty("isolation_window")
+    _activation = ParamManagingProperty('activation')
+
+    spectrum_reference = ParamManagingProperty('spectrum_reference')
+    source_file_reference = ParamManagingProperty('source_file_reference')
+    external_spectrum_id = ParamManagingProperty('external_spectrum_id', aliases=['scan_id'])
+
+    def selected_ion(self, binding=None, **kwargs):
+        sib = SelectedIonBuilder(self.source, binding=binding, **kwargs)
+        self.selected_ion_list.append(sib)
+        return sib
+
+    def isolation_window(self, binding=None, **kwargs):
+        self._isolation_window = IsolationWindowBuilder(
+            self.source, binding=binding, **kwargs)
+        return self._isolation_window
+
+    def activation(self, binding=None, **kwargs):
+        self._activation = ActivationBuilder(
+            self.source, binding=binding, **kwargs)
+        return self._activation
 
 
 class IndexedMzMLWriter(PlainMzMLWriter):
