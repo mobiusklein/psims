@@ -138,6 +138,13 @@ def test_write(output_path, compressor):
                         "scan_id": "scanId=1", "activation": ["collision-induced dissociation",
                                                               {"collision energy": 56.}]
                 }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
+                pb = f.precursor_builder(mz=12030, scan_id='scanId=2')
+                pb.selected_ion_list[0].set(charge=-2)
+                pb.activation({"collision-induced dissociation": None})
+
+                f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=3', params=[
+                    {"name": "ms level", "value": 2}, {"ref": 'common_params'}],
+                    polarity='negative scan', precursor_information=pb)
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)
     assert opener == compressor

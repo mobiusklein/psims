@@ -919,7 +919,7 @@ class Precursor(ComponentBase):
                 [SelectedIon.ensure(si, context=context) for si in list(selected_ion_list)],
                 context=context)
         self.selected_ion_list = selected_ion_list
-        self.activation = activation
+        self.activation = Activation.ensure(activation, context=context)
         self.isolation_window = isolation_window
 
         self.spectrum_reference = spectrum_reference
@@ -983,8 +983,8 @@ class Product(ComponentBase):
 
 class Activation(ParameterContainer):
 
-    def __init__(self, params, context=NullMap):
-        super(Activation, self).__init__('activation', params, context=context)
+    def __init__(self, params=None, context=NullMap, **kwargs):
+        super(Activation, self).__init__('activation', params, context=context, **kwargs)
 
 
 class SelectedIonList(GenericCollection):

@@ -431,6 +431,48 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                  scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                  encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                  instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+        '''Create a new :class:`~.Spectrum` instance to be written.
+
+        Parameters
+        ----------
+        mz_array: :class:`np.ndarray` of floats
+            The m/z array of the spectrum
+        intensity_array: :class:`np.ndarray` of floats
+            The intensity array of the spectrum
+        charge_array: :class:`np.ndarray`, optional
+            The charge state array of the spectrum, optional.
+        id: str
+            The native ID of the spectrum.
+        polarity: str or int, optional
+            The polarity of the spectrum. If an integer, the sign of
+            the integer is used, otherwise it is interpreted as a cvParam
+        centroided: bool, optional
+            Whether the spectrum is continuous or discretized by peak picking.
+            Defaults to :const:`True`.
+        precursor_information: dict or :class:`PrecursorBuilder`, optional
+            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`
+        scan_start_time: float, optional
+            The scan start time, in minutes
+        params: list, optional
+            The parameters of the `spectrum`
+        compression: str, optional
+            The compression type name to use. Defaults to `COMPRESSION_ZLIB`.
+        encoding: dict, optional
+            A mapping from array name to NumPy data types.
+        other_arrays: dict, optional
+            A mapping of array names to additional data arrays
+        scan_params: list, optional
+            A list of cvParams for the `scan` of this `spectrum`
+        scan_window_list: list, optional
+            A list of scan windows specified as pairs of m/z intervals
+        instrument_configuration_id: str, optional
+            The `id` of the `instrumentConfiguration` to associate with this spectrum
+            if not the default one.
+
+        Returns
+        -------
+        :class:`~.Spectrum`
+        '''
         self.state_machine.expects_state("spectrum_list")
         if encoding is None:
             {MZ_ARRAY: np.float64}
@@ -539,6 +581,48 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                        scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                        encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                        instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+        '''Write a :class:`~.Spectrum` with the provided data.
+
+        Parameters
+        ----------
+        mz_array: :class:`np.ndarray` of floats
+            The m/z array of the spectrum
+        intensity_array: :class:`np.ndarray` of floats
+            The intensity array of the spectrum
+        charge_array: :class:`np.ndarray`, optional
+            The charge state array of the spectrum, optional.
+        id: str
+            The native ID of the spectrum.
+        polarity: str or int, optional
+            The polarity of the spectrum. If an integer, the sign of
+            the integer is used, otherwise it is interpreted as a cvParam
+        centroided: bool, optional
+            Whether the spectrum is continuous or discretized by peak picking.
+            Defaults to :const:`True`.
+        precursor_information: dict or :class:`PrecursorBuilder`, optional
+            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`
+        scan_start_time: float, optional
+            The scan start time, in minutes
+        params: list, optional
+            The parameters of the `spectrum`
+        compression: str, optional
+            The compression type name to use. Defaults to `COMPRESSION_ZLIB`.
+        encoding: dict, optional
+            A mapping from array name to NumPy data types.
+        other_arrays: dict, optional
+            A mapping of array names to additional data arrays
+        scan_params: list, optional
+            A list of cvParams for the `scan` of this `spectrum`
+        scan_window_list: list, optional
+            A list of scan windows specified as pairs of m/z intervals
+        instrument_configuration_id: str, optional
+            The `id` of the `instrumentConfiguration` to associate with this spectrum
+            if not the default one.
+
+        See Also
+        --------
+        :meth:`spectrum`
+        '''
         spectrum = self.spectrum(
             mz_array=mz_array, intensity_array=intensity_array, charge_array=charge_array,
             id=id, polarity=polarity, centroided=centroided, precursor_information=precursor_information,
@@ -680,6 +764,39 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                                        isolation_window_args=None, params=None,
                                        intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None, external_spectrum_id=None,
                                        source_file_reference=None):
+        '''Prepare a :class:`Precursor` element from disparate data structures.
+
+        Parameters
+        ----------
+        mz: float, optional
+            The m/z of the first selected ion
+        intensity: float, optional
+            The intensity of the first selected ion
+        charge: int, optional
+            The charge state of the first seelcted ion
+        spectrum_reference: str, optional
+            The `id` of the prescursor `<spectrum>` for this precursor
+        activation: dict, optional
+            Parameters forwarded to :meth:`PrecursorBuilder.activation`
+        isolation_window_args: tuple, list, or dict, optional
+            Parameters forwarded to :meth:PrecursorBuilder.isolation_window`,
+            tuple or list values are converted into :class:`dict` of the correct
+            structure.
+        params: list, optional
+            The cv-params of the first selected ion
+        intensity_unit: str
+            The intensity unit of the first selected ion
+        scan_id: str, optional
+            An alias for `spectrum_reference`
+        external_spectrum_id: str, optional
+            The `externalSpectrumID` attribute of the precursor
+        source_file_reference: str, optional
+            The `sourceFileRef` attribute of the precursor
+
+        Returns
+        -------
+        :class:`~.Precursor`
+        '''
         if isinstance(mz, PrecursorBuilder):
             return self.Precursor(**mz.pack())
         if scan_id is not None:
@@ -709,15 +826,49 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                           intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None,
                           external_spectrum_id=None,
                           source_file_reference=None):
+        '''Create a :class:`PrecursorBuilder`, an object to help populate the precursor information
+        data structure.
+
+        Parameters
+        ----------
+        mz: float, optional
+            The m/z of the first selected ion
+        intensity: float, optional
+            The intensity of the first selected ion
+        charge: int, optional
+            The charge state of the first seelcted ion
+        spectrum_reference: str, optional
+            The `id` of the prescursor `<spectrum>` for this precursor
+        activation: dict, optional
+            Parameters forwarded to :meth:`PrecursorBuilder.activation`
+        isolation_window_args: tuple, list, or dict, optional
+            Parameters forwarded to :meth:PrecursorBuilder.isolation_window`,
+            tuple or list values are converted into :class:`dict` of the correct
+            structure.
+        params: list, optional
+            The cv-params of the first selected ion
+        intensity_unit: str
+            The intensity unit of the first selected ion
+        scan_id: str, optional
+            An alias for `spectrum_reference`
+        external_spectrum_id: str, optional
+            The `externalSpectrumID` attribute of the precursor
+        source_file_reference: str, optional
+            The `sourceFileRef` attribute of the precursor
+
+        Returns
+        -------
+        :class:`PrecursorBuilder`
+        '''
         if scan_id is None:
             spectrum_reference = scan_id
         inst = PrecursorBuilder(
             self, spectrum_reference=spectrum_reference,
             external_spectrum_id=external_spectrum_id)
-        if mz is not None or intensity is not None or charge is not None:
+        if mz is not None or intensity is not None or charge is not None or params is not None:
             inst.selected_ion(
                 mz=mz, intensity=intensity, charge=charge,
-                intensity_unit=intensity_unit)
+                intensity_unit=intensity_unit, params=params)
         if isolation_window_args is None:
             if isinstance(isolation_window_args, (tuple, list)):
                 isolation_window_args = {
