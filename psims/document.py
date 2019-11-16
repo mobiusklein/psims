@@ -477,6 +477,8 @@ class ComponentDispatcherBase(object):
             A partially parameterized instance constructor for
             the :class:`ComponentBase` type requested.
         """
+        if name.startswith("_"):
+            raise AttributeError(name)
         tp = self._dispatch_component(name)
         return tp
 
