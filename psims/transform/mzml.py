@@ -247,7 +247,7 @@ class MzMLTransformer(TransformerBase):
             if term.is_of_type("spectrum representation"):
                 spec_data["centroided"] = term.id == "MS:1000127"
                 temp.pop(key)
-            elif term.is_of_type("spectrum attribute"):
+            elif term.is_of_type("spectrum property") or term.is_of_type("spectrum attribute"):
                 params.append({"name": term.id, "value": value})
                 if hasattr(value, 'unit_info'):
                     params[-1]['unit_name'] = value.unit_info

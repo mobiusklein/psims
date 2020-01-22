@@ -450,7 +450,10 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             Whether the spectrum is continuous or discretized by peak picking.
             Defaults to :const:`True`.
         precursor_information: dict or :class:`PrecursorBuilder`, optional
-            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`
+            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`.
+            The structure of this object should either be formatted as arguments to
+            :meth:`precursor_builder`, or a :class:`PrecursorBuilder` instance populated
+            with information.
         scan_start_time: float, optional
             The scan start time, in minutes
         params: list, optional
@@ -475,7 +478,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         '''
         self.state_machine.expects_state("spectrum_list")
         if encoding is None:
-            {MZ_ARRAY: np.float64}
+            encoding = {MZ_ARRAY: np.float64}
         if params is None:
             params = []
         else:
@@ -600,7 +603,10 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             Whether the spectrum is continuous or discretized by peak picking.
             Defaults to :const:`True`.
         precursor_information: dict or :class:`PrecursorBuilder`, optional
-            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`
+            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`.
+            The structure of this object should either be formatted as arguments to
+            :meth:`precursor_builder`, or a :class:`PrecursorBuilder` instance populated
+            with information.
         scan_start_time: float, optional
             The scan start time, in minutes
         params: list, optional
@@ -829,6 +835,9 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         '''Create a :class:`PrecursorBuilder`, an object to help populate the precursor information
         data structure.
 
+        The helper object should be used to incrementally populate the precursor information passed
+        to :meth:`spectrum` or :meth:`write_spectrum`'s `precursor_information` argument.
+
         Parameters
         ----------
         mz: float, optional
@@ -836,19 +845,24 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         intensity: float, optional
             The intensity of the first selected ion
         charge: int, optional
-            The charge state of the first seelcted ion
+            The charge state of the first selected ion
         spectrum_reference: str, optional
-            The `id` of the prescursor `<spectrum>` for this precursor
-        activation: dict, optional
-            Parameters forwarded to :meth:`PrecursorBuilder.activation`
+            The `id` of the prescursor `<spectrum>` for this precursor, mapped through the
+            document context.
+        activation: dict or list, optional
+            Parameters forwarded to :meth:`PrecursorBuilder.activation`. This should be a dictionary
+            with a key "params" and a list of :class:`~.CVParam` coerce-able values, with additional
+            optional keys naming other :class:`~.CVParam` coerce-able values.
         isolation_window_args: tuple, list, or dict, optional
             Parameters forwarded to :meth:PrecursorBuilder.isolation_window`,
-            tuple or list values are converted into :class:`dict` of the correct
-            structure.
+            tuple or list of three values are converted into :class:`dict` of the correct
+            structure. The expected keys are "lower", the lower m/z offset, "target", the center m/z,
+            and "upper", the upper m/z offset.
         params: list, optional
-            The cv-params of the first selected ion
+            The cv- and user-params of the first selected ion, in addition to `mz`, `intensity`,
+            `charge`.
         intensity_unit: str
-            The intensity unit of the first selected ion
+            The intensity unit of the first selected ion, to be specified with `intensity`
         scan_id: str, optional
             An alias for `spectrum_reference`
         external_spectrum_id: str, optional

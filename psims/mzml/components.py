@@ -1,3 +1,4 @@
+# pylint: disable=super-init-not-called
 import os
 import warnings
 try:
