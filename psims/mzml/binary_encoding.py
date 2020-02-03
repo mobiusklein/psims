@@ -83,5 +83,5 @@ def decode_array(bytestring, compression=COMPRESSION_NONE, dtype=np.float32):
         decoded_string = zlib.decompress(decoded_string)
     else:
         raise ValueError("Unknown compression: %s" % compression)
-    array = np.fromstring(decoded_string, dtype=dtype)
+    array = np.frombuffer(decoded_string, dtype=dtype)
     return array
