@@ -6,7 +6,7 @@ from collections import deque, OrderedDict
 
 from lxml import etree
 
-from six import string_types as basestring, add_metaclass, text_type
+from six import string_types as basestring, add_metaclass, text_type, PY3
 
 from . import controlled_vocabulary
 from .controlled_vocabulary import obj_to_xsdtype
@@ -900,7 +900,7 @@ class XMLFormattingStreamWriter(object):
         self.wrote_text_stack.pop()
 
     def write(self, *args, **kwargs):
-        if isinstance(args[0], basestring):
+        if isinstance(args[0], basestring if not PY3 else (str, bytes)):
             self.wrote_text_stack[-1] = True
         if not self.wrote_text_stack[-1]:
             if self.indent_level > 0:
