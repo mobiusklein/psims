@@ -95,29 +95,23 @@ class ControlledVocabulary(object):
         return self.query(key)
 
     def query(self, key):
-        try:
+        if key in self.terms:
             return self.terms[key]
-        except KeyError as e:
-            try:
-                return self._names[key]
-            except KeyError:
-                try:
-                    return self._names[self.normalize_name(key)]
-                except KeyError as e2:
-                    lower_key = key.lower()
-                    try:
-                        return self._synonyms[lower_key]
-                    except KeyError:
-                        try:
-                            return self.terms[lower_key]
-                        except KeyError:
-                            try:
-                                return self._obsolete_names[lower_key]
-                            except KeyError:
-                                err = KeyError("%s and %s were not found." % (e, e2))
-                                # suppress intense Py3 exception chain without using raise-from syntax
-                                err.__cause__ = None
-                                raise err
+        elif key in self._names:
+            return self._names[key]
+        else:
+            normalized_key = self.normalize_name(key)
+            if normalized_key in self._names:
+                return self._names[normalized_key]
+            lower_key = key.lower()
+            if lower_key in self._synonyms:
+                return self._synonyms[lower_key]
+            elif lower_key in self.terms:
+                return self.terms[lower_key]
+            elif lower_key in self._obsolete_names:
+                return self._obsolete_names[lower_key]
+            else:
+                raise KeyError("%s and %s were not found." % (key, normalized_key))
 
     def __repr__(self):
         template = ("{self.__class__.__name__}(terms={size}, id={self.id}, "
