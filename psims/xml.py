@@ -1052,7 +1052,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         warnings.warn(
             "This method is no longer necessary, XML is formatted automatically",
-            DeprecationWarning, level=2)
+            DeprecationWarning, 2)
 
     def validate(self):
         """Attempt to perform XSD validation on the XML document
