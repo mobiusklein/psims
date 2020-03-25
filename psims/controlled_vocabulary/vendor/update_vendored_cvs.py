@@ -19,6 +19,7 @@ registry = {
     # "bto.obo": "http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO",
     "go.obo": "http://purl.obolibrary.org/obo/go.obo",
     'psi-mod.obo': 'https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo',
+    'gno.obo': "http://purl.obolibrary.org/obo/gno.obo",
 }
 
 

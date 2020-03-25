@@ -1,34 +1,38 @@
 {
   "XLMOD.obo": {
-    "checksum": "04af265ae46251125148089afc95c732", 
-    "version": "release/2019-03-15"
+    "checksum": "9e37cba8387cf6755ec9875a749ef6f3", 
+    "version": "release/2019-10-28"
   }, 
   "bto.obo": {
     "checksum": "2de2552d9a693603576eb6c214ada517", 
     "version": "30:04:2018 17:00"
   }, 
+  "gno.obo": {
+    "checksum": "6142a41d81c5e424aef02960a215aeb8", 
+    "version": "2020-03-23"
+  }, 
   "go.obo": {
-    "checksum": "27a6a2d4a1036df99c81a1245cb16279", 
-    "version": "releases/2019-07-01"
+    "checksum": "ec55af8e60b8ac206e1de325ee3dedf3", 
+    "version": "releases/2020-02-21"
   }, 
   "pato.obo": {
-    "checksum": "2c0227df2d26071d1067d3ec43fa5242", 
-    "version": "releases/2018-11-12"
+    "checksum": "443de10a418cba2b0a6f4a9c3b73c60c", 
+    "version": "releases/2019-09-05"
   }, 
   "psi-mod.obo": {
-    "checksum": "d349b0edae7542429fa3938a7182329b", 
+    "checksum": "83e05a63aa4978050750317a0dbb4c64", 
     "version": null
   }, 
   "psi-ms.obo": {
-    "checksum": "89fa3cf7f07ab25f7dcdc32dbd958286", 
-    "version": "4.1.28"
+    "checksum": "4b1456b323809f7723747ec67dba1ce4", 
+    "version": "4.1.35"
   }, 
   "unimod_tables.xml": {
-    "checksum": "5a0af755e15add3ce35f8284f14618ec", 
+    "checksum": "26f048d17ca899d81185a1ad5f6df28c", 
     "version": null
   }, 
   "unit.obo": {
-    "checksum": "bfb18023e4521a7800191ad6b6add98b", 
-    "version": "releases/2019-03-29"
+    "checksum": "4e45267605698d1fcda533c27853a8fc", 
+    "version": "releases/2020-03-10"
   }
 }

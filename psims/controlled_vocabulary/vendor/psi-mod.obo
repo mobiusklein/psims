@@ -879,7 +879,7 @@ xref: MassMono: "112.039853"
 xref: Origin: "Q"
 xref: Source: "natural"
 xref: TermSpec: "N-term"
-xref: UnimMod: "UniMod:28"
+xref: UniMod: "UniMod:28"
 is_a: MOD:00907 ! modified L-glutamine residue
 is_a: MOD:01048 ! 2-pyrrolidone-5-carboxylic acid
 is_a: MOD:01160 ! deaminated residue
@@ -1683,6 +1683,7 @@ synonym: "LIPID N-palmitoyl cysteine" EXACT UniProt-feature []
 synonym: "N-(1-oxahexadecyl)-L-cysteine" EXACT RESID-alternate []
 synonym: "N-palmitoyl-L-cysteine" EXACT RESID-name []
 synonym: "N-palmitoylated L-cysteine" EXACT PSI-MOD-alternate []
+synonym: "N-hexadecanoylated L-cysteine" EXACT PSI-MOD-alternate []
 synonym: "NPamCys" EXACT PSI-MOD-label []
 synonym: "Palmitoyl" RELATED PSI-MS-label []
 synonym: "Palmitoylation" RELATED UniMod-description []
@@ -2181,6 +2182,7 @@ synonym: "N(zeta)-palmitoyllysine" EXACT RESID-alternate []
 synonym: "N6-(1-oxohexadecyl)-L-lysine" EXACT RESID-alternate []
 synonym: "N6-palmitoyl-L-lysine" EXACT RESID-name []
 synonym: "N6-palmitoylated L-lysine" EXACT PSI-MOD-alternate []
+synonym: "N6-hexadecanoylated L-lysine" EXACT PSI-MOD-alternate []
 synonym: "N6PamLys" EXACT PSI-MOD-label []
 synonym: "Palmitoyl" RELATED PSI-MS-label []
 synonym: "Palmitoylation" RELATED UniMod-description []
@@ -2239,6 +2241,7 @@ synonym: "L-threonine hexadecanoate ester" EXACT RESID-alternate []
 synonym: "LIPID O-palmitoyl threonine" EXACT UniProt-feature []
 synonym: "O-palmitoyl-L-threonine" EXACT RESID-name []
 synonym: "O-palmitoylated L-threonine" EXACT PSI-MOD-alternate []
+synonym: "O-hexadecanoylated L-threonine" EXACT PSI-MOD-alternate []
 synonym: "O3-palmitoyl-threonine" EXACT RESID-alternate []
 synonym: "OPamThr" EXACT PSI-MOD-label []
 synonym: "Palmitoyl" RELATED PSI-MS-label []
@@ -2256,7 +2259,7 @@ xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:47"
 is_a: MOD:00652 ! O-palmitoylated residue
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 
 [Term]
 id: MOD:00089
@@ -2269,6 +2272,7 @@ synonym: "L-serine hexadecanoate ester" EXACT RESID-alternate []
 synonym: "LIPID O-palmitoyl serine" EXACT UniProt-feature []
 synonym: "O-palmitoyl-L-serine" EXACT RESID-name []
 synonym: "O-palmitoylated L-serine" EXACT PSI-MOD-alternate []
+synonym: "O-hexadecanoylated L-serine" EXACT PSI-MOD-alternate []
 synonym: "O3-palmitoyl-serine" EXACT RESID-alternate []
 synonym: "OPamSer" EXACT PSI-MOD-label []
 synonym: "Palmitoyl" RELATED PSI-MS-label []
@@ -2286,7 +2290,7 @@ xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:47"
 is_a: MOD:00652 ! O-palmitoylated residue
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 
 [Term]
 id: MOD:00090
@@ -2921,6 +2925,7 @@ synonym: "Palmitoyl" RELATED PSI-MS-label []
 synonym: "Palmitoylation" RELATED UniMod-description []
 synonym: "S-palmitoyl-L-cysteine" EXACT RESID-name []
 synonym: "S-palmitoylated L-cysteine" EXACT PSI-MOD-alternate []
+synonym: "S-hexadecanoylated L-cysteine" EXACT PSI-MOD-alternate []
 synonym: "S-palmityl Cystenyl" EXACT DeltaMass-label []
 synonym: "SPamCys" EXACT PSI-MOD-label []
 xref: DiffAvg: "238.41"
@@ -6204,7 +6209,7 @@ xref: Origin: "C, G"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00908 ! modified glycine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -6226,7 +6231,7 @@ xref: Origin: "C, S"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00916 ! modified L-serine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -6248,7 +6253,7 @@ xref: Origin: "C, F"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00914 ! modified L-phenylalanine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -6269,7 +6274,7 @@ xref: MassMono: "185.992155"
 xref: Origin: "C, C"
 xref: Source: "natural"
 xref: TermSpec: "none"
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -6290,7 +6295,7 @@ xref: Origin: "C, K"
 xref: Source: "hypothetical"
 xref: TermSpec: "none"
 is_a: MOD:00912 ! modified L-lysine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -6984,7 +6989,7 @@ is_a: MOD:00722 ! monomethylated L-glutamine
 [Term]
 id: MOD:00279
 name: N-pyruvic acid 2-iminyl-L-cysteine
-def: "A protein modification that effectively converts an Lcysteline residue to N-pyruvic acid 2-iminyl-L-cysteine." [PubMed:1388164, RESID:AA0274, UniMod:422#C]
+def: "A protein modification that effectively converts an L-cysteine residue to N-pyruvic acid 2-iminyl-L-cysteine." [PubMed:1388164, RESID:AA0274, UniMod:422#C]
 subset: PSI-MOD-slim
 synonym: "(R)-2-(1-carboxy-2-sulfanylethanimino)propanoic acid" EXACT RESID-systematic []
 synonym: "MOD_RES N-pyruvate 2-iminyl-cysteine" EXACT UniProt-feature []
@@ -7385,7 +7390,7 @@ xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:426"
 is_a: MOD:00669 ! O-octanoylated residue
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 
 [Term]
 id: MOD:00296
@@ -7836,9 +7841,8 @@ xref: Origin: "C"
 xref: Source: "hypothetical"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:431"
-is_a: MOD:00672 ! S-acylated residue
+is_a: MOD:02002 ! S-palmitoleylated residue
 is_a: MOD:00905 ! modified L-cysteine residue
-is_a: MOD:01423 ! palmitoleylated residue
 
 [Term]
 id: MOD:00314
@@ -8594,6 +8598,7 @@ synonym: "LIPID N-palmitoyl glycine" EXACT UniProt-feature []
 synonym: "N-(1-oxohexadecyl)glycine" EXACT RESID-alternate []
 synonym: "N-palmitoyl-glycine" EXACT RESID-name []
 synonym: "N-palmitoylated glycine" EXACT PSI-MOD-alternate []
+synonym: "N-hexadecanoylated glycine" EXACT PSI-MOD-alternate []
 synonym: "NPamGly" EXACT PSI-MOD-label []
 xref: DiffAvg: "238.41"
 xref: DiffFormula: "C 16 H 30 N 0 O 1 S 0"
@@ -9221,6 +9226,7 @@ xref: TermSpec: "none"
 xref: UniMod: "UniMod:1"
 is_a: MOD:00644 ! O-acetylated residue
 is_a: MOD:00647 ! acetylated L-serine
+is_a: MOD:02003 ! O3-acylated L-serine
 
 [Term]
 id: MOD:00370
@@ -9745,7 +9751,7 @@ xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:449"
 is_a: MOD:00668 ! O-decanoylated residue
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 
 [Term]
 id: MOD:00391
@@ -9772,7 +9778,7 @@ xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:426"
 is_a: MOD:00669 ! O-octanoylated residue
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 
 [Term]
 id: MOD:00392
@@ -9798,7 +9804,7 @@ xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:449"
 is_a: MOD:00668 ! O-decanoylated residue
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 
 [Term]
 id: MOD:00393
@@ -10687,6 +10693,7 @@ synonym: "Palmitoyl" RELATED PSI-MS-label []
 synonym: "Palmitoylation" EXACT DeltaMass-label []
 synonym: "Palmitoylation" RELATED UniMod-description []
 synonym: "PamRes" EXACT PSI-MOD-label []
+synonym: "Hexadecanoylated residue" EXACT PSI-MOD-alternate []
 xref: DiffAvg: "238.41"
 xref: DiffFormula: "C 16 H 30 O 1"
 xref: DiffMono: "238.229666"
@@ -14540,6 +14547,7 @@ xref: Source: "artifact"
 xref: TermSpec: "N-term"
 is_a: MOD:00408 ! N-acetylated residue
 is_a: MOD:00644 ! O-acetylated residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:00647 ! acetylated L-serine
 relationship: has_functional_parent MOD:00060 ! N-acetyl-L-serine
 relationship: has_functional_parent MOD:00369 ! O-acetyl-L-serine
@@ -14576,6 +14584,7 @@ name: N-palmitoylated residue
 def: "A protein modification that effectively replaces a residue amino group with a palmitoylamino group." [PubMed:18688235]
 subset: PSI-MOD-slim
 synonym: "NPamRes" EXACT PSI-MOD-label []
+synonym: "N-hexadecanoylated residue" EXACT PSI-MOD-alternate []
 xref: DiffAvg: "238.41"
 xref: DiffFormula: "C 16 H 30 O 1"
 xref: DiffMono: "238.229666"
@@ -14594,6 +14603,7 @@ name: O-palmitoylated residue
 def: "A protein modification that effectively replaces a residue hydroxyl group with a palmitoyloxy group." [PubMed:18688235]
 subset: PSI-MOD-slim
 synonym: "OPamRes" EXACT PSI-MOD-label []
+synonym: "O-hexadecanoylated residue" EXACT PSI-MOD-alternate []
 xref: DiffAvg: "238.41"
 xref: DiffFormula: "C 16 H 30 O 1"
 xref: DiffMono: "238.229666"
@@ -14612,6 +14622,7 @@ name: S-palmitoylated residue
 def: "A protein modification that effectively replaces a residue sulfanyl group with an palmitoylsulfanyl group." [PubMed:18688235]
 subset: PSI-MOD-slim
 synonym: "SPamRes" EXACT PSI-MOD-label []
+synonym: "S-hexadecanoylated residue" EXACT PSI-MOD-alternate []
 xref: DiffAvg: "238.41"
 xref: DiffFormula: "C 16 H 30 O 1 S 0"
 xref: DiffMono: "238.229666"
@@ -17098,9 +17109,8 @@ xref: MassMono: "369.270150"
 xref: Origin: "C"
 xref: Source: "natural"
 xref: TermSpec: "none"
-is_a: MOD:00672 ! S-acylated residue
-is_a: MOD:00905 ! modified L-cysteine residue
-is_a: MOD:01155 ! lipoconjugated residue
+is_a: MOD:02005 ! S-acylated L-cysteine
+is_a: MOD:02006 ! S-stearoylated residue
 
 [Term]
 id: MOD:00817
@@ -23973,7 +23983,7 @@ xref: MassMono: "284.046692"
 xref: Origin: "E"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-xref: UinMo: "UniMod:285"
+xref: UniMod: "UniMod:285"
 is_a: MOD:00605 ! Sulfanilic Acid (SA), light C12
 
 [Term]
@@ -24029,7 +24039,7 @@ xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:122"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01483 ! O-formylated residue
 
 [Term]
@@ -24049,7 +24059,7 @@ xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:122"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01483 ! O-formylated residue
 
 [Term]
@@ -27147,7 +27157,7 @@ xref: MassMono: "323.246044"
 xref: Origin: "S"
 xref: Source: "natural"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01768 ! O-palmitoleylated residue
 
 [Term]
@@ -27335,7 +27345,7 @@ xref: Origin: "C, I"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00910 ! modified L-isoleucine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -27357,7 +27367,7 @@ xref: Origin: "C, V"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00920 ! modified L-valine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -27379,7 +27389,7 @@ xref: Origin: "C, V"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00920 ! modified L-valine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -27401,7 +27411,7 @@ xref: Origin: "C, N"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00903 ! modified L-asparagine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 relationship: derives_from MOD:00656 ! C-methylated residue
 
@@ -27661,7 +27671,7 @@ xref: Origin: "C, N"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00903 ! modified L-asparagine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -27682,7 +27692,7 @@ xref: Origin: "C, P"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00915 ! modified L-proline residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -27704,7 +27714,7 @@ xref: Origin: "C, T"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00917 ! modified L-threonine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -27726,7 +27736,7 @@ xref: Origin: "C, F"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00914 ! modified L-phenylalanine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 
 [Term]
 id: MOD:01408
@@ -27747,7 +27757,7 @@ xref: Origin: "C, T"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00917 ! modified L-threonine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 
 [Term]
 id: MOD:01409
@@ -27927,7 +27937,7 @@ is_a: MOD:00690 ! oxazole/thiazole ring crosslinked residues
 
 [Term]
 id: MOD:01420
-name: thiazole/thiazoline ring croslinked residues
+name: thiazole/thiazoline ring crosslinked residues
 def: "A protein modification that crosslinks two residues by condensation of a cysteine thiol with the carbonyl of the preceding residue to form a thiazole or thiazoline ring." [PubMed:18688235]
 xref: DiffAvg: "none"
 xref: DiffFormula: "none"
@@ -27989,6 +27999,7 @@ xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:431"
 is_a: MOD:00649 ! acylated residue
+is_a: MOD:01155 ! lipoconjugated residue
 
 [Term]
 id: MOD:01424
@@ -29186,7 +29197,7 @@ xref: MassMono: "231.137947"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01485 ! iTRAQ4plex-114 reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -29206,7 +29217,7 @@ xref: MassMono: "245.153598"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01485 ! iTRAQ4plex-114 reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -29349,7 +29360,7 @@ xref: MassMono: "231.131628"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01492 ! iTRAQ4plex-115 reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -29369,7 +29380,7 @@ xref: MassMono: "245.147278"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01492 ! iTRAQ4plex-115 reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -29511,7 +29522,7 @@ xref: MassMono: "231.134091"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01499 ! iTRAQ4plex-116 reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -29531,7 +29542,7 @@ xref: MassMono: "245.149741"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01499 ! iTRAQ4plex-116 reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -29688,7 +29699,7 @@ xref: MassMono: "231.134091"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01506 ! iTRAQ4plex-117, mTRAQ heavy, reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -29708,7 +29719,7 @@ xref: MassMono: "245.149741"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01506 ! iTRAQ4plex-117, mTRAQ heavy, reporter+balance reagent acylated residue
 is_a: MOD:01713 ! iTRAQ4plex reporter+balance reagent O-acylated residue
 
@@ -30034,7 +30045,7 @@ xref: MassMono: "391.237388"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01528 ! iTRAQ8plex-113 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30057,7 +30068,7 @@ xref: MassMono: "405.253038"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01528 ! iTRAQ8plex-113 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30198,7 +30209,7 @@ xref: MassMono: "391.237388"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01535 ! iTRAQ8plex-114 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30217,7 +30228,7 @@ xref: MassMono: "405.253038"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01535 ! iTRAQ8plex-114 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30350,7 +30361,7 @@ xref: MassMono: "391.231068"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01542 ! iTRAQ8plex-115 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30369,7 +30380,7 @@ xref: MassMono: "405.246718"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01542 ! iTRAQ8plex-115 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30506,7 +30517,7 @@ xref: MassMono: "391.237388"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01549 ! iTRAQ8plex-116 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30525,7 +30536,7 @@ xref: MassMono: "405.253038"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01549 ! iTRAQ8plex-116 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30662,7 +30673,7 @@ xref: MassMono: "391.237388"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01556 ! iTRAQ8plex-117 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30681,7 +30692,7 @@ xref: MassMono: "405.253038"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01556 ! iTRAQ8plex-117 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30814,7 +30825,7 @@ xref: MassMono: "391.231068"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01563 ! iTRAQ8plex-118 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30833,7 +30844,7 @@ xref: MassMono: "405.246718"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01563 ! iTRAQ8plex-118 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30966,7 +30977,7 @@ xref: MassMono: "391.231068"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01570 ! iTRAQ8plex-119 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -30985,7 +30996,7 @@ xref: MassMono: "405.246718"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01570 ! iTRAQ8plex-119 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -31118,7 +31129,7 @@ xref: MassMono: "391.231068"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01577 ! iTRAQ8plex-121 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -31137,7 +31148,7 @@ xref: MassMono: "405.246718"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01577 ! iTRAQ8plex-121 reporter+balance reagent acylated residue
 is_a: MOD:01714 ! iTRAQ8plex reporter+balance reagent O-acylated residue
 
@@ -33095,6 +33106,7 @@ synonym: "Palmitoyl" RELATED PSI-MS-label []
 synonym: "Palmitoylation" RELATED UniMod-description []
 synonym: "palmitoylationc" EXACT OMSSA-label []
 synonym: "PamCys" EXACT PSI-MOD-label []
+synonym: "Hexadecanoylated L-cysteine" EXACT PSI-MOD-alternate []
 xref: DiffAvg: "238.41"
 xref: DiffFormula: "C 16 H 30 N 0 O 1 S 0"
 xref: DiffMono: "238.229666"
@@ -33105,7 +33117,6 @@ xref: Origin: "C"
 xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:47"
-is_a: MOD:00440 ! palmitoylated residue
 is_a: MOD:00905 ! modified L-cysteine residue
 
 [Term]
@@ -33878,7 +33889,7 @@ xref: MassMono: "316.194961"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01720 ! TMT6plex-126 reporter+balance reagent acylated residue
 
@@ -33899,7 +33910,7 @@ xref: MassMono: "330.210611"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01720 ! TMT6plex-126 reporter+balance reagent acylated residue
 
@@ -34051,7 +34062,7 @@ xref: MassMono: "316.194961"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01728 ! TMT6plex-127 reporter+balance reagent acylated residue
 
@@ -34072,7 +34083,7 @@ xref: MassMono: "330.210611"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01728 ! TMT6plex-127 reporter+balance reagent acylated residue
 
@@ -34225,7 +34236,7 @@ xref: MassMono: "316.194961"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01736 ! TMT6plex-128 reporter+balance reagent acylated residue
 
@@ -34246,7 +34257,7 @@ xref: MassMono: "330.210611"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01736 ! TMT6plex-128 reporter+balance reagent acylated residue
 
@@ -34399,7 +34410,7 @@ xref: MassMono: "316.194961"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01744 ! TMT6plex-129 reporter+balance reagent acylated residue
 
@@ -34420,7 +34431,7 @@ xref: MassMono: "330.210611"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01744 ! TMT6plex-129 reporter+balance reagent acylated residue
 
@@ -34574,7 +34585,7 @@ xref: MassMono: "316.194961"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01752 ! TMT6plex-130 reporter+balance reagent acylated residue
 
@@ -34595,7 +34606,7 @@ xref: MassMono: "330.210611"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01752 ! TMT6plex-130 reporter+balance reagent acylated residue
 
@@ -34749,7 +34760,7 @@ xref: MassMono: "316.194961"
 xref: Origin: "S"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00916 ! modified L-serine residue
+is_a: MOD:02003 ! O3-acylated L-serine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01760 ! TMT6plex-131 reporter+balance reagent acylated residue
 
@@ -34770,7 +34781,7 @@ xref: MassMono: "330.210611"
 xref: Origin: "T"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01719 ! TMT6plex reporter+balance reagent O-acylated residue
 is_a: MOD:01760 ! TMT6plex-131 reporter+balance reagent acylated residue
 
@@ -34833,7 +34844,7 @@ xref: Origin: "T"
 xref: Source: "natural"
 xref: TermSpec: "none"
 xref: UniMod: "UniMod:431"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 is_a: MOD:01768 ! O-palmitoleylated residue
 
 [Term]
@@ -34851,7 +34862,7 @@ xref: MassMono: "355.296068"
 xref: Origin: "T"
 xref: Source: "natural"
 xref: TermSpec: "C-term"
-is_a: MOD:00917 ! modified L-threonine residue
+is_a: MOD:02004 ! O3-acylated L-threonine
 relationship: has_functional_parent MOD:00088 ! O-palmitoyl-L-threonine
 relationship: has_functional_parent MOD:00106 ! L-threonine amide
 
@@ -35734,7 +35745,7 @@ xref: Origin: "C, E"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00906 ! modified L-glutamic acid residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -37293,7 +37304,7 @@ xref: Origin: "C, R"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00902 ! modified L-arginine residue
-is_a: MOD:01420 ! thiazole/thiazoline ring croslinked residues
+is_a: MOD:01420 ! thiazole/thiazoline ring crosslinked residues
 is_a: MOD:01888 ! didehydrogenated residue
 
 [Term]
@@ -38069,6 +38080,7 @@ xref: Origin: "K"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:01875 ! N6-acylated L-lysine
+is_a: MOD:02011 ! N-oleoylated residue
 
 [Term]
 id: MOD:01937
@@ -39363,6 +39375,411 @@ xref: Origin: "K"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00912 ! modified L-lysine residue
+
+[Term]
+id: MOD:02001
+name: stearoylated residue
+def: "A protein modification that effectively replaces a hydrogen atom with a stearoyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "266.47"
+xref: DiffFormula: "C 18 H 34 O 1"
+xref: DiffMono: "266.260966"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00649 ! acylated residue
+is_a: MOD:01155 ! lipoconjugated residue
+
+[Term]
+id: MOD:02002
+name: S-palmitoleylated residue
+def: "A protein modification that effectively replaces a residue sulfanyl group with a palmitoleylsulfanyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "236.40"
+xref: DiffFormula: "C 16 H 28 N 0 O 1"
+xref: DiffMono: "236.214016"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00672 ! S-acylated residue
+is_a: MOD:01423 ! palmitoleylated residue
+
+[Term]
+id: MOD:02003
+name: O3-acylated L-serine
+def: "A protein modification that effectively replaces an O3-hydroxy hydrogen atom of L-serine with an acyl group." []
+subset: PSI-MOD-slim
+xref: Origin: "S"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00671 ! O-acylated residue
+is_a: MOD:00916 ! modified L-serine residue
+
+[Term]
+id: MOD:02004
+name: O3-acylated L-threonine
+def: "A protein modification that effectively replaces an O3-hydroxy hydrogen atom of L-threonine with an acyl group." []
+subset: PSI-MOD-slim
+xref: Origin: "T"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00671 ! O-acylated residue
+is_a: MOD:00917 ! modified L-threonine residue
+
+[Term]
+id: MOD:02005
+name: S-acylated L-cysteine
+def: "A protein modification that effectively replaces an sulfanyl hydrogen atom of L-cysteine with an acyl group." []
+subset: PSI-MOD-slim
+xref: Origin: "C"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00672 ! S-acylated residue
+is_a: MOD:00905 ! modified L-cysteine residue
+
+[Term]
+id: MOD:02006
+name: S-stearoylated residue
+def: "A protein modification that effectively replaces a residue sulfanyl group with a stearoylsulfanyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "266.47"
+xref: DiffFormula: "C 18 H 34 O 1"
+xref: DiffMono: "266.260966"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00672 ! S-acylated residue
+is_a: MOD:02001 ! stearoylated residue
+
+[Term]
+id: MOD:02007
+name: N6-palmitoleyl-L-lysine
+def: "A protein modification that effectively converts an L-lysine residue to N6-palmitoleyl-L-lysine." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "236.40"
+xref: DiffFormula: "C 16 H 28 N 0 O 1"
+xref: DiffMono: "236.214016"
+xref: Formula: "C 22 H 40 N 2 O 2" 
+xref: MassAvg: "364.58" 
+xref: MassMono: "364.308979"
+xref: Origin: "K"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:01875 ! N6-acylated L-lysine
+is_a: MOD:02008 ! N-palmitoleylated residue
+
+[Term]
+id: MOD:02008
+name: N-palmitoleylated residue
+def: "A protein modification that effectively replaces a residue amino group with a palmitoleylamino group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "236.40"
+xref: DiffFormula: "C 16 H 28 N 0 O 1"
+xref: DiffMono: "236.214016"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00670 ! N-acylated residue
+is_a: MOD:01423 ! palmitoleylated residue
+
+[Term]
+id: MOD:02009
+name: N6-stearoyl-L-lysine
+def: "A protein modification that effectively converts an L-lysine residue to N6-stearoyl-L-lysine." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "266.47"
+xref: DiffFormula: "C 18 H 34 O 1"
+xref: DiffMono: "266.260966"
+xref: Formula: "C 24 H 46 N 2 O 2" 
+xref: MassAvg: "394.65" 
+xref: MassMono: "394.355929" 
+xref: Origin: "K"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:01875 ! N6-acylated L-lysine
+is_a: MOD:02010 ! N-stearoylated residue
+
+[Term]
+id: MOD:02010
+name: N-stearoylated residue
+def: "A protein modification that effectively replaces a residue amino group with a stearoylamino group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "266.47"
+xref: DiffFormula: "C 18 H 34 O 1"
+xref: DiffMono: "266.260966"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00670 ! N-acylated residue
+is_a: MOD:02001 ! stearoylated residue
+
+[Term]
+id: MOD:02011
+name: N-oleoylated residue
+def: "A protein modification that effectively replaces a residue amino group with a oleoylamino group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "264.46"
+xref: DiffFormula: "C 18 H 32 N 0 O 1"
+xref: DiffMono: "264.245316"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00670 ! N-acylated residue
+is_a: MOD:02012 ! oleoylated residue
+
+[Term]
+id: MOD:02012
+name: oleoylated residue
+def: "A protein modification that effectively replaces a hydrogen atom with a oleoyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "264.46"
+xref: DiffFormula: "C 18 H 32 N 0 O 1"
+xref: DiffMono: "264.245316"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00649 ! acylated residue
+is_a: MOD:01155 ! lipoconjugated residue
+
+[Term]
+id: MOD:02013
+name: N6-linoloyl-L-lysine
+def: "A protein modification that effectively converts an L-lysine residue to N6-linoloyl-L-lysine." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "262.45"
+xref: DiffFormula: "C 18 H 30 N 0 O 1"
+xref: DiffMono: "262.229666" 
+xref: Formula: "C 24 H 42 N 2 O 2"
+xref: MassAvg: "390.63" 
+xref: MassMono: "390.324629"
+xref: Origin: "K"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:01875 ! N6-acylated L-lysine
+is_a: MOD:02014 ! N-linoloylated residue
+
+[Term]
+id: MOD:02014
+name: N-linoloylated residue
+def: "A protein modification that effectively replaces a residue amino group with a linoloylamino group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "262.45"
+xref: DiffFormula: "C 18 H 30 N 0 O 1"
+xref: DiffMono: "262.229666" 
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00670 ! N-acylated residue
+is_a: MOD:02015 ! linoloylated residue
+
+[Term]
+id: MOD:02015
+name: linoloylated residue
+def: "A protein modification that effectively replaces a hydrogen atom with a linoloyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "262.45"
+xref: DiffFormula: "C 18 H 30 N 0 O 1"
+xref: DiffMono: "262.229666" 
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00649 ! acylated residue
+is_a: MOD:01155 ! lipoconjugated residue
+
+[Term]
+id: MOD:02016
+name: N6-arachidonoyl-L-lysine
+def: "A protein modification that effectively converts an L-lysine residue to N6-arachidonoyl-L-lysine." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "286.49"
+xref: DiffFormula: "C 20 H 30 N 0 O 1"
+xref: DiffMono: "286.229666"
+xref: Formula: "C 26 H 42 N 2 O 2"
+xref: MassAvg: "414.67"
+xref: MassMono: "414.324629"
+xref: Origin: "K"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:01875 ! N6-acylated L-lysine
+is_a: MOD:02017 ! N-arachidonoylated residue
+
+[Term]
+id: MOD:02017
+name: N-arachidonoylated residue
+def: "A protein modification that effectively replaces a residue amino group with an arachidonoylamino group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "286.49"
+xref: DiffFormula: "C 20 H 30 N 0 O 1"
+xref: DiffMono: "286.229666"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00670 ! N-acylated residue
+is_a: MOD:02018 ! arachidonoylated residue
+
+[Term]
+id: MOD:02018
+name: arachidonoylated residue
+def: "A protein modification that effectively replaces a hydrogen atom with an arachidonoyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "286.49"
+xref: DiffFormula: "C 20 H 30 N 0 O 1"
+xref: DiffMono: "286.229666"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00649 ! acylated residue
+is_a: MOD:01155 ! lipoconjugated residue
+
+[Term]
+id: MOD:02019
+name: N6-timnodonoyl-L-lysine
+def: "A protein modification that effectively converts an L-lysine residue to N6-timnodonoyl-L-lysine." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "284.48"
+xref: DiffFormula: "C 20 H 28 N 0 O 1"
+xref: DiffMono: "284.214016"
+xref: Formula: "C 26 H 40 N 2 O 2"
+xref: MassAvg: "412.66"
+xref: MassMono: "412.308979"
+xref: Origin: "K"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:01875 ! N6-acylated L-lysine
+is_a: MOD:02020 ! N-timnodonoylated residue
+
+[Term]
+id: MOD:02020
+name: N-timnodonoylated residue
+def: "A protein modification that effectively replaces a residue amino group with a timnodonoylamino group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "284.48"
+xref: DiffFormula: "C 20 H 28 N 0 O 1"
+xref: DiffMono: "284.214016"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00670 ! N-acylated residue
+is_a: MOD:02021 ! timnodonoylated residue
+
+[Term]
+id: MOD:02021
+name: timnodonoylated residue
+def: "A protein modification that effectively replaces a hydrogen atom with a timnodonoyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "284.48"
+xref: DiffFormula: "C 20 H 28 N 0 O 1"
+xref: DiffMono: "284.214016"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00649 ! acylated residue
+is_a: MOD:01155 ! lipoconjugated residue
+
+[Term]
+id: MOD:02022
+name: N6-cervonoyl-L-lysine
+def: "A protein modification that effectively converts an L-lysine residue to N6-cervonoyl-L-lysine." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "310.53"
+xref: DiffFormula: "C 22 H 30 N 0 O 1"
+xref: DiffMono: "310.229666"
+xref: Formula: "C 28 H 42 N 2 O 2"
+xref: MassAvg: "438.71"
+xref: MassMono: "438.324629"
+xref: Origin: "K"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:01875 ! N6-acylated L-lysine
+is_a: MOD:02023 ! N-cervonoylated residue
+
+[Term]
+id: MOD:02023
+name: N-cervonoylated residue
+def: "A protein modification that effectively replaces a residue amino group with a cervonoylamino group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "310.53"
+xref: DiffFormula: "C 22 H 30 N 0 O 1"
+xref: DiffMono: "310.229666"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00670 ! N-acylated residue
+is_a: MOD:02024 ! cervonoylated residue
+
+[Term]
+id: MOD:02024
+name: cervonoylated residue
+def: "A protein modification that effectively replaces a hydrogen atom with a cervonoyl group." []
+subset: PSI-MOD-slim
+xref: DiffAvg: "310.53"
+xref: DiffFormula: "C 22 H 30 N 0 O 1"
+xref: DiffMono: "310.229666"
+xref: Formula: "none"
+xref: MassAvg: "none"
+xref: MassMono: "none"
+xref: Origin: "X"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00649 ! acylated residue
+is_a: MOD:01155 ! lipoconjugated residue
+
+[Term]
+id: MOD:02025
+name: 5-glutaminyl glutamic acid
+def: "A protein modification that effectively converts the alpha amino group of a glutamine residue to glutaminyl glutamic acid by forming an isopeptide bond with the side chain carboxyl group of a free glutamic acid." [PubMed:28801462]
+xref: DiffAvg: "128.13"
+xref: DiffFormula: "C 5 H 8 N 2 O 2"
+xref: DiffMono: "128.058576"
+xref: Formula: "C 10 H 15 N 3 O 5"
+xref: MassAvg: "257.24"
+xref: MassMono: "257.101167"
+xref: Origin: "E"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00906 ! modified L-glutamic acid residue
 
 [Typedef]
 id: contains

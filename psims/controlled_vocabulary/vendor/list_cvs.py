@@ -12,6 +12,7 @@ registry = {
     "bto.obo": r"date: ([^\n]+)\n",
     "go.obo": r"data-version: ([^\n]+)\n",
     'psi-mod.obo': r"remark: PSI-MOD version: \(([^)\n]+)\)\n",
+    "gno.obo": r"data-version: ([^\n]+)\n",
 }
 
 
