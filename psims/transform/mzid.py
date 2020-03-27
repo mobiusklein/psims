@@ -81,9 +81,12 @@ class MzIdentMLTranslater(TransformerBase):
                     unit = None
                     if hasattr(value, 'unit_info'):
                         unit = value.unit_info
-                    try:
-                        cast_value = value_type(value)
-                    except ValueError:
+                    if value_type is not None:
+                        try:
+                            cast_value = value_type(value)
+                        except ValueError:
+                            cast_value = value
+                    else:
                         cast_value = value
                     param = {
                         "name": key, "value": cast_value
