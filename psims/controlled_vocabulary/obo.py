@@ -179,7 +179,10 @@ class OBOParser(object):
                 if val.startswith("\""):
                     val, dtype = val.rsplit(" ", 1)
                     dtype = parse_xsdtype(dtype)
-                    val = dtype(val[1:-1])
+                    try:
+                        val = dtype(val[1:-1])
+                    except ValueError:
+                        pass
                 entity[prop] = val
 
     def _connect_parents(self):

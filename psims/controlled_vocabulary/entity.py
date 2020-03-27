@@ -14,14 +14,6 @@ class Entity(Mapping):
         self.data = dict(attributes)
         self.children = []
         self.vocabulary = vocabulary
-        if "property_value" in self.data:
-            for prop_val in ensure_iterable(self.data['property_value']):
-                prop, val = prop_val.split(" ", 1)
-                if val.startswith("\""):
-                    val, dtype = val.rsplit(" ", 1)
-                    dtype = parse_xsdtype(dtype)
-                    val = dtype(val[1:-1])
-                self[prop] = val
 
     def get(self, key, default=None):
         return self.data.get(key, default)
