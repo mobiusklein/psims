@@ -1,4 +1,5 @@
 import re
+import datetime
 from six import text_type
 
 xsd_pattern = re.compile(r"(?:value-type:)?xsd\\?:([^\"]+)")
@@ -20,13 +21,16 @@ def positive_integer(value):
 
 value_type_resolvers = {
     'int': int,
+    'integer': int,
     'double': float,
     'float': float,
+    'decimal': float,
     'string': text_type,
     "anyURI": text_type,
     'nonNegativeInteger': non_negative_integer,
     'boolean': bool,
     'positiveInteger': positive_integer,
+    'dateTime': lambda x: datetime.datetime.strptime(x, '%Y-%m-%dT%H:%M:%S')
 }
 
 

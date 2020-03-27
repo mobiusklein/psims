@@ -40,6 +40,10 @@ def _use_vendored_go_obo():
     return pkg_resources.resource_stream(__name__, "vendor/go.obo")
 
 
+def _use_vendored_gno_obo():
+    return pkg_resources.resource_stream(__name__, "vendor/gno.obo")
+
+
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
@@ -55,6 +59,7 @@ fallback = {
      ): _use_vendored_bto_obo,
     "http://purl.obolibrary.org/obo/go.obo": _use_vendored_go_obo,
     "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo": _use_vendored_psimod_obo,
+    "http://purl.obolibrary.org/obo/gno.obo": _use_vendored_gno_obo,
 }
 
 
@@ -372,4 +377,9 @@ def load_go():
 
 def load_psimod():
     cv = obo_cache.resolve("https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo")
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_gno():
+    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/gno.obo")
     return ControlledVocabulary.from_obo(cv)
