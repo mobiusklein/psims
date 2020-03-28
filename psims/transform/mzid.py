@@ -56,7 +56,8 @@ class MzIdentMLTranslater(TransformerBase):
                 if accession:
                     term = self.writer.term(accession)
                     try:
-                        value_type = term.value_type
+                        if term.value_type is not None:
+                            value_type = term.value_type
                     except KeyError:
                         pass
                 if isinstance(value, list):

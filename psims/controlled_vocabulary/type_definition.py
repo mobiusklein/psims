@@ -1,5 +1,10 @@
+'''Machinery for interpreting XSD data type declarations in controlled vocabulary
+file formats and mapping them to and from Python types.
+'''
 import re
 import datetime
+import warnings
+
 from six import text_type
 
 xsd_pattern = re.compile(r"(?:value-type:)?xsd\\?:([^\"]+)")
@@ -30,7 +35,9 @@ value_type_resolvers = {
     'nonNegativeInteger': non_negative_integer,
     'boolean': bool,
     'positiveInteger': positive_integer,
-    'dateTime': lambda x: datetime.datetime.strptime(x, '%Y-%m-%dT%H:%M:%S')
+    'dateTime': lambda x: datetime.datetime.strptime(x, '%Y-%m-%dT%H:%M:%S'),
+    # TODO
+    'date': str,
 }
 
 
@@ -50,7 +57,12 @@ def parse_xsdtype(text):
     match = xsd_pattern.search(text)
     if match:
         dtype_name = match.group(1).strip()
-        return value_type_resolvers[dtype_name]
+        try:
+            dtype = value_type_resolvers[dtype_name]
+        except KeyError:
+            warnings.warn("Could not find a converter for XSD type %r" % (text, ))
+            dtype = str
+            return dtype
 
 
 def obj_to_xsdtype(value):

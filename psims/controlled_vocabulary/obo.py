@@ -169,7 +169,8 @@ class OBOParser(object):
                     if value.startswith("\""):
                         value, dtype = value.rsplit(" ", 1)
                         dtype = parse_xsdtype(dtype)
-                        value = dtype(value[1:-1])
+                        if dtype is not None:
+                            value = dtype(value[1:-1])
                     entity[key] = value
 
     def _expand_property_value(self, entity):
@@ -181,7 +182,7 @@ class OBOParser(object):
                     dtype = parse_xsdtype(dtype)
                     try:
                         val = dtype(val[1:-1])
-                    except ValueError:
+                    except (ValueError, TypeError):
                         pass
                 entity[prop] = val
 
