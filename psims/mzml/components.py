@@ -920,6 +920,9 @@ class Precursor(ComponentBase):
                 [SelectedIon.ensure(si, context=context) for si in list(selected_ion_list)],
                 context=context)
         self.selected_ion_list = selected_ion_list
+        if activation is None:
+            warnings.warn("Precursor element with missing activation information")
+            activation = {}
         self.activation = Activation.ensure(activation, context=context)
         self.isolation_window = isolation_window
 

@@ -41,7 +41,9 @@ with MzMLWriter(open("out.mzML", 'wb')) as out:
                             "mz": prod.precursor_mz,
                             "intensity": prod.precursor_intensity,
                             "charge": prod.precursor_charge,
-                            "scan_id": prod.precursor_scan_id
+                            "scan_id": prod.precursor_scan_id,
+                            "activation": ["beam-type collisional dissociation", {"collision energy": 25}],
+                            "isolation_window": [prod.precursor_mz - 1, prod.precursor_mz, prod.precursor_mz + 1]
                          })
 ```
 

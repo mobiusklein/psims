@@ -1088,7 +1088,10 @@ class SpectrumIdentificationProtocol(ComponentBase):
         special_processing_types = {
             t.id for t in special_processing_type_terms}
         for param in self.additional_search_params:
-            param = self.context.param(param)
+            try:
+                param = self.context.param(param)
+            except KeyError:
+                continue
             accession = param.get('accession', None)
             if (accession in special_processing_types):
                 special_processing_instructions.append(param)
