@@ -489,6 +489,7 @@ class Modification(Base, HasFullNameMixin):
     notes = relationship("MiscNotesModifications")
     specificities = relationship("Specificity")
     bricks = relationship(ModificationToBrick)
+    crossreferences = relationship("Crossreference")
     _fragments = relationship(Fragment)
 
     _alt_names = relationship(AlternativeName, backref=backref("modification"))
