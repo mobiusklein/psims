@@ -8,19 +8,19 @@
     "version": "30:04:2018 17:00"
   }, 
   "gno.obo": {
-    "checksum": "6142a41d81c5e424aef02960a215aeb8", 
-    "version": "2020-03-23"
+    "checksum": "e436b2b8b8949fcf11e73ed0914603f4", 
+    "version": "2020-04-14"
   }, 
   "go.obo": {
-    "checksum": "ec55af8e60b8ac206e1de325ee3dedf3", 
-    "version": "releases/2020-02-21"
+    "checksum": "99f9bbb9949ea6c2313ea372bbc3838c", 
+    "version": "releases/2020-03-23"
   }, 
   "pato.obo": {
     "checksum": "443de10a418cba2b0a6f4a9c3b73c60c", 
     "version": "releases/2019-09-05"
   }, 
   "psi-mod.obo": {
-    "checksum": "83e05a63aa4978050750317a0dbb4c64", 
+    "checksum": "f3fb9a9a4ddeb6ad56ece97446f52926", 
     "version": null
   }, 
   "psi-ms.obo": {

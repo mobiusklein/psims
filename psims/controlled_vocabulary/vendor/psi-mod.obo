@@ -3503,7 +3503,7 @@ xref: MassMono: "71.013304"
 xref: Origin: "C"
 xref: Source: "natural"
 xref: TermSpec: "N-term"
-xref: UniMod: "UniMod:381"
+xref: UniMod: "UniMod:382"
 is_a: MOD:00905 ! modified L-cysteine residue
 is_a: MOD:01154 ! pyruvic acid
 
@@ -5895,6 +5895,7 @@ id: MOD:00234
 name: L-cysteine glutathione disulfide
 def: "A protein modification that effectively converts an L-cysteine residue to S-glutathionyl-L-cysteine." [ChEBI:21264, DeltaMass:0, OMSSA:51, PubMed:3083866, PubMed:8344916, RESID:AA0229, UniMod:55]
 comment: From DeltaMass: Average Mass: 305
+comment: Glutamyl-transpeptidase cleaves glutathione into cysteinylglycine (Cys-Gly) and a Glu residue. [PubMed: 28537416]
 subset: PSI-MOD-slim
 synonym: "(2S)-2-amino-3-((2S)-2-((4R)-4-amino-4-carboxyl-1-oxobutyl)amino-3-(carboxylmethyl)amino-3-oxo-propyl)dithio-propanoic acid" EXACT RESID-systematic []
 synonym: "cysteinyl glutathione" EXACT RESID-alternate []
@@ -5919,6 +5920,7 @@ xref: TermSpec: "none"
 xref: UniMod: "UniMod:55"
 is_a: MOD:00905 ! modified L-cysteine residue
 is_a: MOD:01862 ! disulfide conjugated residue
+contains: MOD:02026 ! S-(cysteinyl-glycyl)-L-cysteine
 
 [Term]
 id: MOD:00235
@@ -12525,7 +12527,7 @@ is_a: MOD:00848 ! reagent derivatized residue
 [Term]
 id: MOD:00536
 name: L-serine to L-alanine replacement
-def: "OBSOLETE because UniMod 179 merged wth UniMod 447 remap to ??? a protein modification that replaces an L-serine residue with an L-alanine residue" [UniMod:179]
+def: "OBSOLETE because UniMod 179 merged with UniMod 447 remap to ??? a protein modification that replaces an L-serine residue with an L-alanine residue" [UniMod:179]
 synonym: "Ser_Ala" EXACT PSI-MOD-label []
 xref: DiffAvg: "-16.00"
 xref: DiffFormula: "O -1"
@@ -39780,6 +39782,24 @@ xref: Origin: "E"
 xref: Source: "natural"
 xref: TermSpec: "none"
 is_a: MOD:00906 ! modified L-glutamic acid residue
+
+[Term]
+id: MOD:02026
+name: S-(cysteinyl-glycyl)-L-cysteine 
+def: "A protein modification that effectively cross-links an L-cysteinyl-L-glycine dipeptide and an L-cysteine residue by a disulfide bond to form S-(cysteinyl-glycyl)-L-cysteine." [PubMed:27936627, PubMed: 20594348, PubMed: 29627744]
+comment: Glutamyl-transpeptidase cleaves glutathione into cysteinylglycine (Cys-Gly) and a Glu residue. [PubMed:28537416]
+xref: DiffAvg: "176.17"
+xref: DiffFormula: "C 5 H 8 N 2 O 3 S 1"
+xref: DiffMono: "176.025563"
+xref: Formula: "C 8 H 13 N 3 O 4 S 2"
+xref: MassAvg: "279.33"
+xref: MassMono: "279.034748"
+xref: Origin: "C"
+xref: Source: "natural"
+xref: TermSpec: "none"
+is_a: MOD:00905 ! modified L-cysteine residue
+is_a: MOD:01862 ! disulfide conjugated residue
+part_of: MOD:00234 ! L-cysteine glutathione disulfide
 
 [Typedef]
 id: contains
