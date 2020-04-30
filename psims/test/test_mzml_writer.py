@@ -3,7 +3,7 @@ import gzip
 import os
 import tempfile
 
-from psims.mzml import MzMLWriter, binary_encoding
+from psims.mzml import MzMLWriter, binary_encoding, components
 from pyteomics import mzml
 import numpy as np
 from lxml import etree
@@ -91,6 +91,13 @@ def test_array_codec():
         encoded = encode(original, compression, dtype)
         decoded = decode(encoded, compression, dtype)
         np.allclose(original, decoded)
+
+
+def test_param_unit_resolution():
+    param = components.NullMap.param({"base peak intensity": 1, 'unit_accession': 'MS:1000131'})
+    assert param.unit_accession == "MS:1000131"
+    assert param.value == 1
+    assert param.name == 'base peak intensity'
 
 
 def test_write(output_path, compressor):

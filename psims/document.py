@@ -134,7 +134,6 @@ class VocabularyResolver(object):
 
     def param(self, name, value=None, cv_ref=None, **kwargs):
         accession = kwargs.get("accession")
-
         if isinstance(name, CVParam):
             return name
         elif isinstance(name, ParamGroupReference):
@@ -161,13 +160,13 @@ class VocabularyResolver(object):
                 kwargs.update({k: v for k, v in mapping.items()
                                if k not in (
                     "name", "value", "accession")})
-                # case normalize unit information so that cvParam can detect them
-                if unit_name is not None:
-                    kwargs.setdefault("unit_name", unit_name)
-                if unit_accession is not None:
-                    kwargs.setdefault("unit_accession", unit_accession)
-                if unit_cv_ref is not None:
-                    kwargs.setdefault("unit_cv_ref", unit_cv_ref)
+            # case normalize unit information so that cvParam can detect them
+            if unit_name is not None:
+                kwargs.setdefault("unit_name", unit_name)
+            if unit_accession is not None:
+                kwargs.setdefault("unit_accession", unit_accession)
+            if unit_cv_ref is not None:
+                kwargs.setdefault("unit_cv_ref", unit_cv_ref)
 
         if name == 'ref' and value is not None and cv_ref is None and not kwargs:
             return self.param_group_reference(value)
@@ -185,7 +184,6 @@ class VocabularyResolver(object):
             term = cv[query]
         if term is not None:
             self._validate_units(term, kwargs, name)
-
         if cv_ref is None:
             user_param = UserParam(name=name, value=value, **kwargs)
             return user_param
