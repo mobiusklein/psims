@@ -5920,7 +5920,7 @@ xref: TermSpec: "none"
 xref: UniMod: "UniMod:55"
 is_a: MOD:00905 ! modified L-cysteine residue
 is_a: MOD:01862 ! disulfide conjugated residue
-contains: MOD:02026 ! S-(cysteinyl-glycyl)-L-cysteine
+relationship: contains: MOD:02026 ! S-(cysteinyl-glycyl)-L-cysteine
 
 [Term]
 id: MOD:00235
@@ -12933,7 +12933,7 @@ xref: MassMono: "166.110613"
 xref: Origin: "K"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-xref: UniMod; "UniMod:207"
+xref: UniMod: "UniMod:207"
 is_a: MOD:00003 ! UniMod
 
 [Term]
@@ -13005,7 +13005,7 @@ xref: MassMono: "none"
 xref: Origin: "X"
 xref: Source: "artifact"
 xref: TermSpec: "none"
-xref: UniMod; "UniMod:212"
+xref: UniMod: "UniMod:212"
 is_a: MOD:01431 ! (2)H deuterium tagged reagent
 
 [Term]
@@ -39470,8 +39470,8 @@ subset: PSI-MOD-slim
 xref: DiffAvg: "236.40"
 xref: DiffFormula: "C 16 H 28 N 0 O 1"
 xref: DiffMono: "236.214016"
-xref: Formula: "C 22 H 40 N 2 O 2" 
-xref: MassAvg: "364.58" 
+xref: Formula: "C 22 H 40 N 2 O 2"
+xref: MassAvg: "364.58"
 xref: MassMono: "364.308979"
 xref: Origin: "K"
 xref: Source: "natural"
@@ -39504,9 +39504,9 @@ subset: PSI-MOD-slim
 xref: DiffAvg: "266.47"
 xref: DiffFormula: "C 18 H 34 O 1"
 xref: DiffMono: "266.260966"
-xref: Formula: "C 24 H 46 N 2 O 2" 
-xref: MassAvg: "394.65" 
-xref: MassMono: "394.355929" 
+xref: Formula: "C 24 H 46 N 2 O 2"
+xref: MassAvg: "394.65"
+xref: MassMono: "394.355929"
 xref: Origin: "K"
 xref: Source: "natural"
 xref: TermSpec: "none"
@@ -39571,9 +39571,9 @@ def: "A protein modification that effectively converts an L-lysine residue to N6
 subset: PSI-MOD-slim
 xref: DiffAvg: "262.45"
 xref: DiffFormula: "C 18 H 30 N 0 O 1"
-xref: DiffMono: "262.229666" 
+xref: DiffMono: "262.229666"
 xref: Formula: "C 24 H 42 N 2 O 2"
-xref: MassAvg: "390.63" 
+xref: MassAvg: "390.63"
 xref: MassMono: "390.324629"
 xref: Origin: "K"
 xref: Source: "natural"
@@ -39588,7 +39588,7 @@ def: "A protein modification that effectively replaces a residue amino group wit
 subset: PSI-MOD-slim
 xref: DiffAvg: "262.45"
 xref: DiffFormula: "C 18 H 30 N 0 O 1"
-xref: DiffMono: "262.229666" 
+xref: DiffMono: "262.229666"
 xref: Formula: "none"
 xref: MassAvg: "none"
 xref: MassMono: "none"
@@ -39605,7 +39605,7 @@ def: "A protein modification that effectively replaces a hydrogen atom with a li
 subset: PSI-MOD-slim
 xref: DiffAvg: "262.45"
 xref: DiffFormula: "C 18 H 30 N 0 O 1"
-xref: DiffMono: "262.229666" 
+xref: DiffMono: "262.229666"
 xref: Formula: "none"
 xref: MassAvg: "none"
 xref: MassMono: "none"
@@ -39785,7 +39785,7 @@ is_a: MOD:00906 ! modified L-glutamic acid residue
 
 [Term]
 id: MOD:02026
-name: S-(cysteinyl-glycyl)-L-cysteine 
+name: S-(cysteinyl-glycyl)-L-cysteine
 def: "A protein modification that effectively cross-links an L-cysteinyl-L-glycine dipeptide and an L-cysteine residue by a disulfide bond to form S-(cysteinyl-glycyl)-L-cysteine." [PubMed:27936627, PubMed: 20594348, PubMed: 29627744]
 comment: Glutamyl-transpeptidase cleaves glutathione into cysteinylglycine (Cys-Gly) and a Glu residue. [PubMed:28537416]
 xref: DiffAvg: "176.17"
