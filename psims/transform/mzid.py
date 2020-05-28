@@ -119,7 +119,7 @@ class MzIdentMLTranslater(TransformerBase):
         try:
             analysis_software_list = next(self.reader.iterfind("AnalysisSoftwareList"))
         except StopIteration:
-            analysis_software_list = []
+            analysis_software_list = {}
 
         analysis_software_list = map(
             self.format_analysis_software, analysis_software_list.get("AnalysisSoftware"))
