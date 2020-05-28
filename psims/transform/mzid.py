@@ -456,10 +456,14 @@ class MzIdentMLTranslater(TransformerBase):
                     for spectrum_id_result in spectrum_identification_list.pop("SpectrumIdentificationResult", []):
                         i += 1
                         result = self.format_spectrum_identification_result(spectrum_id_result)
+                        if result is None:
+                            continue
                         with result:
                             for item in map(
                                     self.format_spectrum_identification_item,
                                     spectrum_id_result['SpectrumIdentificationItem']):
+                                if item is None:
+                                    continue
                                 item.write(self.writer)
                         if i % K == 0:
                             self.log("Copied %d SpectrumIdentificationResults" % i)
@@ -475,14 +479,20 @@ class MzIdentMLTranslater(TransformerBase):
                     for pag in protein_detection_list.pop('ProteinAmbiguityGroup'):
                         i += 1
                         result = self.format_protein_ambiguity_group(pag)
+                        if result is None:
+                            continue
                         with result:
                             j = 0
                             for prot in pag['ProteinDetectionHypothesis']:
                                 result = self.format_protein_detection_hypothesis(prot)
+                                if result is None:
+                                    continue
                                 with result:
                                     k = 0
                                     for pept in prot['PeptideHypothesis']:
                                         result = self.format_peptide_detection_hypothesis(pept)
+                                        if result is None:
+                                            continue
                                         result.write(self.writer)
                                     k += 1
                                     if k > N:
