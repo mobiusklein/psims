@@ -185,11 +185,11 @@ class MzIdentMLTranslater(TransformerBase):
         with writer.sequence_collection():
             reader.reset()
             i = 0
-            for db_seq in map(self.format_db_sequence, reader.iterfind("dBSequence")):
+            for db_seq in map(self.format_db_sequence, reader.iterfind("DBSequence")):
                 i += 1
                 db_seq.write(self.writer)
                 if i % K == 0:
-                    self.log("Copied %d dBSequences" % i)
+                    self.log("Copied %d DBSequences" % i)
                 if i > N:
                     break
 
