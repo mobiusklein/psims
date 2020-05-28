@@ -363,13 +363,13 @@ class MzIdentMLTranslater(TransformerBase):
         d['parent_tolerance'] = self.format_tolerance(d.pop("ParentTolerance", {}), self.writer.ParentTolerance)
         d['fragment_tolerance'] = self.format_tolerance(d.pop("FragmentTolerance", {}), self.writer.FragmentTolerance)
         d['threshold'] = self._extract_params(d.pop("Threshold"))
-        d['analysis_software_id'] = d.pop("analysisSoftware_ref")
+        d['analysis_software_id'] = d.pop("analysisSoftware_ref", None)
         return self.writer.SpectrumIdentificationProtocol.ensure(d)
 
     def format_protein_detection_protocol(self, pdp):
         d = dict(pdp)
         d['threshold'] = self._extract_params(d.pop("Threshold"))
-        d['analysis_software_id'] = d.pop("analysisSoftware_ref")
+        d['analysis_software_id'] = d.pop("analysisSoftware_ref", None)
         d['params'] = d.pop("AnalysisParams", [])
         return self.writer.ProteinDetectionProtocol.ensure(d)
 
