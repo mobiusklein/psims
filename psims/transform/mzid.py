@@ -122,7 +122,7 @@ class MzIdentMLTranslater(TransformerBase):
             analysis_software_list = {}
 
         analysis_software_list = map(
-            self.format_analysis_software, analysis_software_list.get("AnalysisSoftware"))
+            self.format_analysis_software, analysis_software_list.get("AnalysisSoftware", []))
 
         with self.writer.AnalysisSoftwareList(analysis_software_list):
             self.insert_software_record()
