@@ -215,7 +215,7 @@ class MzIdentMLTranslater(TransformerBase):
 
     def format_db_sequence(self, db_sequence):
         d = dict(db_sequence)
-        d['search_database_id'] = d.pop("searchDatabase_ref")
+        d['search_database_id'] = d.pop("searchDatabase_ref", None)
         d['sequence'] = d.pop("Seq", None)
         return self.writer.DBSequence.ensure(d)
 
