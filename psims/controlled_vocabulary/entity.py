@@ -58,6 +58,10 @@ class Entity(Mapping):
     def definition(self):
         return self.data.get("def", '')
 
+    @definition.setter
+    def definition(self, value):
+        self.data['def'] = value
+
     def parent(self):
         try:
             reference = self.is_a
