@@ -38,8 +38,11 @@ class Relationship(SemanticEdge):
         self.accession = accession
         self.comment = comment
 
+    def __str__(self):
+        return "%s: %s ! %s" % (self.predicate, self.accession, self.comment)
+
     def __repr__(self):
-        return "%s ! %s" % (self.accession, self.comment)
+        return "{self.__class__.__name__}({self.predicate}, {self.accession}, {self.comment})".format(self=self)
 
     @classmethod
     def fromstring(cls, string):
