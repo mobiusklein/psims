@@ -244,3 +244,40 @@ class OBOParser(object):
 
     def __iter__(self):
         return iter(self.terms.items())
+
+
+class OBOWriter(object):
+    def __init__(self, stream):
+        self.stream = stream
+
+    def write_header(self, header):
+        for key, value in header:
+            if isinstance(value, (list, tuple)):
+                for v in value:
+                    self.stream.write("%s: %s\n" % (key, v))
+            else:
+                self.stream.write("%s: %s\n" % (key, value))
+        self.stream.write("\n")
+        self.stream.write("\n")
+
+    def write_term(self, term):
+        self.stream.write("[Term]\nid: %s\nname: %s\ndef: \"%s\"\n" %
+                    (term.id, term.name, term.definition))
+        for xref in term.get('xref', []):
+            self.stream.write("xref: ")
+        for is_a in ensure_iterable(term.get("is_a", [])):
+            self.stream.write("is_a: %s" % str(is_a))
+        seen = set()
+        for syn in term.get('synonyms', []):
+            if syn in seen:
+                continue
+            seen.add(syn)
+            self.stream.write("synonym: \"%s\" EXACT\n" % str(syn).replace("\n", "\\n"))
+        for prop in term.get('property_value', []):
+            self.stream.write("property_value: %s\n" % prop)
+        self.stream.write("\n")
+
+    def write_vocabulary(self, vocabulary):
+        self.write_header(vocabular.metadata)
+        for term in vocabulary.terms.values():
+            self.write_term(term)
