@@ -62,7 +62,7 @@ def parse_xsdtype(text):
         except KeyError:
             warnings.warn("Could not find a converter for XSD type %r" % (text, ))
             dtype = str
-            return dtype
+        return dtype
 
 
 def obj_to_xsdtype(value):
