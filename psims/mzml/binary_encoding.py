@@ -60,7 +60,7 @@ for dtype in list(encoding_map.values()):
 
 
 def encode_array(array, compression=COMPRESSION_NONE, dtype=np.float32):
-    bytestring = np.asanyarray(array).astype(dtype).tobytes()
+    bytestring = np.asanyarray(array).astype(dtype, copy=False).tobytes()
     if compression == COMPRESSION_NONE:
         bytestring = bytestring
     elif compression == COMPRESSION_ZLIB:
