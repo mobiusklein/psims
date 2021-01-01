@@ -36,6 +36,10 @@ class Entity(Mapping):
         else:
             self[key] = value
 
+    def __dir__(self):
+        keys = set(object.__dir__(self)) | set(self.keys())
+        return sorted(keys)
+
     def __len__(self):
         return len(self.data)
 

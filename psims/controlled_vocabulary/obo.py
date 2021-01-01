@@ -177,6 +177,8 @@ class OBOParser(object):
         if "property_value" in entity.data:
             for prop_val in ensure_iterable(entity.data['property_value']):
                 prop, val = prop_val.split(" ", 1)
+                prop = prop.strip(": ")
+                val = val.strip()
                 if val.startswith("\""):
                     val, dtype = val.rsplit(" ", 1)
                     dtype = parse_xsdtype(dtype)
