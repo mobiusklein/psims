@@ -2,3 +2,4 @@ lxml
 sqlalchemy
 pyteomics >= 4.0.1
 numpy
+six
