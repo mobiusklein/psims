@@ -240,12 +240,12 @@ class TagBase(object):
                 raise ValueError("Required id for %r but id was None" % (self,))
             attrs['id'] = self.id
         if xml_file is None:
-            elt = etree.Element(self.tag_name, **attrs)
+            elt = etree.Element(self.tag_name, attrs)
             if self.text:
                 elt.text = self.text
             return elt
         else:
-            return xml_file.element(self.tag_name, **attrs)
+            return xml_file.element(self.tag_name, attrs)
 
     def write(self, xml_file, with_id=False):
         """Write this element to file
