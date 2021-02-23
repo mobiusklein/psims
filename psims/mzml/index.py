@@ -154,25 +154,24 @@ class IndexList(Sequence):
         self.indexers.append(indexer)
 
 
-class HashingStream(object):
+class StreamWrapperBase(object):
     def __init__(self, stream):
         if isinstance(stream, basestring):
-            stream = open(stream, 'wb')
+            stream = io.open(stream, 'wb')
         self.stream = stream
-        self._checksum = sha1()
-        self.accumulator = 0
 
     def write(self, b):
-        self.stream.write(b)
-        self._checksum.update(b)
-        self.accumulator += len(b)
-        return len(b)
+        return self.stream.write(b)
 
     def flush(self):
-        self.stream.flush()
+        return self.stream.flush()
 
     def close(self):
         self.stream.close()
+
+    @property
+    def closed(self):
+        return self.stream.closed
 
     def writable(self):
         return self.stream.writable()
@@ -181,17 +180,42 @@ class HashingStream(object):
     def name(self):
         return self.stream.name
 
+
+class HashingStream(StreamWrapperBase):
+    def __init__(self, stream):
+        super(HashingStream, self).__init__(stream)
+        self._checksum = sha1()
+
+    def write(self, b):
+        n = self.stream.write(b)
+        self._checksum.update(b)
+        return n
+
     def checksum(self):
         return self._checksum.hexdigest()
 
 
-class IndexingStream(HashingStream):
+class IndexingStream(StreamWrapperBase):
     def __init__(self, stream):
+        # Make sure we keep a handle on the real hashing stream, regardless of
+        # whether we wrap it in a buffering layer.
+        self.hashing_stream = HashingStream(stream)
+        # If the stream created supports writable and the rest of the io.IOBase
+        # interface, we can combine it with io.BufferedWriter, cutting down on
+        # the number of calls to write on the inner stream.
+        if hasattr(self.hashing_stream.stream, 'writable'):
+            stream = io.BufferedWriter(self.hashing_stream)
+        else:
+            # No Python-level buffering
+            stream = self.hashing_stream
         super(IndexingStream, self).__init__(stream)
+        # A running tally of the number of bytes written
+        self.accumulator = 0
         self.indices = IndexList()
         self.indices.add(SpectrumIndexer())
         self.indices.add(ChromatogramIndexer())
 
+    # This could be optimized better, split produces a lot of copies.
     def tokenize(self, buff):
         delim = b'<'
         started_with_delim = buff.startswith(delim)
@@ -218,6 +242,7 @@ class IndexingStream(HashingStream):
     def write(self, data):
         for line in self.tokenize(data):
             self.indices.test(line, self.accumulator)
+            self.accumulator += len(line)
             super(IndexingStream, self).write(line)
 
     def _raw_write(self, data):
@@ -228,6 +253,12 @@ class IndexingStream(HashingStream):
         for ref_id, index_data in index.items():
             self.write_offset(ref_id, index_data)
         self.write(b"    </index>\n")
+
+    def checksum(self):
+        # Make sure to flush the buffer into the underlying checksum stream so
+        # that any final data is written.
+        self.flush()
+        return self.hashing_stream.checksum()
 
     def write_index_list(self):
         offset = self.accumulator
