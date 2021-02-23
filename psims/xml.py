@@ -245,7 +245,7 @@ class TagBase(object):
                 elt.text = self.text
             return elt
         else:
-            return xml_file.element(self.tag_name, attrs)
+            return xml_file.element(self.tag_name, **attrs)
 
     def write(self, xml_file, with_id=False):
         """Write this element to file
