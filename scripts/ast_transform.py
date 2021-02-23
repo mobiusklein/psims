@@ -19,12 +19,12 @@ for block in module.body:
 # Inspect each class's __init__ method for an argument called "id" which we'll assume
 # means that the class should map to an XML element that has an id attribute
 for cls in clses:
-    print(cls.name)
+    print((cls.name))
     for block in cls.body:
         if isinstance(block, ast.FunctionDef):
             if block.name == "__init__":
                 args = block.args
-                print '\t', len(args.args), "argument __init__"
+                print('\t', len(args.args), "argument __init__")
                 if "id" in [a.id for a in args.args]:
                     print("Has ID")
                     cls.body.insert(0, ast.Assign(targets=[ast.Name(id="requires_id")], value=ast.Name(id="True")))
@@ -35,7 +35,7 @@ for cls in clses:
 
 # Rewrite the write method as "write_content", removing the top-most with expression
 for cls in clses:
-    print cls.name
+    print(cls.name)
     for block in cls.body:
         if isinstance(block, ast.FunctionDef):
             if block.name == "write":
