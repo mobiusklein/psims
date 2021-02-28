@@ -203,9 +203,12 @@ class IndexingStream(StreamWrapperBase):
         # If the stream created supports writable and the rest of the io.IOBase
         # interface, we can combine it with io.BufferedWriter, cutting down on
         # the number of calls to write on the inner stream.
-        if hasattr(self.hashing_stream.stream, 'writable'):
-            stream = io.BufferedWriter(self.hashing_stream)
-        else:
+        try:
+            if self.hashing_stream.writable():
+                stream = io.BufferedWriter(self.hashing_stream)
+            else:
+                raise ValueError("Stream %s must be writable!" % self.hashing_stream.stream)
+        except AttributeError:
             # No Python-level buffering
             stream = self.hashing_stream
         super(IndexingStream, self).__init__(stream)
