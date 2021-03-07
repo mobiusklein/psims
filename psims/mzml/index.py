@@ -247,7 +247,9 @@ class IndexingStream(StreamWrapperBase):
         for line in self.tokenize(data):
             self.indices.test(line, self.accumulator)
             self.accumulator += len(line)
-            n += super(IndexingStream, self).write(line)
+            nl = super(IndexingStream, self).write(line)
+            if nl is not None:
+                n += nl
         return n
 
     def _raw_write(self, data):
