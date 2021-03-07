@@ -243,10 +243,12 @@ class IndexingStream(StreamWrapperBase):
             yield tail
 
     def write(self, data):
+        n = 0
         for line in self.tokenize(data):
             self.indices.test(line, self.accumulator)
             self.accumulator += len(line)
-            super(IndexingStream, self).write(line)
+            n += super(IndexingStream, self).write(line)
+        return n
 
     def _raw_write(self, data):
         super(IndexingStream, self).write(data)
