@@ -1,5 +1,6 @@
 import os
 import pkg_resources
+import gzip
 try:
     from urllib2 import urlopen, URLError, Request
 except ImportError:
@@ -9,39 +10,39 @@ from . import unimod
 
 
 def _use_vendored_psims_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/psi-ms.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/psi-ms.obo.gz"))
 
 
 def _use_vendored_psimod_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/psi-mod.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/psi-mod.obo.gz"))
 
 
 def _use_vendored_unit_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/unit.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/unit.obo.gz"))
 
 
 def _use_vendored_pato_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/pato.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/pato.obo.gz"))
 
 
 def _use_vendored_unimod_xml():
-    return pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml.gz"))
 
 
 def _use_vendored_xlmod_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/XLMOD.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/XLMOD.obo.gz"))
 
 
 def _use_vendored_bto_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/bto.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/bto.obo.gz"))
 
 
 def _use_vendored_go_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/go.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/go.obo.gz"))
 
 
 def _use_vendored_gno_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/gno.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/gno.obo.gz"))
 
 
 fallback = {
