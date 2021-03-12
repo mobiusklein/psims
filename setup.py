@@ -45,4 +45,12 @@ setup(
         'Source Code': 'https://github.com/mobiusklein/psims',
         'Issue Tracker': 'https://github.com/mobiusklein/psims/issues'
     },
+    classifiers=[
+        "License :: OSI Approved :: Apache Software License",
+        "Topic :: Text Processing :: Markup :: XML",
+        "Intended Audience :: Science/Research",
+        "Development Status :: 5 - Production/Stable",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+    ]
 )
