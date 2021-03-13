@@ -4,7 +4,7 @@ import io
 from io import BytesIO
 from collections import defaultdict, OrderedDict
 
-from six import string_types as basestring
+from six import string_types as basestring, PY2
 
 try:
     from collections.abc import Sequence, Mapping
@@ -162,11 +162,15 @@ class StreamWrapperBase(object):
             stream = io.open(stream, 'wb')
         self.stream = stream
 
-    def write(self, b):
-        n = self.stream.write(b)
-        if n is None:
-            raise ValueError("The write stream %r failed to return number of bytes written" % (self.stream, ))
-        return n
+    if PY2:
+        def write(self, b):
+            return self.stream.write(b)
+    else:
+        def write(self, b):
+            n = self.stream.write(b)
+            if n is None:
+                raise ValueError("The write stream %r failed to return number of bytes written" % (self.stream, ))
+            return n
 
     def flush(self):
         return self.stream.flush()
