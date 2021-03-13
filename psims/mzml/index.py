@@ -155,13 +155,18 @@ class IndexList(Sequence):
 
 
 class StreamWrapperBase(object):
+    '''A base class for wrapping an output stream to intercept operations.
+    '''
     def __init__(self, stream):
         if isinstance(stream, basestring):
             stream = io.open(stream, 'wb')
         self.stream = stream
 
     def write(self, b):
-        return self.stream.write(b)
+        n = self.stream.write(b)
+        if n is None:
+            raise ValueError("The write stream %r failed to return number of bytes written" % (self.stream, ))
+        return n
 
     def flush(self):
         return self.stream.flush()
@@ -180,8 +185,18 @@ class StreamWrapperBase(object):
     def name(self):
         return self.stream.name
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if not self.closed:
+            self.close()
+
 
 class HashingStream(StreamWrapperBase):
+    '''A write stream wrapper to compute a running SHA1 checksum as bytes are written to
+    the output stream.
+    '''
     def __init__(self, stream):
         super(HashingStream, self).__init__(stream)
         self._checksum = sha1()
@@ -192,10 +207,23 @@ class HashingStream(StreamWrapperBase):
         return n
 
     def checksum(self):
+        '''Get the current checksum.
+
+        Returns
+        -------
+        bytes
+        '''
         return self._checksum.hexdigest()
 
 
 class IndexingStream(StreamWrapperBase):
+    '''An output stream wrapper that tracks running byte offsets for specific patterns.
+
+    The output stream is also wrapped in a :class:`HashingStream`. If the innermost stream
+    supports :class:`io.BufferedWriter`, this will also wrap the output stream too to reduce
+    the number of calls to write through the hashing stream.
+    '''
+
     def __init__(self, stream):
         # Make sure we keep a handle on the real hashing stream, regardless of
         # whether we wrap it in a buffering layer.
