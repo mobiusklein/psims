@@ -5,7 +5,7 @@ from collections import Counter
 
 from lxml import etree
 
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship, backref, object_session
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy import (Numeric, Unicode,
@@ -36,7 +36,17 @@ except ImportError:
             return str(element)
 
 
-Base = declarative_base()
+model_registry = set()
+
+class SubclassRegistringDeclarativeMeta(DeclarativeMeta):
+    def __new__(cls, name, parents, attrs):
+        new_type = super(SubclassRegistringDeclarativeMeta,
+                         cls).__new__(cls, name, parents, attrs)
+        model_registry.add(new_type)
+        return new_type
+
+
+Base = declarative_base(metaclass=SubclassRegistringDeclarativeMeta)
 
 _unimod_xml_download_url = "http://www.unimod.org/xml/unimod_tables.xml"
 
@@ -692,7 +702,7 @@ def create(doc_path, output_path="sqlite://"):
     session = sessionmaker(bind=engine, autoflush=False)()
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-        for model in Base._decl_class_registry.values():
+        for model in model_registry:
             if hasattr(model, "_tag_name") and hasattr(model, "from_tag"):
                 for tag in tree.iterfind(".//" + model._tag_name):
                     session.add(model.from_tag(tag))
@@ -746,51 +756,49 @@ class Unimod(object):
             return self.default_version
 
     def get(self, identifier, strict=True):
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-            is_explicit_accession = isinstance(identifier, basestring) and identifier.startswith("UNIMOD")
-            try:
-                # At least one Modification has an empty string code_name or ex_code_name, causing
-                # this fuzzy finder function to happily respond to that record
-                if identifier == "":
-                    raise KeyError(identifier)
-            except (TypeError, ValueError):
-                pass
-            if isinstance(identifier, int) or is_explicit_accession:
-                if is_explicit_accession:
-                    identifier = int(identifier.replace("UNIMOD:", ''))
-                mod = self.session.query(Modification).get(identifier)
-                if mod is None:
-                    raise KeyError(identifier)
-                return mod
-            elif isinstance(identifier, basestring):
-                if strict:
-                    mod = self.session.query(Modification).filter(
-                        (Modification.full_name == identifier) |
-                        (Modification.code_name == identifier) |
-                        (Modification.ex_code_name == identifier)).first()
-                    if mod is None:
-                        alt_name = self.session.query(AlternativeName).filter(
-                            AlternativeName.alt_name == identifier).first()
-                        if alt_name is None:
-                            raise KeyError(identifier)
-                        mod = alt_name.modification
-                    return mod
-                else:
-                    qname = "%%%s%%" % identifier
-                    mod = self.session.query(Modification).filter(
-                        (Modification.full_name.like(qname)) |
-                        (Modification.code_name.like(qname)) |
-                        (Modification.ex_code_name.like(qname))).first()
-                    if mod is None:
-                        alt_name = self.session.query(AlternativeName).filter(
-                            AlternativeName.alt_name.like(qname)).first()
-                        if alt_name is None:
-                            raise KeyError(identifier)
-                        mod = alt_name.modification
-                    return mod
-            else:
+        is_explicit_accession = isinstance(identifier, basestring) and identifier.startswith("UNIMOD")
+        try:
+            # At least one Modification has an empty string code_name or ex_code_name, causing
+            # this fuzzy finder function to happily respond to that record
+            if identifier == "":
                 raise KeyError(identifier)
+        except (TypeError, ValueError):
+            pass
+        if isinstance(identifier, int) or is_explicit_accession:
+            if is_explicit_accession:
+                identifier = int(identifier.replace("UNIMOD:", ''))
+            mod = self.session.query(Modification).get(identifier)
+            if mod is None:
+                raise KeyError(identifier)
+            return mod
+        elif isinstance(identifier, basestring):
+            if strict:
+                mod = self.session.query(Modification).filter(
+                    (Modification.full_name == identifier) |
+                    (Modification.code_name == identifier) |
+                    (Modification.ex_code_name == identifier)).first()
+                if mod is None:
+                    alt_name = self.session.query(AlternativeName).filter(
+                        AlternativeName.alt_name == identifier).first()
+                    if alt_name is None:
+                        raise KeyError(identifier)
+                    mod = alt_name.modification
+                return mod
+            else:
+                qname = "%%%s%%" % identifier
+                mod = self.session.query(Modification).filter(
+                    (Modification.full_name.like(qname)) |
+                    (Modification.code_name.like(qname)) |
+                    (Modification.ex_code_name.like(qname))).first()
+                if mod is None:
+                    alt_name = self.session.query(AlternativeName).filter(
+                        AlternativeName.alt_name.like(qname)).first()
+                    if alt_name is None:
+                        raise KeyError(identifier)
+                    mod = alt_name.modification
+                return mod
+        else:
+            raise KeyError(identifier)
 
     by_title = by_name = get
 
