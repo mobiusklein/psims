@@ -14,6 +14,7 @@ from ..mzml.binary_encoding import encode_array_direct, encoding_map, compressio
 from ..mzml.writer import PlainMzMLWriter as _MzMLWriter, NON_STANDARD_ARRAY, ARRAY_TYPES, Mapping
 from ..mzml.index import IndexingStream
 
+from . import components
 
 class MzMLbWriter(_MzMLWriter):
     def __init__(self, h5_file, close=False, vocabularies=None, missing_reference_is_error=False,
@@ -120,10 +121,8 @@ class MzMLbWriter(_MzMLWriter):
         offset = self.offset_tracker[storage_name]
 
         buff = self.h5_file[storage_name]
+        buff.resize((offset + length, ))
         buff[offset:offset + length] = encoded_array
-        # z = buff.size
-        # if offset + length > z:
-
 
         self.offset_tracker[storage_name] += length
 
