@@ -64,11 +64,17 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.section_args = section_args
 
     def __enter__(self):
+        return self.begin()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.end(exc_type, exc_value, traceback)
+
+    def begin(self):
         self.toplevel = element(self.writer, self.section, **self.section_args)
         self.toplevel.__enter__()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def end(self, exc_type, exc_value, traceback):
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
 
@@ -145,13 +151,13 @@ class IndexedmzMLSection(DocumentSection):
         self.inner = None
         self.indexer = indexer
 
-    def __enter__(self):
+    def begin(self):
         self.toplevel = element(self.writer, IndexedMzML())
         self.toplevel.__enter__()
         self.inner = element(self.writer, MzML(**self.section_args))
         self.inner.__enter__()
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def end(self, exc_type, exc_value, traceback):
         self.inner.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
         self.write_index()
@@ -528,26 +534,26 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         default_array_length = len(mz_array) if mz_array is not None else 0
         if mz_array is not None:
             mz_array_tag = self._prepare_array(
-                mz_array, encoding=encoding[MZ_ARRAY], compression=compression, array_type=MZ_ARRAY)
+                mz_array, encoding=encoding[MZ_ARRAY], compression=compression, array_type=MZ_ARRAY, scope='spectrum')
             array_list.append(mz_array_tag)
 
         if intensity_array is not None:
             intensity_array_tag = self._prepare_array(
                 intensity_array, encoding=encoding[INTENSITY_ARRAY], compression=compression,
-                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit})
+                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit}, scope='spectrum')
             array_list.append(intensity_array_tag)
 
         if charge_array is not None:
             charge_array_tag = self._prepare_array(
                 charge_array, encoding=encoding[CHARGE_ARRAY], compression=compression,
-                array_type=CHARGE_ARRAY)
+                array_type=CHARGE_ARRAY, scope='spectrum')
             array_list.append(charge_array_tag)
         for array_type, array in other_arrays:
             if array_type is None:
                 raise ValueError("array type can't be None")
             array_tag = self._prepare_array(
                 array, encoding=encoding[array_type], compression=compression, array_type=array_type,
-                default_array_length=default_array_length)
+                default_array_length=default_array_length, scope='spectrum')
             array_list.append(array_tag)
         array_list_tag = self.BinaryDataArrayList(array_list)
 
@@ -671,19 +677,19 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         if time_array is not None:
             time_array_tag = self._prepare_array(
                 time_array, encoding=encoding[TIME_ARRAY], compression=compression,
-                array_type={"name": TIME_ARRAY, "unit_name": time_unit})
+                array_type={"name": TIME_ARRAY, "unit_name": time_unit}, scope='chromatogram')
             array_list.append(time_array_tag)
 
         if intensity_array is not None:
             intensity_array_tag = self._prepare_array(
                 intensity_array, encoding=encoding[INTENSITY_ARRAY], compression=compression,
-                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit})
+                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit}, scope='chromatogram')
             array_list.append(intensity_array_tag)
 
         for array_type, array in other_arrays:
             array_tag = self._prepare_array(
                 array, encoding=encoding[array_type], compression=compression, array_type=array_type,
-                default_array_length=default_array_length)
+                default_array_length=default_array_length, scope='chromatogram')
             array_list.append(array_tag)
         params.append(chromatogram_type)
         array_list_tag = self.BinaryDataArrayList(array_list)
@@ -709,7 +715,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         chromatogram.write(self.writer)
 
     def _prepare_array(self, array, encoding=32, compression=COMPRESSION_ZLIB,
-                       array_type=None, default_array_length=None):
+                       array_type=None, default_array_length=None, scope=None):
         if isinstance(encoding, numbers.Number):
             _encoding = int(encoding)
         else:
