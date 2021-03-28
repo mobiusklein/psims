@@ -2,8 +2,8 @@ from ..mzml.components import BinaryDataArray, Binary, NullMap
 from ..xml import _element
 
 
-# EXTERNAL_DATASET_PARAM = "external reference dataset"
-EXTERNAL_DATASET_PARAM = "external dataset"
+EXTERNAL_DATASET_PARAM = "external HDF5 dataset"
+# EXTERNAL_DATASET_PARAM = "external dataset"
 
 
 class ExternalBinaryDataArray(BinaryDataArray):
