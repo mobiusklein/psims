@@ -1,8 +1,11 @@
+import logging
 import io
 import numbers
 from collections import Counter
 
 import numpy as np
+
+logging.getLogger('hdf5plugin').addHandler(logging.NullHandler())
 
 import h5py
 import hdf5plugin
