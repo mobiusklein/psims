@@ -69,6 +69,8 @@ class MzMLbWriter(_MzMLWriter):
         else:
             key = array_type.replace(" ", "_")
         tag_name = "{scope}_{key}".format(scope=scope, key=key)
+        if dtype is not None:
+            tag_name += '_' + dtype.__name__
         self.h5_file.create_dataset(
             tag_name, chunks=(self.h5_blocksize, ),
             shape=(self.h5_blocksize, ), dtype=dtype, compression=self.h5_compression,
@@ -138,7 +140,7 @@ class MzMLbWriter(_MzMLWriter):
         id_ref_array = []
         offset_array = []
         for i, o in index:
-            id_ref_array.append(i.encode('utf8'))
+            id_ref_array.append(i)
             offset_array.append(o.offset)
         id_ref_array.append(b'')
         offset_array.append(last)

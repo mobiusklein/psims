@@ -1,6 +1,6 @@
 from pyteomics import mzml
 
-from psims import MzMLWriter
+from psims import MzMLWriter, MzMLbWriter
 from psims.utils import ensure_iterable
 
 from .utils import TransformerBase
@@ -326,3 +326,18 @@ class MzMLTransformer(TransformerBase):
                         self.writer.write_spectrum(**self.format_spectrum(spectrum))
                         if i % 1000 == 0:
                             self.log("Handled %d spectra" % (i, ))
+
+
+class MzMLToMzMLb(MzMLTransformer):
+    def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
+                 sort_by_scan_time=False):
+        if transform is None:
+            transform = identity
+        self.input_stream = input_stream
+        self.output_stream = output_stream
+        self.transform = transform
+        self.transform_description = transform_description
+        self.sort_by_scan_time = sort_by_scan_time
+        self.reader = MzMLParser(input_stream, iterative=True)
+        self.writer = MzMLbWriter(output_stream)
+        self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary
