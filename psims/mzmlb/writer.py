@@ -19,7 +19,7 @@ from . import components
 class MzMLbWriter(_MzMLWriter):
     def __init__(self, h5_file, close=False, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, h5_compression='gzip',
-                 h5_compression_options=9, h5_blocksize=2**20, **kwargs):
+                 h5_compression_options=4, h5_blocksize=2**20, **kwargs):
         if not isinstance(h5_file, h5py.File):
             h5_file = h5py.File(h5_file, 'w')
         self.xml_buffer = io.BytesIO()
