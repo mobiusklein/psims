@@ -26,11 +26,17 @@ if hdf5plugin is not None:
     HDF5_COMPRESSORS = {
         "blosc": hdf5plugin.Blosc(),
         "blosc:lz4": hdf5plugin.Blosc('lz4'),
+        "blosc:lz4hc": hdf5plugin.Blosc('lz4hc'),
         "blosc:zlib": hdf5plugin.Blosc('zlib'),
         "blosc:zstd": hdf5plugin.Blosc('zstd'),
     }
     HDF5_COMPRESSORS = {k: dict(v) for k, v in HDF5_COMPRESSORS.items()}
-HDF5_COMPRESSORS['gzip'] = {'compression': 'gzip', 'compression_opts': 4}
+HDF5_COMPRESSORS['zlib'] = HDF5_COMPRESSORS['gzip'] = {'compression': 'gzip', 'compression_opts': 4}
+
+
+HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME = {
+    v['compression']: k for k, v in HDF5_COMPRESSORS.items()
+}
 
 
 class MzMLbWriter(_MzMLWriter):
@@ -38,11 +44,13 @@ class MzMLbWriter(_MzMLWriter):
                  vocabulary_resolver=None, id=None, accession=None, h5_compression='gzip',
                  h5_compression_options=None, h5_blocksize=2**20, **kwargs):
         if h5_compression in HDF5_COMPRESSORS:
-            h5_compression = HDF5_COMPRESSORS[h5_compression]['compression']
+            key = h5_compression
+            h5_compression = HDF5_COMPRESSORS[key]['compression']
             if h5_compression_options is None:
-                h5_compression_options = HDF5_COMPRESSORS[h5_compression]['compression_opts']
+                h5_compression_options = HDF5_COMPRESSORS[key]['compression_opts']
         if h5_compression_options is None:
             h5_compression_options = 4
+        self.compressor_name = HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME[h5_compression]
         if not isinstance(h5_file, h5py.File):
             h5_file = h5py.File(h5_file, 'w')
         self.xml_buffer = io.BytesIO()
@@ -61,6 +69,7 @@ class MzMLbWriter(_MzMLWriter):
         self.offset_tracker = Counter()
 
     def begin(self):
+        self.h5_file.attrs['compression'] = self.compressor_name
         return super(MzMLbWriter, self).begin()
 
     def end(self, type, value, traceback):
