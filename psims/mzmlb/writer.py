@@ -22,6 +22,8 @@ from . import components
 
 HDF5_COMPRESSORS = {}
 
+DEFAULT_COMPRESSOR = 'gzip'
+
 if hdf5plugin is not None:
     HDF5_COMPRESSORS = {
         "blosc": hdf5plugin.Blosc(),
@@ -31,6 +33,8 @@ if hdf5plugin is not None:
         "blosc:zstd": hdf5plugin.Blosc('zstd'),
     }
     HDF5_COMPRESSORS = {k: dict(v) for k, v in HDF5_COMPRESSORS.items()}
+    DEFAULT_COMPRESSOR = 'blosc:zstd'
+
 HDF5_COMPRESSORS['zlib'] = HDF5_COMPRESSORS['gzip'] = {'compression': 'gzip', 'compression_opts': 4}
 
 
@@ -41,7 +45,7 @@ HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME = {
 
 class MzMLbWriter(_MzMLWriter):
     def __init__(self, h5_file, close=False, vocabularies=None, missing_reference_is_error=False,
-                 vocabulary_resolver=None, id=None, accession=None, h5_compression='gzip',
+                 vocabulary_resolver=None, id=None, accession=None, h5_compression=DEFAULT_COMPRESSOR,
                  h5_compression_options=None, h5_blocksize=2**20, **kwargs):
         if h5_compression in HDF5_COMPRESSORS:
             key = h5_compression
