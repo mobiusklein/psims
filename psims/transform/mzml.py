@@ -330,7 +330,7 @@ class MzMLTransformer(TransformerBase):
 
 class MzMLToMzMLb(MzMLTransformer):
     def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
-                 sort_by_scan_time=False):
+                 sort_by_scan_time=False, **hdf5args):
         if transform is None:
             transform = identity
         self.input_stream = input_stream
@@ -339,5 +339,5 @@ class MzMLToMzMLb(MzMLTransformer):
         self.transform_description = transform_description
         self.sort_by_scan_time = sort_by_scan_time
         self.reader = MzMLParser(input_stream, iterative=True)
-        self.writer = MzMLbWriter(output_stream)
+        self.writer = MzMLbWriter(output_stream, **hdf5args)
         self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary

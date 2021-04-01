@@ -86,7 +86,7 @@ class MzMLbWriter(_MzMLWriter):
             'mzML', shape=(n, ), chunks=True,
             dtype=np.int8, data=bytearray(xml_bytes), compression=self.h5_compression,
             compression_opts=self.h5_compression_options)
-
+        self.h5_file['mzML'].attrs['version'] = "mzMLb 1.0"
         for array, z in self.offset_tracker.items():
             self.h5_file[array].resize((z, ))
 
@@ -187,3 +187,9 @@ class MzMLbWriter(_MzMLWriter):
         self.h5_file.create_dataset(
             offset_index_id_ref, data=id_ref_array_enc)
 
+    def _prepare_metadata_index(self, index, index_name, last=None, dtype=np.float32):
+        n = len(index)
+        value = np.empty(n + 1, dtype=dtype)
+        value[:n] = index
+        value[n] = dtype(last) if last is not None else dtype()
+        self.h5_file.create_dataset(index_name, data=value)
