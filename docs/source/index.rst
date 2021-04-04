@@ -12,9 +12,10 @@ Welcome to psims's documentation!
 
    mzML <mzml/index>
    mzIdentML <mzid/index>
+   mzMLb <mzmlb/index>
    XML Utilities <xml>
    Examples <examples>
-   
+
    Transforming mzML <transform/mzml>
 
 

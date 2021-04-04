@@ -44,6 +44,24 @@ HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME = {
 
 
 class MzMLbWriter(_MzMLWriter):
+    '''A high level API for generating mzMLb HDF5 files from simple Python objects.
+
+    This class's public interface is identical to :class:`~.MzMLWriter`, with the exception of those
+    related to HDF5 compression described below.
+
+    Attributes
+    ----------
+    h5_compression : str
+        A valid HDF5 compressor ID or compression scheme name or :const:`None`. Available compression schemes
+        are "gzip"/"zlib", and if :mod:`hdf5plugin` is installed, "blosc", "blosc:lz4", "blosc:zlib", and
+        "blosc:zstd". All Blosc-based compressors enable byte shuffling.
+    h5_compressor_options : int or tuple
+        The options to provide to the compressor designated by :attr:`h5_compressor`. For "gzip", this a single
+        integer setting the compression level, while Blosc takes a tuple of integers.
+    h5_blocksize : int
+        The number of bytes to include in a single HDF5 data block. Smaller blocks improve random access speed
+        at the expense of compression efficiency and space. Defaults to 2 ** 20, 1MB.
+    '''
     def __init__(self, h5_file, close=False, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, h5_compression=DEFAULT_COMPRESSOR,
                  h5_compression_options=None, h5_blocksize=2**20, **kwargs):

@@ -12,3 +12,4 @@ each spectrum en-route. It can also optionally sort the spectra by "scan start t
         :members:
         :inherited-members:
 
+    .. autoclass:: MzMLToMzMLb
