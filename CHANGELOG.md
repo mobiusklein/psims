@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 ## [Unreleased]
 
 ### Added
+
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v0.1.35]
+
+### Added
 1. Added a change log.
 2. Added a `mzMLb` writer implementation.
 
@@ -33,6 +48,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.34...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.35...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v0.1.35]: https://github.com/mobiusklein/psims/releases/v0.1.35
 [v0.1.34]: https://github.com/mobiusklein/psims/releases/v0.1.34
