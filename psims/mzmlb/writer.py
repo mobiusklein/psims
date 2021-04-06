@@ -241,7 +241,7 @@ class MzMLbWriter(_MzMLWriter):
         self.h5_file.create_dataset(
             name, data=value, compression=self.h5_compression,
             compression_opts=self.h5_compression_options,
-            chunks=self.h5_blocksize if chunks else None)
+            chunks=min(self.h5_blocksize, n) if chunks else None)
 
     def create_buffer(self, name, content):
         '''Create a compressed binary buffer with a name and fixed length.
@@ -261,7 +261,7 @@ class MzMLbWriter(_MzMLWriter):
         '''
         n = len(content)
         self.h5_file.create_dataset(
-            name, shape=(n, ), chunks=(self.h5_blocksize, ),
+            name, shape=(n, ), chunks=(min(self.h5_blocksize, n), ),
             dtype=np.int8, data=bytearray(content), compression=self.h5_compression,
             compression_opts=self.h5_compression_options)
         return n
