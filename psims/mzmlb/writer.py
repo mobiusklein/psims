@@ -99,17 +99,13 @@ class MzMLbWriter(_MzMLWriter):
         self._close = False
         super(MzMLbWriter, self).end(type, value, traceback)
         xml_bytes = self.xml_buffer.getvalue()
-        n = len(xml_bytes)
-        self.h5_file.create_dataset(
-            'mzML', shape=(n, ), chunks=True,
-            dtype=np.int8, data=bytearray(xml_bytes), compression=self.h5_compression,
-            compression_opts=self.h5_compression_options)
+        n = self.create_buffer("mzML", xml_bytes)
         self.h5_file['mzML'].attrs['version'] = "mzMLb 1.0"
         for array, z in self.offset_tracker.items():
             self.h5_file[array].resize((z, ))
 
         for index in self.index_builder.indices:
-            self._prepare_index(index, index.name, n)
+            self._prepare_offset_index(index, index.name, n)
 
         self._close = close_
         self.h5_file.flush()
@@ -187,7 +183,18 @@ class MzMLbWriter(_MzMLWriter):
             offset=offset, array_length=length,
             params=params)
 
-    def _prepare_index(self, index, name, last):
+    def _prepare_offset_index(self, index, name, last):
+        '''Prepare an offset index.
+
+        Parameters
+        ----------
+        index : :class:`Iterable` of :class:`~.Offset`
+            The offset index records to store
+        name : str
+            The name of the indexed entity, e.g. "spectrum" or "chromatogram"
+        last : int
+            The final offset value at the end of the file or list
+        '''
         offset_index_key = "mzML_{name}Index".format(name=name)
         offset_index_id_ref = "mzML_{name}Index_idRef".format(name=name)
 
@@ -201,13 +208,60 @@ class MzMLbWriter(_MzMLWriter):
 
         id_ref_array_enc = bytearray(b'\x00'.join(id_ref_array))
         self.h5_file.create_dataset(
-            offset_index_key, data=np.array(offset_array))
+            offset_index_key, data=np.array(offset_array), compression=self.h5_compression,
+            compression_opts=self.h5_compression_options)
         self.h5_file.create_dataset(
-            offset_index_id_ref, data=id_ref_array_enc)
+            offset_index_id_ref, data=id_ref_array_enc, compression=self.h5_compression,
+            compression_opts=self.h5_compression_options)
 
-    def _prepare_metadata_index(self, index, index_name, last=None, dtype=np.float32):
-        n = len(index)
+    def create_array(self, data, name, last=None, dtype=np.float32, chunks=True):
+        '''Store a typed data array as a named dataset.
+
+        .. note::
+            The array should not be textual unless they've already been translated
+            into a byte array with terminal null bytes.
+
+        Parameters
+        ----------
+        data : :class:`Iterable`
+            The data to be stored.
+        name : str
+            The name to store the dataset by.
+        last : object, optional
+            A value to associate with the final entry of the array.
+        dtype : type
+            The type of the entries in the array.
+        chunks : bool
+            Whether or not to store the dataset in chunks.
+        '''
+        n = len(data)
         value = np.empty(n + 1, dtype=dtype)
-        value[:n] = index
+        value[:n] = data
         value[n] = dtype(last) if last is not None else dtype()
-        self.h5_file.create_dataset(index_name, data=value)
+        self.h5_file.create_dataset(
+            name, data=value, compression=self.h5_compression,
+            compression_opts=self.h5_compression_options,
+            chunks=self.h5_blocksize if chunks else None)
+
+    def create_buffer(self, name, content):
+        '''Create a compressed binary buffer with a name and fixed length.
+
+        Parameters
+        ----------
+        name : str
+            The name of the HDF5 dataset
+        content : bytes-like object
+            The data to store. Must be convertable into a :class:`bytearray`, e.g. through the
+            buffer interface.
+
+        Returns
+        -------
+        n : int
+            The size of the buffer written
+        '''
+        n = len(content)
+        self.h5_file.create_dataset(
+            name, shape=(n, ), chunks=(self.h5_blocksize, ),
+            dtype=np.int8, data=bytearray(content), compression=self.h5_compression,
+            compression_opts=self.h5_compression_options)
+        return n
