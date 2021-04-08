@@ -33,7 +33,7 @@ if hdf5plugin is not None:
         "blosc:zstd": hdf5plugin.Blosc('zstd'),
     }
     HDF5_COMPRESSORS = {k: dict(v) for k, v in HDF5_COMPRESSORS.items()}
-    DEFAULT_COMPRESSOR = 'blosc:zstd'
+    DEFAULT_COMPRESSOR = 'blosc'
 
 HDF5_COMPRESSORS['zlib'] = HDF5_COMPRESSORS['gzip'] = {'compression': 'gzip', 'compression_opts': 4}
 
@@ -41,6 +41,35 @@ HDF5_COMPRESSORS['zlib'] = HDF5_COMPRESSORS['gzip'] = {'compression': 'gzip', 'c
 HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME = {
     v['compression']: k for k, v in HDF5_COMPRESSORS.items()
 }
+
+
+class ArrayBuffer(object):
+    def __init__(self, dataset, dtype, size=1024 ** 2):
+        self.dataset = dataset
+        self.dtype = dtype
+        self.size = size
+        self.buffer = io.BytesIO()
+        self.offset = 0
+
+    def add(self, array):
+        self.buffer.write(array.tobytes())
+        self.check()
+
+    def check(self):
+        v = self.buffer.tell()
+        if v >= self.size:
+            self.flush()
+
+    def flush(self):
+        array = np.frombuffer(self.buffer.getvalue(), dtype=self.dtype)
+        n = len(array)
+        total_size = self.offset + n
+        if self.dataset.size < total_size:
+            self.dataset.resize((total_size, ))
+        self.dataset[self.offset:total_size] = array
+        self.offset += n
+        self.buffer.seek(0)
+        self.buffer.truncate(0)
 
 
 class MzMLbWriter(_MzMLWriter):
@@ -88,6 +117,7 @@ class MzMLbWriter(_MzMLWriter):
         self.h5_compression_options = h5_compression_options
 
         self.array_name_cache = {}
+        self.array_buffers = {}
         self.offset_tracker = Counter()
 
     def begin(self):
@@ -102,7 +132,10 @@ class MzMLbWriter(_MzMLWriter):
         n = self.create_buffer("mzML", xml_bytes)
         self.h5_file['mzML'].attrs['version'] = "mzMLb 1.0"
         for array, z in self.offset_tracker.items():
-            self.h5_file[array].resize((z, ))
+            buff = self.array_buffers[array]
+            buff.flush()
+            if buff.dataset.size != z:
+                self.h5_file[array].resize((z, ))
 
         for index in self.index_builder.indices:
             self._prepare_offset_index(index, index.name, n)
@@ -121,10 +154,11 @@ class MzMLbWriter(_MzMLWriter):
         tag_name = "{scope}_{key}".format(scope=scope, key=key)
         if dtype is not None:
             tag_name += '_' + dtype.__name__
-        self.h5_file.create_dataset(
+        dset = self.h5_file.create_dataset(
             tag_name, chunks=(self.h5_blocksize, ),
             shape=(self.h5_blocksize, ), dtype=dtype, compression=self.h5_compression,
             compression_opts=self.h5_compression_options, maxshape=(None, ))
+        self.array_buffers[tag_name] = ArrayBuffer(dset, dtype, self.h5_blocksize)
         return tag_name
 
     def _prepare_array(self, array, encoding=32, compression=COMPRESSION_NONE, array_type=None,
@@ -172,12 +206,9 @@ class MzMLbWriter(_MzMLWriter):
         length = len(encoded_array)
         offset = self.offset_tracker[storage_name]
 
-        buff = self.h5_file[storage_name]
-        buff.resize((offset + length, ))
-        buff[offset:offset + length] = encoded_array
-
+        buff = self.array_buffers[storage_name]
+        buff.add(encoded_array)
         self.offset_tracker[storage_name] += length
-
         return self.ExternalBinaryDataArray(
             external_dataset_name=storage_name,
             offset=offset, array_length=length,

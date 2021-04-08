@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 ## [Unreleased]
 
 ### Added
-
+1. Added additional in-memory buffering of data arrays to reduce round-trips to HDF5 file when writing mzMLb.
 
 ### Changed
 
