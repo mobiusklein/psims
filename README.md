@@ -1,5 +1,9 @@
 # psims
-Prototype work for a unified API for writing PSIMS standardized XML documents, currently just mzML and MzIdentML
+Prototype work for a unified API for writing Proteomics Standards Initiative standardized formats
+for mass spectrometry:
+    1. mzML
+    2. mzIdentML
+    3. mzMLb
 
 See the [Documenation](https://mobiusklein.github.io/psims) for more information
 
@@ -11,7 +15,7 @@ from psims.mzml.writer import MzMLWriter
 # Load the data to write
 scans = get_scan_data()
 
-with MzMLWriter(open("out.mzML", 'wb')) as out:
+with MzMLWriter(open("out.mzML", 'wb'), close=True) as out:
     # Add default controlled vocabularies
     out.controlled_vocabularies()
     # Open the run and spectrum list sections

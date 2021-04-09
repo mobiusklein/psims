@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 ### Removed
 
 ### Fixed
+1. Made the README mzML example actually work.
 
 ### Security
 

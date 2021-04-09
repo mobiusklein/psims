@@ -775,7 +775,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def _prepare_precursor_information(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
                                        isolation_window_args=None, params=None,
                                        intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None, external_spectrum_id=None,
-                                       source_file_reference=None):
+                                       source_file_reference=None, **kwargs):
         '''Prepare a :class:`Precursor` element from disparate data structures.
 
         Parameters
@@ -809,6 +809,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         -------
         :class:`~.Precursor`
         '''
+        if isolation_window_args is None:
+            isolation_window_args = kwargs.get("isolation_window")
         if isinstance(mz, PrecursorBuilder):
             return self.Precursor(**mz.pack())
         if scan_id is not None:
@@ -823,7 +825,10 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         else:
             ion_list = None
         if isolation_window_args:
-            isolation_window_tag = self.IsolationWindow(**isolation_window_args)
+            if isinstance(isolation_window_args, (list, tuple)):
+                isolation_window_tag = self.IsolationWindow(*isolation_window_args)
+            else:
+                isolation_window_tag = self.IsolationWindow(**isolation_window_args)
         else:
             isolation_window_tag = None
         precursor = self.Precursor(
