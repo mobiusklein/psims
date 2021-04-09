@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 1. Added additional in-memory buffering of data arrays to reduce round-trips to HDF5 file when writing mzMLb.
 
 ### Changed
+1. The `MzIdentMLTranslater` class was renamed `MzIdentMLTranslator` for the sake of the English language.
 
 ### Deprecated
 

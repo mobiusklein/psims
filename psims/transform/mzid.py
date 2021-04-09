@@ -30,7 +30,7 @@ class MzIdentMLParser(mzid.MzIdentML):
         self.seek(0)
 
 
-class MzIdentMLTranslater(TransformerBase):
+class MzIdentMLTranslator(TransformerBase):
     def _uncamel(self, name):
         temp = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         return re.sub('([a-z0-9])([A-Z])', r'\1_\2', temp).lower()
