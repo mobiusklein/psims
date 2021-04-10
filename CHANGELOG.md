@@ -17,6 +17,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ### Fixed
 1. Made the README mzML example actually work.
+2. Allowed `Mapping` types to be used for `other_arrays` array names so that units may be specified. Previously, only
+   hashable types were supported, though this was not the intent. Also corrected the documentation to indicate this
+   expects a `list` of (name, array) pairs, not a `Mapping` of them.
 
 ### Security
 

@@ -439,6 +439,9 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                  instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
         '''Create a new :class:`~.Spectrum` instance to be written.
 
+        This method does not immediately write and close the spectrum element, leaving it
+        open for modification and embedding.
+
         Parameters
         ----------
         mz_array: :class:`np.ndarray` of floats
@@ -468,8 +471,11 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             The compression type name to use. Defaults to `COMPRESSION_ZLIB`.
         encoding: dict, optional
             A mapping from array name to NumPy data types.
-        other_arrays: dict, optional
-            A mapping of array names to additional data arrays
+        other_arrays: list, optional
+            An iterable of array names to additional data arrays. Array names may either be
+            strings, :class:`Mapping` objects that define :class:`~.CVParam` or :class:`~.UserParam`,
+            or such paramter objects themselves. Use the latter two methods when defining arrays with
+            units.
         scan_params: list, optional
             A list of cvParams for the `scan` of this `spectrum`
         scan_window_list: list, optional
@@ -481,6 +487,12 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         Returns
         -------
         :class:`~.Spectrum`
+
+        See Also
+        --------
+        :meth:`write_spectrum`
+        :meth:`chromatogram`
+        :meth:`write_chromatogram`
         '''
         self.state_machine.expects_state("spectrum_list")
         if encoding is None:
@@ -551,8 +563,12 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         for array_type, array in other_arrays:
             if array_type is None:
                 raise ValueError("array type can't be None")
+            if isinstance(array_type, Mapping):
+                array_name = array_type['name']
+            else:
+                array_name = array_type
             array_tag = self._prepare_array(
-                array, encoding=encoding[array_type], compression=compression, array_type=array_type,
+                array, encoding=encoding[array_name], compression=compression, array_type=array_type,
                 default_array_length=default_array_length, scope='spectrum')
             array_list.append(array_tag)
         array_list_tag = self.BinaryDataArrayList(array_list)
@@ -592,6 +608,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                        instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
         '''Write a :class:`~.Spectrum` with the provided data.
 
+        To create a spectrum element but not immediately close it off, see the :meth:`spectrum` method.
+
         Parameters
         ----------
         mz_array: :class:`np.ndarray` of floats
@@ -621,8 +639,11 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             The compression type name to use. Defaults to `COMPRESSION_ZLIB`.
         encoding: dict, optional
             A mapping from array name to NumPy data types.
-        other_arrays: dict, optional
-            A mapping of array names to additional data arrays
+        other_arrays: list, optional
+            An iterable of array names to additional data arrays. Array names may either be
+            strings, :class:`Mapping` objects that define :class:`~.CVParam` or :class:`~.UserParam`,
+            or such paramter objects themselves. Use the latter two methods when defining arrays with
+            units.
         scan_params: list, optional
             A list of cvParams for the `scan` of this `spectrum`
         scan_window_list: list, optional
@@ -687,8 +708,12 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             array_list.append(intensity_array_tag)
 
         for array_type, array in other_arrays:
+            if isinstance(array_type, Mapping):
+                array_name = array_type['name']
+            else:
+                array_name = array_type
             array_tag = self._prepare_array(
-                array, encoding=encoding[array_type], compression=compression, array_type=array_type,
+                array, encoding=encoding[array_name], compression=compression, array_type=array_type,
                 default_array_length=default_array_length, scope='chromatogram')
             array_list.append(array_tag)
         params.append(chromatogram_type)
