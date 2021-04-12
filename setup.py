@@ -19,6 +19,11 @@ except Exception:
     print("long_description is missing")
 
 
+extras_require = {
+    'mzmlb': ['h5py', 'hdf5plugin']
+}
+extras_require['all'] = sum(extras_require.values(), [])
+
 setup(
     name='psims',
     version=version,
@@ -41,8 +46,17 @@ setup(
         "sqlalchemy",
         "numpy"
     ],
+    extras_require=extras_require,
     project_urls={
         'Source Code': 'https://github.com/mobiusklein/psims',
         'Issue Tracker': 'https://github.com/mobiusklein/psims/issues'
     },
+    classifiers=[
+        "License :: OSI Approved :: Apache Software License",
+        "Topic :: Text Processing :: Markup :: XML",
+        "Intended Audience :: Science/Research",
+        "Development Status :: 5 - Production/Stable",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+    ]
 )

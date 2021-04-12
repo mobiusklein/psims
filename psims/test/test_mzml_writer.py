@@ -3,7 +3,7 @@ import gzip
 import os
 import tempfile
 
-from psims.mzml import MzMLWriter, binary_encoding
+from psims.mzml import MzMLWriter, binary_encoding, components
 from pyteomics import mzml
 import numpy as np
 from lxml import etree
@@ -93,6 +93,13 @@ def test_array_codec():
         np.allclose(original, decoded)
 
 
+def test_param_unit_resolution():
+    param = components.NullMap.param({"base peak intensity": 1, 'unit_accession': 'MS:1000131'})
+    assert param.unit_accession == "MS:1000131"
+    assert param.value == 1
+    assert param.name == 'base peak intensity'
+
+
 def test_write(output_path, compressor):
     with MzMLWriter(compressor(output_path, 'wb'), close=True) as f:
         f.register("Software", 'psims')
@@ -104,7 +111,7 @@ def test_write(output_path, compressor):
         ])
         f.sample_list([sample])
         f.software_list([
-            f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'psims'])
+            f.Software(version="0.0.0", id='psims', params=['custom unreleased software tool', 'python-psims'])
         ])
         f.instrument_configuration_list([
             f.InstrumentConfiguration(id=1, component_list=f.ComponentList([
@@ -138,11 +145,13 @@ def test_write(output_path, compressor):
                         "scan_id": "scanId=1", "activation": ["collision-induced dissociation",
                                                               {"collision energy": 56.}]
                 }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
-    try:
-        f.format()
-    except OSError:
-        pass
+                pb = f.precursor_builder(mz=12030, scan_id='scanId=2')
+                pb.selected_ion_list[0].set(charge=-2)
+                pb.activation({"collision-induced dissociation": None})
 
+                f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=3', params=[
+                    {"name": "ms level", "value": 2}, {"ref": 'common_params'}],
+                    polarity='negative scan', precursor_information=pb)
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)
     assert opener == compressor
@@ -195,6 +204,8 @@ def test_write(output_path, compressor):
     assert index_list[0]['name'] == 'spectrum'
     reset()
     spectrum_offsets = list(reader.iterfind("offset"))
+    for i, off in enumerate(spectrum_offsets):
+        assert "scanId=%d" % (i + 1) == off['idRef']
     offset = int(spectrum_offsets[0]['offset'])
     reader.seek(offset)
     bytestring = reader.read(100)
@@ -208,4 +219,5 @@ def test_write(output_path, compressor):
     reset()
     line = reader.readline()
     assert line.startswith(b"""<?xml version='1.0' encoding='utf-8'?>""")
+    reader.close()
     return f

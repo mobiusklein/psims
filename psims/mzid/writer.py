@@ -2,9 +2,9 @@ import warnings
 from numbers import Number
 
 try:
-    from collections import Mapping
-except ImportError:
     from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
@@ -176,7 +176,8 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, version='1.2.0', **kwargs):
         if vocabularies is None:
-            vocabularies = list(default_cv_list)
+            vocabularies = []
+        vocabularies = list(default_cv_list) + list(vocabularies)
         ComponentDispatcher.__init__(
             self, vocabularies=vocabularies, missing_reference_is_error=missing_reference_is_error,
             vocabulary_resolver=vocabulary_resolver)

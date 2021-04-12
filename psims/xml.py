@@ -1,23 +1,16 @@
-import os
-import shutil
 import re
+import warnings
+
 from contextlib import contextmanager
-import tempfile
-import time
+from collections import deque, OrderedDict
+
 from lxml import etree
 
+from six import string_types as basestring, add_metaclass, text_type, PY3
+
 from . import controlled_vocabulary
-from .utils import pretty_xml
+from .controlled_vocabulary import obj_to_xsdtype
 from .validation import validate
-
-from six import string_types as basestring, add_metaclass, text_type
-
-
-try:
-    WindowsError
-    on_windows = True
-except NameError:
-    on_windows = False
 
 
 def make_counter(start=1):
@@ -39,6 +32,7 @@ def make_counter(start=1):
     start = [start]
 
     def count_up():
+        '''A closure returning incrementally larger integers'''
         ret_val = start[0]
         start[0] += 1
         return ret_val
@@ -67,6 +61,9 @@ def camelize(name):
 
 
 def id_maker(type_name, id_number):
+    '''Generate a consistent ID that is unique within a document,
+    assuming `id_number` is unique within the tag type.
+    '''
     return "%s_%s" % (type_name.upper(), str(id_number))
 
 
@@ -96,16 +93,16 @@ class ElementType(type):
     """
     _cache = {}
 
-    def __new__(cls, name, parents, attrs):
-        new_type = type.__new__(cls, name, parents, attrs)
+    def __new__(mcs, name, parents, attrs):
+        new_type = type.__new__(mcs, name, parents, attrs)
         tag_name = attrs.get("tag_name")
         if attrs.get("_track") is NO_TRACK:
             return new_type
-        if not hasattr(cls, "_cache"):
-            cls._cache = dict()
-        cls._cache[name] = new_type
+        if not hasattr(mcs, "_cache"):
+            mcs._cache = dict()
+        mcs._cache[name] = new_type
         if tag_name is not None:
-            cls._cache[tag_name] = new_type
+            mcs._cache[tag_name] = new_type
         return new_type
 
 
@@ -243,7 +240,7 @@ class TagBase(object):
                 raise ValueError("Required id for %r but id was None" % (self,))
             attrs['id'] = self.id
         if xml_file is None:
-            elt = etree.Element(self.tag_name, **attrs)
+            elt = etree.Element(self.tag_name, attrs)
             if self.text:
                 elt.text = self.text
             return elt
@@ -375,12 +372,63 @@ def element(xml_file, _tag_name, *args, **kwargs):
     return el.element(xml_file=xml_file, with_id=with_id)
 
 
+class AttrProperty(object):
+    def __init__(self, name, transform=None):
+        if transform is None:
+            transform = self._default_transform
+        self.name = name
+        self.transform = transform
+
+    def _default_transform(self, value):
+        return value
+
+    def __get__(self, inst, cls=None):
+        return inst.attrs.get(self.name)
+
+    def __set__(self, inst, value):
+        inst.attrs[self.name] = self.transform(value)
+
+    def __delete__(self, inst):
+        try:
+            inst.attrs.pop(self.name)
+        except KeyError:
+            pass
+
+
+class XSDTypingProperty(AttrProperty):
+
+    def __get__(self, inst, cls=None):
+        value = inst.attrs.get(self.name)
+        xsdtype = obj_to_xsdtype(value)
+        if xsdtype:
+            inst.attrs['type'] = xsdtype
+        return value
+
+    def __set__(self, inst, value):
+        inst.attrs[self.name] = self.transform(value)
+        value = inst.attrs[self.name]
+        xsdtype = obj_to_xsdtype(value)
+        if xsdtype:
+            inst.attrs['type'] = xsdtype
+
+
+
 class CVParam(TagBase):
     """Represents a ``<cvParam />``
 
     .. note::
         This element holds additional data or annotation. Only controlled values
         are allowed here
+
+    Attributes
+    ----------
+    name: str
+        The human-readable name of the parameter
+    accession: str
+        The within-vocabulary unique identifier of the parameter
+    value: object
+        The value of the parameter, to be converted to text
+
     """
 
     tag_name = "cvParam"
@@ -426,25 +474,15 @@ class CVParam(TagBase):
         super(CVParam, self).__init__(self.tag_name, **attrs)
         self.patch_accession(accession, ref)
 
-    @property
-    def value(self):
-        return self.attrs.get("value")
+    value = AttrProperty("value")
+    ref = AttrProperty("cvRef")
+    name = AttrProperty("name")
+    accession = AttrProperty("accession")
 
-    @value.setter
-    def value(self, value):
-        self.attrs['value'] = value
+    unit_name = AttrProperty("unitName")
+    unit_accession = AttrProperty("unitAccession")
+    unit_cv_ref = AttrProperty("unitCvRef")
 
-    @property
-    def ref(self):
-        return self.attrs['cvRef']
-
-    @property
-    def name(self):
-        return self.attrs['name']
-
-    @property
-    def accession(self):
-        return self.attrs['accession']
 
     def __call__(self, *args, **kwargs):
         self.write(*args, **kwargs)
@@ -469,17 +507,19 @@ class UserParam(CVParam):
         Uncontrolled user parameters (essentially allowing free text). Before
         using these, one should verify whether there is an appropriate CV term
         available, and if so, use the CV term instead
-
-    Attributes
-    ----------
-    accession : TYPE
-        Description
-    tag_name : str
-        Description
     """
 
     tag_name = "userParam"
     accession = None
+
+    value = XSDTypingProperty('value')
+    type = AttrProperty('type')
+
+    def __init__(self, accession=None, name=None, ref=None, value=None, **attrs):
+        super(UserParam, self).__init__(
+            accession=accession, name=name, ref=ref, value=value, **attrs)
+        # get XSDTypingProperty to force property __get__
+        self.value
 
 
 class ParamGroupReference(TagBase):
@@ -491,6 +531,85 @@ class ParamGroupReference(TagBase):
 
     def __call__(self, *args, **kwargs):
         self.write(*args, **kwargs)
+
+
+class CVCollection(object):
+    """A partially unique collection of :class:`CV` objects.
+    """
+    def __init__(self, cvs=None):
+        self.storage = OrderedDict()
+        if cvs:
+            self.update(cvs)
+
+    def add(self, cv):
+        """Add `cv` to the collection.
+
+        If the :attr:`CV.id` is aleady present in the collection, a warning
+        will be issued.
+
+        Parameters
+        ----------
+        cv : :class:`CV`
+            The controlled vocabulary reference
+        """
+        if cv.id in self.storage:
+            old = self.storage[cv.id]
+            warnings.warn(
+                "Replacing {cv.id} {old.version}@{old.uri} with {cv.version}@{cv.uri}".format(
+                    cv=cv, old=old))
+        self.storage[cv.id] = cv
+        return self
+
+    def update(self, collection):
+        """Add each element of `collection` to `self`, calling :meth:`add` on each
+        element.
+
+        Parameters
+        ----------
+        collection : :class:`~.Iterable`
+            Any iterable collection of :class:`CV`
+
+        See Also
+        --------
+        :meth:`add`
+        """
+        for cv in collection:
+            self.add(cv)
+
+    append = add
+    extend = update
+
+    def copy(self):
+        """Create a copy of `self`
+
+        Returns
+        -------
+        :class:`CVCollection`
+        """
+        return self.__class__(self)
+
+    def __add__(self, other):
+        copy = self.copy()
+        copy.update(other)
+        return copy
+
+    def __iadd__(self, other):
+        self.update(other)
+        return self
+
+    def __getitem__(self, key):
+        return self.storage[key]
+
+    def __iter__(self):
+        return iter(self.storage.values())
+
+    def __len__(self):
+        return len(self.storage)
+
+    def __repr__(self):
+        template = "{self.__class__.__name__}({members})"
+        members = list(self)
+        return template.format(self=self, members=members)
 
 
 class CV(object):
@@ -531,6 +650,18 @@ class CV(object):
         self.options = kwargs
         self._vocabulary = None
         self.resolver = None
+
+    def __hash__(self):
+        return hash(self.uri)
+
+    def match(self, other):
+        return self.uri == other.uri and self.id == other.id and self.full_name == other.full_name
+
+    def __eq__(self, other):
+        return self.match(other) and self.version == other.version
+
+    def __ne__(self, other):
+        return not self == other
 
     @property
     def version(self):
@@ -585,7 +716,6 @@ class CV(object):
         except Exception:
             import traceback
             traceback.print_exc()
-            pass
         return cv
 
     def __getitem__(self, key):
@@ -593,6 +723,13 @@ class CV(object):
 
     def query(self, *args, **kwargs):
         return self.vocabulary.query(*args, **kwargs)
+
+    def __repr__(self):
+        template = "{self.__class__.__name__}({self.full_name!r}, {self.id!r}, {self.uri!r}, {version!r})"
+        version = self._version
+        if version is None:
+            version = "?"
+        return template.format(self=self, version=version)
 
 
 class ProvidedCV(CV):
@@ -702,6 +839,83 @@ class XMLWriterMixin(object):
             else:
                 raise
 
+    def flush(self):
+        self.writer.flush()
+
+
+class XMLFormattingStreamWriter(object):
+    """Wraps a writable stream with a layer emulating the
+     class:`lxml.etree.xmlfile` interface, save that it automatically
+     formats and indents the XML generated without requiring a separate
+     pass through the XML pretty printing processing
+
+    Attributes
+    ----------
+    indent_chars : str
+        The characters to indent with
+    indent_level : int
+        The current indentation level
+    stream : :class:`io.IOBase`
+        The stream to wrap
+    writer : :class:`lxml.etree._IncrementalFileWriter`
+        The actual XML writer
+    wrote_text_stack : :class:`collections.deque`
+        A stack to track if a layer wrote text in one of its children and should not
+        have its end tag written on a new line
+    xmlfile : :class:`lxml.etree.xmlfile`
+        The actual XML writer's controller
+    """
+
+    def __init__(self, stream, encoding=None, indent='  ', **kwargs):
+        self.stream = stream
+        self.xmlfile = etree.xmlfile(self.stream, encoding=encoding, buffered=False, **kwargs)
+        self.writer = None
+        self.indent_level = 0
+        self.indent_chars = indent
+        self.wrote_text_stack = deque()
+
+    def __enter__(self):
+        self.writer = self.xmlfile.__enter__()
+        return self
+
+    def __exit__(self, *args):
+        self.xmlfile.__exit__(*args)
+
+    def _indent_tag(self):
+        self.writer.write('\n' + (self.indent_chars * self.indent_level))
+
+    @contextmanager
+    def element(self, *args, **kwargs):
+        if self.indent_level > 0:
+            self._indent_tag()
+        elt = self.writer.element(*args, **kwargs)
+        elt.__enter__()
+        self.wrote_text_stack.append(False)
+        self.indent_level += 1
+        yield
+        self.indent_level -= 1
+        if not self.wrote_text_stack[-1]:
+            self._indent_tag()
+        elt.__exit__(None, None, None)
+        self.wrote_text_stack.pop()
+
+    def write(self, *args, **kwargs):
+        if isinstance(args[0], basestring if not PY3 else (str, bytes)):
+            self.wrote_text_stack[-1] = True
+        if not self.wrote_text_stack[-1]:
+            if self.indent_level > 0:
+                self._indent_tag()
+        self.writer.write(*args, **kwargs)
+
+    def flush(self):
+        self.writer.flush()
+
+    def write_doctype(self):
+        self.writer.write_doctype()
+
+    def write_declaration(self):
+        self.writer.write_declaration()
+
 
 class XMLDocumentWriter(XMLWriterMixin):
     """A base class for types which are used to
@@ -727,21 +941,21 @@ class XMLDocumentWriter(XMLWriterMixin):
         -------
         TagBase
         """
-        raise TypeError("Must specify an XMLDocumentWriter's toplevel_tag attribute")
+        return _element("xmldocument")
 
     def __init__(self, outfile, close=False, encoding=None, **kwargs):
         if encoding is None:
             encoding = 'utf-8'
         self.outfile = outfile
         self.encoding = encoding
-        self.xmlfile = etree.xmlfile(outfile, encoding=encoding, **kwargs)
+        self.xmlfile = XMLFormattingStreamWriter(outfile, encoding=encoding, **kwargs)
         self._writer = None
         self.toplevel = None
         self._close = close
 
     def _should_close(self):
         if self._close is None:
-            return (self.outfile, 'close')
+            return hasattr(self.outfile, 'close')
         return bool(self._close)
 
     @property
@@ -763,7 +977,12 @@ class XMLDocumentWriter(XMLWriterMixin):
             return
         self.writer = self.xmlfile.__enter__()
         self.writer.write_declaration()
-        self.toplevel = element(self.writer, self.toplevel_tag())
+        toplevel = self.toplevel_tag()
+        if isinstance(toplevel, TagBase):
+            toplevel_element = element(self.writer, toplevel)
+        else:
+            toplevel_element = toplevel
+        self.toplevel = toplevel_element
         self.toplevel.__enter__()
 
     def _has_begun(self):
@@ -783,10 +1002,20 @@ class XMLDocumentWriter(XMLWriterMixin):
 
     def end(self, exc_type=None, exc_value=None, traceback=None):
         """Ends the XML document, and flushes and closes the file
+        if appropriate.
         """
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
-        self.xmlfile.__exit__(exc_type, exc_value, traceback)
+        try:
+            self.xmlfile.__exit__(exc_type, exc_value, traceback)
+        except etree.SerialisationError as err:
+            # There seems to be a bug when `__exit__`ing xmlfile objects, usually
+            # when they get large see here: https://bugs.launchpad.net/lxml/+bug/1570388
+            # https://github.com/mobiusklein/psims/issues/7
+            if str(err).startswith('unknown error'):
+                warnings.warn("Error closing file: {}".format(err))
+            else:
+                raise
         try:
             self.flush()
         except Exception:
@@ -817,70 +1046,14 @@ class XMLDocumentWriter(XMLWriterMixin):
             self.writer.flush()
 
     def format(self, outfile=None):
-        """Pretty-prints the contents of the file.
-
-        Uses a :class:`tempfile.NamedTemporaryFile` to receive
-        the formatted XML content, removes the
-        original file, and moves the temporary file
-        to the original file's name.
+        """This method is deprecated. Previously, the serialization
+        process did not indent the XML in-place and the lxml pretty printer
+        had to be invoked separately. With the addition of :class:`XMLFormattingStreamWriter`,
+        the XML stream is formatted in-place as it is being streamed to file.
         """
-        use_temp = False
-        # can't format a terminal stream
-        try:
-            if self.outfile.isatty():
-                return
-        except (AttributeError, ValueError):
-            pass
-
-        # Maybe we can seek to the beginning and open the stream for reading and writing?
-        if outfile is None:
-            use_temp = True
-            handle = tempfile.NamedTemporaryFile(delete=False)
-        else:
-            handle = open(outfile, 'wb')
-
-        try:
-            outfile_name = self.outfile.name
-        except AttributeError:
-            outfile_name = self.outfile
-        try:
-            try:
-                pretty_xml(outfile_name, handle.name)
-            except AttributeError:
-                try:
-                    pretty_xml(outfile_name, handle.name)
-                except Exception as e:
-                    print(e)
-        except MemoryError:
-            pass
-
-        if use_temp:
-            handle.close()
-            try:
-                os.remove(outfile_name)
-                try:
-                    shutil.move(handle.name, outfile_name)
-                except IOError as e:
-                    if e.errno == 13:
-                        try:
-                            time.sleep(3)
-                            shutil.move(handle.name, outfile_name)
-                        except IOError:
-                            print(
-                                "Could not obtain write-permission for original\
-                                 file name. Formatted XML document located at \"%s\"" % (
-                                    handle.name))
-            except (AttributeError, TypeError):
-                try:
-                    self.outfile.seek(0)
-                    with open(handle.name, 'rb') as fh:
-                        chunk_size = int(2 ** 16)
-                        chunk = fh.read(chunk_size)
-                        while chunk:
-                            self.outfile.write(chunk)
-                            chunk = fh.read(chunk_size)
-                except AttributeError as e:
-                    print("Could not format document", e)
+        warnings.warn(
+            "This method is no longer necessary, XML is formatted automatically",
+            DeprecationWarning, 2)
 
     def validate(self):
         """Attempt to perform XSD validation on the XML document

@@ -1,4 +1,7 @@
 lxml
 sqlalchemy
-pyteomics
+pyteomics >= 4.0.1
 numpy
+six
+h5py
+hdf5plugin

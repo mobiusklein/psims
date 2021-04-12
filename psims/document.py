@@ -8,7 +8,7 @@ from .utils import add_metaclass, ensure_iterable, Mapping
 
 from .xml import (
     id_maker, CVParam, UserParam,
-    ParamGroupReference, _element,
+    ParamGroupReference, _element, CVCollection,
     XMLWriterMixin)
 
 
@@ -111,7 +111,8 @@ class VocabularyResolver(object):
         if vocabulary_resolver is None:
             vocabulary_resolver = obo_cache
         self.vocabulary_resolver = vocabulary_resolver
-        self.vocabularies = list(map(self._bind_vocabulary, vocabularies))
+        self.vocabularies = CVCollection(
+            map(self._bind_vocabulary, vocabularies))
 
     def _bind_vocabulary(self, cv):
         cv.resolver = self.vocabulary_resolver
@@ -133,7 +134,6 @@ class VocabularyResolver(object):
 
     def param(self, name, value=None, cv_ref=None, **kwargs):
         accession = kwargs.get("accession")
-
         if isinstance(name, CVParam):
             return name
         elif isinstance(name, ParamGroupReference):
@@ -160,13 +160,13 @@ class VocabularyResolver(object):
                 kwargs.update({k: v for k, v in mapping.items()
                                if k not in (
                     "name", "value", "accession")})
-                # case normalize unit information so that cvParam can detect them
-                if unit_name is not None:
-                    kwargs.setdefault("unit_name", unit_name)
-                if unit_accession is not None:
-                    kwargs.setdefault("unit_accession", unit_accession)
-                if unit_cv_ref is not None:
-                    kwargs.setdefault("unit_cv_ref", unit_cv_ref)
+            # case normalize unit information so that cvParam can detect them
+            if unit_name is not None:
+                kwargs.setdefault("unit_name", unit_name)
+            if unit_accession is not None:
+                kwargs.setdefault("unit_accession", unit_accession)
+            if unit_cv_ref is not None:
+                kwargs.setdefault("unit_cv_ref", unit_cv_ref)
 
         if name == 'ref' and value is not None and cv_ref is None and not kwargs:
             return self.param_group_reference(value)
@@ -184,9 +184,9 @@ class VocabularyResolver(object):
             term = cv[query]
         if term is not None:
             self._validate_units(term, kwargs, name)
-
         if cv_ref is None:
-            return UserParam(name=name, value=value, **kwargs)
+            user_param = UserParam(name=name, value=value, **kwargs)
+            return user_param
         else:
             kwargs.setdefault("ref", cv_ref)
             kwargs.setdefault("accession", accession)
@@ -420,7 +420,7 @@ class ComponentDispatcherBase(object):
                 missing_reference_is_error=missing_reference_is_error)
         else:
             if vocabularies is not None:
-                context.vocabularies.extend(vocabularies)
+                context.vocabularies.update(vocabularies)
         self.type_cache = dict()
         self.component_namespace = component_namespace
         self.context = context
@@ -475,6 +475,8 @@ class ComponentDispatcherBase(object):
             A partially parameterized instance constructor for
             the :class:`ComponentBase` type requested.
         """
+        if name.startswith("_"):
+            raise AttributeError(name)
         tp = self._dispatch_component(name)
         return tp
 
@@ -613,7 +615,7 @@ class ComponentBase(object):
         if not self.is_bound():
             raise ValueError(
                 "A component not bound to an XMLWriter cannot be used as a context manager directly. "
-                "Call the `bind` method first with an ")
+                "Call the `bind` method first with an XMLWriter")
         begun = self.begin()
         self._context_manager = begun
         # actually execute the code in `begin` now

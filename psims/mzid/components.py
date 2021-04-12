@@ -3,7 +3,10 @@ import warnings
 import operator
 import re
 
-from collections import Mapping
+try:
+    from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 from datetime import datetime
 from numbers import Number as NumberBase
 from itertools import chain
@@ -1085,7 +1088,10 @@ class SpectrumIdentificationProtocol(ComponentBase):
         special_processing_types = {
             t.id for t in special_processing_type_terms}
         for param in self.additional_search_params:
-            param = self.context.param(param)
+            try:
+                param = self.context.param(param)
+            except KeyError:
+                continue
             accession = param.get('accession', None)
             if (accession in special_processing_types):
                 special_processing_instructions.append(param)

@@ -1,30 +1,47 @@
+'''
+mzML is a standard rich XML-format for raw mass spectrometry data storage.
+Please refer to `psidev.info <http://www.psidev.info/index.php?q=node/257>`_
+for the detailed specification of the format and structure of mzML files.
+
+In addition to mzML, there is a wrapping format called ``indexedmzML``
+which adds an extra layer to the XML document, including pre-computed byte offsets
+for each ``<spectrum>`` and ``<chromatogram>`` element.
+
+To write ``mzML`` without an index use :class:`PlainMzMLWriter`, and for ``indexedmzML``
+use :class:`IndexedMzMLWriter`. Because so many tools rely on the index, :class:`IndexedMzMLWriter`
+is exported under the alias `MzMLWriter`. The interface for these two classes are the same,
+with :class:`IndexedMzMLWriter` having slightly more complex behavior on writing and when finishing
+the document, though you are able to alter the indexing behavior via :attr:`IndexedMzMLWriter.index_builder`
+or through inheritance.
+'''
+
 import numbers
 import warnings
 
 from collections import defaultdict
 
 try:
-    from collections import Mapping
-except ImportError:
     from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 
 import numpy as np
 
 from psims.xml import XMLWriterMixin, XMLDocumentWriter
 from psims.utils import TableStateMachine
-from psims import compression
 
 from .components import (
     ComponentDispatcher, element,
-    default_cv_list, MzML, InstrumentConfiguration)
+    default_cv_list, MzML, InstrumentConfiguration, IndexedMzML)
 
 from .binary_encoding import (
     encode_array, COMPRESSION_ZLIB,
     encoding_map, compression_map, dtype_to_encoding)
 
 from .utils import ensure_iterable
+from .index import IndexingStream
 
-from .index import MzMLIndexer
+from .element_builder import ElementBuilder, ParamManagingProperty
 
 
 MZ_ARRAY = 'm/z array'
@@ -64,11 +81,17 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.section_args = section_args
 
     def __enter__(self):
+        return self.begin()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.end(exc_type, exc_value, traceback)
+
+    def begin(self):
         self.toplevel = element(self.writer, self.section, **self.section_args)
         self.toplevel.__enter__()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def end(self, exc_type=None, exc_value=None, traceback=None):
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
 
@@ -136,7 +159,32 @@ class RunSection(DocumentSection):
             self.section_args["sampleRef"] = self.context['Sample'][sample_id]
 
 
-class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
+class IndexedmzMLSection(DocumentSection):
+    def __init__(self, writer, parent_context, indexer, section_args=None, **kwargs):
+        super(IndexedmzMLSection, self).__init__(
+            'indexedmzML', writer, parent_context, section_args=section_args,
+            **kwargs)
+        self.toplevel = None
+        self.inner = None
+        self.indexer = indexer
+
+    def begin(self):
+        self.toplevel = element(self.writer, IndexedMzML())
+        self.toplevel.__enter__()
+        self.inner = element(self.writer, MzML(**self.section_args))
+        self.inner.__enter__()
+
+    def end(self, exc_type=None, exc_value=None, traceback=None):
+        self.inner.__exit__(exc_type, exc_value, traceback)
+        self.writer.flush()
+        self.write_index()
+        self.toplevel.__exit__(exc_type, exc_value, traceback)
+
+    def write_index(self):
+        self.indexer.to_xml(self)
+
+
+class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     """A high level API for generating mzML XML files from simple Python objects.
 
     This class depends heavily on lxml's incremental file writing API which in turn
@@ -145,7 +193,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     that they have access to a universal identity map for each element in the document,
     that map is centralized in this class.
 
-    MzMLWriter inherits from :class:`.ComponentDispatcher`, giving it a :attr:`context`
+    MzMLWriter inherits from :class:`~psims.mzml.components.ComponentDispatcher`, giving it a :attr:`context`
     attribute and access to all `Component` objects pre-bound to that context with attribute-access
     notation.
 
@@ -202,7 +250,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         This method requires writing to have begun.
         """
         self.state_machine.transition("controlled_vocabularies")
-        super(MzMLWriter, self).controlled_vocabularies()
+        super(PlainMzMLWriter, self).controlled_vocabularies()
 
     def software_list(self, software_list):
         """Writes the ``<softwareList>`` section of the document.
@@ -235,7 +283,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A list or other iterable of :class:`str`, :class:`dict`, or \*Param-types which will
             be placed in the ``<fileContent>`` element.
         source_files : list
-            A list or other iterable of dict or :class:`~.SourceFile`-like objects
+            A list or other iterable of dict or :class:`~psims.mzml.components.SourceFile`-like objects
             to be placed in the ``<sourceFileList>`` element
         """
         self.state_machine.transition("file_description")
@@ -406,9 +454,66 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                  scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                  encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                  instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+        '''Create a new :class:`~.Spectrum` instance to be written.
+
+        This method does not immediately write and close the spectrum element, leaving it
+        open for modification and embedding.
+
+        Parameters
+        ----------
+        mz_array: :class:`np.ndarray` of floats
+            The m/z array of the spectrum
+        intensity_array: :class:`np.ndarray` of floats
+            The intensity array of the spectrum
+        charge_array: :class:`np.ndarray`, optional
+            The charge state array of the spectrum, optional.
+        id: str
+            The native ID of the spectrum.
+        polarity: str or int, optional
+            The polarity of the spectrum. If an integer, the sign of
+            the integer is used, otherwise it is interpreted as a cvParam
+        centroided: bool, optional
+            Whether the spectrum is continuous or discretized by peak picking.
+            Defaults to :const:`True`.
+        precursor_information: dict or :class:`PrecursorBuilder`, optional
+            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`.
+            The structure of this object should either be formatted as arguments to
+            :meth:`precursor_builder`, or a :class:`PrecursorBuilder` instance populated
+            with information.
+        scan_start_time: float, optional
+            The scan start time, in minutes
+        params: list, optional
+            The parameters of the `spectrum`
+        compression: str, optional
+            The compression type name to use. Defaults to `COMPRESSION_ZLIB`.
+        encoding: dict, optional
+            A mapping from array name to NumPy data types.
+        other_arrays: list, optional
+            An iterable of array names to additional data arrays. Array names may either be
+            strings, :class:`Mapping` objects that define :class:`~.CVParam` or :class:`~.UserParam`,
+            or such paramter objects themselves. Use the latter two methods when defining arrays with
+            units.
+        scan_params: list, optional
+            A list of cvParams for the `scan` of this `spectrum`
+        scan_window_list: list, optional
+            A list of scan windows specified as pairs of m/z intervals
+        instrument_configuration_id: str, optional
+            The `id` of the `instrumentConfiguration` to associate with this spectrum
+            if not the default one.
+
+        Returns
+        -------
+        :class:`~.Spectrum`
+
+        See Also
+        --------
+        :meth:`write_spectrum`
+        :meth:`chromatogram`
+        :meth:`write_chromatogram`
+        '''
         self.state_machine.expects_state("spectrum_list")
         if encoding is None:
-            {MZ_ARRAY: np.float64}
+            encoding = {MZ_ARRAY: np.float64, CHARGE_ARRAY: np.int32}
         if params is None:
             params = []
         else:
@@ -455,29 +560,33 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         params.append(peak_mode)
 
         array_list = []
-        default_array_length = len(mz_array)
+        default_array_length = len(mz_array) if mz_array is not None else 0
         if mz_array is not None:
             mz_array_tag = self._prepare_array(
-                mz_array, encoding=encoding[MZ_ARRAY], compression=compression, array_type=MZ_ARRAY)
+                mz_array, encoding=encoding[MZ_ARRAY], compression=compression, array_type=MZ_ARRAY, scope='spectrum')
             array_list.append(mz_array_tag)
 
         if intensity_array is not None:
             intensity_array_tag = self._prepare_array(
                 intensity_array, encoding=encoding[INTENSITY_ARRAY], compression=compression,
-                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit})
+                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit}, scope='spectrum')
             array_list.append(intensity_array_tag)
 
         if charge_array is not None:
             charge_array_tag = self._prepare_array(
                 charge_array, encoding=encoding[CHARGE_ARRAY], compression=compression,
-                array_type=CHARGE_ARRAY)
+                array_type=CHARGE_ARRAY, scope='spectrum')
             array_list.append(charge_array_tag)
         for array_type, array in other_arrays:
             if array_type is None:
                 raise ValueError("array type can't be None")
+            if isinstance(array_type, Mapping):
+                array_name = array_type['name']
+            else:
+                array_name = array_type
             array_tag = self._prepare_array(
-                array, encoding=encoding[array_type], compression=compression, array_type=array_type,
-                default_array_length=default_array_length)
+                array, encoding=encoding[array_name], compression=compression, array_type=array_type,
+                default_array_length=default_array_length, scope='spectrum')
             array_list.append(array_tag)
         array_list_tag = self.BinaryDataArrayList(array_list)
 
@@ -514,6 +623,56 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                        scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                        encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                        instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+        '''Write a :class:`~.Spectrum` with the provided data.
+
+        To create a spectrum element but not immediately close it off, see the :meth:`spectrum` method.
+
+        Parameters
+        ----------
+        mz_array: :class:`np.ndarray` of floats
+            The m/z array of the spectrum
+        intensity_array: :class:`np.ndarray` of floats
+            The intensity array of the spectrum
+        charge_array: :class:`np.ndarray`, optional
+            The charge state array of the spectrum, optional.
+        id: str
+            The native ID of the spectrum.
+        polarity: str or int, optional
+            The polarity of the spectrum. If an integer, the sign of
+            the integer is used, otherwise it is interpreted as a cvParam
+        centroided: bool, optional
+            Whether the spectrum is continuous or discretized by peak picking.
+            Defaults to :const:`True`.
+        precursor_information: dict or :class:`PrecursorBuilder`, optional
+            The precursor ion description. Will be passed to :meth:`_prepare_precursor_list`.
+            The structure of this object should either be formatted as arguments to
+            :meth:`precursor_builder`, or a :class:`PrecursorBuilder` instance populated
+            with information.
+        scan_start_time: float, optional
+            The scan start time, in minutes
+        params: list, optional
+            The parameters of the `spectrum`
+        compression: str, optional
+            The compression type name to use. Defaults to `COMPRESSION_ZLIB`.
+        encoding: dict, optional
+            A mapping from array name to NumPy data types.
+        other_arrays: list, optional
+            An iterable of array names to additional data arrays. Array names may either be
+            strings, :class:`Mapping` objects that define :class:`~.CVParam` or :class:`~.UserParam`,
+            or such paramter objects themselves. Use the latter two methods when defining arrays with
+            units.
+        scan_params: list, optional
+            A list of cvParams for the `scan` of this `spectrum`
+        scan_window_list: list, optional
+            A list of scan windows specified as pairs of m/z intervals
+        instrument_configuration_id: str, optional
+            The `id` of the `instrumentConfiguration` to associate with this spectrum
+            if not the default one.
+
+        See Also
+        --------
+        :meth:`spectrum`
+        '''
         spectrum = self.spectrum(
             mz_array=mz_array, intensity_array=intensity_array, charge_array=charge_array,
             id=id, polarity=polarity, centroided=centroided, precursor_information=precursor_information,
@@ -552,23 +711,27 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         else:
             precursor = None
 
-        default_array_length = len(time_array)
+        default_array_length = len(time_array) if time_array is not None else 0
         if time_array is not None:
             time_array_tag = self._prepare_array(
                 time_array, encoding=encoding[TIME_ARRAY], compression=compression,
-                array_type={"name": TIME_ARRAY, "unit_name": time_unit})
+                array_type={"name": TIME_ARRAY, "unit_name": time_unit}, scope='chromatogram')
             array_list.append(time_array_tag)
 
         if intensity_array is not None:
             intensity_array_tag = self._prepare_array(
                 intensity_array, encoding=encoding[INTENSITY_ARRAY], compression=compression,
-                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit})
+                array_type={"name": INTENSITY_ARRAY, "unit_name": intensity_unit}, scope='chromatogram')
             array_list.append(intensity_array_tag)
 
         for array_type, array in other_arrays:
+            if isinstance(array_type, Mapping):
+                array_name = array_type['name']
+            else:
+                array_name = array_type
             array_tag = self._prepare_array(
-                array, encoding=encoding[array_type], compression=compression, array_type=array_type,
-                default_array_length=default_array_length)
+                array, encoding=encoding[array_name], compression=compression, array_type=array_type,
+                default_array_length=default_array_length, scope='chromatogram')
             array_list.append(array_tag)
         params.append(chromatogram_type)
         array_list_tag = self.BinaryDataArrayList(array_list)
@@ -594,7 +757,7 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         chromatogram.write(self.writer)
 
     def _prepare_array(self, array, encoding=32, compression=COMPRESSION_ZLIB,
-                       array_type=None, default_array_length=None):
+                       array_type=None, default_array_length=None, scope=None):
         if isinstance(encoding, numbers.Number):
             _encoding = int(encoding)
         else:
@@ -628,30 +791,90 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def _prepare_precursor_list(self, precursors, intensity_unit=DEFAULT_INTENSITY_UNIT):
         if isinstance(precursors, self.PrecursorList.type):
             return precursors
-        elif isinstance(precursors, dict):
-            precursors = self.PrecursorList([self._prepare_precursor_information(
+        elif isinstance(precursors, (dict)):
+            precursors = self.PrecursorList([self.prepare_precursor_information(
                 intensity_unit=intensity_unit, **precursors)])
+        elif isinstance(precursors, PrecursorBuilder):
+            precursors = self.PrecursorList([self.prepare_precursor_information(
+                precursors,
+                intensity_unit=intensity_unit)])
         else:
-            precursors = self.PrecursorList([
-                p if isinstance(p, self.Precursor.type)
-                else self._prepare_precursor_information(
-                    intensity_unit=intensity_unit, **p)
-                for p in ensure_iterable(precursors)])
+            packaged = []
+            for p in ensure_iterable(precursors):
+                if isinstance(p, self.Precursor.type):
+                    packaged.append(p)
+                elif isinstance(p, dict):
+                    packaged.append(
+                        self.prepare_precursor_information(
+                            intensity_unit=intensity_unit, **p))
+                elif isinstance(p, PrecursorBuilder):
+                    packaged.append(
+                        self._prepare_precursor_information(
+                            p, intensity_unit=intensity_unit))
+            precursors = self.PrecursorList(packaged)
         return precursors
 
-    def _prepare_precursor_information(self, mz, intensity, charge, spectrum_reference=None, activation=None,
+    def prepare_precursor_information(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
                                        isolation_window_args=None, params=None,
-                                       intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None):
+                                       intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None, external_spectrum_id=None,
+                                       source_file_reference=None, **kwargs):
+        '''Prepare a :class:`Precursor` element from disparate data structures.
+
+        Parameters
+        ----------
+        mz: float, optional
+            The m/z of the first selected ion
+        intensity: float, optional
+            The intensity of the first selected ion
+        charge: int, optional
+            The charge state of the first seelcted ion
+        spectrum_reference: str, optional
+            The `id` of the prescursor `<spectrum>` for this precursor
+        activation: list, optional
+            A list of parameters describing the ion activation method used.
+        isolation_window_args: tuple, list, or dict, optional
+            Parameters forwarded to :meth:`PrecursorBuilder.isolation_window`,
+            tuple or list values are converted into :class:`dict` of the correct
+            structure. This argument may also be passed as `isolation_window`.
+        params: list, optional
+            The cvParams of the first selected ion
+        intensity_unit: str
+            The intensity unit of the first selected ion
+        scan_id: str, optional
+            An alias for `spectrum_reference`
+        external_spectrum_id: str, optional
+            The `externalSpectrumID` attribute of the precursor
+        source_file_reference: str, optional
+            The `sourceFileRef` attribute of the precursor
+
+        Returns
+        -------
+        :class:`~.Precursor`
+        '''
+        if isinstance(mz, PrecursorBuilder):
+            return self.Precursor(**mz.pack())
+        if isinstance(mz, dict):
+            return self.Precursor(**mz)
+        if isolation_window_args is None:
+            isolation_window_args = kwargs.get("isolation_window")
+        if mz is None:
+            mz = kwargs.get("selected_ion_mz")
         if scan_id is not None:
             spectrum_reference = scan_id
         if params is None:
             params = []
         if activation:
             activation = self.Activation(activation)
-        ion = self.SelectedIon(mz, intensity, charge, params=params)
-        ion_list = self.SelectedIonList([ion])
+        if any((mz, intensity, charge)):
+            ion = self.SelectedIon(mz, intensity, charge, params=params)
+            ion_list = self.SelectedIonList([ion])
+        else:
+            ion_list = None
         if isolation_window_args:
-            isolation_window_tag = self.IsolationWindow(**isolation_window_args)
+            if isinstance(isolation_window_args, (list, tuple)):
+                isolation_window_tag = self.IsolationWindow(*isolation_window_args)
+            else:
+                isolation_window_tag = self.IsolationWindow(**isolation_window_args)
         else:
             isolation_window_tag = None
         precursor = self.Precursor(
@@ -661,33 +884,165 @@ class MzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             spectrum_reference=spectrum_reference)
         return precursor
 
-    def format(self, outfile=None, index=True, indexer=None):
-        """Pretty-prints the contents of the file and wrap in
-        an indexedmzML container, indexing ``<spectrum>`` and
-        ``<chromatogram>`` tags.
+    def precursor_builder(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
+                          isolation_window_args=None, params=None,
+                          intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None,
+                          external_spectrum_id=None, source_file_reference=None,
+                          isolation_window=None):
+        '''Create a :class:`PrecursorBuilder`, an object to help populate the precursor information
+        data structure.
 
-        Uses a :class:`tempfile.NamedTemporaryFile` to receive
-        the formatted XML content, removes the
-        original file, and moves the temporary file
-        to the original file's name.
-        """
-        if indexer is None:
-            indexer = MzMLIndexer
-        if not index:
-            return super(MzMLWriter, self).format(outfile=outfile)
-        try:
-            if self.outfile.isatty():
-                return
-        except (AttributeError, ValueError):
-            pass
-        if hasattr(self.outfile, 'name'):
-            fh = self.outfile.name
-        else:
-            fh = self.outfile
-        opener = compression.get(fh)
-        indexer = indexer(fh)
-        try:
-            indexer.build()
-            indexer.overwrite(opener)
-        except MemoryError:
-            pass
+        The helper object should be used to incrementally populate the precursor information passed
+        to :meth:`spectrum` or :meth:`write_spectrum`'s `precursor_information` argument.
+
+        Parameters
+        ----------
+        mz: float, optional
+            The m/z of the first selected ion
+        intensity: float, optional
+            The intensity of the first selected ion
+        charge: int, optional
+            The charge state of the first selected ion
+        spectrum_reference: str, optional
+            The `id` of the prescursor `<spectrum>` for this precursor, mapped through the
+            document context.
+        activation: dict or list, optional
+            Parameters forwarded to :meth:`PrecursorBuilder.activation`. This should be a dictionary
+            with a key "params" and a list of :class:`~.CVParam` coerce-able values, with additional
+            optional keys naming other :class:`~.CVParam` coerce-able values. If a :class:`list` is
+            passed, it will be wrapped in one e.g. ``{"params": activation}``
+        isolation_window_args: tuple, list, or dict, optional
+            Parameters forwarded to :meth:PrecursorBuilder.isolation_window`,
+            tuple or list of three values are converted into :class:`dict` of the correct
+            structure. The expected keys are "lower", the lower m/z offset, "target", the center m/z,
+            and "upper", the upper m/z offset. You may also pass this argumemt as `isolation_window`.
+        params: list, optional
+            The cv- and user-params of the first selected ion, in addition to `mz`, `intensity`,
+            `charge`.
+        intensity_unit: str
+            The intensity unit of the first selected ion, to be specified with `intensity`
+        scan_id: str, optional
+            An alias for `spectrum_reference`
+        external_spectrum_id: str, optional
+            The `externalSpectrumID` attribute of the precursor
+        source_file_reference: str, optional
+            The `sourceFileRef` attribute of the precursor
+
+        Returns
+        -------
+        :class:`PrecursorBuilder`
+        '''
+        if isolation_window_args is None:
+            isolation_window_args = isolation_window
+        if scan_id is None:
+            spectrum_reference = scan_id
+        inst = PrecursorBuilder(
+            self, spectrum_reference=spectrum_reference,
+            external_spectrum_id=external_spectrum_id)
+        if mz is not None or intensity is not None or charge is not None or params is not None:
+            inst.selected_ion(
+                selected_ion_mz=mz, intensity=intensity, charge=charge,
+                intensity_unit=intensity_unit, params=params)
+        if isolation_window_args is None:
+            if isinstance(isolation_window_args, (tuple, list)):
+                isolation_window_args = {
+                    "lower": isolation_window_args[0],
+                    "target": isolation_window_args[1],
+                    "upper": isolation_window_args[2]}
+            inst.isolation_window(isolation_window_args)
+        if activation is not None:
+            if isinstance(activation, (list, tuple)):
+                activation = {'params': activation}
+            inst.activation(activation)
+        return  inst
+
+
+class SelectedIonBuilder(ElementBuilder):
+    mz = ParamManagingProperty('selected_ion_mz', 0.0, aliases=['mz'])
+    charge = ParamManagingProperty('charge')
+    intensity = ParamManagingProperty('intensity', 0.0)
+    intensity_unit = ParamManagingProperty(
+        'intensity_unit', DEFAULT_INTENSITY_UNIT)
+
+
+class IsolationWindowBuilder(ElementBuilder):
+    lower = ParamManagingProperty('lower')
+    target = ParamManagingProperty('target')
+    upper = ParamManagingProperty('upper')
+
+
+class ActivationBuilder(ElementBuilder):
+    pass
+
+
+class PrecursorBuilder(ElementBuilder):
+    def __init__(self, source, binding=None, params=None, **kwargs):
+        super(PrecursorBuilder, self).__init__(
+            source, binding, params, **kwargs)
+
+    selected_ion_list = ParamManagingProperty("selected_ion_list", list)
+    _isolation_window = ParamManagingProperty("isolation_window")
+    _activation = ParamManagingProperty('activation')
+
+    spectrum_reference = ParamManagingProperty('spectrum_reference')
+    source_file_reference = ParamManagingProperty('source_file_reference')
+    external_spectrum_id = ParamManagingProperty('external_spectrum_id', aliases=['scan_id'])
+
+    def selected_ion(self, binding=None, **kwargs):
+        sib = SelectedIonBuilder(self.source, binding=binding, **kwargs)
+        self.selected_ion_list.append(sib)
+        return sib
+
+    def isolation_window(self, binding=None, **kwargs):
+        self._isolation_window = IsolationWindowBuilder(
+            self.source, binding=binding, **kwargs)
+        return self._isolation_window
+
+    def activation(self, binding=None, **kwargs):
+        self._activation = ActivationBuilder(
+            self.source, binding=binding, **kwargs)
+        return self._activation
+
+
+class IndexedMzMLWriter(PlainMzMLWriter):
+    """A high level API for generating indexed mzML XML files from simple Python objects.
+
+    This class depends heavily on :mod:`lxml`'s incremental file writing API which in turn
+    depends heavily on context managers. Almost all logic is handled inside a context
+    manager and in the context of a particular document. Since all operations assume
+    that they have access to a universal identity map for each element in the document,
+    that map is centralized in this class.
+
+    `MzMLWriter` inherits from :class:`.ComponentDispatcher`, giving it a :attr:`context`
+    attribute and access to all `Component` objects pre-bound to that context with attribute-access
+    notation.
+
+    Attributes
+    ----------
+    chromatogram_count : int
+        A count of the number of chromatograms written
+    spectrum_count : int
+        A count of the number of spectra written
+    index_builder : :class:`~.IndexingStream`
+        A writing stream that automatically tokenizes and records byte offsets for
+        specific XML tags.
+    """
+    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+                 vocabulary_resolver=None, id=None, accession=None, **kwargs):
+        outfile = IndexingStream(outfile)
+        super(IndexedMzMLWriter, self).__init__(
+            outfile, close, vocabularies, missing_reference_is_error, vocabulary_resolver,
+            id, accession, **kwargs)
+        self.index_builder = outfile
+
+    def toplevel_tag(self):
+        return IndexedmzMLSection(
+            self.writer, self.context, id=self.id, accession=self.accession,
+            indexer=self.index_builder)
+
+    def format(self, *args, **kwargs):
+        return
+
+
+MzMLWriter = IndexedMzMLWriter
+# MzMLWriter = PlainMzMLWriter

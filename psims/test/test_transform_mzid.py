@@ -7,7 +7,7 @@ from psims.test.test_data import datafile
 def test_mzid_pipe():
     buff = BytesIO()
     path = datafile("xiFDR-CrossLinkExample_single_run.mzid")
-    st = mzid.MzIdentMLTranslater(path, buff)
+    st = mzid.MzIdentMLTranslator(path, buff)
     st.write()
 
     buff.seek(0)

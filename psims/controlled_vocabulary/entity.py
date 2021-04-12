@@ -1,10 +1,12 @@
 from collections import deque
 try:
-    from collections import Mapping
-except ImportError:
     from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 
 from psims.utils import ensure_iterable
+
+from .type_definition import parse_xsdtype
 
 
 class Entity(Mapping):
@@ -34,6 +36,10 @@ class Entity(Mapping):
         else:
             self[key] = value
 
+    def __dir__(self):
+        keys = set(object.__dir__(self)) | set(self.keys())
+        return sorted(keys)
+
     def __len__(self):
         return len(self.data)
 
@@ -55,6 +61,10 @@ class Entity(Mapping):
     @property
     def definition(self):
         return self.data.get("def", '')
+
+    @definition.setter
+    def definition(self, value):
+        self.data['def'] = value
 
     def parent(self):
         try:

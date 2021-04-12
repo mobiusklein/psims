@@ -11,9 +11,12 @@ from .obo import (
 from .entity import Entity
 from .relationship import Relationship, Reference
 
+from .type_definition import obj_to_xsdtype, parse_xsdtype
+
 
 __all__ = [
     "ControlledVocabulary", "obo_cache", "OBOCache", "OBOParser",
     "obo_cache", "load_psims", "unimod", "load_unimod",
-    "Entity", "UNIMODEntity", "Reference", "Relationship"
+    "Entity", "UNIMODEntity", "Reference", "Relationship",
+    "obj_to_xsdtype", "parse_xsdtype",
 ]

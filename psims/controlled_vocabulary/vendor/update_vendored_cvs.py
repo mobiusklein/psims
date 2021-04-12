@@ -1,6 +1,8 @@
 import os
 import re
 import hashlib
+import sys
+import gzip
 
 try:
     from urllib2 import urlopen, Request
@@ -16,22 +18,30 @@ registry = {
     "XLMOD.obo": "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo",
     # appears to reject automated download unless User-Agent is set and is very large
     # "bto.obo": "http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO",
-    "go.obo": "http://purl.obolibrary.org/obo/go.obo"
+    "go.obo": "http://purl.obolibrary.org/obo/go.obo",
+    'psi-mod.obo': 'https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo',
+    'gno.obo': "http://purl.obolibrary.org/obo/gno.obo",
 }
 
 
 storage_dir = os.path.dirname(__file__)
 
-for cv, url in registry.items():
+selected = sys.argv[1:]
+if selected:
+    workload = [(cv, registry[cv]) for cv in selected]
+else:
+    workload = registry.items()
+
+for cv, url in workload:
     print("Updating %s from %s" % (cv, url))
-    path = os.path.join(storage_dir, cv)
+    path = os.path.join(storage_dir, cv + '.gz')
     old_hash = hashlib.new("md5")
     if not os.path.exists(path):
         print("No Previous Version")
     else:
-        with open(path) as current:
+        with gzip.open(path, 'rb') as current:
             read = current.read(2000)
-            version_search = re.search("data-version: ([^\n]+)\n", read)
+            version_search = re.search(b"data-version: ([^\n]+)\n", read)
             if version_search:
                 print("Have Version %s" % (version_search.group(1),))
             while read:
@@ -56,15 +66,15 @@ for cv, url in registry.items():
         raise ValueError("Can't understand how to get HTTP response code from %r" % f)
     if code != 200:
         raise ValueError("%s did not resolve" % url)
-    with open(path, 'wb') as fh:
+    with gzip.open(path, 'wb') as fh:
         content = f.read(2**16)
         while content:
             fh.write(content)
             content = f.read(2**16)
     new_hash = hashlib.new("md5")
-    with open(path) as current:
+    with gzip.open(path, 'rb') as current:
             read = current.read(2000)
-            version_search = re.search("data-version: ([^\n]+)\n", read)
+            version_search = re.search(b"data-version: ([^\n]+)\n", read)
             if version_search:
                 print("New Version %s" % (version_search.group(1),))
             while read:

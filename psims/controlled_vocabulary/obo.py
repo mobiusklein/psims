@@ -4,6 +4,8 @@ from collections import defaultdict
 
 from six import string_types as basestring
 
+from psims.utils import ensure_iterable
+
 from .entity import Entity
 from .relationship import Relationship, Reference
 from .type_definition import parse_xsdtype
@@ -118,16 +120,25 @@ class OBOParser(object):
         if self.current_term is None:
             return
         entity = Entity(self, **{k: v[0] if len(v) == 1 else v for k, v in self.current_term.items()})
-        try:
+        self._expand_is_a(entity)
+        self._expand_relationship(entity)
+        self._expand_synonym(entity)
+        self._expand_xref(entity)
+        self._expand_property_value(entity)
+        self.terms[entity['id']] = entity
+        self.current_term = None
+
+    def _expand_is_a(self, entity):
+        if "is_a" in entity.data:
             is_as = entity['is_a']
             if isinstance(is_as, basestring):
                 is_as = Reference.fromstring(is_as)
             else:
                 is_as = list(map(Reference.fromstring, is_as))
             entity['is_a'] = is_as
-        except KeyError:
-            pass
-        try:
+
+    def _expand_relationship(self, entity):
+        if 'relationship' in entity.data:
             relationships = entity['relationship']
             if not isinstance(relationships, list):
                 relationships = [relationships]
@@ -135,29 +146,47 @@ class OBOParser(object):
             for rel in relationships:
                 entity.setdefault(rel.predicate, [])
                 entity[rel.predicate].append(rel)
-        except KeyError:
-            pass
-        try:
+
+    def _expand_synonym(self, entity):
+        if 'synonym' in entity.data:
             synonyms = entity['synonym']
             if not isinstance(synonyms, list):
                 synonyms = [synonyms]
             synonyms = list(map(synonym_parser, synonyms))
             entity['synonym'] = synonyms
-        except KeyError:
-            pass
-        try:
+
+    def _expand_xref(self, entity):
+        entity.value_type = None
+        if 'xref' in entity.data:
             xref = entity['xref']
             if isinstance(xref, basestring):
-                entity.value_type = self._get_value_type(xref)
-            else:
-                for x in xref:
-                    value_type = self._get_value_type(x)
-                    if x is not None:
-                        entity.value_type = value_type
-        except KeyError:
-            pass
-        self.terms[entity['id']] = entity
-        self.current_term = None
+                xref = [xref]
+            for x in xref:
+                key, value = x.split(":", 1)
+                if key == 'value-type':
+                    entity.value_type = self._get_value_type(x)
+                else:
+                    if value.startswith("\""):
+                        value, dtype = value.rsplit(" ", 1)
+                        dtype = parse_xsdtype(dtype)
+                        if dtype is not None:
+                            value = dtype(value[1:-1])
+                    entity[key] = value
+
+    def _expand_property_value(self, entity):
+        if "property_value" in entity.data:
+            for prop_val in ensure_iterable(entity.data['property_value']):
+                prop, val = prop_val.split(" ", 1)
+                prop = prop.strip(": ")
+                val = val.strip()
+                if val.startswith("\""):
+                    val, dtype = val.rsplit(" ", 1)
+                    dtype = parse_xsdtype(dtype)
+                    try:
+                        val = dtype(val[1:-1])
+                    except (ValueError, TypeError):
+                        pass
+                entity[prop] = val
 
     def _connect_parents(self):
         """Walk the semantic graph up the parent hierarchy, binding child
@@ -210,9 +239,47 @@ class OBOParser(object):
         self.pack()
         self._connect_parents()
         self._simplify_header_information()
+        self.handle.close()
 
     def __getitem__(self, key):
         return self.terms[key]
 
     def __iter__(self):
         return iter(self.terms.items())
+
+
+class OBOWriter(object):
+    def __init__(self, stream):
+        self.stream = stream
+
+    def write_header(self, header):
+        for key, value in header:
+            if isinstance(value, (list, tuple)):
+                for v in value:
+                    self.stream.write("%s: %s\n" % (key, v))
+            else:
+                self.stream.write("%s: %s\n" % (key, value))
+        self.stream.write("\n")
+        self.stream.write("\n")
+
+    def write_term(self, term):
+        self.stream.write("[Term]\nid: %s\nname: %s\ndef: \"%s\"\n" %
+                    (term.id, term.name, term.definition))
+        for xref in term.get('xref', []):
+            self.stream.write("xref: ")
+        for is_a in ensure_iterable(term.get("is_a", [])):
+            self.stream.write("is_a: %s" % str(is_a))
+        seen = set()
+        for syn in term.get('synonyms', []):
+            if syn in seen:
+                continue
+            seen.add(syn)
+            self.stream.write("synonym: \"%s\" EXACT\n" % str(syn).replace("\n", "\\n"))
+        for prop in term.get('property_value', []):
+            self.stream.write("property_value: %s\n" % prop)
+        self.stream.write("\n")
+
+    def write_vocabulary(self, vocabulary):
+        self.write_header(vocabular.metadata)
+        for term in vocabulary.terms.values():
+            self.write_term(term)

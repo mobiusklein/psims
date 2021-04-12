@@ -13,9 +13,9 @@ except ImportError:
     from urllib import parse as urlparse
 
 try:
-    from collections import Iterable, Mapping
-except ImportError:
     from collections.abc import Iterable, Mapping
+except ImportError:
+    from collections import Iterable, Mapping
 
 from collections import OrderedDict
 

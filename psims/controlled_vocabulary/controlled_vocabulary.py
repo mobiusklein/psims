@@ -1,5 +1,6 @@
 import os
 import pkg_resources
+import gzip
 try:
     from urllib2 import urlopen, URLError, Request
 except ImportError:
@@ -9,31 +10,39 @@ from . import unimod
 
 
 def _use_vendored_psims_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/psi-ms.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/psi-ms.obo.gz"))
+
+
+def _use_vendored_psimod_obo():
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/psi-mod.obo.gz"))
 
 
 def _use_vendored_unit_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/unit.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/unit.obo.gz"))
 
 
 def _use_vendored_pato_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/pato.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/pato.obo.gz"))
 
 
 def _use_vendored_unimod_xml():
-    return pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml.gz"))
 
 
 def _use_vendored_xlmod_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/XLMOD.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/XLMOD.obo.gz"))
 
 
 def _use_vendored_bto_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/bto.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/bto.obo.gz"))
 
 
 def _use_vendored_go_obo():
-    return pkg_resources.resource_stream(__name__, "vendor/go.obo")
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/go.obo.gz"))
+
+
+def _use_vendored_gno_obo():
+    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/gno.obo.gz"))
 
 
 fallback = {
@@ -50,6 +59,8 @@ fallback = {
     ("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
      ): _use_vendored_bto_obo,
     "http://purl.obolibrary.org/obo/go.obo": _use_vendored_go_obo,
+    "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo": _use_vendored_psimod_obo,
+    "http://purl.obolibrary.org/obo/gno.obo": _use_vendored_gno_obo,
 }
 
 
@@ -90,29 +101,23 @@ class ControlledVocabulary(object):
         return self.query(key)
 
     def query(self, key):
-        try:
+        if key in self.terms:
             return self.terms[key]
-        except KeyError as e:
-            try:
-                return self._names[key]
-            except KeyError:
-                try:
-                    return self._names[self.normalize_name(key)]
-                except KeyError as e2:
-                    lower_key = key.lower()
-                    try:
-                        return self._synonyms[lower_key]
-                    except KeyError:
-                        try:
-                            return self.terms[lower_key]
-                        except KeyError:
-                            try:
-                                return self._obsolete_names[lower_key]
-                            except KeyError:
-                                err = KeyError("%s and %s were not found." % (e, e2))
-                                # suppress intense Py3 exception chain without using raise-from syntax
-                                err.__cause__ = None
-                                raise err
+        elif key in self._names:
+            return self._names[key]
+        else:
+            normalized_key = self.normalize_name(key)
+            if normalized_key in self._names:
+                return self._names[normalized_key]
+            lower_key = key.lower()
+            if lower_key in self._synonyms:
+                return self._synonyms[lower_key]
+            elif lower_key in self.terms:
+                return self.terms[lower_key]
+            elif lower_key in self._obsolete_names:
+                return self._obsolete_names[lower_key]
+            else:
+                raise KeyError("%s and %s were not found." % (key, normalized_key))
 
     def __repr__(self):
         template = ("{self.__class__.__name__}(terms={size}, id={self.id}, "
@@ -368,4 +373,14 @@ def load_bto():
 
 def load_go():
     cv = obo_cache.resolve("http://purl.obolibrary.org/obo/go.obo")
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_psimod():
+    cv = obo_cache.resolve("https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo")
+    return ControlledVocabulary.from_obo(cv)
+
+
+def load_gno():
+    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/gno.obo")
     return ControlledVocabulary.from_obo(cv)

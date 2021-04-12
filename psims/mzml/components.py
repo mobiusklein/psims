@@ -1,9 +1,10 @@
+# pylint: disable=super-init-not-called
 import os
 import warnings
 try:
-    from collections import Mapping, Iterable
-except ImportError:
     from collections.abc import Mapping, Iterable
+except ImportError:
+    from collections import Mapping, Iterable
 from numbers import Number
 from ..utils import checksum_file
 from ..xml import _element, element, TagBase, CV
@@ -18,7 +19,7 @@ from .utils import ensure_iterable, basestring
 
 
 try:
-    FileNotFoundError
+    FileNotFoundError  # pylint: disable=used-before-assignment
 except Exception as e:
     FileNotFoundError = OSError
 
@@ -36,6 +37,17 @@ class MzML(TagBase):
 
 _COMPONENT_NAMESPACE = 'mzml'
 _xmlns = 'http://psidev.info/psi/pi/mzML/1.1'
+
+
+class IndexedMzML(TagBase):
+    type_attrs = {
+        "xmlns": "http://psi.hupo.org/ms/mzml",
+        'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
+        'xsi:schemaLocation': "http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd"
+    }
+
+    def __init__(self, **attrs):
+        super(IndexedMzML, self).__init__('indexedmzML', **attrs)
 
 
 class ComponentDispatcher(XMLBindingDispatcherBase):
@@ -150,6 +162,14 @@ class SourceFile(ComponentBase):
         return os.path.exists(path)
 
     def checksum(self, digest='sha-1'):
+        '''Compute a file integrity checksum of a file if it is local.
+
+        Returns
+        -------
+        checksum_param : :class:`~.CVParam`
+            A CV term denoting the hashing function used and the checksum
+            hex-string produced.
+        '''
         if not self.is_local():
             raise FileNotFoundError("Can't checksum %r, file not found")
         path = self.path
@@ -394,6 +414,24 @@ class ComponentList(GenericCollection):
 
     @classmethod
     def build(cls, members, context=NullMap, type_key='type'):
+        '''Compile an ordered set of :class:`~.Source`, :class:`~.Analyzer`,
+        and :class:`~.Detector`-like objects into a sorted :class:`ComponentList`
+        instance.
+
+        Parameters
+        ----------
+        members : list
+            A list of :class:`~.Source`, :class:`~.Analyzer`, and
+            :class:`~.Detector`-like objects.
+        context : :class:`~.DocumentContext`
+            The context of the containing document.
+        type_key : str
+            The key to use to read the component type.
+
+        Returns
+        -------
+        ComponentList
+        '''
         components = []
         for component in sorted(members, key=(lambda x: int(x['order']))):
             if (component[type_key] == 'source'):
@@ -826,6 +864,9 @@ class ScanWindow(ComponentBase):
         self.element = _element('scanWindow')
         self.context = context
 
+    def is_empty(self):
+        return self.lower is self.upper is None and not self.params
+
     def write_content(self, xml_file):
         self.context.param(
             name='scan window lower limit',
@@ -854,6 +895,9 @@ class IsolationWindow(ComponentBase):
         self.element = _element('isolationWindow')
         self.context = context
         self.params = self.prepare_params(params, **kwargs)
+
+    def is_empty(self):
+        return self.target is self.lower is self.upper is None and not self.params
 
     def write_content(self, xml_file):
         if self.target is not None:
@@ -894,7 +938,7 @@ class PrecursorList(GenericCollection):
 class Precursor(ComponentBase):
     requires_id = False
 
-    def __init__(self, selected_ion_list, activation, isolation_window=None, spectrum_reference=None,
+    def __init__(self, selected_ion_list, activation=None, isolation_window=None, spectrum_reference=None,
                  source_file_reference=None, external_spectrum_id=None, context=NullMap):
         if (isolation_window is not None):
             if isinstance(isolation_window, (tuple, list)):
@@ -903,8 +947,15 @@ class Precursor(ComponentBase):
             elif isinstance(isolation_window, Mapping):
                 isolation_window = IsolationWindow(
                     context=context, **isolation_window)
+        if selected_ion_list is not None:
+            selected_ion_list = SelectedIonList(
+                [SelectedIon.ensure(si, context=context) for si in list(selected_ion_list)],
+                context=context)
         self.selected_ion_list = selected_ion_list
-        self.activation = activation
+        if activation is None:
+            warnings.warn("Precursor element with missing activation information")
+            activation = {}
+        self.activation = Activation.ensure(activation, context=context)
         self.isolation_window = isolation_window
 
         self.spectrum_reference = spectrum_reference
@@ -926,10 +977,12 @@ class Precursor(ComponentBase):
         self.context = context
 
     def write_content(self, xml_file):
-        if (self.isolation_window is not None):
-            self.isolation_window.write(xml_file)
-        self.selected_ion_list.write(xml_file)
-        if (self.activation is not None):
+        if self.isolation_window is not None:
+            if not self.isolation_window.is_empty():
+                self.isolation_window.write(xml_file)
+        if self.selected_ion_list is not None and self.selected_ion_list:
+            self.selected_ion_list.write(xml_file)
+        if self.activation is not None:
             self.activation.write(xml_file)
 
 
@@ -967,8 +1020,8 @@ class Product(ComponentBase):
 
 class Activation(ParameterContainer):
 
-    def __init__(self, params, context=NullMap):
-        super(Activation, self).__init__('activation', params, context=context)
+    def __init__(self, params=None, context=NullMap, **kwargs):
+        super(Activation, self).__init__('activation', params, context=context, **kwargs)
 
 
 class SelectedIonList(GenericCollection):

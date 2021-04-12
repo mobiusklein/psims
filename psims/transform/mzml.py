@@ -1,9 +1,9 @@
 from pyteomics import mzml
 
-from psims import MzMLWriter
+from psims import MzMLWriter, MzMLbWriter
 from psims.utils import ensure_iterable
 
-from .utils import log
+from .utils import TransformerBase
 
 
 class MzMLParser(mzml.MzML):
@@ -24,19 +24,44 @@ def identity(x):
     return x
 
 
-class MzMLTransformer(object):
-    def __init__(self, input_stream, output_stream, transform=None, transform_description=None):
+class MzMLTransformer(TransformerBase):
+    """Reads an mzML file stream from :attr:`input_stream`, copying its metadata
+    to :attr:`output_stream`, and then copies its spectra, applying :attr:`transform`
+    to each spectrum object as it goes.
+
+    If :attr:`sort_by_by_scan_time` is :const:`True`, then prior to writing spectra,
+    a first pass will be made over the mzML file and the spectra will be written out
+    ordered by ``MS:1000016:"scan start time"``.
+
+    Attributes
+    ----------
+    input_stream : file-like
+        A byte stream from an mzML format data buffer
+    output_stream : file-like
+        A writable binary stream to copy the contents of :attr:`input_stream` into
+    sort_by_scan_time : :class:`bool`
+        Whether or not to sort spectra by scan time prior to writing
+    transform : :class:`Callable`, optional
+        A function to call on each spectrum, passed as a :class:`dict` object as
+        read by :class:`pyteomics.mzml.MzML`.
+    transform_description : :class:`str`
+        A description of the transformation to include in the written metadata
+    """
+
+    def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
+                 sort_by_scan_time=False):
         if transform is None:
             transform = identity
         self.input_stream = input_stream
         self.output_stream = output_stream
         self.transform = transform
         self.transform_description = transform_description
+        self.sort_by_scan_time = sort_by_scan_time
         self.reader = MzMLParser(input_stream, iterative=True)
         self.writer = MzMLWriter(output_stream)
         self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary
 
-    def _format_referenceable_param_groups(self):
+    def format_referenceable_param_groups(self):
         self.reader.reset()
         try:
             param_list = next(self.reader.iterfind("referenceableParamGroupList", recursive=True, retrive_refs=False))
@@ -45,13 +70,11 @@ class MzMLTransformer(object):
             param_groups = []
         return [self.writer.ReferenceableParamGroup.ensure(d) for d in param_groups]
 
-    def _format_instrument_configuration(self):
+    def format_instrument_configuration(self):
         self.reader.reset()
         configuration_list = next(self.reader.iterfind("instrumentConfigurationList", recursive=True))
         configurations = []
         for config_dict in configuration_list.get("instrumentConfiguration", []):
-            # import IPython
-            # IPython.embed()
             components = []
             for key, members in config_dict.pop('componentList', {}).items():
                 if key not in ("source", "analyzer", "detector"):
@@ -69,7 +92,7 @@ class MzMLTransformer(object):
             configurations.append(configuration)
         return configurations
 
-    def _format_data_processing(self):
+    def format_data_processing(self):
         self.reader.reset()
         dpl = next(self.reader.iterfind("dataProcessingList", recursive=True))
         data_processing = []
@@ -88,40 +111,48 @@ class MzMLTransformer(object):
         source_files = file_description.get("sourceFileList").get('sourceFile')
         self.writer.file_description(file_description.get("fileContent", {}).items(), source_files)
 
-        param_groups = self._format_referenceable_param_groups()
+        param_groups = self.format_referenceable_param_groups()
         if param_groups:
             self.writer.reference_param_group_list(param_groups)
 
         self.reader.reset()
         software_list = next(self.reader.iterfind("softwareList"))
         software_list = software_list.get("software", [])
-        software_list.append({
-            "id": "psims-example-MzMLTransformer",
-            "params": [
-                self.writer.param("custom unreleased software tool", "psims-example-MzMLTransformer"),
-            ]
-        })
+        software_list.append(self._make_software())
         self.writer.software_list(software_list)
 
-        configurations = self._format_instrument_configuration()
+        configurations = self.format_instrument_configuration()
         self.writer.instrument_configuration_list(configurations)
 
         # include transformation description here
-        data_processing = self._format_data_processing()
-        data_processing.append({
-            "id": "psims-example-MzMLTransformer-processing",
+        data_processing = self.format_data_processing()
+        data_processing.append(self._make_data_processing_entry())
+        self.writer.data_processing_list(data_processing)
+
+    def _make_software(self):
+        description = {
+            "id": "psims-MzMLTransformer",
+            "params": [
+                self.writer.param("python-psims"),
+            ]
+        }
+        return description
+
+    def _make_data_processing_entry(self):
+        description = {
+            "id": "psims-MzMLTransformer-processing",
             "processing_methods": [
                 {
                     "order": 1,
-                    "software_reference": "psims-example-MzMLTransformer",
+                    "software_reference": "psims-MzMLTransformer",
                     "params": ([self.transform_description] if self.transform_description else []
                                ) + ['conversion to mzML'],
                 }
             ]
-        })
-        self.writer.data_processing_list(data_processing)
+        }
+        return description
 
-    def _format_scan(self, scan):
+    def format_scan(self, scan):
         scan_params = []
         scan_window_list = []
         scan_start_time = None
@@ -178,7 +209,7 @@ class MzMLTransformer(object):
 
         return scan_start_time, scan_params, scan_window_list
 
-    def _format_spectrum(self, spectrum):
+    def format_spectrum(self, spectrum):
         spec_data = dict()
         spec_data["mz_array"] = spectrum.pop("m/z array", None)
         spec_data["intensity_array"] = spectrum.pop("intensity array", None)
@@ -216,13 +247,13 @@ class MzMLTransformer(object):
             if term.is_of_type("spectrum representation"):
                 spec_data["centroided"] = term.id == "MS:1000127"
                 temp.pop(key)
-            elif term.is_of_type("spectrum attribute"):
+            elif term.is_of_type("spectrum property") or term.is_of_type("spectrum attribute"):
                 params.append({"name": term.id, "value": value})
                 if hasattr(value, 'unit_info'):
                     params[-1]['unit_name'] = value.unit_info
                 temp.pop(key)
 
-        spec_data["scan_start_time"], spec_data['scan_params'], spec_data["scan_window_list"] = self._format_scan(
+        spec_data["scan_start_time"], spec_data['scan_params'], spec_data["scan_window_list"] = self.format_scan(
             spectrum.get("scanList", {}).get('scan', [{}])[0])
 
         spec_data['params'] = params
@@ -263,7 +294,24 @@ class MzMLTransformer(object):
             pass
         return spec_data
 
+    def iterspectrum(self):
+        self.reader.reset()
+        if self.sort_by_scan_time:
+            time_map = dict()
+            self.log("Building Scan Time Map")
+            for spectrum in self.reader.iterfind("spectrum"):
+                time = self.reader._get_time(spectrum)
+                time_map[spectrum['id']] = time
+            self.reader.reset()
+            by_time = sorted(time_map.items(), key=lambda x: x[1])
+            generate = (self.reader.get_by_id(spectrum_id) for spectrum_id, _ in by_time)
+            return generate
+        else:
+            return self.reader.iterfind("spectrum")
+
     def write(self):
+        '''Write out the the transformed mzML file
+        '''
         writer = self.writer
         with writer:
             writer.controlled_vocabularies()
@@ -271,13 +319,25 @@ class MzMLTransformer(object):
             with writer.run(id="transformation_run"):
                 with writer.spectrum_list(len(self.reader._offset_index)):
                     self.reader.reset()
-                    i = 0
-                    for spectrum in self.reader.iterfind("spectrum"):
+                    for i, spectrum in enumerate(self.iterspectrum()):
                         spectrum = self.transform(spectrum)
-                        self.writer.write_spectrum(**self._format_spectrum(spectrum))
-                        i += 1
+                        if spectrum is None:
+                            continue
+                        self.writer.write_spectrum(**self.format_spectrum(spectrum))
                         if i % 1000 == 0:
-                            log("Handled %d spectra" % (i, ))
+                            self.log("Handled %d spectra" % (i, ))
 
-        self.output_stream.seek(0)
-        writer.format()
+
+class MzMLToMzMLb(MzMLTransformer):
+    def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
+                 sort_by_scan_time=False, **hdf5args):
+        if transform is None:
+            transform = identity
+        self.input_stream = input_stream
+        self.output_stream = output_stream
+        self.transform = transform
+        self.transform_description = transform_description
+        self.sort_by_scan_time = sort_by_scan_time
+        self.reader = MzMLParser(input_stream, iterative=True)
+        self.writer = MzMLbWriter(output_stream, **hdf5args)
+        self.psims_cv = self.writer.get_vocabulary('PSI-MS').vocabulary

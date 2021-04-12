@@ -1,12 +1,15 @@
 import re
 
+import io
 from io import BytesIO
 from collections import defaultdict, OrderedDict
 
+from six import string_types as basestring, PY2
+
 try:
-    from collections import Sequence, Mapping
-except ImportError:
     from collections.abc import Sequence, Mapping
+except ImportError:
+    from collections import Sequence, Mapping
 
 from hashlib import sha1
 
@@ -79,6 +82,16 @@ class TagIndexerBase(object):
                 ref_id, int(index_data)).encode('utf-8'))
         writer.write(b"    </index>\n")
 
+    def write_xml(self, writer):
+        with writer.element("index", name=self.name):
+            for ref_id, index_data in self.index.items():
+                try:
+                    ref_id = ref_id.decode("utf8")
+                except AttributeError:
+                    pass
+                with writer.element("offset", idRef=ref_id):
+                    writer.write(str(int(index_data)))
+
 
 class SpectrumIndexer(TagIndexerBase):
     def __init__(self):
@@ -93,6 +106,17 @@ class ChromatogramIndexer(TagIndexerBase):
 
 
 class IndexList(Sequence):
+
+    """Wrap an arbitrary collection of :class:`TagIndexerBase`-derived
+    objects, and support building XML indices.
+
+    Attributes
+    ----------
+    indexers : list
+        A list of :class:`TagIndexerBase`-derived objects to use when
+        extracting indices from XML
+    """
+
     def __init__(self, indexers=None):
         if indexers is None:
             indexers = []
@@ -116,64 +140,152 @@ class IndexList(Sequence):
     def __call__(self, data, distance):
         return self.test(data, distance)
 
-    def write_index_list(self, writer, distance):
+    def write_index_list_xml(self, writer, distance):
         offset = distance
         n = len(self)
-        writer.write("  <indexList count=\"{:d}\">\n".format(n).encode("utf-8"))
-        for index in self:
-            if len(index) > 0:
-                index.write(writer)
-        writer.write(b"  </indexList>\n")
-        writer.write(b"  <indexListOffset>")
-        writer.write("{:d}</indexListOffset>\n".format(offset).encode("utf-8"))
+        with writer.element("indexList", count=str(n)):
+            for index in self:
+                if len(index) > 0:
+                    index.write_xml(writer)
+        with writer.element("indexListOffset"):
+            writer.write(str(int(offset)))
 
     def add(self, indexer):
         self.indexers.append(indexer)
 
 
-class HashingFileBuffer(object):
-    def __init__(self):
-        self.buffer = BytesIO()
-        self.checksum = sha1()
+class StreamWrapperBase(object):
+    '''A base class for wrapping an output stream to intercept operations.
+    '''
+    def __init__(self, stream):
+        if isinstance(stream, basestring):
+            stream = io.open(stream, 'wb')
+        self.stream = stream
+
+    if PY2:
+        def write(self, b):
+            return self.stream.write(b)
+    else:
+        def write(self, b):
+            n = self.stream.write(b)
+            if n is None:
+                raise ValueError("The write stream %r failed to return number of bytes written" % (self.stream, ))
+            return n
+
+    def flush(self):
+        return self.stream.flush()
+
+    def close(self):
+        self.stream.close()
+
+    @property
+    def closed(self):
+        return self.stream.closed
+
+    def writable(self):
+        return self.stream.writable()
+
+    @property
+    def name(self):
+        return self.stream.name
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if not self.closed:
+            self.close()
+
+
+class HashingStream(StreamWrapperBase):
+    '''A write stream wrapper to compute a running SHA1 checksum as bytes are written to
+    the output stream.
+    '''
+    def __init__(self, stream):
+        super(HashingStream, self).__init__(stream)
+        self._checksum = sha1()
+
+    def write(self, b):
+        n = self.stream.write(b)
+        self._checksum.update(b)
+        return n
+
+    def checksum(self):
+        '''Get the current checksum.
+
+        Returns
+        -------
+        bytes
+        '''
+        return self._checksum.hexdigest()
+
+
+class IndexingStream(StreamWrapperBase):
+    '''An output stream wrapper that tracks running byte offsets for specific patterns.
+
+    The output stream is also wrapped in a :class:`HashingStream`. If the innermost stream
+    supports :class:`io.BufferedWriter`, this will also wrap the output stream too to reduce
+    the number of calls to write through the hashing stream.
+    '''
+
+    def __init__(self, stream):
+        # Make sure we keep a handle on the real hashing stream, regardless of
+        # whether we wrap it in a buffering layer.
+        self.hashing_stream = HashingStream(stream)
+        # If the stream created supports writable and the rest of the io.IOBase
+        # interface, we can combine it with io.BufferedWriter, cutting down on
+        # the number of calls to write on the inner stream.
+        try:
+            if self.hashing_stream.writable():
+                stream = io.BufferedWriter(self.hashing_stream)
+            else:
+                raise ValueError("Stream %s must be writable!" % self.hashing_stream.stream)
+        except AttributeError:
+            # No Python-level buffering
+            stream = self.hashing_stream
+        super(IndexingStream, self).__init__(stream)
+        # A running tally of the number of bytes written
         self.accumulator = 0
-
-    def write(self, data):
-        self.buffer.write(data)
-        self.accumulator += len(data)
-        self.checksum.update(data)
-        return self.accumulator
-
-
-class MzMLIndexer(HashingFileBuffer):
-    def __init__(self, source, pretty=True):
-        self.source = source
-        super(MzMLIndexer, self).__init__()
         self.indices = IndexList()
         self.indices.add(SpectrumIndexer())
         self.indices.add(ChromatogramIndexer())
 
+    # This could be optimized better, split produces a lot of copies.
+    def tokenize(self, buff):
+        delim = b'<'
+        started_with_delim = buff.startswith(delim)
+        parts = buff.split(delim)
+        tail = parts[-1]
+        front = parts[:-1]
+        i = 0
+        for part in front:
+            i += 1
+            if part == b"":
+                continue
+            if i == 1:
+                if started_with_delim:
+                    yield delim + part
+                else:
+                    yield part
+            else:
+                yield delim + part
+        if tail.strip() and i > 0:
+            yield delim + tail
+        else:
+            yield tail
+
     def write(self, data):
-        self.indices.test(data, self.accumulator)
-        return super(MzMLIndexer, self).write(data)
+        n = 0
+        for line in self.tokenize(data):
+            self.indices.test(line, self.accumulator)
+            self.accumulator += len(line)
+            nl = super(IndexingStream, self).write(line)
+            if nl is not None:
+                n += nl
+        return n
 
-    def write_opening(self):
-        header = (b'<?xml version=\'1.0\' encoding=\'utf-8\'?>\n'
-                  b'<indexedmzML xmlns="http://psi.hupo.org/ms/mzml" '
-                  b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-                  b' xsi:schemaLocation="http://psi.hupo.org/ms/mzml '
-                  b'http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd">\n')
-        self.write(header)
-
-    def embed_source(self):
-        try:
-            self.source.seek(0)
-        except AttributeError:
-            pass
-        tree = etree.parse(self.source)
-        content = etree.tostring(tree, pretty_print=True).splitlines()
-        for line in content:
-            indented = b''.join((b'  ', line, b'\n'))
-            self.write(indented)
+    def _raw_write(self, data):
+        super(IndexingStream, self).write(data)
 
     def write_index(self, index, name):
         self.write("    <index name=\"{}\">\n".format(name).encode('utf-8'))
@@ -181,35 +293,25 @@ class MzMLIndexer(HashingFileBuffer):
             self.write_offset(ref_id, index_data)
         self.write(b"    </index>\n")
 
+    def checksum(self):
+        # Make sure to flush the buffer into the underlying checksum stream so
+        # that any final data is written.
+        self.flush()
+        return self.hashing_stream.checksum()
+
     def write_index_list(self):
         offset = self.accumulator
         self.indices.write_index_list(self, offset)
 
     def write_checksum(self):
         self.write(b"  <fileChecksum>")
-        self.write(self.checksum.hexdigest().encode('utf-8'))
-        self.write(b"</fileChecksum>\n")
+        self.write(self.checksum().encode('utf-8'))
+        self.write(b"</fileChecksum>")
 
-    def write_closing(self):
-        self.write(b"</indexedmzML>")
-
-    def write_offset(self, ref_id, index_data):
-        self.write('      <offset idRef="{}">{:d}</offset>\n'.format(
-            ref_id, index_data).encode('utf-8'))
-
-    def build(self):
-        self.write_opening()
-        self.embed_source()
-        self.write_index_list()
-        self.write_checksum()
-        self.write_closing()
-
-    def overwrite(self, opener=None):
-        if opener is None:
-            opener = compression.get(self.source)
-        try:
-            self.source.seek(0)
-            fh = self.source
-        except AttributeError:
-            fh = opener(self.source, 'wb')
-        fh.write(self.buffer.getvalue())
+    def to_xml(self, writer):
+        offset = self.accumulator
+        writer.flush()
+        self.indices.write_index_list_xml(writer, offset)
+        with writer.element("fileChecksum"):
+            writer.flush()
+            writer.write(self.checksum())
