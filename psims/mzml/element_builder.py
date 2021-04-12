@@ -158,4 +158,6 @@ class ElementBuilder(object):
             if key == 'params' and not value:
                 continue
             result[key] = value
-        return result
+        if result:
+            return result
+        return

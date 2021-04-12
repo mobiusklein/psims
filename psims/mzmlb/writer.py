@@ -75,8 +75,13 @@ class ArrayBuffer(object):
 class MzMLbWriter(_MzMLWriter):
     '''A high level API for generating mzMLb HDF5 files from simple Python objects.
 
-    This class's public interface is identical to :class:`~.MzMLWriter`, with the exception of those
+    This class's public interface is identical to :class:`~.IndexedMzMLWriter`, with the exception of those
     related to HDF5 compression described below.
+
+    .. note::
+        Although :mod:`h5py` can read and write through Python file-like objects, if they are used they
+        must be opened in read+write mode to allow the file to be partially re-read during an update to
+        an existing block.
 
     Attributes
     ----------
@@ -124,7 +129,7 @@ class MzMLbWriter(_MzMLWriter):
         self.h5_file.attrs['compression'] = self.compressor_name
         return super(MzMLbWriter, self).begin()
 
-    def end(self, type, value, traceback):
+    def end(self, type=None, value=None, traceback=None):
         close_ = self._close
         self._close = False
         super(MzMLbWriter, self).end(type, value, traceback)
@@ -246,7 +251,7 @@ class MzMLbWriter(_MzMLWriter):
             compression_opts=self.h5_compression_options)
 
     def create_array(self, data, name, last=None, dtype=np.float32, chunks=True):
-        '''Store a typed data array as a named dataset.
+        '''Store a typed data array as a named dataset in the HDF5 file.
 
         .. note::
             The array should not be textual unless they've already been translated
@@ -275,7 +280,7 @@ class MzMLbWriter(_MzMLWriter):
             chunks=min(self.h5_blocksize, n) if chunks else None)
 
     def create_buffer(self, name, content):
-        '''Create a compressed binary buffer with a name and fixed length.
+        '''Create a compressed binary buffer with a name and fixed length in the HDF5 file.
 
         Parameters
         ----------

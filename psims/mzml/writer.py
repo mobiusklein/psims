@@ -1,3 +1,20 @@
+'''
+mzML is a standard rich XML-format for raw mass spectrometry data storage.
+Please refer to `psidev.info <http://www.psidev.info/index.php?q=node/257>`_
+for the detailed specification of the format and structure of mzML files.
+
+In addition to mzML, there is a wrapping format called ``indexedmzML``
+which adds an extra layer to the XML document, including pre-computed byte offsets
+for each ``<spectrum>`` and ``<chromatogram>`` element.
+
+To write ``mzML`` without an index use :class:`PlainMzMLWriter`, and for ``indexedmzML``
+use :class:`IndexedMzMLWriter`. Because so many tools rely on the index, :class:`IndexedMzMLWriter`
+is exported under the alias `MzMLWriter`. The interface for these two classes are the same,
+with :class:`IndexedMzMLWriter` having slightly more complex behavior on writing and when finishing
+the document, though you are able to alter the indexing behavior via :attr:`IndexedMzMLWriter.index_builder`
+or through inheritance.
+'''
+
 import numbers
 import warnings
 
@@ -74,7 +91,7 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.toplevel.__enter__()
         return self
 
-    def end(self, exc_type, exc_value, traceback):
+    def end(self, exc_type=None, exc_value=None, traceback=None):
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
 
@@ -157,7 +174,7 @@ class IndexedmzMLSection(DocumentSection):
         self.inner = element(self.writer, MzML(**self.section_args))
         self.inner.__enter__()
 
-    def end(self, exc_type, exc_value, traceback):
+    def end(self, exc_type=None, exc_value=None, traceback=None):
         self.inner.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
         self.write_index()
@@ -176,7 +193,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     that they have access to a universal identity map for each element in the document,
     that map is centralized in this class.
 
-    MzMLWriter inherits from :class:`.ComponentDispatcher`, giving it a :attr:`context`
+    MzMLWriter inherits from :class:`~psims.mzml.components.ComponentDispatcher`, giving it a :attr:`context`
     attribute and access to all `Component` objects pre-bound to that context with attribute-access
     notation.
 
@@ -266,7 +283,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             A list or other iterable of :class:`str`, :class:`dict`, or \*Param-types which will
             be placed in the ``<fileContent>`` element.
         source_files : list
-            A list or other iterable of dict or :class:`~.SourceFile`-like objects
+            A list or other iterable of dict or :class:`~psims.mzml.components.SourceFile`-like objects
             to be placed in the ``<sourceFileList>`` element
         """
         self.state_machine.transition("file_description")
@@ -496,7 +513,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         '''
         self.state_machine.expects_state("spectrum_list")
         if encoding is None:
-            encoding = {MZ_ARRAY: np.float64}
+            encoding = {MZ_ARRAY: np.float64, CHARGE_ARRAY: np.int32}
         if params is None:
             params = []
         else:
@@ -775,10 +792,10 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         if isinstance(precursors, self.PrecursorList.type):
             return precursors
         elif isinstance(precursors, (dict)):
-            precursors = self.PrecursorList([self._prepare_precursor_information(
+            precursors = self.PrecursorList([self.prepare_precursor_information(
                 intensity_unit=intensity_unit, **precursors)])
         elif isinstance(precursors, PrecursorBuilder):
-            precursors = self.PrecursorList([self._prepare_precursor_information(
+            precursors = self.PrecursorList([self.prepare_precursor_information(
                 precursors,
                 intensity_unit=intensity_unit)])
         else:
@@ -788,7 +805,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                     packaged.append(p)
                 elif isinstance(p, dict):
                     packaged.append(
-                        self._prepare_precursor_information(
+                        self.prepare_precursor_information(
                             intensity_unit=intensity_unit, **p))
                 elif isinstance(p, PrecursorBuilder):
                     packaged.append(
@@ -797,7 +814,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             precursors = self.PrecursorList(packaged)
         return precursors
 
-    def _prepare_precursor_information(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
+    def prepare_precursor_information(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
                                        isolation_window_args=None, params=None,
                                        intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None, external_spectrum_id=None,
                                        source_file_reference=None, **kwargs):
@@ -813,14 +830,14 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             The charge state of the first seelcted ion
         spectrum_reference: str, optional
             The `id` of the prescursor `<spectrum>` for this precursor
-        activation: dict, optional
-            Parameters forwarded to :meth:`PrecursorBuilder.activation`
+        activation: list, optional
+            A list of parameters describing the ion activation method used.
         isolation_window_args: tuple, list, or dict, optional
-            Parameters forwarded to :meth:PrecursorBuilder.isolation_window`,
+            Parameters forwarded to :meth:`PrecursorBuilder.isolation_window`,
             tuple or list values are converted into :class:`dict` of the correct
-            structure.
+            structure. This argument may also be passed as `isolation_window`.
         params: list, optional
-            The cv-params of the first selected ion
+            The cvParams of the first selected ion
         intensity_unit: str
             The intensity unit of the first selected ion
         scan_id: str, optional
@@ -834,10 +851,14 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         -------
         :class:`~.Precursor`
         '''
-        if isolation_window_args is None:
-            isolation_window_args = kwargs.get("isolation_window")
         if isinstance(mz, PrecursorBuilder):
             return self.Precursor(**mz.pack())
+        if isinstance(mz, dict):
+            return self.Precursor(**mz)
+        if isolation_window_args is None:
+            isolation_window_args = kwargs.get("isolation_window")
+        if mz is None:
+            mz = kwargs.get("selected_ion_mz")
         if scan_id is not None:
             spectrum_reference = scan_id
         if params is None:
@@ -866,8 +887,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def precursor_builder(self, mz=None, intensity=None, charge=None, spectrum_reference=None, activation=None,
                           isolation_window_args=None, params=None,
                           intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None,
-                          external_spectrum_id=None,
-                          source_file_reference=None):
+                          external_spectrum_id=None, source_file_reference=None,
+                          isolation_window=None):
         '''Create a :class:`PrecursorBuilder`, an object to help populate the precursor information
         data structure.
 
@@ -888,12 +909,13 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         activation: dict or list, optional
             Parameters forwarded to :meth:`PrecursorBuilder.activation`. This should be a dictionary
             with a key "params" and a list of :class:`~.CVParam` coerce-able values, with additional
-            optional keys naming other :class:`~.CVParam` coerce-able values.
+            optional keys naming other :class:`~.CVParam` coerce-able values. If a :class:`list` is
+            passed, it will be wrapped in one e.g. ``{"params": activation}``
         isolation_window_args: tuple, list, or dict, optional
             Parameters forwarded to :meth:PrecursorBuilder.isolation_window`,
             tuple or list of three values are converted into :class:`dict` of the correct
             structure. The expected keys are "lower", the lower m/z offset, "target", the center m/z,
-            and "upper", the upper m/z offset.
+            and "upper", the upper m/z offset. You may also pass this argumemt as `isolation_window`.
         params: list, optional
             The cv- and user-params of the first selected ion, in addition to `mz`, `intensity`,
             `charge`.
@@ -910,6 +932,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         -------
         :class:`PrecursorBuilder`
         '''
+        if isolation_window_args is None:
+            isolation_window_args = isolation_window
         if scan_id is None:
             spectrum_reference = scan_id
         inst = PrecursorBuilder(
@@ -917,7 +941,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             external_spectrum_id=external_spectrum_id)
         if mz is not None or intensity is not None or charge is not None or params is not None:
             inst.selected_ion(
-                mz=mz, intensity=intensity, charge=charge,
+                selected_ion_mz=mz, intensity=intensity, charge=charge,
                 intensity_unit=intensity_unit, params=params)
         if isolation_window_args is None:
             if isinstance(isolation_window_args, (tuple, list)):
@@ -927,6 +951,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                     "upper": isolation_window_args[2]}
             inst.isolation_window(isolation_window_args)
         if activation is not None:
+            if isinstance(activation, (list, tuple)):
+                activation = {'params': activation}
             inst.activation(activation)
         return  inst
 
@@ -979,6 +1005,28 @@ class PrecursorBuilder(ElementBuilder):
 
 
 class IndexedMzMLWriter(PlainMzMLWriter):
+    """A high level API for generating indexed mzML XML files from simple Python objects.
+
+    This class depends heavily on :mod:`lxml`'s incremental file writing API which in turn
+    depends heavily on context managers. Almost all logic is handled inside a context
+    manager and in the context of a particular document. Since all operations assume
+    that they have access to a universal identity map for each element in the document,
+    that map is centralized in this class.
+
+    `MzMLWriter` inherits from :class:`.ComponentDispatcher`, giving it a :attr:`context`
+    attribute and access to all `Component` objects pre-bound to that context with attribute-access
+    notation.
+
+    Attributes
+    ----------
+    chromatogram_count : int
+        A count of the number of chromatograms written
+    spectrum_count : int
+        A count of the number of spectra written
+    index_builder : :class:`~.IndexingStream`
+        A writing stream that automatically tokenizes and records byte offsets for
+        specific XML tags.
+    """
     def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, **kwargs):
         outfile = IndexingStream(outfile)

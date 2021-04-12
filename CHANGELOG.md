@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ### Changed
 1. The `MzIdentMLTranslater` class was renamed `MzIdentMLTranslator` for the sake of the English language.
+2. Overhauled large parts of the documentation.
 
 ### Deprecated
 

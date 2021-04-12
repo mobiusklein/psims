@@ -162,6 +162,14 @@ class SourceFile(ComponentBase):
         return os.path.exists(path)
 
     def checksum(self, digest='sha-1'):
+        '''Compute a file integrity checksum of a file if it is local.
+
+        Returns
+        -------
+        checksum_param : :class:`~.CVParam`
+            A CV term denoting the hashing function used and the checksum
+            hex-string produced.
+        '''
         if not self.is_local():
             raise FileNotFoundError("Can't checksum %r, file not found")
         path = self.path
@@ -406,6 +414,24 @@ class ComponentList(GenericCollection):
 
     @classmethod
     def build(cls, members, context=NullMap, type_key='type'):
+        '''Compile an ordered set of :class:`~.Source`, :class:`~.Analyzer`,
+        and :class:`~.Detector`-like objects into a sorted :class:`ComponentList`
+        instance.
+
+        Parameters
+        ----------
+        members : list
+            A list of :class:`~.Source`, :class:`~.Analyzer`, and
+            :class:`~.Detector`-like objects.
+        context : :class:`~.DocumentContext`
+            The context of the containing document.
+        type_key : str
+            The key to use to read the component type.
+
+        Returns
+        -------
+        ComponentList
+        '''
         components = []
         for component in sorted(members, key=(lambda x: int(x['order']))):
             if (component[type_key] == 'source'):
@@ -838,6 +864,9 @@ class ScanWindow(ComponentBase):
         self.element = _element('scanWindow')
         self.context = context
 
+    def is_empty(self):
+        return self.lower is self.upper is None and not self.params
+
     def write_content(self, xml_file):
         self.context.param(
             name='scan window lower limit',
@@ -866,6 +895,9 @@ class IsolationWindow(ComponentBase):
         self.element = _element('isolationWindow')
         self.context = context
         self.params = self.prepare_params(params, **kwargs)
+
+    def is_empty(self):
+        return self.target is self.lower is self.upper is None and not self.params
 
     def write_content(self, xml_file):
         if self.target is not None:
@@ -906,7 +938,7 @@ class PrecursorList(GenericCollection):
 class Precursor(ComponentBase):
     requires_id = False
 
-    def __init__(self, selected_ion_list, activation, isolation_window=None, spectrum_reference=None,
+    def __init__(self, selected_ion_list, activation=None, isolation_window=None, spectrum_reference=None,
                  source_file_reference=None, external_spectrum_id=None, context=NullMap):
         if (isolation_window is not None):
             if isinstance(isolation_window, (tuple, list)):
@@ -946,7 +978,8 @@ class Precursor(ComponentBase):
 
     def write_content(self, xml_file):
         if self.isolation_window is not None:
-            self.isolation_window.write(xml_file)
+            if not self.isolation_window.is_empty():
+                self.isolation_window.write(xml_file)
         if self.selected_ion_list is not None and self.selected_ion_list:
             self.selected_ion_list.write(xml_file)
         if self.activation is not None:

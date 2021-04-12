@@ -1,11 +1,9 @@
-Writing mzML Documents
-----------------------
+Writing mzMLb Documents
+-----------------------
 
 
 .. automodule:: psims.mzmlb.writer
 
     .. autoclass:: MzMLbWriter
         :members:
-        :inherited-members:
-        :exclude-members: toplevel_tag
-        :special-members: __enter__, __exit__, __getattr__
+        :exclude-members: toplevel_tag, begin, end

@@ -7,7 +7,7 @@ from .mzml import (
     MzMLWriter, ARRAY_TYPES, compression_map,
     MZ_ARRAY, INTENSITY_ARRAY, CHARGE_ARRAY,
     components as mzml_components,
-    default_cv_list as default_mzml_cv_list)
+    default_cv_list as default_mzml_cv_list, compressors)
 
 from .mzmlb import MzMLbWriter
 
@@ -32,7 +32,7 @@ __all__ = [
 
     "MzIdentMLWriter", "default_mzid_cv_list", "mzid_components",
 
-    "compression",
+    "compression", 'compressors',
 
     "TableStateMachine", "checksum_file", "__version__"
 ]

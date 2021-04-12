@@ -1002,6 +1002,7 @@ class XMLDocumentWriter(XMLWriterMixin):
 
     def end(self, exc_type=None, exc_value=None, traceback=None):
         """Ends the XML document, and flushes and closes the file
+        if appropriate.
         """
         self.toplevel.__exit__(exc_type, exc_value, traceback)
         self.writer.flush()
