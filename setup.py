@@ -20,7 +20,8 @@ except Exception:
 
 
 extras_require = {
-    'mzmlb': ['h5py', 'hdf5plugin']
+    'mzmlb': ['h5py', 'hdf5plugin'],
+    'numpress': ['pynumpress']
 }
 extras_require['all'] = sum(extras_require.values(), [])
 
