@@ -1,0 +1,515 @@
+
+
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>psims.transform.mzml &mdash; psims  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a class="site-nav-toggle hidden-lg-up"><i class="icon-menu"></i></a>
+            <a class="site-title" href="../../../index.html">
+                psims
+            </a>
+        </div>
+    </header>
+
+
+<div class="breadcrumbs-outer hidden-xs-down">
+    <div class="container">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a></li>
+        
+          <li><a href="../../index.html">Module code</a></li>
+        
+      <li>psims.transform.mzml</li>
+    
+    
+      <li class="breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+</div>
+    </div>
+</div>
+    <div class="main-outer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 site-nav">
+                    
+<div role="search">
+    <form class="search" action="../../../search.html" method="get">
+        <div class="icon-input">
+            <input type="text" name="q" placeholder="Search" />
+            <span class="icon-search"></span>
+        </div>
+        <input type="submit" value="Go" class="d-hidden" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+                    <div class="site-nav-tree">
+                        
+                            
+                            
+                                <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzml/examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzml/components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/writer.html">Writing mzIdentML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/components.html">Components of mzIdentML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzmlb/index.html">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzmlb/writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzmlb/index.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
+</ul>
+</li>
+</ul>
+
+                            
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="document">
+                        
+                            
+  <h1>Source code for psims.transform.mzml</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pyteomics</span> <span class="kn">import</span> <span class="n">mzml</span>
+
+<span class="kn">from</span> <span class="nn">psims</span> <span class="kn">import</span> <span class="n">MzMLWriter</span><span class="p">,</span> <span class="n">MzMLbWriter</span>
+<span class="kn">from</span> <span class="nn">psims.utils</span> <span class="kn">import</span> <span class="n">ensure_iterable</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TransformerBase</span>
+
+
+<span class="k">class</span> <span class="nc">MzMLParser</span><span class="p">(</span><span class="n">mzml</span><span class="o">.</span><span class="n">MzML</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_handle_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MzMLParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_handle_param</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MzMLParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+
+<div class="viewcode-block" id="MzMLTransformer"><a class="viewcode-back" href="../../../transform/mzml.html#psims.transform.mzml.MzMLTransformer">[docs]</a><span class="k">class</span> <span class="nc">MzMLTransformer</span><span class="p">(</span><span class="n">TransformerBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reads an mzML file stream from :attr:`input_stream`, copying its metadata</span>
+<span class="sd">    to :attr:`output_stream`, and then copies its spectra, applying :attr:`transform`</span>
+<span class="sd">    to each spectrum object as it goes.</span>
+
+<span class="sd">    If :attr:`sort_by_by_scan_time` is :const:`True`, then prior to writing spectra,</span>
+<span class="sd">    a first pass will be made over the mzML file and the spectra will be written out</span>
+<span class="sd">    ordered by ``MS:1000016:&quot;scan start time&quot;``.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_stream : file-like</span>
+<span class="sd">        A byte stream from an mzML format data buffer</span>
+<span class="sd">    output_stream : file-like</span>
+<span class="sd">        A writable binary stream to copy the contents of :attr:`input_stream` into</span>
+<span class="sd">    sort_by_scan_time : :class:`bool`</span>
+<span class="sd">        Whether or not to sort spectra by scan time prior to writing</span>
+<span class="sd">    transform : :class:`Callable`, optional</span>
+<span class="sd">        A function to call on each spectrum, passed as a :class:`dict` object as</span>
+<span class="sd">        read by :class:`pyteomics.mzml.MzML`.</span>
+<span class="sd">    transform_description : :class:`str`</span>
+<span class="sd">        A description of the transformation to include in the written metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_stream</span><span class="p">,</span> <span class="n">output_stream</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform_description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">sort_by_scan_time</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="n">identity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_stream</span> <span class="o">=</span> <span class="n">input_stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_stream</span> <span class="o">=</span> <span class="n">output_stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_description</span> <span class="o">=</span> <span class="n">transform_description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_by_scan_time</span> <span class="o">=</span> <span class="n">sort_by_scan_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">MzMLParser</span><span class="p">(</span><span class="n">input_stream</span><span class="p">,</span> <span class="n">iterative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">MzMLWriter</span><span class="p">(</span><span class="n">output_stream</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">get_vocabulary</span><span class="p">(</span><span class="s1">&#39;PSI-MS&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">vocabulary</span>
+
+    <span class="k">def</span> <span class="nf">format_referenceable_param_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">param_list</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s2">&quot;referenceableParamGroupList&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retrive_refs</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="n">param_groups</span> <span class="o">=</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">param_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;referenceableParamGroup&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="n">param_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">ReferenceableParamGroup</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">param_groups</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">format_instrument_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">configuration_list</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s2">&quot;instrumentConfigurationList&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">configurations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">config_dict</span> <span class="ow">in</span> <span class="n">configuration_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instrumentConfiguration&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">members</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;componentList&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;analyzer&quot;</span><span class="p">,</span> <span class="s2">&quot;detector&quot;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;source&#39;</span><span class="p">:</span>
+                    <span class="n">components</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">Source</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;analyzer&quot;</span><span class="p">:</span>
+                    <span class="n">components</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">Analyzer</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;detector&#39;</span><span class="p">:</span>
+                    <span class="n">components</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">Detector</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">)</span>
+            <span class="n">components</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">software_reference</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;softwareRef&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref&quot;</span><span class="p">)</span>
+            <span class="n">configuration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">InstrumentConfiguration</span><span class="p">(</span>
+                <span class="n">component_list</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">software_reference</span><span class="o">=</span><span class="n">software_reference</span><span class="p">,</span> <span class="o">**</span><span class="n">config_dict</span><span class="p">)</span>
+            <span class="n">configurations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">configurations</span>
+
+    <span class="k">def</span> <span class="nf">format_data_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">dpl</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s2">&quot;dataProcessingList&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">data_processing</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dp_dict</span> <span class="ow">in</span> <span class="n">dpl</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataProcessing&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">pm</span> <span class="ow">in</span> <span class="n">dp_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;processingMethod&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="n">pm</span><span class="p">[</span><span class="s1">&#39;software_reference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;softwareRef&quot;</span><span class="p">)</span>
+                <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">ProcessingMethod</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">pm</span><span class="p">))</span>
+            <span class="n">dp_dict</span><span class="p">[</span><span class="s1">&#39;processing_methods&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">methods</span>
+            <span class="n">data_processing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">DataProcessing</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">data_processing</span>
+
+    <span class="k">def</span> <span class="nf">copy_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">file_description</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s2">&quot;fileDescription&quot;</span><span class="p">))</span>
+        <span class="n">source_files</span> <span class="o">=</span> <span class="n">file_description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sourceFileList&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sourceFile&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">file_description</span><span class="p">(</span><span class="n">file_description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fileContent&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">source_files</span><span class="p">)</span>
+
+        <span class="n">param_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_referenceable_param_groups</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">param_groups</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">reference_param_group_list</span><span class="p">(</span><span class="n">param_groups</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">software_list</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s2">&quot;softwareList&quot;</span><span class="p">))</span>
+        <span class="n">software_list</span> <span class="o">=</span> <span class="n">software_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">software_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_software</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">software_list</span><span class="p">(</span><span class="n">software_list</span><span class="p">)</span>
+
+        <span class="n">configurations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_instrument_configuration</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">instrument_configuration_list</span><span class="p">(</span><span class="n">configurations</span><span class="p">)</span>
+
+        <span class="c1"># include transformation description here</span>
+        <span class="n">data_processing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_data_processing</span><span class="p">()</span>
+        <span class="n">data_processing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_data_processing_entry</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">data_processing_list</span><span class="p">(</span><span class="n">data_processing</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_make_software</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;psims-MzMLTransformer&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">param</span><span class="p">(</span><span class="s2">&quot;python-psims&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">description</span>
+
+    <span class="k">def</span> <span class="nf">_make_data_processing_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;psims-MzMLTransformer-processing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;processing_methods&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">&quot;software_reference&quot;</span><span class="p">:</span> <span class="s2">&quot;psims-MzMLTransformer&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_description</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_description</span> <span class="k">else</span> <span class="p">[]</span>
+                               <span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;conversion to mzML&#39;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">description</span>
+
+    <span class="k">def</span> <span class="nf">format_scan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan</span><span class="p">):</span>
+        <span class="n">scan_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">scan_window_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">scan_start_time</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">scan</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;accession&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">accession</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">accession</span>
+            <span class="k">if</span> <span class="n">accession</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">accession</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">scan_params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
+                    <span class="n">scan_params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span><span class="p">[</span><span class="n">accession</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;scan attribute&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;scan start time&#39;</span><span class="p">:</span>
+                    <span class="n">scan_start_time</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;unit_name&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">scan_params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
+                        <span class="n">scan_params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scanWindowList&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scanWindow&#39;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;accession&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">accession</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">accession</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span><span class="p">[</span><span class="n">accession</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;selection window attribute&quot;</span><span class="p">):</span>
+                <span class="n">scan_window_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
+                    <span class="n">scan_window_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">scan_window_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scan_window_list</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">windows</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scan_window_list</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+                <span class="n">lo</span> <span class="o">=</span> <span class="n">scan_window_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">hi</span> <span class="o">=</span> <span class="n">scan_window_list</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">windows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lo</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">hi</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]))</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+            <span class="n">scan_window_list</span> <span class="o">=</span> <span class="n">windows</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scan_window_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="n">scan_start_time</span><span class="p">,</span> <span class="n">scan_params</span><span class="p">,</span> <span class="n">scan_window_list</span>
+
+    <span class="k">def</span> <span class="nf">format_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">):</span>
+        <span class="n">spec_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;mz_array&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;m/z array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;intensity_array&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;intensity array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;charge_array&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;charge array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;encoding&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;m/z array&quot;</span><span class="p">:</span> <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;mz_array&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span> <span class="n">spec_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mz_array&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;intensity array&quot;</span><span class="p">:</span> <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;intensity_array&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span> <span class="n">spec_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;intensity_array&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;charge array&quot;</span><span class="p">:</span> <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;charge_array&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span> <span class="n">spec_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;charge_array&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">}</span>
+
+        <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;positive scan&quot;</span> <span class="ow">in</span> <span class="n">spectrum</span><span class="p">:</span>
+            <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;polarity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="s2">&quot;negative scan&quot;</span> <span class="ow">in</span> <span class="n">spectrum</span><span class="p">:</span>
+            <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;polarity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;polarity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;accession&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">accession</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">accession</span>
+            <span class="k">if</span> <span class="n">accession</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">accession</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
+                    <span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span><span class="p">[</span><span class="n">accession</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum representation&quot;</span><span class="p">):</span>
+                <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;centroided&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;MS:1000127&quot;</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum property&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum attribute&quot;</span><span class="p">):</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
+                    <span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;scan_start_time&quot;</span><span class="p">],</span> <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;scan_params&#39;</span><span class="p">],</span> <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;scan_window_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_scan</span><span class="p">(</span>
+            <span class="n">spectrum</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scanList&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scan&#39;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span>
+
+        <span class="n">precursors</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;precursorList&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;precursor&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">precursors</span><span class="p">:</span>
+            <span class="n">precursor_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">prec</span> <span class="ow">in</span> <span class="n">precursors</span><span class="p">:</span>
+                <span class="n">precursor_information</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">precursor_information</span><span class="p">[</span><span class="s1">&#39;scan_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spectrumRef&quot;</span><span class="p">)</span>
+                <span class="n">ion</span> <span class="o">=</span> <span class="n">prec</span><span class="p">[</span><span class="s1">&#39;selectedIonList&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;selectedIon&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                    <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;MS:1000744&quot;</span><span class="p">:</span>
+                        <span class="n">precursor_information</span><span class="p">[</span><span class="s1">&#39;mz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="n">ion</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;MS:1000042&quot;</span><span class="p">:</span>
+                        <span class="n">precursor_information</span><span class="p">[</span><span class="s1">&#39;intensity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="n">ion</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;MS:1000041&quot;</span><span class="p">,</span> <span class="s2">&quot;MS:1000633&quot;</span><span class="p">):</span>
+                        <span class="n">precursor_information</span><span class="p">[</span><span class="s1">&#39;charge&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="n">ion</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">precursor_information</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;intensity&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">precursor_information</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;charge&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">precursor_information</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ion</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="n">precursor_information</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">prec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;activation&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                <span class="n">precursor_information</span><span class="p">[</span><span class="s1">&#39;isolation_window_args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;isolationWindow&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">precursor_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">precursor_information</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">precursor_list</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;precursor_information&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">precursor_list</span>
+        <span class="c1"># attempt to find the instrumentConfiguration id to reference</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;instrument_configuration_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;scanList&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scan&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instrumentConfigurationRef&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">spec_data</span>
+
+    <span class="k">def</span> <span class="nf">iterspectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_by_scan_time</span><span class="p">:</span>
+            <span class="n">time_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Building Scan Time Map&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s2">&quot;spectrum&quot;</span><span class="p">):</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">_get_time</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+                <span class="n">time_map</span><span class="p">[</span><span class="n">spectrum</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">by_time</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">time_map</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">generate</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="n">spectrum_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">spectrum_id</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">by_time</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">generate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s2">&quot;spectrum&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MzMLTransformer.write"><a class="viewcode-back" href="../../../transform/mzml.html#psims.transform.mzml.MzMLTransformer.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Write out the the transformed mzML file</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span>
+        <span class="k">with</span> <span class="n">writer</span><span class="p">:</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">controlled_vocabularies</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">copy_metadata</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;transformation_run&quot;</span><span class="p">):</span>
+                <span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">spectrum_list</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">_offset_index</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterspectrum</span><span class="p">()):</span>
+                        <span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">spectrum</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_spectrum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">format_spectrum</span><span class="p">(</span><span class="n">spectrum</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Handled </span><span class="si">%d</span><span class="s2"> spectra&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="MzMLToMzMLb"><a class="viewcode-back" href="../../../transform/mzml.html#psims.transform.mzml.MzMLToMzMLb">[docs]</a><span class="k">class</span> <span class="nc">MzMLToMzMLb</span><span class="p">(</span><span class="n">MzMLTransformer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_stream</span><span class="p">,</span> <span class="n">output_stream</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform_description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">sort_by_scan_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">hdf5args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="n">identity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_stream</span> <span class="o">=</span> <span class="n">input_stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_stream</span> <span class="o">=</span> <span class="n">output_stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_description</span> <span class="o">=</span> <span class="n">transform_description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_by_scan_time</span> <span class="o">=</span> <span class="n">sort_by_scan_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">MzMLParser</span><span class="p">(</span><span class="n">input_stream</span><span class="p">,</span> <span class="n">iterative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">MzMLbWriter</span><span class="p">(</span><span class="n">output_stream</span><span class="p">,</span> <span class="o">**</span><span class="n">hdf5args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">get_vocabulary</span><span class="p">(</span><span class="s1">&#39;PSI-MS&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">vocabulary</span></div>
+</pre></div>
+
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+    <div class="footer" role="contentinfo">
+        <div class="container">
+            &#169; Copyright 2018, Joshua Klein.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        </div>
+    </div>  
+
+</body>
+</html>

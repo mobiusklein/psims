@@ -6,7 +6,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mzML &mdash; psims  documentation</title>
+  <title>mzMLb &mdash; psims  documentation</title>
   
 
   
@@ -27,8 +27,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Writing mzML Documents" href="writer.html" />
-    <link rel="prev" title="Welcome to psims’s documentation!" href="../index.html" /> 
+    <link rel="next" title="Writing mzMLb Documents" href="writer.html" />
+    <link rel="prev" title="Components of mzIdentML" href="../mzid/components.html" /> 
 
 </head>
 
@@ -67,13 +67,13 @@
     
       <li><a href="../index.html">Docs</a></li>
         
-      <li>mzML</li>
+      <li>mzMLb</li>
     
     
       <li class="breadcrumbs-aside">
         
             
-            <a href="../_sources/mzml/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/mzmlb/index.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -104,10 +104,10 @@
                             
                                 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mzML</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="writer.html">Writing mzML Documents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html">Usage Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mzml/index.html">mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/components.html">Components of mzML</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mzid/index.html">mzIdentML</a><ul>
@@ -115,9 +115,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../mzid/components.html">Components of mzIdentML</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../mzmlb/index.html">mzMLb</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../mzmlb/writer.html">Writing mzMLb Documents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../mzmlb/index.html#references">References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
@@ -135,18 +135,29 @@
                     <div class="document">
                         
                             
-  <div class="section" id="mzml">
-<h1>mzML<a class="headerlink" href="#mzml" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mzmlb">
+<h1>mzMLb<a class="headerlink" href="#mzmlb" title="Permalink to this headline">¶</a></h1>
+<p>mzMLb is an HDF5 container format wrapping around the standard rich XML-format
+for raw mass spectrometry data storage, mzML. Please refer to <a class="footnote-reference" href="#id2" id="id1">[1]</a> for more information
+about mzMLb and its features.</p>
+<p>This module’s goal is to provide an identical interface to <code class="xref py py-mod docutils literal notranslate"><span class="pre">psims.mzml</span></code> for writing
+the same content.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="writer.html">Writing mzML Documents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Usage Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#writing-mzml">Writing mzML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#the-complicated-bits">The Complicated Bits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="writer.html">Writing mzMLb Documents</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Components of mzML</a></li>
-</ul>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Bhamber, R. S., Jankevics, A., Deutsch, E. W., Jones, A. R., &amp; Dowsey, A. W. (2021).
+MzMLb: A Future-Proof Raw Mass Spectrometry Data Format Based on Standards-Compliant
+mzML and Optimized for Speed and Storage Requirements. Journal of Proteome Research,
+20(1), 172–183. <a class="reference external" href="https://doi.org/10.1021/acs.jproteome.0c00192">https://doi.org/10.1021/acs.jproteome.0c00192</a></td></tr>
+</tbody>
+</table>
 </div>
 </div>
 

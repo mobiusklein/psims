@@ -1,55 +1,150 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>psims.xml &#8212; psims  documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>psims.xml &mdash; psims  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
-  </head><body>
-  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body>
+    <header>
+        <div class="container">
+            <a class="site-nav-toggle hidden-lg-up"><i class="icon-menu"></i></a>
+            <a class="site-title" href="../../index.html">
+                psims
+            </a>
+        </div>
+    </header>
+
+
+<div class="breadcrumbs-outer hidden-xs-down">
+    <div class="container">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a></li>
+        
+          <li><a href="../index.html">Module code</a></li>
+        
+      <li>psims.xml</li>
+    
+    
+      <li class="breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+</div>
+    </div>
+</div>
+    <div class="main-outer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 site-nav">
+                    
+<div role="search">
+    <form class="search" action="../../search.html" method="get">
+        <div class="icon-input">
+            <input type="text" name="q" placeholder="Search" />
+            <span class="icon-search"></span>
+        </div>
+        <input type="submit" value="Go" class="d-hidden" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+                    <div class="site-nav-tree">
+                        
+                            
+                            
+                                <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../mzml/index.html">mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../mzml/examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../mzml/components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../mzid/index.html">mzIdentML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../mzid/writer.html">Writing mzIdentML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../mzid/components.html">Components of mzIdentML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../mzmlb/index.html">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../mzmlb/writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../mzmlb/index.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
+</ul>
+</li>
+</ul>
+
+                            
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="document">
+                        
+                            
   <h1>Source code for psims.xml</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">lxml</span> <span class="k">import</span> <span class="n">etree</span>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">controlled_vocabulary</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">pretty_xml</span>
-<span class="kn">from</span> <span class="nn">.validation</span> <span class="k">import</span> <span class="n">validate</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">OrderedDict</span>
 
-<span class="kn">from</span> <span class="nn">six</span> <span class="k">import</span> <span class="n">string_types</span> <span class="k">as</span> <span class="n">basestring</span><span class="p">,</span> <span class="n">add_metaclass</span><span class="p">,</span> <span class="n">text_type</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
 
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span> <span class="k">as</span> <span class="n">basestring</span><span class="p">,</span> <span class="n">add_metaclass</span><span class="p">,</span> <span class="n">text_type</span><span class="p">,</span> <span class="n">PY3</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="ne">WindowsError</span>
-    <span class="n">on_windows</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
-    <span class="n">on_windows</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">controlled_vocabulary</span>
+<span class="kn">from</span> <span class="nn">.controlled_vocabulary</span> <span class="kn">import</span> <span class="n">obj_to_xsdtype</span>
+<span class="kn">from</span> <span class="nn">.validation</span> <span class="kn">import</span> <span class="n">validate</span>
 
 
 <span class="k">def</span> <span class="nf">make_counter</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -71,6 +166,7 @@
     <span class="n">start</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">count_up</span><span class="p">():</span>
+        <span class="sd">&#39;&#39;&#39;A closure returning incrementally larger integers&#39;&#39;&#39;</span>
         <span class="n">ret_val</span> <span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">ret_val</span>
@@ -99,6 +195,9 @@
 
 
 <span class="k">def</span> <span class="nf">id_maker</span><span class="p">(</span><span class="n">type_name</span><span class="p">,</span> <span class="n">id_number</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Generate a consistent ID that is unique within a document,</span>
+<span class="sd">    assuming `id_number` is unique within the tag type.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">type_name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_number</span><span class="p">))</span>
 
 
@@ -128,16 +227,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
-        <span class="n">new_type</span> <span class="o">=</span> <span class="nb">type</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="n">mcs</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+        <span class="n">new_type</span> <span class="o">=</span> <span class="nb">type</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">mcs</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
         <span class="n">tag_name</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag_name&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_track&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NO_TRACK</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">new_type</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_cache&quot;</span><span class="p">):</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mcs</span><span class="p">,</span> <span class="s2">&quot;_cache&quot;</span><span class="p">):</span>
+            <span class="n">mcs</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">mcs</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_type</span>
         <span class="k">if</span> <span class="n">tag_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_type</span>
+            <span class="n">mcs</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_type</span>
         <span class="k">return</span> <span class="n">new_type</span>
 
 
@@ -189,7 +288,7 @@
 
     <span class="n">type_attrs</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span> <span class="o">=</span> <span class="n">tag_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span>
         <span class="n">_id</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -212,7 +311,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_id_string</span> <span class="o">=</span> <span class="n">_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_open</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -222,7 +321,7 @@
                 <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no attribute </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
 
     <span class="c1"># Support Mapping Interface</span>
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -275,7 +374,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Required id for </span><span class="si">%r</span><span class="s2"> but id was None&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,))</span>
             <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
         <span class="k">if</span> <span class="n">xml_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">elt</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">)</span>
+            <span class="n">elt</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
                 <span class="n">elt</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
             <span class="k">return</span> <span class="n">elt</span>
@@ -309,28 +408,28 @@
             <span class="k">yield</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_open</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_id</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_id</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Alias of :meth:`element`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="n">with_id</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2"> id=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="n">k</span><span class="p">,</span> <span class="n">attrencode</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">attrs</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">attrs</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span></div>
 
 
@@ -407,12 +506,63 @@
     <span class="k">return</span> <span class="n">el</span><span class="o">.</span><span class="n">element</span><span class="p">(</span><span class="n">xml_file</span><span class="o">=</span><span class="n">xml_file</span><span class="p">,</span> <span class="n">with_id</span><span class="o">=</span><span class="n">with_id</span><span class="p">)</span></div>
 
 
+<span class="k">class</span> <span class="nc">AttrProperty</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+
+    <span class="k">def</span> <span class="nf">_default_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">XSDTypingProperty</span><span class="p">(</span><span class="n">AttrProperty</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">xsdtype</span> <span class="o">=</span> <span class="n">obj_to_xsdtype</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xsdtype</span><span class="p">:</span>
+            <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xsdtype</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">xsdtype</span> <span class="o">=</span> <span class="n">obj_to_xsdtype</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xsdtype</span><span class="p">:</span>
+            <span class="n">inst</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xsdtype</span>
+
+
+
 <div class="viewcode-block" id="CVParam"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.CVParam">[docs]</a><span class="k">class</span> <span class="nc">CVParam</span><span class="p">(</span><span class="n">TagBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a ``&lt;cvParam /&gt;``</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        This element holds additional data or annotation. Only controlled values</span>
 <span class="sd">        are allowed here</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name: str</span>
+<span class="sd">        The human-readable name of the parameter</span>
+<span class="sd">    accession: str</span>
+<span class="sd">        The within-vocabulary unique identifier of the parameter</span>
+<span class="sd">    value: object</span>
+<span class="sd">        The value of the parameter, to be converted to text</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">tag_name</span> <span class="o">=</span> <span class="s2">&quot;cvParam&quot;</span>
@@ -441,7 +591,7 @@
 
         <span class="k">return</span> <span class="n">attrs</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;cvRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ref</span>
         <span class="k">if</span> <span class="n">accession</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -458,30 +608,20 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">CVParam</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">patch_accession</span><span class="p">(</span><span class="n">accession</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s2">&quot;cvRef&quot;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">accession</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s2">&quot;accession&quot;</span><span class="p">)</span>
 
-    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="n">unit_name</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s2">&quot;unitName&quot;</span><span class="p">)</span>
+    <span class="n">unit_accession</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s2">&quot;unitAccession&quot;</span><span class="p">)</span>
+    <span class="n">unit_cv_ref</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s2">&quot;unitCvRef&quot;</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;cvRef&#39;</span><span class="p">]</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">accession</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;accession&#39;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
@@ -501,28 +641,109 @@
 <span class="sd">        Uncontrolled user parameters (essentially allowing free text). Before</span>
 <span class="sd">        using these, one should verify whether there is an appropriate CV term</span>
 <span class="sd">        available, and if so, use the CV term instead</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    accession : TYPE</span>
-<span class="sd">        Description</span>
-<span class="sd">    tag_name : str</span>
-<span class="sd">        Description</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">tag_name</span> <span class="o">=</span> <span class="s2">&quot;userParam&quot;</span>
-    <span class="n">accession</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">accession</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">XSDTypingProperty</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="n">AttrProperty</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UserParam</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">accession</span><span class="o">=</span><span class="n">accession</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">)</span>
+        <span class="c1"># get XSDTypingProperty to force property __get__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="ParamGroupReference"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.ParamGroupReference">[docs]</a><span class="k">class</span> <span class="nc">ParamGroupReference</span><span class="p">(</span><span class="n">TagBase</span><span class="p">):</span>
     <span class="n">tag_name</span> <span class="o">=</span> <span class="s2">&quot;referenceableParamGroupRef&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ref</span> <span class="o">=</span> <span class="n">ref</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ParamGroupReference</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">CVCollection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A partially unique collection of :class:`CV` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cvs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cvs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cvs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add `cv` to the collection.</span>
+
+<span class="sd">        If the :attr:`CV.id` is aleady present in the collection, a warning</span>
+<span class="sd">        will be issued.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cv : :class:`CV`</span>
+<span class="sd">            The controlled vocabulary reference</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cv</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
+            <span class="n">old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">cv</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Replacing </span><span class="si">{cv.id}</span><span class="s2"> </span><span class="si">{old.version}</span><span class="s2">@</span><span class="si">{old.uri}</span><span class="s2"> with </span><span class="si">{cv.version}</span><span class="s2">@</span><span class="si">{cv.uri}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">old</span><span class="o">=</span><span class="n">old</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">cv</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cv</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add each element of `collection` to `self`, calling :meth:`add` on each</span>
+<span class="sd">        element.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        collection : :class:`~.Iterable`</span>
+<span class="sd">            Any iterable collection of :class:`CV`</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :meth:`add`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">cv</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span>
+
+    <span class="n">append</span> <span class="o">=</span> <span class="n">add</span>
+    <span class="n">extend</span> <span class="o">=</span> <span class="n">update</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a copy of `self`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :class:`CVCollection`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">copy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">copy</span>
+
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{self.__class__.__name__}</span><span class="s2">(</span><span class="si">{members}</span><span class="s2">)&quot;</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="o">=</span><span class="n">members</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="CV"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.CV">[docs]</a><span class="k">class</span> <span class="nc">CV</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -555,7 +776,7 @@
 <span class="sd">        The parsed term graph defining this vocabulary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_name</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_name</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span> <span class="o">=</span> <span class="n">full_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span>
@@ -563,6 +784,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vocabulary</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resolver</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">uri</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">full_name</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">version</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -617,14 +850,20 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">traceback</span>
             <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
-            <span class="k">pass</span>
         <span class="k">return</span> <span class="n">cv</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocabulary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocabulary</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocabulary</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{self.__class__.__name__}</span><span class="s2">(</span><span class="si">{self.full_name!r}</span><span class="s2">, </span><span class="si">{self.id!r}</span><span class="s2">, </span><span class="si">{self.uri!r}</span><span class="s2">, </span><span class="si">{version!r}</span><span class="s2">)&quot;</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;?&quot;</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProvidedCV"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.ProvidedCV">[docs]</a><span class="k">class</span> <span class="nc">ProvidedCV</span><span class="p">(</span><span class="n">CV</span><span class="p">):</span>
@@ -639,7 +878,7 @@
 <span class="sd">        something matching the :class:`~.controlled_vocabulary.Entity` interface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">converter</span><span class="o">=</span><span class="n">identity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">converter</span><span class="o">=</span><span class="n">identity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">converter</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ProvidedCV</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -657,7 +896,7 @@
             <span class="k">pass</span>
         <span class="k">return</span> <span class="n">cv</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">ProvidedCV</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span></div>
 
 
@@ -732,7 +971,84 @@
                     <span class="s2">&quot;`with` notation or by explicitly calling its __enter__ and &quot;</span>
                     <span class="s2">&quot;__exit__ methods.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span></div></div>
+                <span class="k">raise</span></div>
+
+    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+
+<span class="k">class</span> <span class="nc">XMLFormattingStreamWriter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wraps a writable stream with a layer emulating the</span>
+<span class="sd">     class:`lxml.etree.xmlfile` interface, save that it automatically</span>
+<span class="sd">     formats and indents the XML generated without requiring a separate</span>
+<span class="sd">     pass through the XML pretty printing processing</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    indent_chars : str</span>
+<span class="sd">        The characters to indent with</span>
+<span class="sd">    indent_level : int</span>
+<span class="sd">        The current indentation level</span>
+<span class="sd">    stream : :class:`io.IOBase`</span>
+<span class="sd">        The stream to wrap</span>
+<span class="sd">    writer : :class:`lxml.etree._IncrementalFileWriter`</span>
+<span class="sd">        The actual XML writer</span>
+<span class="sd">    wrote_text_stack : :class:`collections.deque`</span>
+<span class="sd">        A stack to track if a layer wrote text in one of its children and should not</span>
+<span class="sd">        have its end tag written on a new line</span>
+<span class="sd">    xmlfile : :class:`lxml.etree.xmlfile`</span>
+<span class="sd">        The actual XML writer&#39;s controller</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s1">&#39;  &#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">xmlfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">buffered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indent_level</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indent_chars</span> <span class="o">=</span> <span class="n">indent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrote_text_stack</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_indent_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent_chars</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent_level</span><span class="p">))</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent_level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_indent_tag</span><span class="p">()</span>
+        <span class="n">elt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">element</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">elt</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrote_text_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indent_level</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">yield</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indent_level</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrote_text_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_indent_tag</span><span class="p">()</span>
+        <span class="n">elt</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrote_text_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">basestring</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">PY3</span> <span class="k">else</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wrote_text_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrote_text_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent_level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_indent_tag</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">write_doctype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_doctype</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">write_declaration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_declaration</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="XMLDocumentWriter"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter">[docs]</a><span class="k">class</span> <span class="nc">XMLDocumentWriter</span><span class="p">(</span><span class="n">XMLWriterMixin</span><span class="p">):</span>
@@ -759,21 +1075,21 @@
 <span class="sd">        -------</span>
 <span class="sd">        TagBase</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Must specify an XMLDocumentWriter&#39;s toplevel_tag attribute&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">_element</span><span class="p">(</span><span class="s2">&quot;xmldocument&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span> <span class="o">=</span> <span class="n">outfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">encoding</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">xmlfile</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span> <span class="o">=</span> <span class="n">XMLFormattingStreamWriter</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_close</span> <span class="o">=</span> <span class="n">close</span>
 
     <span class="k">def</span> <span class="nf">_should_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_close</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -795,19 +1111,24 @@
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_declaration</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span> <span class="o">=</span> <span class="n">element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toplevel_tag</span><span class="p">())</span>
+        <span class="n">toplevel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toplevel_tag</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">toplevel</span><span class="p">,</span> <span class="n">TagBase</span><span class="p">):</span>
+            <span class="n">toplevel_element</span> <span class="o">=</span> <span class="n">element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="n">toplevel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">toplevel_element</span> <span class="o">=</span> <span class="n">toplevel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span> <span class="o">=</span> <span class="n">toplevel_element</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_has_begun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Begins writing, opening the top-level tag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Closes the top-level tag, the XML formatter,</span>
 <span class="sd">        and the file itself.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -815,10 +1136,20 @@
 
 <div class="viewcode-block" id="XMLDocumentWriter.end"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exc_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Ends the XML document, and flushes and closes the file</span>
+<span class="sd">        if appropriate.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">toplevel</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xmlfile</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">etree</span><span class="o">.</span><span class="n">SerialisationError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="c1"># There seems to be a bug when `__exit__`ing xmlfile objects, usually</span>
+            <span class="c1"># when they get large see here: https://bugs.launchpad.net/lxml/+bug/1570388</span>
+            <span class="c1"># https://github.com/mobiusklein/psims/issues/7</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;unknown error&#39;</span><span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Error closing file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -849,70 +1180,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
 <div class="viewcode-block" id="XMLDocumentWriter.format"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Pretty-prints the contents of the file.</span>
-
-<span class="sd">        Uses a :class:`tempfile.NamedTemporaryFile` to receive</span>
-<span class="sd">        the formatted XML content, removes the</span>
-<span class="sd">        original file, and moves the temporary file</span>
-<span class="sd">        to the original file&#39;s name.</span>
+        <span class="sd">&quot;&quot;&quot;This method is deprecated. Previously, the serialization</span>
+<span class="sd">        process did not indent the XML in-place and the lxml pretty printer</span>
+<span class="sd">        had to be invoked separately. With the addition of :class:`XMLFormattingStreamWriter`,</span>
+<span class="sd">        the XML stream is formatted in-place as it is being streamed to file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">use_temp</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="c1"># can&#39;t format a terminal stream</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
-                <span class="k">return</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-            <span class="k">pass</span>
-
-        <span class="c1"># Maybe we can seek to the beginning and open the stream for reading and writing?</span>
-        <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">use_temp</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">handle</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">outfile_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">outfile_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">pretty_xml</span><span class="p">(</span><span class="n">outfile_name</span><span class="p">,</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">pretty_xml</span><span class="p">(</span><span class="n">outfile_name</span><span class="p">,</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">MemoryError</span><span class="p">:</span>
-            <span class="k">pass</span>
-
-        <span class="k">if</span> <span class="n">use_temp</span><span class="p">:</span>
-            <span class="n">handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">outfile_name</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">handle</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">outfile_name</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
-                        <span class="k">try</span><span class="p">:</span>
-                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-                            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">handle</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">outfile_name</span><span class="p">)</span>
-                        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span>
-                                <span class="s2">&quot;Could not obtain write-permission for original</span><span class="se">\</span>
-<span class="s2">                                 file name. Formatted XML document located at </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                                    <span class="n">handle</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">handle</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-                        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">16</span><span class="p">)</span>
-                        <span class="n">chunk</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
-                        <span class="k">while</span> <span class="n">chunk</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
-                            <span class="n">chunk</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not format document&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;This method is no longer necessary, XML is formatted automatically&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="XMLDocumentWriter.validate"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Attempt to perform XSD validation on the XML document</span>
@@ -951,65 +1226,39 @@
         <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">schema</span></div></div>
 </pre></div>
 
-          </div>
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">psims</a></h1>
+    </div>    
 
 
+  
 
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../mzml/index.html">mzML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../mzid/index.html">mzIdentML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../xml.html">XML Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+    <div class="footer" role="contentinfo">
+        <div class="container">
+            &#169; Copyright 2018, Joshua Klein.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
         </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Joshua Klein.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-    </div>
+    </div>  
 
-    
-
-    
-  </body>
+</body>
 </html>

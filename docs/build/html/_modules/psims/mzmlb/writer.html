@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>psims.mzmlb.writer &mdash; psims  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a class="site-nav-toggle hidden-lg-up"><i class="icon-menu"></i></a>
+            <a class="site-title" href="../../../index.html">
+                psims
+            </a>
+        </div>
+    </header>
+
+
+<div class="breadcrumbs-outer hidden-xs-down">
+    <div class="container">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a></li>
+        
+          <li><a href="../../index.html">Module code</a></li>
+        
+      <li>psims.mzmlb.writer</li>
+    
+    
+      <li class="breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+</div>
+    </div>
+</div>
+    <div class="main-outer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 site-nav">
+                    
+<div role="search">
+    <form class="search" action="../../../search.html" method="get">
+        <div class="icon-input">
+            <input type="text" name="q" placeholder="Search" />
+            <span class="icon-search"></span>
+        </div>
+        <input type="submit" value="Go" class="d-hidden" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+                    <div class="site-nav-tree">
+                        
+                            
+                            
+                                <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzml/examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzml/components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/writer.html">Writing mzIdentML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/components.html">Components of mzIdentML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mzmlb/index.html">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzmlb/writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzmlb/index.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
+</ul>
+</li>
+</ul>
+
+                            
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="document">
+                        
+                            
+  <h1>Source code for psims.mzmlb.writer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;hdf5plugin&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">hdf5plugin</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">hdf5plugin</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">from</span> <span class="nn">..mzml.binary_encoding</span> <span class="kn">import</span> <span class="n">encode_array_direct</span><span class="p">,</span> <span class="n">encoding_map</span><span class="p">,</span> <span class="n">compression_map</span><span class="p">,</span> <span class="n">dtype_to_encoding</span><span class="p">,</span> <span class="n">COMPRESSION_NONE</span>
+<span class="kn">from</span> <span class="nn">..mzml.writer</span> <span class="kn">import</span> <span class="n">PlainMzMLWriter</span> <span class="k">as</span> <span class="n">_MzMLWriter</span><span class="p">,</span> <span class="n">NON_STANDARD_ARRAY</span><span class="p">,</span> <span class="n">ARRAY_TYPES</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">..mzml.index</span> <span class="kn">import</span> <span class="n">IndexingStream</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">components</span>
+
+
+<span class="n">HDF5_COMPRESSORS</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">DEFAULT_COMPRESSOR</span> <span class="o">=</span> <span class="s1">&#39;gzip&#39;</span>
+
+<span class="k">if</span> <span class="n">hdf5plugin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">HDF5_COMPRESSORS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;blosc&quot;</span><span class="p">:</span> <span class="n">hdf5plugin</span><span class="o">.</span><span class="n">Blosc</span><span class="p">(),</span>
+        <span class="s2">&quot;blosc:lz4&quot;</span><span class="p">:</span> <span class="n">hdf5plugin</span><span class="o">.</span><span class="n">Blosc</span><span class="p">(</span><span class="s1">&#39;lz4&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;blosc:lz4hc&quot;</span><span class="p">:</span> <span class="n">hdf5plugin</span><span class="o">.</span><span class="n">Blosc</span><span class="p">(</span><span class="s1">&#39;lz4hc&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;blosc:zlib&quot;</span><span class="p">:</span> <span class="n">hdf5plugin</span><span class="o">.</span><span class="n">Blosc</span><span class="p">(</span><span class="s1">&#39;zlib&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;blosc:zstd&quot;</span><span class="p">:</span> <span class="n">hdf5plugin</span><span class="o">.</span><span class="n">Blosc</span><span class="p">(</span><span class="s1">&#39;zstd&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">HDF5_COMPRESSORS</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">HDF5_COMPRESSORS</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">DEFAULT_COMPRESSOR</span> <span class="o">=</span> <span class="s1">&#39;blosc&#39;</span>
+
+<span class="n">HDF5_COMPRESSORS</span><span class="p">[</span><span class="s1">&#39;zlib&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">HDF5_COMPRESSORS</span><span class="p">[</span><span class="s1">&#39;gzip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;compression&#39;</span><span class="p">:</span> <span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="s1">&#39;compression_opts&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+
+
+<span class="n">HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">v</span><span class="p">[</span><span class="s1">&#39;compression&#39;</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">HDF5_COMPRESSORS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">ArrayBuffer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="n">total_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">n</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">total_size</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">total_size</span><span class="p">,</span> <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span><span class="n">total_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MzMLbWriter"><a class="viewcode-back" href="../../../mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter">[docs]</a><span class="k">class</span> <span class="nc">MzMLbWriter</span><span class="p">(</span><span class="n">_MzMLWriter</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A high level API for generating mzMLb HDF5 files from simple Python objects.</span>
+
+<span class="sd">    This class&#39;s public interface is identical to :class:`~.IndexedMzMLWriter`, with the exception of those</span>
+<span class="sd">    related to HDF5 compression described below.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Although :mod:`h5py` can read and write through Python file-like objects, if they are used they</span>
+<span class="sd">        must be opened in read+write mode to allow the file to be partially re-read during an update to</span>
+<span class="sd">        an existing block.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    h5_compression : str</span>
+<span class="sd">        A valid HDF5 compressor ID or compression scheme name or :const:`None`. Available compression schemes</span>
+<span class="sd">        are &quot;gzip&quot;/&quot;zlib&quot;, and if :mod:`hdf5plugin` is installed, &quot;blosc&quot;, &quot;blosc:lz4&quot;, &quot;blosc:zlib&quot;, and</span>
+<span class="sd">        &quot;blosc:zstd&quot;. All Blosc-based compressors enable byte shuffling.</span>
+<span class="sd">    h5_compressor_options : int or tuple</span>
+<span class="sd">        The options to provide to the compressor designated by :attr:`h5_compressor`. For &quot;gzip&quot;, this a single</span>
+<span class="sd">        integer setting the compression level, while Blosc takes a tuple of integers.</span>
+<span class="sd">    h5_blocksize : int</span>
+<span class="sd">        The number of bytes to include in a single HDF5 data block. Smaller blocks improve random access speed</span>
+<span class="sd">        at the expense of compression efficiency and space. Defaults to 2 ** 20, 1MB.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5_file</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">vocabulary_resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h5_compression</span><span class="o">=</span><span class="n">DEFAULT_COMPRESSOR</span><span class="p">,</span>
+                 <span class="n">h5_compression_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h5_blocksize</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">h5_compression</span> <span class="ow">in</span> <span class="n">HDF5_COMPRESSORS</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">h5_compression</span>
+            <span class="n">h5_compression</span> <span class="o">=</span> <span class="n">HDF5_COMPRESSORS</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;compression&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">h5_compression_options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">h5_compression_options</span> <span class="o">=</span> <span class="n">HDF5_COMPRESSORS</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;compression_opts&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">h5_compression_options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">h5_compression_options</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compressor_name</span> <span class="o">=</span> <span class="n">HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME</span><span class="p">[</span><span class="n">h5_compression</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">):</span>
+            <span class="n">h5_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xml_buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">IndexingStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_buffer</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MzMLbWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">vocabularies</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="p">,</span> <span class="n">vocabulary_resolver</span><span class="p">,</span>
+            <span class="nb">id</span><span class="p">,</span> <span class="n">accession</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_builder</span> <span class="o">=</span> <span class="n">outfile</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span> <span class="o">=</span> <span class="n">h5_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span> <span class="o">=</span> <span class="n">h5_blocksize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span> <span class="o">=</span> <span class="n">h5_compression</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span> <span class="o">=</span> <span class="n">h5_compression_options</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_name_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_buffers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset_tracker</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;compression&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compressor_name</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MzMLbWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">close_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_close</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MzMLbWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
+        <span class="n">xml_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_buffer</span><span class="p">(</span><span class="s2">&quot;mzML&quot;</span><span class="p">,</span> <span class="n">xml_bytes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="p">[</span><span class="s1">&#39;mzML&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mzMLb 1.0&quot;</span>
+        <span class="k">for</span> <span class="n">array</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset_tracker</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">buff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_buffers</span><span class="p">[</span><span class="n">array</span><span class="p">]</span>
+            <span class="n">buff</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">z</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="p">[</span><span class="n">array</span><span class="p">]</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">z</span><span class="p">,</span> <span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_builder</span><span class="o">.</span><span class="n">indices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_offset_index</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_close</span> <span class="o">=</span> <span class="n">close_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_close</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_generate_array_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_type</span><span class="p">,</span> <span class="n">is_non_standard</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;spectrum&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_non_standard</span><span class="p">:</span>
+            <span class="n">cv_ref</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">accession</span><span class="p">,</span> <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">_resolve_cv_ref</span><span class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">accession</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">array_type</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="n">tag_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{scope}</span><span class="s2">_</span><span class="si">{key}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tag_name</span> <span class="o">+=</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">dtype</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">dset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="n">tag_name</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">,</span> <span class="p">),</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span><span class="p">,</span>
+            <span class="n">compression_opts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span><span class="p">,</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_buffers</span><span class="p">[</span><span class="n">tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArrayBuffer</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tag_name</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_NONE</span><span class="p">,</span> <span class="n">array_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">default_array_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;spectrum&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="n">_encoding</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">encoding_map</span><span class="p">[</span><span class="n">_encoding</span><span class="p">]</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">encoded_array</span> <span class="o">=</span> <span class="n">encode_array_direct</span><span class="p">(</span>
+            <span class="n">array</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">default_array_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">!=</span> <span class="n">default_array_length</span><span class="p">:</span>
+            <span class="n">override_length</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">override_length</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">is_non_standard</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">array_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">array_type_</span> <span class="o">=</span> <span class="n">array_type</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">array_type_</span> <span class="o">=</span> <span class="n">array_type</span>
+            <span class="k">if</span> <span class="n">array_type_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ARRAY_TYPES</span><span class="p">:</span>
+                <span class="n">is_non_standard</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NON_STANDARD_ARRAY</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compression_map</span><span class="p">[</span><span class="n">compression</span><span class="p">])</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtype_to_encoding</span><span class="p">[</span><span class="n">dtype</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">array_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">array_type</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">array_name</span> <span class="o">=</span> <span class="n">array_type</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array_name</span> <span class="o">=</span> <span class="n">array_type</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">storage_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_name_cache</span><span class="p">[</span><span class="n">array_name</span><span class="p">,</span> <span class="n">is_non_standard</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">dtype</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">storage_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_array_name</span><span class="p">(</span><span class="n">array_name</span><span class="p">,</span> <span class="n">is_non_standard</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_name_cache</span><span class="p">[</span><span class="n">array_name</span><span class="p">,</span> <span class="n">is_non_standard</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="n">storage_name</span>
+
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded_array</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset_tracker</span><span class="p">[</span><span class="n">storage_name</span><span class="p">]</span>
+
+        <span class="n">buff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_buffers</span><span class="p">[</span><span class="n">storage_name</span><span class="p">]</span>
+        <span class="n">buff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">encoded_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset_tracker</span><span class="p">[</span><span class="n">storage_name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">length</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ExternalBinaryDataArray</span><span class="p">(</span>
+            <span class="n">external_dataset_name</span><span class="o">=</span><span class="n">storage_name</span><span class="p">,</span>
+            <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">array_length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_offset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">last</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Prepare an offset index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : :class:`Iterable` of :class:`~.Offset`</span>
+<span class="sd">            The offset index records to store</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of the indexed entity, e.g. &quot;spectrum&quot; or &quot;chromatogram&quot;</span>
+<span class="sd">        last : int</span>
+<span class="sd">            The final offset value at the end of the file or list</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">offset_index_key</span> <span class="o">=</span> <span class="s2">&quot;mzML_</span><span class="si">{name}</span><span class="s2">Index&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">offset_index_id_ref</span> <span class="o">=</span> <span class="s2">&quot;mzML_</span><span class="si">{name}</span><span class="s2">Index_idRef&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">id_ref_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
+            <span class="n">id_ref_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">offset_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span>
+        <span class="n">id_ref_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">offset_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>
+
+        <span class="n">id_ref_array_enc</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">id_ref_array</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="n">offset_index_key</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">offset_array</span><span class="p">),</span> <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span><span class="p">,</span>
+            <span class="n">compression_opts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="n">offset_index_id_ref</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">id_ref_array_enc</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span><span class="p">,</span>
+            <span class="n">compression_opts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MzMLbWriter.create_array"><a class="viewcode-back" href="../../../mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter.create_array">[docs]</a>    <span class="k">def</span> <span class="nf">create_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Store a typed data array as a named dataset in the HDF5 file.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            The array should not be textual unless they&#39;ve already been translated</span>
+<span class="sd">            into a byte array with terminal null bytes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : :class:`Iterable`</span>
+<span class="sd">            The data to be stored.</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name to store the dataset by.</span>
+<span class="sd">        last : object, optional</span>
+<span class="sd">            A value to associate with the final entry of the array.</span>
+<span class="sd">        dtype : type</span>
+<span class="sd">            The type of the entries in the array.</span>
+<span class="sd">        chunks : bool</span>
+<span class="sd">            Whether or not to store the dataset in chunks.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">value</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">value</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">last</span><span class="p">)</span> <span class="k">if</span> <span class="n">last</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span><span class="p">,</span>
+            <span class="n">compression_opts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span><span class="p">,</span>
+            <span class="n">chunks</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">chunks</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MzMLbWriter.create_buffer"><a class="viewcode-back" href="../../../mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter.create_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">create_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Create a compressed binary buffer with a name and fixed length in the HDF5 file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of the HDF5 dataset</span>
+<span class="sd">        content : bytes-like object</span>
+<span class="sd">            The data to store. Must be convertable into a :class:`bytearray`, e.g. through the</span>
+<span class="sd">            buffer interface.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        n : int</span>
+<span class="sd">            The size of the buffer written</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">),</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="nb">bytearray</span><span class="p">(</span><span class="n">content</span><span class="p">),</span> <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span><span class="p">,</span>
+            <span class="n">compression_opts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">n</span></div></div>
+</pre></div>
+
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+    <div class="footer" role="contentinfo">
+        <div class="container">
+            &#169; Copyright 2018, Joshua Klein.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        </div>
+    </div>  
+
+</body>
+</html>

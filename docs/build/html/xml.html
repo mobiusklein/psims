@@ -1,36 +1,140 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Basic XML Components &#8212; psims  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Basic XML Components &mdash; psims  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.min.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Usage Examples" href="examples.html" />
-    <link rel="prev" title="Components of mzIdentML" href="mzid/components.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="next" title="mzML Transformation Stream" href="transform/mzml.html" />
+    <link rel="prev" title="Writing mzMLb Documents" href="mzmlb/writer.html" /> 
 
-  </head><body>
-  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body>
+    <header>
+        <div class="container">
+            <a class="site-nav-toggle hidden-lg-up"><i class="icon-menu"></i></a>
+            <a class="site-title" href="index.html">
+                psims
+            </a>
+        </div>
+    </header>
+
+
+<div class="breadcrumbs-outer hidden-xs-down">
+    <div class="container">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="breadcrumbs">
+    
+      <li><a href="index.html">Docs</a></li>
+        
+      <li>Basic XML Components</li>
+    
+    
+      <li class="breadcrumbs-aside">
+        
             
+            <a href="_sources/xml.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+</div>
+    </div>
+</div>
+    <div class="main-outer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 site-nav">
+                    
+<div role="search">
+    <form class="search" action="search.html" method="get">
+        <div class="icon-input">
+            <input type="text" name="q" placeholder="Search" />
+            <span class="icon-search"></span>
+        </div>
+        <input type="submit" value="Go" class="d-hidden" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+                    <div class="site-nav-tree">
+                        
+                            
+                            
+                                <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mzml/index.html">mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mzml/examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mzml/components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mzid/index.html">mzIdentML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mzid/writer.html">Writing mzIdentML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mzid/components.html">Components of mzIdentML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mzmlb/index.html">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mzmlb/writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mzmlb/index.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
+</ul>
+</li>
+</ul>
+
+                            
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="document">
+                        
+                            
   <div class="section" id="module-psims.xml">
 <span id="basic-xml-components"></span><h1>Basic XML Components<a class="headerlink" href="#module-psims.xml" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
@@ -45,7 +149,7 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>xml_file</strong> (<a class="reference internal" href="#psims.xml.XMLWriterMixin" title="psims.xml.XMLWriterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLWriterMixin</span></code></a>) – The XML writer to write to</li>
-<li><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tag type to create</li>
+<li><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
 <li><strong>*args</strong> – Arbitrary arguments for the tag</li>
 <li><strong>**kwargs</strong> – Key word arguments for the tag</li>
 </ul>
@@ -66,7 +170,7 @@ constructor</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tag type to create</li>
+<li><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
 <li><strong>*args</strong> – Arbitrary arguments for the tag</li>
 <li><strong>**kwargs</strong> – Key word arguments for the tag</li>
 </ul>
@@ -90,39 +194,87 @@ constructor</p>
 <dl class="attribute">
 <dt id="psims.xml.TagBase.attrs">
 <code class="descname">attrs</code><a class="headerlink" href="#psims.xml.TagBase.attrs" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> – The attributes of the element. <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__()</span></code> falls back
+<dd><p>The attributes of the element. <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__()</span></code> falls back
 to querying <a class="reference internal" href="#psims.xml.TagBase.attrs" title="psims.xml.TagBase.attrs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">attrs</span></code></a>, trying both requested name and <code class="docutils literal notranslate"><span class="pre">camelCase</span></code>
 versions of the name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.TagBase.is_open">
 <code class="descname">is_open</code><a class="headerlink" href="#psims.xml.TagBase.is_open" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bool</em> – Whether the element has been opened as a context manager</p>
+<dd><p>Whether the element has been opened as a context manager</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.TagBase.tag_name">
 <code class="descname">tag_name</code><a class="headerlink" href="#psims.xml.TagBase.tag_name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – The name of the element</p>
+<dd><p>The name of the element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.TagBase.text">
 <code class="descname">text</code><a class="headerlink" href="#psims.xml.TagBase.text" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – The body text of the element</p>
+<dd><p>The body text of the element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.TagBase.type_attrs">
 <code class="descname">type_attrs</code><a class="headerlink" href="#psims.xml.TagBase.type_attrs" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> – Attributes common to all elements of this type</p>
+<dd><p>Attributes common to all elements of this type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.TagBase.id">
 <code class="descname">id</code><a class="headerlink" href="#psims.xml.TagBase.id" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – The &#64;id attribute of the element.</p>
+<dd><p>The &#64;id attribute of the element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -136,6 +288,48 @@ versions of the name</p>
 <p class="last">This element holds additional data or annotation. Only controlled values
 are allowed here</p>
 </div>
+<dl class="attribute">
+<dt id="psims.xml.CVParam.name">
+<code class="descname">name</code><a class="headerlink" href="#psims.xml.CVParam.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The human-readable name of the parameter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.CVParam.accession">
+<code class="descname">accession</code><a class="headerlink" href="#psims.xml.CVParam.accession" title="Permalink to this definition">¶</a></dt>
+<dd><p>The within-vocabulary unique identifier of the parameter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.xml.CVParam.value">
+<code class="descname">value</code><a class="headerlink" href="#psims.xml.CVParam.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value of the parameter, to be converted to text</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd><div class="admonition">
 <p class="first admonition-title">XSD Description</p>
 <p class="last">This element holds additional data or annotation. Only controlled values are allowed here.</p>
@@ -152,18 +346,6 @@ are allowed here</p>
 using these, one should verify whether there is an appropriate CV term
 available, and if so, use the CV term instead</p>
 </div>
-<dl class="attribute">
-<dt id="psims.xml.UserParam.accession">
-<code class="descname">accession</code><a class="headerlink" href="#psims.xml.UserParam.accession" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>TYPE</em> – Description</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="psims.xml.UserParam.tag_name">
-<code class="descname">tag_name</code><a class="headerlink" href="#psims.xml.UserParam.tag_name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – Description</p>
-</dd></dl>
-
 </dd><div class="admonition">
 <p class="first admonition-title">XSD Description</p>
 <p class="last">Uncontrolled user parameters (essentially allowing free text). Before using these, one should verify whether there is an appropriate CV term available, and if so, use the CV term instead</p>
@@ -188,44 +370,100 @@ handled by the <a class="reference internal" href="#psims.xml.CV.resolver" title
 <dl class="attribute">
 <dt id="psims.xml.CV.full_name">
 <code class="descname">full_name</code><a class="headerlink" href="#psims.xml.CV.full_name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – The full name of the controlled vocabulary, which may or may not
+<dd><p>The full name of the controlled vocabulary, which may or may not
 be identical to the <a class="reference internal" href="#psims.xml.CV.id" title="psims.xml.CV.id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.CV.id">
 <code class="descname">id</code><a class="headerlink" href="#psims.xml.CV.id" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – A short unique identifier for the controlled vocabulary</p>
+<dd><p>A short unique identifier for the controlled vocabulary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.CV.options">
 <code class="descname">options</code><a class="headerlink" href="#psims.xml.CV.options" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> – Additional information that may be used during resolution</p>
+<dd><p>Additional information that may be used during resolution</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.CV.resolver">
 <code class="descname">resolver</code><a class="headerlink" href="#psims.xml.CV.resolver" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">VocabularyResolver</span></code> – The resolver which will handle all requests for this controlled vocabulary</p>
+<dd><p>The resolver which will handle all requests for this controlled vocabulary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">VocabularyResolver</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.CV.uri">
 <code class="descname">uri</code><a class="headerlink" href="#psims.xml.CV.uri" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – The location where the definition can be found</p>
+<dd><p>The location where the definition can be found</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.CV.version">
 <code class="descname">version</code><a class="headerlink" href="#psims.xml.CV.version" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – The version of the vocabulary resolved</p>
+<dd><p>The version of the vocabulary resolved</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.CV.vocabulary">
 <code class="descname">vocabulary</code><a class="headerlink" href="#psims.xml.CV.vocabulary" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code> – The parsed term graph defining this vocabulary</p>
+<dd><p>The parsed term graph defining this vocabulary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd><div class="admonition">
@@ -243,8 +481,16 @@ function</p>
 <dl class="attribute">
 <dt id="psims.xml.ProvidedCV.converter">
 <code class="descname">converter</code><a class="headerlink" href="#psims.xml.ProvidedCV.converter" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Callable</em> – A function that converts elements of the provided vocabulary into
+<dd><p>A function that converts elements of the provided vocabulary into
 something matching the <code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code> interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Callable</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -257,13 +503,29 @@ XML elements and aggregate Components.</p>
 <dl class="attribute">
 <dt id="psims.xml.XMLWriterMixin.verbose">
 <code class="descname">verbose</code><a class="headerlink" href="#psims.xml.XMLWriterMixin.verbose" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bool</em> – Controls debug printing</p>
+<dd><p>Controls debug printing</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.XMLWriterMixin.writer">
 <code class="descname">writer</code><a class="headerlink" href="#psims.xml.XMLWriterMixin.writer" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>lxml.etree._IncrementalFileWriter</em> – The low-level XML writer used by <code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></p>
+<dd><p>The low-level XML writer used by <code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._IncrementalFileWriter</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -277,7 +539,7 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tag type to create</li>
+<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
 <li><strong>*args</strong> – Arbitrary arguments for the tag</li>
 <li><strong>**kwargs</strong> – Key word arguments for the tag</li>
 </ul>
@@ -315,25 +577,57 @@ write complete XML documents.</p>
 <dl class="attribute">
 <dt id="psims.xml.XMLDocumentWriter.outfile">
 <code class="descname">outfile</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.outfile" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>file</em> – A writable file object</p>
+<dd><p>A writable file object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">file</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.XMLDocumentWriter.toplevel">
 <code class="descname">toplevel</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.toplevel" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>TagBase</em> – The top-level XML tag</p>
+<dd><p>The top-level XML tag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase">TagBase</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.XMLDocumentWriter.xmlfile">
 <code class="descname">xmlfile</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.xmlfile" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>lxml.etree.xmlfile</em> – The XML formatter</p>
+<dd><p>The XML formatter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree.xmlfile</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.xml.XMLDocumentWriter.writer">
 <code class="descname">writer</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.writer" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>lxml.etree._IncrementalFileWriter</em> – The low-level XML writer used by <a class="reference internal" href="#psims.xml.XMLDocumentWriter.xmlfile" title="psims.xml.XMLDocumentWriter.xmlfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></a></p>
+<dd><p>The low-level XML writer used by <a class="reference internal" href="#psims.xml.XMLDocumentWriter.xmlfile" title="psims.xml.XMLDocumentWriter.xmlfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._IncrementalFileWriter</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -362,7 +656,7 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tag type to create</li>
+<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
 <li><strong>*args</strong> – Arbitrary arguments for the tag</li>
 <li><strong>**kwargs</strong> – Key word arguments for the tag</li>
 </ul>
@@ -379,17 +673,17 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 <dl class="method">
 <dt id="psims.xml.XMLDocumentWriter.end">
 <code class="descname">end</code><span class="sig-paren">(</span><em>exc_type=None</em>, <em>exc_value=None</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ends the XML document, and flushes and closes the file</p>
+<dd><p>Ends the XML document, and flushes and closes the file
+if appropriate.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="psims.xml.XMLDocumentWriter.format">
 <code class="descname">format</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.format" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pretty-prints the contents of the file.</p>
-<p>Uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">tempfile.NamedTemporaryFile</span></code> to receive
-the formatted XML content, removes the
-original file, and moves the temporary file
-to the original file’s name.</p>
+<dd><p>This method is deprecated. Previously, the serialization
+process did not indent the XML in-place and the lxml pretty printer
+had to be invoked separately. With the addition of <code class="xref py py-class docutils literal notranslate"><span class="pre">XMLFormattingStreamWriter</span></code>,
+the XML stream is formatted in-place as it is being streamed to file.</p>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -424,8 +718,8 @@ this writer wrote</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
-a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
+a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
 </tr>
 </tbody>
 </table>
@@ -450,68 +744,39 @@ a <a class="reference external" href="https://docs.python.org/3/library/exceptio
 </div>
 
 
-          </div>
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">psims</a></h1>
+    </div>    
 
 
+  
 
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="mzml/index.html">mzML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mzid/index.html">mzIdentML</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">XML Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="mzid/components.html" title="previous chapter">Components of mzIdentML</a></li>
-      <li>Next: <a href="examples.html" title="next chapter">Usage Examples</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+    <div class="footer" role="contentinfo">
+        <div class="container">
+            &#169; Copyright 2018, Joshua Klein.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
         </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Joshua Klein.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/xml.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
+    </div>  
 
-    
-
-    
-  </body>
+</body>
 </html>

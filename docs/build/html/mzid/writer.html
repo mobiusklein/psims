@@ -1,36 +1,142 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Writing mzIdentML Documents &#8212; psims  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Writing mzIdentML Documents &mdash; psims  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Components of mzIdentML" href="components.html" />
-    <link rel="prev" title="mzIdentML" href="index.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="mzIdentML" href="index.html" /> 
 
-  </head><body>
-  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body>
+    <header>
+        <div class="container">
+            <a class="site-nav-toggle hidden-lg-up"><i class="icon-menu"></i></a>
+            <a class="site-title" href="../index.html">
+                psims
+            </a>
+        </div>
+    </header>
+
+
+<div class="breadcrumbs-outer hidden-xs-down">
+    <div class="container">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a></li>
+        
+          <li><a href="index.html">mzIdentML</a></li>
+        
+      <li>Writing mzIdentML Documents</li>
+    
+    
+      <li class="breadcrumbs-aside">
+        
             
+            <a href="../_sources/mzid/writer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+</div>
+    </div>
+</div>
+    <div class="main-outer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 site-nav">
+                    
+<div role="search">
+    <form class="search" action="../search.html" method="get">
+        <div class="icon-input">
+            <input type="text" name="q" placeholder="Search" />
+            <span class="icon-search"></span>
+        </div>
+        <input type="submit" value="Go" class="d-hidden" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+                    <div class="site-nav-tree">
+                        
+                            
+                            
+                                <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../mzml/index.html">mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">mzIdentML</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing mzIdentML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzIdentML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mzmlb/index.html">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mzmlb/writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzmlb/index.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
+</ul>
+</li>
+</ul>
+
+                            
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="document">
+                        
+                            
   <div class="section" id="module-psims.mzid.writer">
 <span id="writing-mzidentml-documents"></span><h1>Writing mzIdentML Documents<a class="headerlink" href="#module-psims.mzid.writer" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
@@ -48,33 +154,72 @@ notation.</p>
 <dl class="attribute">
 <dt id="psims.mzid.writer.MzIdentMLWriter.outfile">
 <code class="descname">outfile</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.outfile" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>file</em> – The open, writable file descriptor which XML will be written to.</p>
+<dd><p>The open, writable file descriptor which XML will be written to.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">file</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.mzid.writer.MzIdentMLWriter.xmlfile">
 <code class="descname">xmlfile</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.xmlfile" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>lxml.etree.xmlfile</em> – The incremental XML file wrapper which organizes file writes onto <a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.outfile" title="psims.mzid.writer.MzIdentMLWriter.outfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">outfile</span></code></a>.
+<dd><p>The incremental XML file wrapper which organizes file writes onto <a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.outfile" title="psims.mzid.writer.MzIdentMLWriter.outfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">outfile</span></code></a>.
 Kept to control context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree.xmlfile</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.mzid.writer.MzIdentMLWriter.writer">
 <code class="descname">writer</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.writer" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>lxml.etree._IncrementalFileWriter</em> – The incremental XML writer produced by <a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.xmlfile" title="psims.mzid.writer.MzIdentMLWriter.xmlfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></a>. Kept to control context.</p>
+<dd><p>The incremental XML writer produced by <a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.xmlfile" title="psims.mzid.writer.MzIdentMLWriter.xmlfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></a>. Kept to control context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._IncrementalFileWriter</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.mzid.writer.MzIdentMLWriter.toplevel">
 <code class="descname">toplevel</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.toplevel" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>lxml.etree._FileWriterElement</em> – The top level incremental xml writer element which will be closed at the end
+<dd><p>The top level incremental xml writer element which will be closed at the end
 of file generation. Kept to control context</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._FileWriterElement</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="psims.mzid.writer.MzIdentMLWriter.context">
 <code class="descname">context</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.context" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentContext</span></code></p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentContext</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -100,7 +245,7 @@ use this instance’s context.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Component Name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Component Name</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A partially parameterized instance constructor for
 the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentBase</span></code> type requested.</td>
@@ -137,7 +282,7 @@ are forwarded to the <code class="xref py py-class docutils literal notranslate"
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tag type to create</li>
+<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
 <li><strong>*args</strong> – Arbitrary arguments for the tag</li>
 <li><strong>**kwargs</strong> – Key word arguments for the tag</li>
 </ul>
@@ -154,17 +299,17 @@ are forwarded to the <code class="xref py py-class docutils literal notranslate"
 <dl class="method">
 <dt id="psims.mzid.writer.MzIdentMLWriter.end">
 <code class="descname">end</code><span class="sig-paren">(</span><em>exc_type=None</em>, <em>exc_value=None</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ends the XML document, and flushes and closes the file</p>
+<dd><p>Ends the XML document, and flushes and closes the file
+if appropriate.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="psims.mzid.writer.MzIdentMLWriter.format">
 <code class="descname">format</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.format" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pretty-prints the contents of the file.</p>
-<p>Uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">tempfile.NamedTemporaryFile</span></code> to receive
-the formatted XML content, removes the
-original file, and moves the temporary file
-to the original file’s name.</p>
+<dd><p>This method is deprecated. Previously, the serialization
+process did not indent the XML in-place and the lxml pretty printer
+had to be invoked separately. With the addition of <code class="xref py py-class docutils literal notranslate"><span class="pre">XMLFormattingStreamWriter</span></code>,
+the XML stream is formatted in-place as it is being streamed to file.</p>
 </dd></dl>
 
 <dl class="method">
@@ -178,9 +323,9 @@ analysis</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>software</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em> or </em><em>list of dict</em><em>, </em><em>optional</em>) – A single dictionary or list of dictionaries specifying an <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSoftware</span></code> instance</li>
-<li><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> instance. If missing, a default person will be created</li>
-<li><strong>organization</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Organization</span></code> instance. If missing, a default organization will
+<li><strong>software</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em> or </em><em>list of dict</em><em>, </em><em>optional</em>) – A single dictionary or list of dictionaries specifying an <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSoftware</span></code> instance</li>
+<li><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> instance. If missing, a default person will be created</li>
+<li><strong>organization</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Organization</span></code> instance. If missing, a default organization will
 be created</li>
 </ul>
 </td>
@@ -199,15 +344,15 @@ a reference look up will be satisfied.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – An entity type, either a tag name or a component name</li>
-<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The unique id number for the thing registered</li>
+<li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – An entity type, either a tag name or a component name</li>
+<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The unique id number for the thing registered</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The constructed reference id</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -229,8 +374,8 @@ this writer wrote</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
-a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
+a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
 </tr>
 </tbody>
 </table>
@@ -255,74 +400,39 @@ a <a class="reference external" href="https://docs.python.org/3/library/exceptio
 </div>
 
 
-          </div>
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">psims</a></h1>
+    </div>    
 
 
+  
 
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../mzml/index.html">mzML</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">mzIdentML</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing mzIdentML Documents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzIdentML</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">mzIdentML</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">mzIdentML</a></li>
-      <li>Next: <a href="components.html" title="next chapter">Components of mzIdentML</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+    <div class="footer" role="contentinfo">
+        <div class="container">
+            &#169; Copyright 2018, Joshua Klein.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
         </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Joshua Klein.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="../_sources/mzid/writer.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
+    </div>  
 
-    
-
-    
-  </body>
+</body>
 </html>

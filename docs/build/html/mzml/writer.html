@@ -1,78 +1,227 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Writing mzML Documents &#8212; psims  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Writing mzML Documents &mdash; psims  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Components of mzML" href="components.html" />
-    <link rel="prev" title="mzML" href="index.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="next" title="Usage Examples" href="examples.html" />
+    <link rel="prev" title="mzML" href="index.html" /> 
 
-  </head><body>
-  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body>
+    <header>
+        <div class="container">
+            <a class="site-nav-toggle hidden-lg-up"><i class="icon-menu"></i></a>
+            <a class="site-title" href="../index.html">
+                psims
+            </a>
+        </div>
+    </header>
+
+
+<div class="breadcrumbs-outer hidden-xs-down">
+    <div class="container">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a></li>
+        
+          <li><a href="index.html">mzML</a></li>
+        
+      <li>Writing mzML Documents</li>
+    
+    
+      <li class="breadcrumbs-aside">
+        
             
+            <a href="../_sources/mzml/writer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+</div>
+    </div>
+</div>
+    <div class="main-outer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 site-nav">
+                    
+<div role="search">
+    <form class="search" action="../search.html" method="get">
+        <div class="icon-input">
+            <input type="text" name="q" placeholder="Search" />
+            <span class="icon-search"></span>
+        </div>
+        <input type="submit" value="Go" class="d-hidden" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+                    <div class="site-nav-tree">
+                        
+                            
+                            
+                                <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">mzML</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mzid/index.html">mzIdentML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mzid/writer.html">Writing mzIdentML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzid/components.html">Components of mzIdentML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mzmlb/index.html">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mzmlb/writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzmlb/index.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
+</ul>
+</li>
+</ul>
+
+                            
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="document">
+                        
+                            
   <div class="section" id="module-psims.mzml.writer">
 <span id="writing-mzml-documents"></span><h1>Writing mzML Documents<a class="headerlink" href="#module-psims.mzml.writer" title="Permalink to this headline">¶</a></h1>
+<p>mzML is a standard rich XML-format for raw mass spectrometry data storage.
+Please refer to <a class="reference external" href="http://www.psidev.info/index.php?q=node/257">psidev.info</a>
+for the detailed specification of the format and structure of mzML files.</p>
+<p>In addition to mzML, there is a wrapping format called <code class="docutils literal notranslate"><span class="pre">indexedmzML</span></code>
+which adds an extra layer to the XML document, including pre-computed byte offsets
+for each <code class="docutils literal notranslate"><span class="pre">&lt;spectrum&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;chromatogram&gt;</span></code> element.</p>
+<p>To write <code class="docutils literal notranslate"><span class="pre">mzML</span></code> without an index use <code class="xref py py-class docutils literal notranslate"><span class="pre">PlainMzMLWriter</span></code>, and for <code class="docutils literal notranslate"><span class="pre">indexedmzML</span></code>
+use <a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter" title="psims.mzml.writer.IndexedMzMLWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexedMzMLWriter</span></code></a>. Because so many tools rely on the index, <a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter" title="psims.mzml.writer.IndexedMzMLWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexedMzMLWriter</span></code></a>
+is exported under the alias <cite>MzMLWriter</cite>. The interface for these two classes are the same,
+with <a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter" title="psims.mzml.writer.IndexedMzMLWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexedMzMLWriter</span></code></a> having slightly more complex behavior on writing and when finishing
+the document, though you are able to alter the indexing behavior via <a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.index_builder" title="psims.mzml.writer.IndexedMzMLWriter.index_builder"><code class="xref py py-attr docutils literal notranslate"><span class="pre">IndexedMzMLWriter.index_builder</span></code></a>
+or through inheritance.</p>
 <dl class="class">
-<dt id="psims.mzml.writer.MzMLWriter">
-<em class="property">class </em><code class="descclassname">psims.mzml.writer.</code><code class="descname">MzMLWriter</code><span class="sig-paren">(</span><em>outfile</em>, <em>close=False</em>, <em>vocabularies=None</em>, <em>missing_reference_is_error=False</em>, <em>vocabulary_resolver=None</em>, <em>id=None</em>, <em>accession=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter" title="Permalink to this definition">¶</a></dt>
-<dd><p>A high level API for generating mzML XML files from simple Python objects.</p>
-<p>This class depends heavily on lxml’s incremental file writing API which in turn
+<dt id="psims.mzml.writer.IndexedMzMLWriter">
+<em class="property">class </em><code class="descclassname">psims.mzml.writer.</code><code class="descname">IndexedMzMLWriter</code><span class="sig-paren">(</span><em>outfile</em>, <em>close=False</em>, <em>vocabularies=None</em>, <em>missing_reference_is_error=False</em>, <em>vocabulary_resolver=None</em>, <em>id=None</em>, <em>accession=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#IndexedMzMLWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>A high level API for generating indexed mzML XML files from simple Python objects.</p>
+<p>This class depends heavily on <code class="xref py py-mod docutils literal notranslate"><span class="pre">lxml</span></code>’s incremental file writing API which in turn
 depends heavily on context managers. Almost all logic is handled inside a context
 manager and in the context of a particular document. Since all operations assume
 that they have access to a universal identity map for each element in the document,
 that map is centralized in this class.</p>
-<p>MzMLWriter inherits from <a class="reference internal" href="../mzid/components.html#psims.mzid.components.ComponentDispatcher" title="psims.mzid.components.ComponentDispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentDispatcher</span></code></a>, giving it a <code class="xref py py-attr docutils literal notranslate"><span class="pre">context</span></code>
+<p><cite>MzMLWriter</cite> inherits from <a class="reference internal" href="../mzid/components.html#psims.mzid.components.ComponentDispatcher" title="psims.mzid.components.ComponentDispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentDispatcher</span></code></a>, giving it a <code class="xref py py-attr docutils literal notranslate"><span class="pre">context</span></code>
 attribute and access to all <cite>Component</cite> objects pre-bound to that context with attribute-access
 notation.</p>
 <dl class="attribute">
-<dt id="psims.mzml.writer.MzMLWriter.chromatogram_count">
-<code class="descname">chromatogram_count</code><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.chromatogram_count" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – A count of the number of chromatograms written</p>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.chromatogram_count">
+<code class="descname">chromatogram_count</code><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.chromatogram_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>A count of the number of chromatograms written</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="psims.mzml.writer.MzMLWriter.spectrum_count">
-<code class="descname">spectrum_count</code><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.spectrum_count" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – A count of the number of spectra written</p>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.spectrum_count">
+<code class="descname">spectrum_count</code><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.spectrum_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>A count of the number of spectra written</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="psims.mzml.writer.IndexedMzMLWriter.index_builder">
+<code class="descname">index_builder</code><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.index_builder" title="Permalink to this definition">¶</a></dt>
+<dd><p>A writing stream that automatically tokenizes and records byte offsets for
+specific XML tags.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexingStream</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.__enter__">
-<code class="descname">__enter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.__enter__" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.__enter__">
+<code class="descname">__enter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.__enter__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Begins writing, opening the top-level tag</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.__exit__">
-<code class="descname">__exit__</code><span class="sig-paren">(</span><em>exc_type</em>, <em>exc_value</em>, <em>traceback</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.__exit__" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.__exit__">
+<code class="descname">__exit__</code><span class="sig-paren">(</span><em>exc_type</em>, <em>exc_value</em>, <em>traceback</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.__exit__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes the top-level tag, the XML formatter,
 and the file itself.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.__getattr__">
-<code class="descname">__getattr__</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.__getattr__" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.__getattr__">
+<code class="descname">__getattr__</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.__getattr__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide access to an automatically parameterized
 version of all <code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentBase</span></code> types which
 use this instance’s context.</p>
@@ -80,7 +229,7 @@ use this instance’s context.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Component Name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Component Name</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A partially parameterized instance constructor for
 the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentBase</span></code> type requested.</td>
@@ -92,14 +241,14 @@ the <code class="xref py py-class docutils literal notranslate"><span class="pre
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.begin">
-<code class="descname">begin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.begin" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.begin">
+<code class="descname">begin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.begin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the doctype and starts the low-level writing machinery</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.controlled_vocabularies">
-<code class="descname">controlled_vocabularies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.controlled_vocabularies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.controlled_vocabularies" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.controlled_vocabularies">
+<code class="descname">controlled_vocabularies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.controlled_vocabularies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the <cite>&lt;cvList&gt;</cite> element and all its children,
 including both this format’s default controlled vocabularies
 and those passed as arguments to this method.this</p>
@@ -107,8 +256,8 @@ and those passed as arguments to this method.this</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.data_processing_list">
-<code class="descname">data_processing_list</code><span class="sig-paren">(</span><em>data_processing</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.data_processing_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.data_processing_list" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.data_processing_list">
+<code class="descname">data_processing_list</code><span class="sig-paren">(</span><em>data_processing</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.data_processing_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;dataProcessingList&gt;</span></code> section of the document.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -118,7 +267,7 @@ and those passed as arguments to this method.this</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_processing</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.DataProcessing" title="psims.mzml.components.DataProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataProcessing</span></code></a>-like
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_processing</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.DataProcessing" title="psims.mzml.components.DataProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataProcessing</span></code></a>-like
 objects</td>
 </tr>
 </tbody>
@@ -126,8 +275,8 @@ objects</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.element">
-<code class="descname">element</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.element" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.element">
+<code class="descname">element</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct and immediately open a subclass instance of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code> with the given tag name. All other arguments
 are forwarded to the <code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code> constructor.</p>
@@ -136,7 +285,7 @@ are forwarded to the <code class="xref py py-class docutils literal notranslate"
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tag type to create</li>
+<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
 <li><strong>*args</strong> – Arbitrary arguments for the tag</li>
 <li><strong>**kwargs</strong> – Key word arguments for the tag</li>
 </ul>
@@ -146,19 +295,20 @@ are forwarded to the <code class="xref py py-class docutils literal notranslate"
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#psims.mzml.writer.MzMLWriter.element" title="psims.mzml.writer.MzMLWriter.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
+<p class="last"><a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.element" title="psims.mzml.writer.IndexedMzMLWriter.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
 </div>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.end">
-<code class="descname">end</code><span class="sig-paren">(</span><em>exc_type=None</em>, <em>exc_value=None</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ends the XML document, and flushes and closes the file</p>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.end">
+<code class="descname">end</code><span class="sig-paren">(</span><em>exc_type=None</em>, <em>exc_value=None</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ends the XML document, and flushes and closes the file
+if appropriate.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.file_description">
-<code class="descname">file_description</code><span class="sig-paren">(</span><em>file_contents=None</em>, <em>source_files=None</em>, <em>contacts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.file_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.file_description" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.file_description">
+<code class="descname">file_description</code><span class="sig-paren">(</span><em>file_contents=None</em>, <em>source_files=None</em>, <em>contacts=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.file_description" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;fileDescription&gt;</span></code> section of the document.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -170,9 +320,9 @@ to any part of the data set) is stored here.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>file_contents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>optional</em>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, or *Param-types which will
+<li><strong>file_contents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, or *Param-types which will
 be placed in the <code class="docutils literal notranslate"><span class="pre">&lt;fileContent&gt;</span></code> element.</li>
-<li><strong>source_files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of dict or <a class="reference internal" href="../mzid/components.html#psims.mzid.components.SourceFile" title="psims.mzid.components.SourceFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceFile</span></code></a>-like objects
+<li><strong>source_files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list or other iterable of dict or <a class="reference internal" href="components.html#psims.mzml.components.SourceFile" title="psims.mzml.components.SourceFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceFile</span></code></a>-like objects
 to be placed in the <code class="docutils literal notranslate"><span class="pre">&lt;sourceFileList&gt;</span></code> element</li>
 </ul>
 </td>
@@ -182,20 +332,17 @@ to be placed in the <code class="docutils literal notranslate"><span class="pre"
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.format">
-<code class="descname">format</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>index=True</em>, <em>indexer=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.format" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pretty-prints the contents of the file and wrap in
-an indexedmzML container, indexing <code class="docutils literal notranslate"><span class="pre">&lt;spectrum&gt;</span></code> and
-<code class="docutils literal notranslate"><span class="pre">&lt;chromatogram&gt;</span></code> tags.</p>
-<p>Uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">tempfile.NamedTemporaryFile</span></code> to receive
-the formatted XML content, removes the
-original file, and moves the temporary file
-to the original file’s name.</p>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.format">
+<code class="descname">format</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#IndexedMzMLWriter.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is deprecated. Previously, the serialization
+process did not indent the XML in-place and the lxml pretty printer
+had to be invoked separately. With the addition of <code class="xref py py-class docutils literal notranslate"><span class="pre">XMLFormattingStreamWriter</span></code>,
+the XML stream is formatted in-place as it is being streamed to file.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.instrument_configuration_list">
-<code class="descname">instrument_configuration_list</code><span class="sig-paren">(</span><em>instrument_configurations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.instrument_configuration_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.instrument_configuration_list" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.instrument_configuration_list">
+<code class="descname">instrument_configuration_list</code><span class="sig-paren">(</span><em>instrument_configurations</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.instrument_configuration_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;instrumentConfigurationList&gt;</span></code> section of the document.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -207,7 +354,7 @@ be specified, even if it is only to specify that the instrument is unknown. In t
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instrument_configurations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.InstrumentConfiguration" title="psims.mzml.components.InstrumentConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">InstrumentConfiguration</span></code></a>-like
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instrument_configurations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.InstrumentConfiguration" title="psims.mzml.components.InstrumentConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">InstrumentConfiguration</span></code></a>-like
 objects</td>
 </tr>
 </tbody>
@@ -215,14 +362,93 @@ objects</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.reference_param_group_list">
-<code class="descname">reference_param_group_list</code><span class="sig-paren">(</span><em>groups</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.reference_param_group_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.reference_param_group_list" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.precursor_builder">
+<code class="descname">precursor_builder</code><span class="sig-paren">(</span><em>mz=None</em>, <em>intensity=None</em>, <em>charge=None</em>, <em>spectrum_reference=None</em>, <em>activation=None</em>, <em>isolation_window_args=None</em>, <em>params=None</em>, <em>intensity_unit='number of detector counts'</em>, <em>scan_id=None</em>, <em>external_spectrum_id=None</em>, <em>source_file_reference=None</em>, <em>isolation_window=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.precursor_builder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <code class="xref py py-class docutils literal notranslate"><span class="pre">PrecursorBuilder</span></code>, an object to help populate the precursor information
+data structure.</p>
+<p>The helper object should be used to incrementally populate the precursor information passed
+to <a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.spectrum" title="psims.mzml.writer.IndexedMzMLWriter.spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrum()</span></code></a> or <a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.write_spectrum" title="psims.mzml.writer.IndexedMzMLWriter.write_spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_spectrum()</span></code></a>’s <cite>precursor_information</cite> argument.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mz</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The m/z of the first selected ion</li>
+<li><strong>intensity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The intensity of the first selected ion</li>
+<li><strong>charge</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The charge state of the first selected ion</li>
+<li><strong>spectrum_reference</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>id</cite> of the prescursor <cite>&lt;spectrum&gt;</cite> for this precursor, mapped through the
+document context.</li>
+<li><strong>activation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – Parameters forwarded to <code class="xref py py-meth docutils literal notranslate"><span class="pre">PrecursorBuilder.activation()</span></code>. This should be a dictionary
+with a key “params” and a list of <a class="reference internal" href="../xml.html#psims.xml.CVParam" title="psims.xml.CVParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">CVParam</span></code></a> coerce-able values, with additional
+optional keys naming other <a class="reference internal" href="../xml.html#psims.xml.CVParam" title="psims.xml.CVParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">CVParam</span></code></a> coerce-able values. If a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is
+passed, it will be wrapped in one e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;params&quot;:</span> <span class="pre">activation}</span></code></li>
+<li><strong>isolation_window_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – Parameters forwarded to :meth:PrecursorBuilder.isolation_window`,
+tuple or list of three values are converted into <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> of the correct
+structure. The expected keys are “lower”, the lower m/z offset, “target”, the center m/z,
+and “upper”, the upper m/z offset. You may also pass this argumemt as <cite>isolation_window</cite>.</li>
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – The cv- and user-params of the first selected ion, in addition to <cite>mz</cite>, <cite>intensity</cite>,
+<cite>charge</cite>.</li>
+<li><strong>intensity_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The intensity unit of the first selected ion, to be specified with <cite>intensity</cite></li>
+<li><strong>scan_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – An alias for <cite>spectrum_reference</cite></li>
+<li><strong>external_spectrum_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>externalSpectrumID</cite> attribute of the precursor</li>
+<li><strong>source_file_reference</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>sourceFileRef</cite> attribute of the precursor</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrecursorBuilder</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="psims.mzml.writer.IndexedMzMLWriter.prepare_precursor_information">
+<code class="descname">prepare_precursor_information</code><span class="sig-paren">(</span><em>mz=None</em>, <em>intensity=None</em>, <em>charge=None</em>, <em>spectrum_reference=None</em>, <em>activation=None</em>, <em>isolation_window_args=None</em>, <em>params=None</em>, <em>intensity_unit='number of detector counts'</em>, <em>scan_id=None</em>, <em>external_spectrum_id=None</em>, <em>source_file_reference=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.prepare_precursor_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare a <code class="xref py py-class docutils literal notranslate"><span class="pre">Precursor</span></code> element from disparate data structures.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mz</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The m/z of the first selected ion</li>
+<li><strong>intensity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The intensity of the first selected ion</li>
+<li><strong>charge</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The charge state of the first seelcted ion</li>
+<li><strong>spectrum_reference</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>id</cite> of the prescursor <cite>&lt;spectrum&gt;</cite> for this precursor</li>
+<li><strong>activation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – A list of parameters describing the ion activation method used.</li>
+<li><strong>isolation_window_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – Parameters forwarded to <code class="xref py py-meth docutils literal notranslate"><span class="pre">PrecursorBuilder.isolation_window()</span></code>,
+tuple or list values are converted into <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> of the correct
+structure. This argument may also be passed as <cite>isolation_window</cite>.</li>
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – The cvParams of the first selected ion</li>
+<li><strong>intensity_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The intensity unit of the first selected ion</li>
+<li><strong>scan_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – An alias for <cite>spectrum_reference</cite></li>
+<li><strong>external_spectrum_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>externalSpectrumID</cite> attribute of the precursor</li>
+<li><strong>source_file_reference</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>sourceFileRef</cite> attribute of the precursor</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="components.html#psims.mzml.components.Precursor" title="psims.mzml.components.Precursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Precursor</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="psims.mzml.writer.IndexedMzMLWriter.reference_param_group_list">
+<code class="descname">reference_param_group_list</code><span class="sig-paren">(</span><em>groups</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.reference_param_group_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;referenceableParamGroupList&gt;</span></code> section of the document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groups</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.ReferenceableParamGroup" title="psims.mzml.components.ReferenceableParamGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceableParamGroup</span></code></a>-like
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groups</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.ReferenceableParamGroup" title="psims.mzml.components.ReferenceableParamGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceableParamGroup</span></code></a>-like
 objects</td>
 </tr>
 </tbody>
@@ -230,8 +456,8 @@ objects</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.register">
-<code class="descname">register</code><span class="sig-paren">(</span><em>entity_type</em>, <em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.register" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.register">
+<code class="descname">register</code><span class="sig-paren">(</span><em>entity_type</em>, <em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-declare an entity in the document context. Ensures that
 a reference look up will be satisfied.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -239,15 +465,15 @@ a reference look up will be satisfied.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – An entity type, either a tag name or a component name</li>
-<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The unique id number for the thing registered</li>
+<li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – An entity type, either a tag name or a component name</li>
+<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The unique id number for the thing registered</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The constructed reference id</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -255,8 +481,8 @@ a reference look up will be satisfied.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.run">
-<code class="descname">run</code><span class="sig-paren">(</span><em>id=None</em>, <em>instrument_configuration=None</em>, <em>source_file=None</em>, <em>start_time=None</em>, <em>sample=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.run" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>id=None</em>, <em>instrument_configuration=None</em>, <em>source_file=None</em>, <em>start_time=None</em>, <em>sample=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Begins the <cite>&lt;run&gt;</cite> section of the document, describing a single
 sample run.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -264,12 +490,12 @@ sample run.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The unique identifier for this element</li>
-<li><strong>instrument_configuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The id string for the default <cite>InstrumentConfiguration</cite> for this
+<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The unique identifier for this element</li>
+<li><strong>instrument_configuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The id string for the default <cite>InstrumentConfiguration</cite> for this
 sample</li>
-<li><strong>source_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The id string for the source file used to produce this data</li>
-<li><strong>start_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – A string encoding the date and time the sample was acquired</li>
-<li><strong>sample</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The id string for the sample used to produce this data</li>
+<li><strong>source_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The id string for the source file used to produce this data</li>
+<li><strong>start_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – A string encoding the date and time the sample was acquired</li>
+<li><strong>sample</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The id string for the sample used to produce this data</li>
 </ul>
 </td>
 </tr>
@@ -284,14 +510,14 @@ sample</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.sample_list">
-<code class="descname">sample_list</code><span class="sig-paren">(</span><em>samples</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.sample_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.sample_list" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.sample_list">
+<code class="descname">sample_list</code><span class="sig-paren">(</span><em>samples</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.sample_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;sampleList&gt;</span></code> section of the document</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.Sample" title="psims.mzml.components.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a>-like
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.Sample" title="psims.mzml.components.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a>-like
 objects</td>
 </tr>
 </tbody>
@@ -299,8 +525,8 @@ objects</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.software_list">
-<code class="descname">software_list</code><span class="sig-paren">(</span><em>software_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/writer.html#MzMLWriter.software_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.software_list" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.software_list">
+<code class="descname">software_list</code><span class="sig-paren">(</span><em>software_list</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.software_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the <code class="docutils literal notranslate"><span class="pre">&lt;softwareList&gt;</span></code> section of the document.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -311,15 +537,67 @@ data in this mzML file</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>software_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.Software" title="psims.mzml.components.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">Software</span></code></a>-like objects</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>software_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list or other iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference internal" href="components.html#psims.mzml.components.Software" title="psims.mzml.components.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">Software</span></code></a>-like objects</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.validate">
-<code class="descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.validate" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.spectrum">
+<code class="descname">spectrum</code><span class="sig-paren">(</span><em>mz_array=None</em>, <em>intensity_array=None</em>, <em>charge_array=None</em>, <em>id=None</em>, <em>polarity='positive scan'</em>, <em>centroided=True</em>, <em>precursor_information=None</em>, <em>scan_start_time=None</em>, <em>params=None</em>, <em>compression='zlib'</em>, <em>encoding=None</em>, <em>other_arrays=None</em>, <em>scan_params=None</em>, <em>scan_window_list=None</em>, <em>instrument_configuration_id=None</em>, <em>intensity_unit='number of detector counts'</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new <a class="reference internal" href="components.html#psims.mzml.components.Spectrum" title="psims.mzml.components.Spectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrum</span></code></a> instance to be written.</p>
+<p>This method does not immediately write and close the spectrum element, leaving it
+open for modification and embedding.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mz_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code> of floats) – The m/z array of the spectrum</li>
+<li><strong>intensity_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code> of floats) – The intensity array of the spectrum</li>
+<li><strong>charge_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>, optional) – The charge state array of the spectrum, optional.</li>
+<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The native ID of the spectrum.</li>
+<li><strong>polarity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The polarity of the spectrum. If an integer, the sign of
+the integer is used, otherwise it is interpreted as a cvParam</li>
+<li><strong>centroided</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the spectrum is continuous or discretized by peak picking.
+Defaults to <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>.</li>
+<li><strong>precursor_information</strong> (dict or <code class="xref py py-class docutils literal notranslate"><span class="pre">PrecursorBuilder</span></code>, optional) – The precursor ion description. Will be passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">_prepare_precursor_list()</span></code>.
+The structure of this object should either be formatted as arguments to
+<a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.precursor_builder" title="psims.mzml.writer.IndexedMzMLWriter.precursor_builder"><code class="xref py py-meth docutils literal notranslate"><span class="pre">precursor_builder()</span></code></a>, or a <code class="xref py py-class docutils literal notranslate"><span class="pre">PrecursorBuilder</span></code> instance populated
+with information.</li>
+<li><strong>scan_start_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The scan start time, in minutes</li>
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – The parameters of the <cite>spectrum</cite></li>
+<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The compression type name to use. Defaults to <cite>COMPRESSION_ZLIB</cite>.</li>
+<li><strong>encoding</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A mapping from array name to NumPy data types.</li>
+<li><strong>other_arrays</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – An iterable of array names to additional data arrays. Array names may either be
+strings, <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code> objects that define <a class="reference internal" href="../xml.html#psims.xml.CVParam" title="psims.xml.CVParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">CVParam</span></code></a> or <a class="reference internal" href="../xml.html#psims.xml.UserParam" title="psims.xml.UserParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserParam</span></code></a>,
+or such paramter objects themselves. Use the latter two methods when defining arrays with
+units.</li>
+<li><strong>scan_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – A list of cvParams for the <cite>scan</cite> of this <cite>spectrum</cite></li>
+<li><strong>scan_window_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – A list of scan windows specified as pairs of m/z intervals</li>
+<li><strong>instrument_configuration_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>id</cite> of the <cite>instrumentConfiguration</cite> to associate with this spectrum
+if not the default one.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="components.html#psims.mzml.components.Spectrum" title="psims.mzml.components.Spectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrum</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.write_spectrum" title="psims.mzml.writer.IndexedMzMLWriter.write_spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_spectrum()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">chromatogram()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">write_chromatogram()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="psims.mzml.writer.IndexedMzMLWriter.validate">
+<code class="descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempt to perform XSD validation on the XML document
 this writer wrote</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -332,16 +610,16 @@ this writer wrote</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
-a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
+a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="psims.mzml.writer.MzMLWriter.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.MzMLWriter.write" title="Permalink to this definition">¶</a></dt>
+<dt id="psims.mzml.writer.IndexedMzMLWriter.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Either write a complete XML sub-tree or add free text to the file stream</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -353,79 +631,139 @@ a <a class="reference external" href="https://docs.python.org/3/library/exceptio
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="psims.mzml.writer.IndexedMzMLWriter.write_spectrum">
+<code class="descname">write_spectrum</code><span class="sig-paren">(</span><em>mz_array=None</em>, <em>intensity_array=None</em>, <em>charge_array=None</em>, <em>id=None</em>, <em>polarity='positive scan'</em>, <em>centroided=True</em>, <em>precursor_information=None</em>, <em>scan_start_time=None</em>, <em>params=None</em>, <em>compression='zlib'</em>, <em>encoding=None</em>, <em>other_arrays=None</em>, <em>scan_params=None</em>, <em>scan_window_list=None</em>, <em>instrument_configuration_id=None</em>, <em>intensity_unit='number of detector counts'</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzml.writer.IndexedMzMLWriter.write_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a <a class="reference internal" href="components.html#psims.mzml.components.Spectrum" title="psims.mzml.components.Spectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrum</span></code></a> with the provided data.</p>
+<p>To create a spectrum element but not immediately close it off, see the <a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.spectrum" title="psims.mzml.writer.IndexedMzMLWriter.spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrum()</span></code></a> method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mz_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code> of floats) – The m/z array of the spectrum</li>
+<li><strong>intensity_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code> of floats) – The intensity array of the spectrum</li>
+<li><strong>charge_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>, optional) – The charge state array of the spectrum, optional.</li>
+<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The native ID of the spectrum.</li>
+<li><strong>polarity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The polarity of the spectrum. If an integer, the sign of
+the integer is used, otherwise it is interpreted as a cvParam</li>
+<li><strong>centroided</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the spectrum is continuous or discretized by peak picking.
+Defaults to <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>.</li>
+<li><strong>precursor_information</strong> (dict or <code class="xref py py-class docutils literal notranslate"><span class="pre">PrecursorBuilder</span></code>, optional) – The precursor ion description. Will be passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">_prepare_precursor_list()</span></code>.
+The structure of this object should either be formatted as arguments to
+<a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.precursor_builder" title="psims.mzml.writer.IndexedMzMLWriter.precursor_builder"><code class="xref py py-meth docutils literal notranslate"><span class="pre">precursor_builder()</span></code></a>, or a <code class="xref py py-class docutils literal notranslate"><span class="pre">PrecursorBuilder</span></code> instance populated
+with information.</li>
+<li><strong>scan_start_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The scan start time, in minutes</li>
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – The parameters of the <cite>spectrum</cite></li>
+<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The compression type name to use. Defaults to <cite>COMPRESSION_ZLIB</cite>.</li>
+<li><strong>encoding</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A mapping from array name to NumPy data types.</li>
+<li><strong>other_arrays</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – An iterable of array names to additional data arrays. Array names may either be
+strings, <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code> objects that define <a class="reference internal" href="../xml.html#psims.xml.CVParam" title="psims.xml.CVParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">CVParam</span></code></a> or <a class="reference internal" href="../xml.html#psims.xml.UserParam" title="psims.xml.UserParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserParam</span></code></a>,
+or such paramter objects themselves. Use the latter two methods when defining arrays with
+units.</li>
+<li><strong>scan_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – A list of cvParams for the <cite>scan</cite> of this <cite>spectrum</cite></li>
+<li><strong>scan_window_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – A list of scan windows specified as pairs of m/z intervals</li>
+<li><strong>instrument_configuration_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – The <cite>id</cite> of the <cite>instrumentConfiguration</cite> to associate with this spectrum
+if not the default one.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#psims.mzml.writer.IndexedMzMLWriter.spectrum" title="psims.mzml.writer.IndexedMzMLWriter.spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrum()</span></code></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="psims.mzml.writer.compression_map">
+<code class="descclassname">psims.mzml.writer.</code><code class="descname">compression_map</code><a class="headerlink" href="#psims.mzml.writer.compression_map" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">The compression methods available:</code></dt>
+<dd><table border="1" class="docutils">
+<colgroup>
+<col width="51%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Compression Scheme</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>None</td>
+<td>no compression</td>
+</tr>
+<tr class="row-odd"><td>False</td>
+<td>no compression</td>
+</tr>
+<tr class="row-even"><td>True</td>
+<td>zlib compression</td>
+</tr>
+<tr class="row-odd"><td>‘MS-Numpress linear prediction compression’</td>
+<td>MS-Numpress linear prediction compression</td>
+</tr>
+<tr class="row-even"><td>‘MS-Numpress positive integer compression’</td>
+<td>MS-Numpress positive integer compression</td>
+</tr>
+<tr class="row-odd"><td>‘MS-Numpress short logged float compression’</td>
+<td>MS-Numpress short logged float compression</td>
+</tr>
+<tr class="row-even"><td>‘delta’</td>
+<td>delta prediction</td>
+</tr>
+<tr class="row-odd"><td>‘linear’</td>
+<td>linear prediction</td>
+</tr>
+<tr class="row-even"><td>‘none’</td>
+<td>no compression</td>
+</tr>
+<tr class="row-odd"><td>‘zlib’</td>
+<td>zlib compression</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
 
 
-          </div>
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">psims</a></h1>
+    </div>    
 
 
+  
 
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">mzML</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing mzML Documents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzML</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../mzid/index.html">mzIdentML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">mzML</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">mzML</a></li>
-      <li>Next: <a href="components.html" title="next chapter">Components of mzML</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+    <div class="footer" role="contentinfo">
+        <div class="container">
+            &#169; Copyright 2018, Joshua Klein.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
         </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Joshua Klein.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="../_sources/mzml/writer.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
+    </div>  
 
-    
-
-    
-  </body>
+</body>
 </html>
