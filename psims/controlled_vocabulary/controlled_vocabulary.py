@@ -101,14 +101,37 @@ class ControlledVocabulary(object):
         return self.query(key)
 
     def query(self, key):
+        '''Search for a term whose id or name matches `key`, or if it is a synonym.
+
+        This search is case-insensitive, but case-matching is preferred.
+
+        Parameters
+        ----------
+        key : str
+            The key to look up.
+
+        Returns
+        -------
+        term : :class:`~.Entity`
+            The found entity, if any.
+
+        Raises
+        ------
+        KeyError :
+            If there is no match to any term in this vocabulary
+        '''
         if key in self.terms:
             return self.terms[key]
         elif key in self._names:
             return self._names[key]
         else:
-            normalized_key = self.normalize_name(key)
-            if normalized_key in self._names:
-                return self._names[normalized_key]
+            try:
+                normalized_key = self.normalize_name(key)
+                if normalized_key in self._names:
+                    return self._names[normalized_key]
+            except KeyError:
+                # Just to have a value to show.
+                normalized_key = key.lower()
             lower_key = key.lower()
             if lower_key in self._synonyms:
                 return self._synonyms[lower_key]
@@ -118,6 +141,36 @@ class ControlledVocabulary(object):
                 return self._obsolete_names[lower_key]
             else:
                 raise KeyError("%s and %s were not found." % (key, normalized_key))
+
+    def search(self, query):
+        '''Search for any term containing the query in its id, name, or synonyms.
+
+        Parameters
+        ----------
+        query : str
+            The search query
+
+        Returns
+        -------
+        matched : list
+            The matched terms.
+        '''
+        terms = {}
+        query = query.lower()
+        for key in self.terms:
+            if query in key.lower():
+                val = self.terms[key]
+                terms[val.id] = val
+        for key in self._names:
+            if query in key.lower():
+                val = self._names[key]
+                terms[val.id] = val
+        for key in self._synonyms:
+            if query in key.lower():
+                val = self._synonyms[key]
+                terms[val.id] = val
+        return sorted(terms.values(), key=lambda x: x.id)
+
 
     def __repr__(self):
         template = ("{self.__class__.__name__}(terms={size}, id={self.id}, "
