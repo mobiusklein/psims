@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+
+## [v0.1.38]
+
+### Changed
+1. Updated vendor controlled vocabularies
+2. Extended mzML writer's list of known arrays to match `psi-ms.obo` v4.1.53's new list
+3. Added additional warnings for when users have `h5py` but not `hdf5plugin`
+
+
 ## [v0.1.37]
 
 ### Added
@@ -55,8 +64,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.35...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.38...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.38
 [v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.37
 [v0.1.35]: https://github.com/mobiusklein/psims/releases/v0.1.35
 [v0.1.34]: https://github.com/mobiusklein/psims/releases/v0.1.34
