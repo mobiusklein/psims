@@ -1,6 +1,7 @@
 import logging
 import io
 import numbers
+import warnings
 from collections import Counter
 
 import numpy as np
@@ -11,6 +12,9 @@ import h5py
 try:
     import hdf5plugin
 except ImportError:
+    warnings.warn(
+        "hdf5plugin is missing! Only the slower GZIP compression scheme will be available! "
+        "Please install hdf5plugin to be able to use Blosc.")
     hdf5plugin = None
 
 from ..mzml.binary_encoding import encode_array_direct, encoding_map, compression_map, dtype_to_encoding, COMPRESSION_NONE
