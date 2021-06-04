@@ -8,42 +8,10 @@ except ImportError:
 from .obo import OBOParser
 from . import unimod
 
-
-def _use_vendored_psims_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/psi-ms.obo.gz"))
-
-
-def _use_vendored_psimod_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/psi-mod.obo.gz"))
-
-
-def _use_vendored_unit_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/unit.obo.gz"))
-
-
-def _use_vendored_pato_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/pato.obo.gz"))
-
-
-def _use_vendored_unimod_xml():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/unimod_tables.xml.gz"))
-
-
-def _use_vendored_xlmod_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/XLMOD.obo.gz"))
-
-
-def _use_vendored_bto_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/bto.obo.gz"))
-
-
-def _use_vendored_go_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/go.obo.gz"))
-
-
-def _use_vendored_gno_obo():
-    return gzip.GzipFile(fileobj=pkg_resources.resource_stream(__name__, "vendor/gno.obo.gz"))
-
+from .vendor import (
+    _use_vendored_bto_obo, _use_vendored_gno_obo, _use_vendored_go_obo,
+    _use_vendored_pato_obo, _use_vendored_psimod_obo, _use_vendored_psims_obo,
+    _use_vendored_unimod_xml, _use_vendored_unit_obo, _use_vendored_xlmod_obo)
 
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
@@ -258,12 +226,19 @@ class OBOCache(object):
         object.
     """
 
+    default_resolvers = {}
+
     def __init__(self, cache_path='.obo_cache', enabled=True, resolvers=None, user_agent_emulation=True):
         self._cache_path = None
         self.cache_path = cache_path
         self.enabled = enabled
         self.resolvers = resolvers or {}
         self.user_agent_emulation = user_agent_emulation
+        self._register_default_resolvers()
+
+    def _register_default_resolvers(self):
+        for uri, resolver in self.default_resolvers.items():
+            self.set_resolver(uri, resolver)
 
     @property
     def cache_path(self):
@@ -375,8 +350,8 @@ def resolve_unimod(cache):
             return unimod.Unimod(None, _use_vendored_unimod_xml())
 
 
+OBOCache.default_resolvers.setdefault("http://www.unimod.org/obo/unimod.obo", resolve_unimod)
 obo_cache = OBOCache(enabled=False)
-obo_cache.set_resolver("http://www.unimod.org/obo/unimod.obo", resolve_unimod)
 
 
 def configure_obo_store(path):
