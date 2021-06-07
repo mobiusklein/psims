@@ -29,15 +29,13 @@ from psims.utils import KeyToAttrProxy
 from .entity import Entity
 
 
-def fetch():
-    # buffer = io.BytesIO()
-    # server = ftplib.FTP("ftp.proteininformationresource.org")
-    # server.login()
-    # server.cwd("pir_databases/other_databases/resid/")
-    # server.retrbinary("RETR RESIDUES.XML", buffer.write)
-    # return etree.fromstring(buffer.getvalue())
-    uri = urlopen(
-        "ftp://ftp.proteininformationresource.org/pir_databases/other_databases/resid/RESIDUES.XML")
+RESID_SOURCE_URL = "ftp://ftp.proteininformationresource.org/pir_databases/other_databases/resid/RESIDUES.XML"
+
+
+def fetch(source_url=None):
+    if source_url is None:
+        source_url = RESID_SOURCE_URL
+    uri = urlopen(source_url)
     return etree.fromstring(uri.read())
 
 

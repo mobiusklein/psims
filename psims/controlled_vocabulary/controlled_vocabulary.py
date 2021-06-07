@@ -5,6 +5,12 @@ try:
     from urllib2 import urlopen, URLError, Request
 except ImportError:
     from urllib.request import urlopen, URLError, Request
+
+try:
+    from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
+
 from .obo import OBOParser
 from . import unimod
 
@@ -32,7 +38,7 @@ fallback = {
 }
 
 
-class ControlledVocabulary(object):
+class ControlledVocabulary(Mapping):
     """A Controlled Vocabulary is a collection
     of terms or entities with controlled meanings
     and semantics.
@@ -40,13 +46,44 @@ class ControlledVocabulary(object):
     This object makes entities resolvable by name,
     accession number, or synonym.
 
+    This object implements the :class:`~.Mapping` protocol.
+
     Attributes
     ----------
     id : str
         Unique identifier for this collection
+    metadata : dict
+        A mapping of metadata describing this controlled vocabulary
+    version : str
+        A string describing the version of this controlled vocabulary.
+        Not all vocabularies are versioned the same way, so this is value
+        is not interpreted further automatically.
+    id : str
+        An identifier for this controlled vocabulary that is unique within
+        a particular context
+    name : str
+        A human-friendly name for this controlled vocabulary
+    terms : dict
+        The storage for storing the primary mapping from term ID to terms
     """
     @classmethod
     def from_obo(cls, handle):
+        '''Construct a new instance from an OBO format stream.
+
+        Parameters
+        ----------
+        handle : file-like
+            A file-like object over an OBO format.
+
+        Returns
+        -------
+        ControlledVocabulary
+
+        Raises
+        ------
+        ValueError:
+            When the controlled vocabulary produced contains no terms
+        '''
         parser = OBOParser(handle)
         inst = cls(parser.terms, metadata=parser.header, version=parser.version, name=parser.name)
         if len(parser.terms) == 0:
@@ -66,6 +103,8 @@ class ControlledVocabulary(object):
         self.metadata = metadata
 
     def __getitem__(self, key):
+        '''A wrapper for :meth:`query`
+        '''
         return self.query(key)
 
     def query(self, key):
@@ -87,6 +126,11 @@ class ControlledVocabulary(object):
         ------
         KeyError :
             If there is no match to any term in this vocabulary
+
+        See Also
+        --------
+        search
+        __getitem__
         '''
         if key in self.terms:
             return self.terms[key]
@@ -113,6 +157,10 @@ class ControlledVocabulary(object):
     def search(self, query):
         '''Search for any term containing the query in its id, name, or synonyms.
 
+        This algorithm uses substring containment and may return multiple hits,
+        and can be ambiguous when given a common or short substring. For exact
+        string matches, use :meth:`query`
+
         Parameters
         ----------
         query : str
@@ -122,6 +170,10 @@ class ControlledVocabulary(object):
         -------
         matched : list
             The matched terms.
+
+        See Also
+        --------
+        query
         '''
         terms = {}
         query = query.lower()
@@ -138,7 +190,6 @@ class ControlledVocabulary(object):
                 val = self._synonyms[key]
                 terms[val.id] = val
         return sorted(terms.values(), key=lambda x: x.id)
-
 
     def __repr__(self):
         template = ("{self.__class__.__name__}(terms={size}, id={self.id}, "
@@ -209,7 +260,9 @@ DEFAULT_USER_AGENT = (
 
 
 class OBOCache(object):
-    """A cache for retrieved ontology sources
+    """A cache for retrieved ontology sources stored on the file system, and an
+    abstraction layer to make registered controlled vocabularies constructable
+    from a URI even if they are not in the same format.
 
     Attributes
     ----------
@@ -220,10 +273,10 @@ class OBOCache(object):
     enabled : bool
         Whether the cache will be used or not
     resolvers : dict
-        A mapping from ontology URL to a function
-        which will be called instead of opening the
-        URL to retrieve the :class:`ControlledVocabulary`
-        object.
+        A mapping from ontology URL to a function which will be called instead of
+        opening the URL to retrieve the :class:`ControlledVocabulary` object. A
+        resolver is any callable that takes only an :class:`OBOCache` instance as
+        a single argument.
     """
 
     default_resolvers = {}
@@ -250,6 +303,24 @@ class OBOCache(object):
         self.cache_exists = os.path.exists(self.cache_path)
 
     def path_for(self, name, setext=True):
+        '''Construct a path for a given controlled vocabulary file
+        in the cache on the file system.
+
+        .. note::
+            If the cache directory does not exist, this will create it.
+
+        Parameters
+        ----------
+        name : str
+            The name of the controlled vocabulary file
+        setext : bool
+            Whether or not to enforce the .obo extension
+
+        Returns
+        -------
+        path : str
+            The path in the file system cache to use for this name.
+        '''
         if not self.cache_exists:
             os.makedirs(self.cache_path)
             self.cache_exists = True
@@ -285,6 +356,19 @@ class OBOCache(object):
         return f
 
     def fallback(self, uri):
+        '''Obtain a stream for the vocabulary specified by `uri`
+        from the packaged bundle distributed with :mod:`psims`.
+
+        Parameters
+        ----------
+        uri : str
+            The URI to retrieve a fallback stream for.
+
+        Returns
+        -------
+        result : file-like or :const:`None`
+            Returns a backup stream, or :const:`None` if no fallback exists.
+        '''
         if uri in fallback:
             f = fallback[uri]()
         else:
@@ -292,10 +376,38 @@ class OBOCache(object):
         return f
 
     def has_custom_resolver(self, uri):
+        '''Test if `uri` has a resolver function.
+
+        Parameters
+        ----------
+        uri : str
+            The URI to test
+
+        Returns
+        -------
+        bool
+        '''
         return uri in self.resolvers
 
     def resolve(self, uri):
-        if uri in self.resolvers:
+        '''Get an readable file-like object for the controlled vocabulary referred
+        to by `uri`.
+
+        If `uri` has a custom resolver, by :meth:`has_custom_resolver`, the custom
+        resolver function will be called instead.
+
+        Parameters
+        ----------
+        uri : str
+            The URI for the controlled vocabulary to access
+
+        Returns
+        -------
+        fp : object
+            If `uri` has a custom resolver, any type may be returned, otherwise a readable
+            file-like object in binary mode over the requested controlled vocabulary.
+        '''
+        if self.has_custom_resolver(uri):
             return self.resolvers[uri](self)
         try:
             if self.enabled:
@@ -323,8 +435,18 @@ class OBOCache(object):
             traceback.print_exc()
             raise
 
-    def set_resolver(self, uri, provider):
-        self.resolvers[uri] = provider
+    def set_resolver(self, uri, resolver):
+        '''Register a resolver callable for `uri`
+
+        Parameters
+        ----------
+        uri : str
+            The URI to register the custom resolver for
+        resolver : Callable
+            A resolver is any callable that takes only an :class:`OBOCache` instance as
+            a single argument.
+        '''
+        self.resolvers[uri] = resolver
 
     def __repr__(self):
         return "OBOCache(cache_path=%r, enabled=%r, resolvers=%s)" % (
