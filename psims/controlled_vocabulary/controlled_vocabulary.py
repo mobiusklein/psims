@@ -199,6 +199,9 @@ class ControlledVocabulary(Mapping):
     def __iter__(self):
         return iter(self.terms)
 
+    def __len__(self):
+        return len(self.terms)
+
     @property
     def terms(self):
         return self._terms
