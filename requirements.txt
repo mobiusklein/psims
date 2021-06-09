@@ -4,5 +4,6 @@ pyteomics >= 4.0.1
 numpy
 six
 h5py
-hdf5plugin
+hdf5plugin < 3.0.0; python_version < '3'
+hdf5plugin; python_version > '3.1'
 pynumpress
