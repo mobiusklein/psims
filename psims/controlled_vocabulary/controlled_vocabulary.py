@@ -1,15 +1,13 @@
 import os
-import pkg_resources
-import gzip
 try:
-    from urllib2 import urlopen, URLError, Request
+    from urllib2 import urlopen, Request
 except ImportError:
-    from urllib.request import urlopen, URLError, Request
+    from urllib.request import urlopen, Request
 
 try:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Callable
 except ImportError:
-    from collections import Mapping
+    from collections import Mapping, Callable
 
 from .obo import OBOParser
 from . import unimod
@@ -248,6 +246,13 @@ class ControlledVocabulary(Mapping):
         return self.terms.keys()
 
     def names(self):
+        '''A key-view over all the names in this controlled vocabulary, distinct
+        from accessions.
+
+        Returns
+        -------
+        collections.KeysView
+        '''
         return self._names.keys()
 
     def items(self):
@@ -262,7 +267,7 @@ DEFAULT_USER_AGENT = (
     ' Gecko) Chrome/68.0.3440.106 Safari/537.36')
 
 
-class OBOCache(object):
+class OBOCache(Callable):
     """A cache for retrieved ontology sources stored on the file system, and an
     abstraction layer to make registered controlled vocabularies constructable
     from a URI even if they are not in the same format.
@@ -280,15 +285,24 @@ class OBOCache(object):
         opening the URL to retrieve the :class:`ControlledVocabulary` object. A
         resolver is any callable that takes only an :class:`OBOCache` instance as
         a single argument.
+    use_remote : bool
+        Whether or not to try to access remote repositories over the network to
+        retrieve controlled vocabularies. If not, will automatically default to
+        either the cached copy or use the fallback value.
+    user_agent_emulation : bool
+        Whether or not to try to emulate a web browser's user agent when trying
+        to download a controlled vocabulary.
     """
 
     default_resolvers = {}
 
-    def __init__(self, cache_path='.obo_cache', enabled=True, resolvers=None, user_agent_emulation=True):
+    def __init__(self, cache_path='.obo_cache', enabled=True, resolvers=None, use_remote=True,
+                 user_agent_emulation=True):
         self._cache_path = None
         self.cache_path = cache_path
         self.enabled = enabled
         self.resolvers = resolvers or {}
+        self.use_remote = use_remote
         self.user_agent_emulation = user_agent_emulation
         self._register_default_resolvers()
 
@@ -305,7 +319,7 @@ class OBOCache(object):
         self._cache_path = value
         self.cache_exists = os.path.exists(self.cache_path)
 
-    def path_for(self, name, setext=True):
+    def path_for(self, name, setext=False):
         '''Construct a path for a given controlled vocabulary file
         in the cache on the file system.
 
@@ -334,6 +348,8 @@ class OBOCache(object):
 
     def _open_url(self, uri):
         try:
+            if not self.use_remote:
+                raise Exception("Fail fast!")
             headers = {}
             if self.user_agent_emulation:
                 headers['User-Agent'] = DEFAULT_USER_AGENT
@@ -429,7 +445,7 @@ class OBOCache(object):
                     if os.path.getsize(name) > 0:
                         return open(name, 'rb')
                     else:
-                        raise ValueError("Failed to download .obo")
+                        raise ValueError("Failed to download file")
             else:
                 f = self._open_url(uri)
                 return f
@@ -454,6 +470,9 @@ class OBOCache(object):
     def __repr__(self):
         return "OBOCache(cache_path=%r, enabled=%r, resolvers=%s)" % (
             self.cache_path, self.enabled, self.resolvers)
+
+    def __call__(self, uri):
+        return self.resolve(uri)
 
 
 def _make_relative_sqlite_sqlalchemy_uri(path):
