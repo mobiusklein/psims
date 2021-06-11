@@ -8,7 +8,7 @@ entities controlled externally from the file formats being written to
 make them update-able without needing to modify the schema for many
 domain-specific changes. The :class:`~.ControlledVocabulary` type
 represents a parsed and interpreted controlled vocabulary, a collection
-of :class:`~psims.controlled_vocabulary.entity.Term` objects.
+of :class:`~psims.controlled_vocabulary.entity.Entity` objects.
 
 
 .. autoclass:: ControlledVocabulary
@@ -36,4 +36,11 @@ If a library wants to create its own separate cache directory, it can create a n
 file writing classes as the :obj:`vocabulary_resolver` parameter.
 
 .. autoclass:: OBOCache
+    :members:
+
+
+Semantic Data
+-------------
+
+.. autoclass:: psims.controlled_vocabulary.entity.Entity
     :members:

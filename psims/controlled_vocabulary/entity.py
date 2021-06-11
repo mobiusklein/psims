@@ -10,6 +10,25 @@ from .type_definition import parse_xsdtype
 
 
 class Entity(Mapping):
+    '''Represent a term in a controlled vocabulary.
+
+    While this type implements the :class:`~collections.abc.Mapping`,
+    it supports attribute access notation for keys.
+
+    Attributes
+    ----------
+    children : list of :class:`Entity`
+        Additional entities derived from this one
+    data : :class:`dict`
+        An arbitrary attribute store representing key-value pairs
+    vocabulary : :class:`~.ControlledVocabulary`
+        The source vocabulary. May be used for upward references
+    id : str
+        The CURI-style identifier of this entity, the accession of the term.
+    definition : str
+        The "def" field of a term.
+
+    '''
     def __init__(self, vocabulary=None, **attributes):
         self.data = dict(attributes)
         self.children = []
@@ -67,6 +86,13 @@ class Entity(Mapping):
         self.data['def'] = value
 
     def parent(self):
+        '''Fetch the parent or parents of this :class:`Entity`
+        in the bound controlled vocabulary.
+
+        Returns
+        -------
+        :class:`Entity` or :class:`list` of :class:`Entity`
+        '''
         try:
             reference = self.is_a
         except KeyError:
@@ -81,10 +107,22 @@ class Entity(Mapping):
         return template.format(self=self)
 
     def is_of_type(self, tp):
-        try:
-            tp = self.vocabulary[tp]
-        except KeyError:
-            return False
+        '''Test if `tp` is an ancestor of this :class:`Entity`
+
+        Parameters
+        ----------
+        tp : str
+            The identifier for the entity to test
+
+        Returns
+        -------
+        bool
+        '''
+        if isinstance(tp, str):
+            try:
+                tp = self.vocabulary[tp]
+            except KeyError:
+                return False
         stack = deque([self])
         while stack:
             ref = stack.pop()

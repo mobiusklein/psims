@@ -44,7 +44,7 @@ class ControlledVocabulary(Mapping):
     This object makes entities resolvable by name,
     accession number, or synonym.
 
-    This object implements the :class:`~.Mapping` protocol.
+    This object implements the :class:`~collections.abc.Mapping` protocol.
 
     Attributes
     ----------
