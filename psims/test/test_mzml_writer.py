@@ -135,7 +135,7 @@ def test_write(output_path, compressor):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
                     {"name": "ms level", "value": 1}, {"ref": 'common_params'}],
                     polarity='negative scan', encoding=encodings,
-                    compression='zlib')
+                    compression='zlib', other_arrays=[("frobnication wavelength array", [1] * len(mz_array))])
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=2', params=[
                     {"name": "ms level", "value": 2}, {"ref": 'common_params'}],
                     polarity='negative scan', precursor_information={

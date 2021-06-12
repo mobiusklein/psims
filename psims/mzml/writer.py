@@ -789,13 +789,20 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             override_length = False
         params = []
         if array_type is not None:
-            params.append(array_type)
             if isinstance(array_type, Mapping):
                 array_type_ = array_type['name']
             else:
                 array_type_ = array_type
+            params.append(array_type)
             if array_type_ not in ARRAY_TYPES:
-                params.append(NON_STANDARD_ARRAY)
+                term = {'name': NON_STANDARD_ARRAY, 'value': array_type_}
+                if isinstance(array_type, Mapping):
+                    for key, value in array_type.items():
+                        if key != 'name':
+                            term[key] = value
+                params.append(term)
+            else:
+                pass
         params.append(compression_map[compression])
         params.append(dtype_to_encoding[dtype])
         encoded_length = len(encoded_binary)
