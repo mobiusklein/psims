@@ -56,7 +56,12 @@ class Entity(Mapping):
             self[key] = value
 
     def __dir__(self):
-        keys = set(object.__dir__(self)) | set(self.keys())
+        keys = set(self.keys())
+        if hasattr(object, '__dir__'):
+            keys |= set(object.__dir__(self))
+        else:
+            keys |= set(self.__dict__.keys())
+            keys |= set(self.__class__.__dict__.keys())
         return sorted(keys)
 
     def __len__(self):
