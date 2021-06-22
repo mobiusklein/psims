@@ -779,6 +779,15 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         else:
             _encoding = encoding
         dtype = encoding_map[_encoding]
+        if dtype is None:
+            if len(array):
+                val = array[0]
+                dtype = encoding_map[val.__class__]
+            else:
+                try:
+                    dtype = array.dtype
+                except AttributeError:
+                    dtype = np.float32
         array = np.array(array, dtype=dtype)
         encoded_binary = encode_array(
             array, compression=compression, dtype=dtype)
