@@ -5,7 +5,7 @@ retest:
 	py.test -v psims --lf
 
 update-cvs:
-	cd psims/controlled_vocabulary/vendor && python update_vendored_cvs.py
+	cd psims/controlled_vocabulary/vendor && python update_vendored_cvs.py && python list_cvs.py
 
 update-docs:
 	git checkout gh-pages
