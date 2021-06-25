@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
@@ -26,6 +25,8 @@
   <link rel="stylesheet" href="_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
 
@@ -118,6 +119,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controlled_vocabulary/index.html">Controlled Vocabularies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="transform/mzml.html">Transforming mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
@@ -146,10 +153,12 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -246,7 +255,13 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_exists">cache_exists (psims.controlled_vocabulary.controlled_vocabulary.OBOCache attribute)</a>
+</li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_path">cache_path (psims.controlled_vocabulary.controlled_vocabulary.OBOCache attribute)</a>
+</li>
       <li><a href="mzml/components.html#psims.mzml.components.SourceFile.checksum">checksum() (psims.mzml.components.SourceFile method)</a>
+</li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.children">children (psims.controlled_vocabulary.entity.Entity attribute)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.Chromatogram">Chromatogram (class in psims.mzml.components)</a>
 </li>
@@ -262,10 +277,10 @@
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.Contact">Contact (class in psims.mzml.components)</a>
 </li>
-      <li><a href="mzid/writer.html#psims.mzid.writer.MzIdentMLWriter.context">context (psims.mzid.writer.MzIdentMLWriter attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mzid/writer.html#psims.mzid.writer.MzIdentMLWriter.context">context (psims.mzid.writer.MzIdentMLWriter attribute)</a>
+</li>
       <li><a href="mzid/writer.html#psims.mzid.writer.MzIdentMLWriter.controlled_vocabularies">controlled_vocabularies() (psims.mzid.writer.MzIdentMLWriter method)</a>
 
       <ul>
@@ -274,6 +289,8 @@
         <li><a href="xml.html#psims.xml.XMLDocumentWriter.controlled_vocabularies">(psims.xml.XMLDocumentWriter method)</a>
 </li>
       </ul></li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary">ControlledVocabulary (class in psims.controlled_vocabulary.controlled_vocabulary)</a>
+</li>
       <li><a href="xml.html#psims.xml.ProvidedCV.converter">converter (psims.xml.ProvidedCV attribute)</a>
 </li>
       <li><a href="mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter.create_array">create_array() (psims.mzmlb.writer.MzMLbWriter method)</a>
@@ -296,6 +313,8 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.data">data (psims.controlled_vocabulary.entity.Entity attribute)</a>
+</li>
       <li><a href="mzml/writer.html#psims.mzml.writer.IndexedMzMLWriter.data_processing_list">data_processing_list() (psims.mzml.writer.IndexedMzMLWriter method)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.DatabaseTranslation">DatabaseTranslation (class in psims.mzid.components)</a>
@@ -309,6 +328,8 @@
       <li><a href="mzml/components.html#psims.mzml.components.DataProcessingList">DataProcessingList (class in psims.mzml.components)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.DBSequence">DBSequence (class in psims.mzid.components)</a>
+</li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.definition">definition (psims.controlled_vocabulary.entity.Entity attribute)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.Detector">Detector (class in psims.mzml.components)</a>
 </li>
@@ -330,6 +351,8 @@
         <li><a href="xml.html#psims.xml.XMLWriterMixin.element">(psims.xml.XMLWriterMixin method)</a>
 </li>
       </ul></li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled">enabled (psims.controlled_vocabulary.controlled_vocabulary.OBOCache attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mzid/writer.html#psims.mzid.writer.MzIdentMLWriter.end">end() (psims.mzid.writer.MzIdentMLWriter method)</a>
@@ -340,6 +363,8 @@
         <li><a href="xml.html#psims.xml.XMLDocumentWriter.end">(psims.xml.XMLDocumentWriter method)</a>
 </li>
       </ul></li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity">Entity (class in psims.controlled_vocabulary.entity)</a>
+</li>
       <li><a href="mzid/components.html#psims.mzid.components.Enzyme">Enzyme (class in psims.mzid.components)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.Enzymes">Enzymes (class in psims.mzid.components)</a>
@@ -350,6 +375,8 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.fallback">fallback() (psims.controlled_vocabulary.controlled_vocabulary.OBOCache method)</a>
+</li>
       <li><a href="mzml/writer.html#psims.mzml.writer.IndexedMzMLWriter.file_description">file_description() (psims.mzml.writer.IndexedMzMLWriter method)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.FileContent">FileContent (class in psims.mzml.components)</a>
@@ -372,6 +399,8 @@
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.FragmentTolerance">FragmentTolerance (class in psims.mzid.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.from_obo">from_obo() (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary class method)</a>
+</li>
       <li><a href="xml.html#psims.xml.CV.full_name">full_name (psims.xml.CV attribute)</a>
 </li>
   </ul></td>
@@ -383,6 +412,10 @@
       <li><a href="mzid/components.html#psims.mzid.components.GenericCollection">GenericCollection (class in psims.mzid.components)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.get">get() (psims.controlled_vocabulary.entity.Entity method)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="H">H</h2>
@@ -390,11 +423,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter.h5_blocksize">h5_blocksize (psims.mzmlb.writer.MzMLbWriter attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter.h5_compression">h5_compression (psims.mzmlb.writer.MzMLbWriter attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter.h5_compressor_options">h5_compressor_options (psims.mzmlb.writer.MzMLbWriter attribute)</a>
+</li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.has_custom_resolver">has_custom_resolver() (psims.controlled_vocabulary.controlled_vocabulary.OBOCache method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -402,9 +437,13 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="xml.html#psims.xml.CV.id">id (psims.xml.CV attribute)</a>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#id0">id (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary attribute)</a>, <a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.id">[1]</a>
 
       <ul>
+        <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.id">(psims.controlled_vocabulary.entity.Entity attribute)</a>
+</li>
+        <li><a href="xml.html#psims.xml.CV.id">(psims.xml.CV attribute)</a>
+</li>
         <li><a href="xml.html#psims.xml.TagBase.id">(psims.xml.TagBase attribute)</a>
 </li>
       </ul></li>
@@ -430,10 +469,30 @@
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.IonType">IonType (class in psims.mzid.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.is_of_type">is_of_type() (psims.controlled_vocabulary.entity.Entity method)</a>
+</li>
       <li><a href="xml.html#psims.xml.TagBase.is_open">is_open (psims.xml.TagBase attribute)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.IsolationWindow">IsolationWindow (class in psims.mzml.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.items">items() (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary method)</a>
+
+      <ul>
+        <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.items">(psims.controlled_vocabulary.entity.Entity method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.keys">keys() (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary method)</a>
+
+      <ul>
+        <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.keys">(psims.controlled_vocabulary.entity.Entity method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -444,12 +503,35 @@
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.Measure">Measure (class in psims.mzid.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.metadata">metadata (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary attribute)</a>
+</li>
       <li><a href="mzid/components.html#psims.mzid.components.Modification">Modification (class in psims.mzid.components)</a>
 </li>
-      <li><a href="mzid/components.html#psims.mzid.components.MzIdentML">MzIdentML (class in psims.mzid.components)</a>
+      <li>
+    module
+
+      <ul>
+        <li><a href="controlled_vocabulary/controlled_vocabulary.html#module-psims.controlled_vocabulary.controlled_vocabulary">psims.controlled_vocabulary.controlled_vocabulary</a>
 </li>
+        <li><a href="mzid/components.html#module-psims.mzid.components">psims.mzid.components</a>
+</li>
+        <li><a href="mzid/writer.html#module-psims.mzid.writer">psims.mzid.writer</a>
+</li>
+        <li><a href="mzml/components.html#module-psims.mzml.components">psims.mzml.components</a>
+</li>
+        <li><a href="mzml/writer.html#module-psims.mzml.writer">psims.mzml.writer</a>
+</li>
+        <li><a href="mzmlb/writer.html#module-psims.mzmlb.writer">psims.mzmlb.writer</a>
+</li>
+        <li><a href="transform/mzml.html#module-psims.transform.mzml">psims.transform.mzml</a>
+</li>
+        <li><a href="xml.html#module-psims.xml">psims.xml</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mzid/components.html#psims.mzid.components.MzIdentML">MzIdentML (class in psims.mzid.components)</a>
+</li>
       <li><a href="mzid/writer.html#psims.mzid.writer.MzIdentMLWriter">MzIdentMLWriter (class in psims.mzid.writer)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.MzML">MzML (class in psims.mzml.components)</a>
@@ -466,7 +548,15 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="xml.html#psims.xml.CVParam.name">name (psims.xml.CVParam attribute)</a>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.name">name (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary attribute)</a>
+
+      <ul>
+        <li><a href="xml.html#psims.xml.CVParam.name">(psims.xml.CVParam attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.names">names() (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -474,6 +564,8 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache">OBOCache (class in psims.controlled_vocabulary.controlled_vocabulary)</a>
+</li>
       <li><a href="xml.html#psims.xml.CV.options">options (psims.xml.CV attribute)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.Organization">Organization (class in psims.mzid.components)</a>
@@ -500,7 +592,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="xml.html#psims.xml.ParamGroupReference">ParamGroupReference (class in psims.xml)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.parent">parent() (psims.controlled_vocabulary.entity.Entity method)</a>
+</li>
       <li><a href="mzid/components.html#psims.mzid.components.ParentTolerance">ParentTolerance (class in psims.mzid.components)</a>
+</li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.path_for">path_for() (psims.controlled_vocabulary.controlled_vocabulary.OBOCache method)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.Peptide">Peptide (class in psims.mzid.components)</a>
 </li>
@@ -528,8 +624,6 @@
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.ProductList">ProductList (class in psims.mzml.components)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mzid/components.html#psims.mzid.components.ProteinAmbiguityGroup">ProteinAmbiguityGroup (class in psims.mzid.components)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.ProteinDetection">ProteinDetection (class in psims.mzid.components)</a>
@@ -538,6 +632,8 @@
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.ProteinDetectionList">ProteinDetectionList (class in psims.mzid.components)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mzid/components.html#psims.mzid.components.ProteinDetectionProtocol">ProteinDetectionProtocol (class in psims.mzid.components)</a>
 </li>
       <li><a href="mzid/writer.html#psims.mzid.writer.MzIdentMLWriter.provenance">provenance() (psims.mzid.writer.MzIdentMLWriter method)</a>
@@ -546,19 +642,69 @@
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.Provider">Provider (class in psims.mzid.components)</a>
 </li>
-      <li><a href="mzid/components.html#module-psims.mzid.components">psims.mzid.components (module)</a>
+      <li>
+    psims.controlled_vocabulary.controlled_vocabulary
+
+      <ul>
+        <li><a href="controlled_vocabulary/controlled_vocabulary.html#module-psims.controlled_vocabulary.controlled_vocabulary">module</a>
 </li>
-      <li><a href="mzid/writer.html#module-psims.mzid.writer">psims.mzid.writer (module)</a>
+      </ul></li>
+      <li>
+    psims.mzid.components
+
+      <ul>
+        <li><a href="mzid/components.html#module-psims.mzid.components">module</a>
 </li>
-      <li><a href="mzml/components.html#module-psims.mzml.components">psims.mzml.components (module)</a>
+      </ul></li>
+      <li>
+    psims.mzid.writer
+
+      <ul>
+        <li><a href="mzid/writer.html#module-psims.mzid.writer">module</a>
 </li>
-      <li><a href="mzml/writer.html#module-psims.mzml.writer">psims.mzml.writer (module)</a>
+      </ul></li>
+      <li>
+    psims.mzml.components
+
+      <ul>
+        <li><a href="mzml/components.html#module-psims.mzml.components">module</a>
 </li>
-      <li><a href="mzmlb/writer.html#module-psims.mzmlb.writer">psims.mzmlb.writer (module)</a>
+      </ul></li>
+      <li>
+    psims.mzml.writer
+
+      <ul>
+        <li><a href="mzml/writer.html#module-psims.mzml.writer">module</a>
 </li>
-      <li><a href="transform/mzml.html#module-psims.transform.mzml">psims.transform.mzml (module)</a>
+      </ul></li>
+      <li>
+    psims.mzmlb.writer
+
+      <ul>
+        <li><a href="mzmlb/writer.html#module-psims.mzmlb.writer">module</a>
 </li>
-      <li><a href="xml.html#module-psims.xml">psims.xml (module)</a>
+      </ul></li>
+      <li>
+    psims.transform.mzml
+
+      <ul>
+        <li><a href="transform/mzml.html#module-psims.transform.mzml">module</a>
+</li>
+      </ul></li>
+      <li>
+    psims.xml
+
+      <ul>
+        <li><a href="xml.html#module-psims.xml">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query">query() (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -582,7 +728,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mzid/components.html#psims.mzid.components.Residue">Residue (class in psims.mzid.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolve">resolve() (psims.controlled_vocabulary.controlled_vocabulary.OBOCache method)</a>
+</li>
       <li><a href="xml.html#psims.xml.CV.resolver">resolver (psims.xml.CV attribute)</a>
+</li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolvers">resolvers (psims.controlled_vocabulary.controlled_vocabulary.OBOCache attribute)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.Run">Run (class in psims.mzml.components)</a>
 </li>
@@ -616,6 +766,8 @@
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.ScanWindowList">ScanWindowList (class in psims.mzml.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search">search() (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary method)</a>
+</li>
       <li><a href="mzid/components.html#psims.mzid.components.SearchDatabase">SearchDatabase (class in psims.mzid.components)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.SearchModification">SearchModification (class in psims.mzid.components)</a>
@@ -626,14 +778,16 @@
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.SequenceCollection">SequenceCollection (class in psims.mzid.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.set_resolver">set_resolver() (psims.controlled_vocabulary.controlled_vocabulary.OBOCache method)</a>
+</li>
       <li><a href="mzml/components.html#psims.mzml.components.Software">Software (class in psims.mzml.components)</a>
 </li>
       <li><a href="mzml/writer.html#psims.mzml.writer.IndexedMzMLWriter.software_list">software_list() (psims.mzml.writer.IndexedMzMLWriter method)</a>
 </li>
-      <li><a href="mzml/components.html#psims.mzml.components.SoftwareList">SoftwareList (class in psims.mzml.components)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mzml/components.html#psims.mzml.components.SoftwareList">SoftwareList (class in psims.mzml.components)</a>
+</li>
       <li><a href="transform/mzml.html#psims.transform.mzml.MzMLTransformer.sort_by_scan_time">sort_by_scan_time (psims.transform.mzml.MzMLTransformer attribute)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.Source">Source (class in psims.mzml.components)</a>
@@ -686,6 +840,8 @@
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.TargetList">TargetList (class in psims.mzml.components)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.terms">terms (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary attribute)</a>
+</li>
       <li><a href="xml.html#psims.xml.TagBase.text">text (psims.xml.TagBase attribute)</a>
 </li>
       <li><a href="mzid/components.html#psims.mzid.components.Threshold">Threshold (class in psims.mzid.components)</a>
@@ -716,8 +872,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="xml.html#psims.xml.CV.uri">uri (psims.xml.CV attribute)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote">use_remote (psims.controlled_vocabulary.controlled_vocabulary.OBOCache attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.user_agent_emulation">user_agent_emulation (psims.controlled_vocabulary.controlled_vocabulary.OBOCache attribute)</a>
+</li>
       <li><a href="xml.html#psims.xml.UserParam">UserParam (class in psims.xml)</a>
 </li>
   </ul></td>
@@ -734,16 +894,26 @@
         <li><a href="xml.html#psims.xml.XMLDocumentWriter.validate">(psims.xml.XMLDocumentWriter method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="xml.html#psims.xml.CVParam.value">value (psims.xml.CVParam attribute)</a>
 </li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.values">values() (psims.controlled_vocabulary.entity.Entity method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="xml.html#psims.xml.XMLWriterMixin.verbose">verbose (psims.xml.XMLWriterMixin attribute)</a>
 </li>
-      <li><a href="xml.html#psims.xml.CV.version">version (psims.xml.CV attribute)</a>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.version">version (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary attribute)</a>
+
+      <ul>
+        <li><a href="xml.html#psims.xml.CV.version">(psims.xml.CV attribute)</a>
 </li>
-      <li><a href="xml.html#psims.xml.CV.vocabulary">vocabulary (psims.xml.CV attribute)</a>
+      </ul></li>
+      <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.vocabulary">vocabulary (psims.controlled_vocabulary.entity.Entity attribute)</a>
+
+      <ul>
+        <li><a href="xml.html#psims.xml.CV.vocabulary">(psims.xml.CV attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -818,16 +988,16 @@
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 
@@ -117,6 +119,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controlled_vocabulary/index.html">Controlled Vocabularies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
@@ -196,7 +204,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">):</span>
         <span class="n">attrs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;creationDate&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
         <span class="n">attrs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">attrs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="s1">&#39;1.1.0&#39;</span><span class="p">)</span>
+        <span class="n">attrs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2.0&#39;</span><span class="p">)</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type_attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr_version_map</span><span class="p">[</span><span class="n">version</span><span class="p">]</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MzIdentML</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;MzIdentML&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">)</span></div>
@@ -1708,16 +1716,16 @@
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

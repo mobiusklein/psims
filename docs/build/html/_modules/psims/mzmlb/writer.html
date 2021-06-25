@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 
@@ -117,6 +119,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controlled_vocabulary/index.html">Controlled Vocabularies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
@@ -135,6 +143,7 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -145,6 +154,9 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">hdf5plugin</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;hdf5plugin is missing! Only the slower GZIP compression scheme will be available! &quot;</span>
+        <span class="s2">&quot;Please install hdf5plugin to be able to use Blosc.&quot;</span><span class="p">)</span>
     <span class="n">hdf5plugin</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="kn">from</span> <span class="nn">..mzml.binary_encoding</span> <span class="kn">import</span> <span class="n">encode_array_direct</span><span class="p">,</span> <span class="n">encoding_map</span><span class="p">,</span> <span class="n">compression_map</span><span class="p">,</span> <span class="n">dtype_to_encoding</span><span class="p">,</span> <span class="n">COMPRESSION_NONE</span>
@@ -458,16 +470,16 @@
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

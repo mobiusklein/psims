@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 
@@ -117,6 +119,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controlled_vocabulary/index.html">Controlled Vocabularies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
@@ -187,19 +195,35 @@
 <span class="n">NON_STANDARD_ARRAY</span> <span class="o">=</span> <span class="s1">&#39;non-standard data array&#39;</span>
 
 <span class="n">ARRAY_TYPES</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;m/z array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;intensity array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;charge array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;signal to noise array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;time array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;wavelength array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;flow rate array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;pressure array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;temperature array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;mean drift time array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;mean charge array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;resolution array&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;baseline array&#39;</span>
+    <span class="s2">&quot;ion mobility array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;temperature array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pressure array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;flow rate array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;time array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;resolution array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;baseline array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean charge array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;signal to noise array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;charge array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;intensity array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;m/z array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scanning quadrupole position upper bound m/z array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scanning quadrupole position lower bound m/z array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;noise array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wavelength array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sampled noise m/z array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sampled noise intensity array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sampled noise baseline array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mass array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;raw inverse reduced ion mobility array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean inverse reduced ion mobility array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;raw ion mobility array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean ion mobility array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean ion mobility drift time array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;raw ion mobility drift time array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;deconvoluted ion mobility drift time array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;deconvoluted ion mobility array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;deconvoluted inverse reduced ion mobility array&quot;</span>
 <span class="p">]</span>
 
 
@@ -897,6 +921,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">encoding_map</span><span class="p">[</span><span class="n">_encoding</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">encoding_map</span><span class="p">[</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dtype</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
         <span class="n">encoded_binary</span> <span class="o">=</span> <span class="n">encode_array</span><span class="p">(</span>
             <span class="n">array</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
@@ -1203,16 +1236,16 @@
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

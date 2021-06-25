@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Components of mzIdentML" href="components.html" />
@@ -123,6 +125,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../controlled_vocabulary/index.html">Controlled Vocabularies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../transform/mzml.html">Transforming mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
@@ -139,9 +147,9 @@
                             
   <div class="section" id="module-psims.mzid.writer">
 <span id="writing-mzidentml-documents"></span><h1>Writing mzIdentML Documents<a class="headerlink" href="#module-psims.mzid.writer" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="psims.mzid.writer.MzIdentMLWriter">
-<em class="property">class </em><code class="descclassname">psims.mzid.writer.</code><code class="descname">MzIdentMLWriter</code><span class="sig-paren">(</span><em>outfile</em>, <em>close=False</em>, <em>vocabularies=None</em>, <em>missing_reference_is_error=False</em>, <em>vocabulary_resolver=None</em>, <em>version='1.2.0'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzid.writer.</span></span><span class="sig-name descname"><span class="pre">MzIdentMLWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabularies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_reference_is_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabulary_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1.2.0'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>A high level API for generating MzIdentML XML files from simple Python objects.</p>
 <p>This class depends heavily on lxml’s incremental file writing API which in turn
 depends heavily on context managers. Almost all logic is handled inside a context
@@ -151,248 +159,215 @@ that map is centralized in this instance.</p>
 <p>MzIdentMLWriter inherits from <a class="reference internal" href="components.html#psims.mzid.components.ComponentDispatcher" title="psims.mzid.components.ComponentDispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentDispatcher</span></code></a>, giving it a <a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.context" title="psims.mzid.writer.MzIdentMLWriter.context"><code class="xref py py-attr docutils literal notranslate"><span class="pre">context</span></code></a>
 attribute and access to all <cite>Component</cite> objects pre-bound to that context with attribute-access
 notation.</p>
-<dl class="attribute">
-<dt id="psims.mzid.writer.MzIdentMLWriter.outfile">
-<code class="descname">outfile</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.outfile" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.outfile">
+<span class="sig-name descname"><span class="pre">outfile</span></span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.outfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>The open, writable file descriptor which XML will be written to.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">file</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>file</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.mzid.writer.MzIdentMLWriter.xmlfile">
-<code class="descname">xmlfile</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.xmlfile" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.xmlfile">
+<span class="sig-name descname"><span class="pre">xmlfile</span></span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.xmlfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>The incremental XML file wrapper which organizes file writes onto <a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.outfile" title="psims.mzid.writer.MzIdentMLWriter.outfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">outfile</span></code></a>.
 Kept to control context.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree.xmlfile</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>lxml.etree.xmlfile</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.mzid.writer.MzIdentMLWriter.writer">
-<code class="descname">writer</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.writer" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.writer">
+<span class="sig-name descname"><span class="pre">writer</span></span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.writer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The incremental XML writer produced by <a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.xmlfile" title="psims.mzid.writer.MzIdentMLWriter.xmlfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></a>. Kept to control context.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._IncrementalFileWriter</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>lxml.etree._IncrementalFileWriter</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.mzid.writer.MzIdentMLWriter.toplevel">
-<code class="descname">toplevel</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.toplevel" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.toplevel">
+<span class="sig-name descname"><span class="pre">toplevel</span></span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.toplevel" title="Permalink to this definition">¶</a></dt>
 <dd><p>The top level incremental xml writer element which will be closed at the end
 of file generation. Kept to control context</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._FileWriterElement</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>lxml.etree._FileWriterElement</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.mzid.writer.MzIdentMLWriter.context">
-<code class="descname">context</code><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.context" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentContext</span></code></td>
-</tr>
-</tbody>
-</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.context">
+<span class="sig-name descname"><span class="pre">context</span></span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.context" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentContext</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.__enter__">
-<code class="descname">__enter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.__enter__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.__enter__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Begins writing, opening the top-level tag</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.__exit__">
-<code class="descname">__exit__</code><span class="sig-paren">(</span><em>exc_type</em>, <em>exc_value</em>, <em>traceback</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.__exit__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.__exit__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes the top-level tag, the XML formatter,
 and the file itself.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.__getattr__">
-<code class="descname">__getattr__</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.__getattr__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.__getattr__">
+<span class="sig-name descname"><span class="pre">__getattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.__getattr__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide access to an automatically parameterized
 version of all <code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentBase</span></code> types which
 use this instance’s context.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Component Name</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A partially parameterized instance constructor for
-the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentBase</span></code> type requested.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ReprBorrowingPartial</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Component Name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partially parameterized instance constructor for
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentBase</span></code> type requested.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ReprBorrowingPartial</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.begin">
-<code class="descname">begin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.begin" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.begin">
+<span class="sig-name descname"><span class="pre">begin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.begin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the doctype and starts the low-level writing machinery</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.controlled_vocabularies">
-<code class="descname">controlled_vocabularies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter.controlled_vocabularies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.controlled_vocabularies" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.controlled_vocabularies">
+<span class="sig-name descname"><span class="pre">controlled_vocabularies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter.controlled_vocabularies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.controlled_vocabularies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the <cite>&lt;cvList&gt;</cite> element and all its children,
 including both this format’s default controlled vocabularies
 and those passed as arguments to this method.this</p>
 <p>This method requires writing to have begun.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.element">
-<code class="descname">element</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.element" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.element">
+<span class="sig-name descname"><span class="pre">element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct and immediately open a subclass instance of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code> with the given tag name. All other arguments
 are forwarded to the <code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code> constructor.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
-<li><strong>*args</strong> – Arbitrary arguments for the tag</li>
-<li><strong>**kwargs</strong> – Key word arguments for the tag</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
+<li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.element" title="psims.mzid.writer.MzIdentMLWriter.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#psims.mzid.writer.MzIdentMLWriter.element" title="psims.mzid.writer.MzIdentMLWriter.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.end">
-<code class="descname">end</code><span class="sig-paren">(</span><em>exc_type=None</em>, <em>exc_value=None</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.end" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.end">
+<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.end" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ends the XML document, and flushes and closes the file
 if appropriate.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.format">
-<code class="descname">format</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.format" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is deprecated. Previously, the serialization
 process did not indent the XML in-place and the lxml pretty printer
 had to be invoked separately. With the addition of <code class="xref py py-class docutils literal notranslate"><span class="pre">XMLFormattingStreamWriter</span></code>,
 the XML stream is formatted in-place as it is being streamed to file.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.provenance">
-<code class="descname">provenance</code><span class="sig-paren">(</span><em>software=()</em>, <em>owner=()</em>, <em>organization=()</em>, <em>provider=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter.provenance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.provenance" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.provenance">
+<span class="sig-name descname"><span class="pre">provenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">software</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter.provenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.provenance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the analysis provenance section, a top-level segment of the MzIdentML document</p>
 <p>This section should be written early on to register the list of software used in this
 analysis</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>software</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em> or </em><em>list of dict</em><em>, </em><em>optional</em>) – A single dictionary or list of dictionaries specifying an <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSoftware</span></code> instance</li>
-<li><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> instance. If missing, a default person will be created</li>
-<li><strong>organization</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Organization</span></code> instance. If missing, a default organization will
-be created</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>software</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em> or </em><em>list of dict</em><em>, </em><em>optional</em>) – A single dictionary or list of dictionaries specifying an <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSoftware</span></code> instance</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> instance. If missing, a default person will be created</p></li>
+<li><p><strong>organization</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Organization</span></code> instance. If missing, a default organization will
+be created</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.register">
-<code class="descname">register</code><span class="sig-paren">(</span><em>entity_type</em>, <em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.register" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-declare an entity in the document context. Ensures that
 a reference look up will be satisfied.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – An entity type, either a tag name or a component name</li>
-<li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The unique id number for the thing registered</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – An entity type, either a tag name or a component name</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The unique id number for the thing registered</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The constructed reference id</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The constructed reference id</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.validate">
-<code class="descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.validate" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempt to perform XSD validation on the XML document
 this writer wrote</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
-<li><em>bool</em> – Whether or not the document was valid</li>
-<li><em>lxml.etree.XMLSchema</em> – The schema object where errors are logged</li>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>bool</em> – Whether or not the document was valid</p></li>
+<li><p><em>lxml.etree.XMLSchema</em> – The schema object where errors are logged</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
-a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
-</tr>
-</tbody>
-</table>
+</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – When the file cannot be recovered from the writer object,
+    a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.mzid.writer.MzIdentMLWriter.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.write" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Either write a complete XML sub-tree or add free text to the file stream</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arg</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code>) – The entity to be written out.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code>) – The entity to be written out.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -421,16 +396,16 @@ a <a class="reference external" href="https://docs.python.org/3/library/exceptio
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 
