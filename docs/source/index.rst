@@ -14,6 +14,7 @@ Welcome to psims's documentation!
    mzIdentML <mzid/index>
    mzMLb <mzmlb/index>
    XML Utilities <xml>
+   Controlled Vocabularies <controlled_vocabulary/index>
 
    Transforming mzML <transform/mzml>
 

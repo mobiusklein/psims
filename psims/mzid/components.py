@@ -62,7 +62,7 @@ class MzIdentML(TagBase):
     def __init__(self, **attrs):
         attrs.setdefault('creationDate', datetime.utcnow().isoformat())
         attrs.setdefault('id', 0)
-        attrs.setdefault('version', '1.1.0')
+        attrs.setdefault('version', '1.2.0')
         version = attrs['version']
         self.type_attrs = self.attr_version_map[version]
         super(MzIdentML, self).__init__('MzIdentML', **attrs)

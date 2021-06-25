@@ -53,19 +53,35 @@ DEFAULT_TIME_UNIT = "minute"
 NON_STANDARD_ARRAY = 'non-standard data array'
 
 ARRAY_TYPES = [
-    'm/z array',
-    'intensity array',
-    'charge array',
-    'signal to noise array',
-    'time array',
-    'wavelength array',
-    'flow rate array',
-    'pressure array',
-    'temperature array',
-    'mean drift time array',
-    'mean charge array',
-    'resolution array',
-    'baseline array'
+    "ion mobility array",
+    "temperature array",
+    "pressure array",
+    "flow rate array",
+    "time array",
+    "resolution array",
+    "baseline array",
+    "mean charge array",
+    "signal to noise array",
+    "charge array",
+    "intensity array",
+    "m/z array",
+    "scanning quadrupole position upper bound m/z array",
+    "scanning quadrupole position lower bound m/z array",
+    "noise array",
+    "wavelength array",
+    "sampled noise m/z array",
+    "sampled noise intensity array",
+    "sampled noise baseline array",
+    "mass array",
+    "raw inverse reduced ion mobility array",
+    "mean inverse reduced ion mobility array",
+    "raw ion mobility array",
+    "mean ion mobility array",
+    "mean ion mobility drift time array",
+    "raw ion mobility drift time array",
+    "deconvoluted ion mobility drift time array",
+    "deconvoluted ion mobility array",
+    "deconvoluted inverse reduced ion mobility array"
 ]
 
 
@@ -763,6 +779,15 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         else:
             _encoding = encoding
         dtype = encoding_map[_encoding]
+        if dtype is None:
+            if len(array):
+                val = array[0]
+                dtype = encoding_map[val.__class__]
+            else:
+                try:
+                    dtype = array.dtype
+                except AttributeError:
+                    dtype = np.float32
         array = np.array(array, dtype=dtype)
         encoded_binary = encode_array(
             array, compression=compression, dtype=dtype)

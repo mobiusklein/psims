@@ -8,7 +8,7 @@ from psims.utils import ensure_iterable
 
 from .entity import Entity
 from .relationship import Relationship, Reference
-from .type_definition import parse_xsdtype
+from .type_definition import parse_xsdtype, type_inference_guess
 
 
 synonym_scopes = {
@@ -86,11 +86,14 @@ class OBOParser(object):
         http://owlcollab.github.io/oboformat/doc/GO.format.obo-1_2.html
     """
 
-    def __init__(self, handle):
+    def __init__(self, handle, type_inference_rules=None):
+        if type_inference_rules is None:
+            type_inference_rules = {}
         self.handle = handle
         self.terms = {}
         self.current_term = None
         self.header = defaultdict(list)
+        self.type_inference_rules = type_inference_rules
         self.parse()
 
     @property
@@ -155,6 +158,14 @@ class OBOParser(object):
             synonyms = list(map(synonym_parser, synonyms))
             entity['synonym'] = synonyms
 
+    def _infer_type(self, key, value):
+        rule = self.type_inference_rules.get(key)
+        if rule is not None:
+            value = rule(value)
+        else:
+            value = type_inference_guess(value)
+        return value
+
     def _expand_xref(self, entity):
         entity.value_type = None
         if 'xref' in entity.data:
@@ -168,9 +179,15 @@ class OBOParser(object):
                 else:
                     if value.startswith("\""):
                         value, dtype = value.rsplit(" ", 1)
+                        value = value.strip()
                         dtype = parse_xsdtype(dtype)
                         if dtype is not None:
                             value = dtype(value[1:-1])
+                        else:
+                            value = self._infer_type(key, value)
+                    else:
+                        value = value.strip()
+                        value = self._infer_type(key, value)
                     entity[key] = value
 
     def _expand_property_value(self, entity):

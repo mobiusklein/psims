@@ -89,3 +89,23 @@ def obj_to_xsdtype(value):
         return "xsd:string"
     else:
         return None
+
+
+def type_inference_guess(string):
+    if string.startswith("\""):
+        string = string[1:-1]
+    lower_string = string.lower()
+    if lower_string == 'none':
+        return None
+    if lower_string[0].isnumeric():
+        try:
+            value = int(string)
+        except ValueError:
+            try:
+                value = float(string)
+            except ValueError:
+                value = string
+        return value
+    return string
+
+

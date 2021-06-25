@@ -6,11 +6,35 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [v0.1.38] - 2021-05-24
+
+### Changed
+1. Updated vendor controlled vocabularies
+2. Extended mzML writer's list of known arrays to match `psi-ms.obo` v4.1.53's new list
+3. Added additional warnings for when users have `h5py` but not `hdf5plugin`
+
+
+## [v0.1.37]
+
+### Added
 1. Added additional in-memory buffering of data arrays to reduce round-trips to HDF5 file when writing mzMLb.
 
 ### Changed
 1. The `MzIdentMLTranslater` class was renamed `MzIdentMLTranslator` for the sake of the English language.
 2. Overhauled large parts of the documentation.
+3. Added clearer error message when attempting to use the mzMLb components without `h5py`.
 
 ### Deprecated
 
@@ -54,7 +78,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.35...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.38...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.38
+[v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.37
 [v0.1.35]: https://github.com/mobiusklein/psims/releases/v0.1.35
 [v0.1.34]: https://github.com/mobiusklein/psims/releases/v0.1.34
