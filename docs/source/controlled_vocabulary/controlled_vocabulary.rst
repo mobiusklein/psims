@@ -3,12 +3,14 @@ Controlled Vocabulary Objects
 
 .. automodule:: psims.controlled_vocabulary.controlled_vocabulary
 
-:mod:`psims` uses several controlled vocabularies to name specific
-entities controlled externally from the file formats being written to
-make them update-able without needing to modify the schema for many
-domain-specific changes. The :class:`~.ControlledVocabulary` type
-represents a parsed and interpreted controlled vocabulary, a collection
-of :class:`~psims.controlled_vocabulary.entity.Entity` objects.
+:mod:`psims` uses controlled vocabularies to refer to externally controlled
+and organized terms to describe the entities being written about in the file
+formats it produces. These domain-specific vocabularies can be updated independently
+from the file schemas for faster update and maintenance life cycles.
+
+The :class:`~.ControlledVocabulary` type represents a parsed and interpreted
+controlled vocabulary, a collection of :class:`~psims.controlled_vocabulary.entity.Entity`
+objects.
 
 
 .. autoclass:: ControlledVocabulary
@@ -33,7 +35,17 @@ for future re-use.
 
 If a library wants to create its own separate cache directory, it can create a new instance of
 :class:`OBOCache` and configure it separately. This custom cache instance can be passed to all
-file writing classes as the :obj:`vocabulary_resolver` parameter.
+XML file writing classes as the :obj:`vocabulary_resolver` parameter.
+
+.. note::
+
+    :class:`OBOCache` has two behavioral switches that interact:
+        - :attr:`OBOCache.enabled` - When this is :const:`True`, files from the cache directory will be used
+          and new files will be added to the cache directory. Otherwise, a new copy of each CV
+          file will be requested when accessing a vocabulary.
+        - :attr:`OBOCache.use_remote` - When this is :const:`True`, new copies of CV files will be requested
+          over the network, falling back to packaged copy in :mod:`psims` only when the network
+          request fails. Otherwise, the packaged copy will be used automatically.
 
 .. autoclass:: OBOCache
     :members:
@@ -41,6 +53,9 @@ file writing classes as the :obj:`vocabulary_resolver` parameter.
 
 Semantic Data
 -------------
+Terms in a controlled vocabulary define entities, categories, properties and relationships between
+them. The :class:`~psims.controlled_vocabulary.entity.Entity` type is how these are represented
+in memory.
 
 .. autoclass:: psims.controlled_vocabulary.entity.Entity
     :members:
