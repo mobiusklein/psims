@@ -122,6 +122,7 @@ class OBOParser(object):
         """
         if self.current_term is None:
             return
+        self.current_term['_class'] = self.term_type
         entity = Entity(self, **{k: v[0] if len(v) == 1 else v for k, v in self.current_term.items()})
         self._expand_is_a(entity)
         self._expand_relationship(entity)
@@ -146,9 +147,12 @@ class OBOParser(object):
             if not isinstance(relationships, list):
                 relationships = [relationships]
             relationships = [Relationship.fromstring(r) for r in relationships]
+            entity.data['relationship'] = relationships
             for rel in relationships:
                 entity.setdefault(rel.predicate, [])
                 entity[rel.predicate].append(rel)
+        else:
+            entity.data['relationship'] = []
 
     def _expand_synonym(self, entity):
         if 'synonym' in entity.data:
@@ -244,10 +248,12 @@ class OBOParser(object):
                 self.header[key].append(val.strip())
             elif line == "[Typedef]":
                 self._pack_if_occupied()
-                self.current_term = None
+                self.current_term = defaultdict(list)
+                self.term_type = "typedef"
             elif line == "[Term]":
                 self._pack_if_occupied()
                 self.current_term = defaultdict(list)
+                self.term_type = 'term'
             else:
                 if self.current_term is None:
                     continue
@@ -270,33 +276,64 @@ class OBOWriter(object):
         self.stream = stream
 
     def write_header(self, header):
-        for key, value in header:
+        for key, value in header.items():
             if isinstance(value, (list, tuple)):
                 for v in value:
                     self.stream.write("%s: %s\n" % (key, v))
             else:
                 self.stream.write("%s: %s\n" % (key, value))
         self.stream.write("\n")
-        self.stream.write("\n")
 
     def write_term(self, term):
-        self.stream.write("[Term]\nid: %s\nname: %s\ndef: \"%s\"\n" %
-                    (term.id, term.name, term.definition))
-        for xref in term.get('xref', []):
-            self.stream.write("xref: ")
-        for is_a in ensure_iterable(term.get("is_a", [])):
-            self.stream.write("is_a: %s" % str(is_a))
-        seen = set()
-        for syn in term.get('synonyms', []):
-            if syn in seen:
-                continue
-            seen.add(syn)
-            self.stream.write("synonym: \"%s\" EXACT\n" % str(syn).replace("\n", "\\n"))
-        for prop in term.get('property_value', []):
-            self.stream.write("property_value: %s\n" % prop)
-        self.stream.write("\n")
+        if term._class == 'term':
+            self.stream.write("[Term]\nid: %s\nname: %s\ndef: %s\n" %
+                        (term.id, term.name, term.definition))
+            seen = set()
+            for syn in ensure_iterable(term.get('synonyms', [])):
+                if syn in seen:
+                    continue
+                seen.add(syn)
+                self.stream.write("synonym: \"%s\" EXACT\n" % str(syn).replace("\n", "\\n"))
+            for xref in ensure_iterable(term.get('xref', [])):
+                self.stream.write("xref: %s\n" % str(xref))
+            for is_a in ensure_iterable(term.get("is_a", [])):
+                self.stream.write("is_a: %s\n" % str(is_a))
+            for rel in ensure_iterable(term.get("relationship", [])):
+                self.stream.write("relationship: %s\n" % str(rel))
+            for prop in ensure_iterable(term.get('property_value', [])):
+                self.stream.write("property_value: %s\n" % prop)
+            self.stream.write("\n")
+        elif term._class == "typedef":
+            self.stream.write("[Typedef]\nid: %s\nname: %s\n" %
+                              (term.id, term.name, ))
+            if term.definition:
+                self.stream.write("def: %s\n" % term.definition)
+            seen = set()
+            for syn in ensure_iterable(term.get('synonyms', [])):
+                if syn in seen:
+                    continue
+                seen.add(syn)
+                self.stream.write("synonym: \"%s\" EXACT\n" %
+                                  str(syn).replace("\n", "\\n"))
+            for xref in ensure_iterable(term.get('xref', [])):
+                self.stream.write("xref: %s\n" % str(xref))
+            keys = ['domain', 'range', 'is_anti_symmetric', 'is_cyclic',
+                    'is_reflexive', 'is_symmetric', 'is_transitive', 'is_a',
+                    'tramsitive_over']
+            for key in keys:
+                for d in ensure_iterable(term.get(key, [])):
+                    self.stream.write("%s: %s\n" % (key, d))
+            for rel in ensure_iterable(term.get("relationship", [])):
+                self.stream.write("relationship: %s\n" % str(rel))
+            for prop in ensure_iterable(term.get('property_value', [])):
+                self.stream.write("property_value: %s\n" % prop)
+            self.stream.write("\n")
 
     def write_vocabulary(self, vocabulary):
-        self.write_header(vocabular.metadata)
+        self.write_header(vocabulary.metadata)
+        groups = defaultdict(list)
         for term in vocabulary.terms.values():
-            self.write_term(term)
+            groups[term._class].append(term)
+        for tp in  ['typedef', 'term', 'instance']:
+            for term in sorted(groups[tp], key=lambda x: x.id):
+                self.write_term(term)
