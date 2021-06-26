@@ -286,8 +286,10 @@ class OBOWriter(object):
 
     def write_term(self, term):
         if term._class == 'term':
-            self.stream.write("[Term]\nid: %s\nname: %s\ndef: %s\n" %
-                        (term.id, term.name, term.definition))
+            self.stream.write("[Term]\nid: %s\nname: %s\n" %
+                        (term.id, term.name, ))
+            if term.definition:
+                self.stream.write("def: %s\n" % (term.definition, ))
             seen = set()
             for syn in ensure_iterable(term.get('synonyms', [])):
                 if syn in seen:

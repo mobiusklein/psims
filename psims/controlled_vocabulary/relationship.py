@@ -45,7 +45,7 @@ class Relationship(SemanticEdge):
         self.comment = comment
 
     def __str__(self):
-        return "%s: %s ! %s" % (self.predicate, self.accession, self.comment)
+        return "%s %s ! %s" % (self.predicate, self.accession, self.comment)
 
     def __repr__(self):
         return "{self.__class__.__name__}({self.predicate}, {self.accession}, {self.comment})".format(self=self)
