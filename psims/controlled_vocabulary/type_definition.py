@@ -106,6 +106,10 @@ def type_inference_guess(string):
             except ValueError:
                 value = string
         return value
+    if lower_string in ('true', 'yes'):
+        return True
+    elif lower_string in ('false', 'no'):
+        return False
     return string
 
 

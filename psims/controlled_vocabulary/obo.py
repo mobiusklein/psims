@@ -321,9 +321,15 @@ class OBOWriter(object):
                 self.stream.write("xref: %s\n" % str(xref))
             keys = ['domain', 'range', 'is_anti_symmetric', 'is_cyclic',
                     'is_reflexive', 'is_symmetric', 'is_transitive', 'is_a',
-                    'tramsitive_over']
+                    'transitive_over']
             for key in keys:
+                is_boolean_predicate = key.startswith('is_')
                 for d in ensure_iterable(term.get(key, [])):
+                    if is_boolean_predicate:
+                        if d is True:
+                            d = 'true'
+                        elif d is False:
+                            d = 'false'
                     self.stream.write("%s: %s\n" % (key, d))
             for rel in ensure_iterable(term.get("relationship", [])):
                 self.stream.write("relationship: %s\n" % str(rel))
