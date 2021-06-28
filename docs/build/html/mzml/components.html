@@ -25,8 +25,6 @@
   <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mzIdentML" href="../mzid/index.html" />
@@ -150,435 +148,441 @@
 <p><code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code> uses Python classes for XML elements in mzML. A few have custom logic that will trigger
 automatically, while others have helper methods that may be useful if you are constructing these objects
 directly.</p>
-<span class="target" id="module-psims.mzml.components"></span><dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Activation">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Activation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Activation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Activation" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-psims.mzml.components"></span><dl class="class">
+<dt id="psims.mzml.components.Activation">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Activation</code><span class="sig-paren">(</span><em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Activation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Activation" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Analyzer">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Analyzer" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Analyzer">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Analyzer</code><span class="sig-paren">(</span><em>order</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Analyzer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Binary">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoded_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Binary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Binary" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Binary">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Binary</code><span class="sig-paren">(</span><em>encoded_array</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Binary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Binary" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.BinaryDataArray">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">BinaryDataArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">binary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_processing_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArray" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.BinaryDataArray">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">BinaryDataArray</code><span class="sig-paren">(</span><em>binary</em>, <em>encoded_length</em>, <em>data_processing_reference=None</em>, <em>array_length=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArray" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>The structure into which encoded binary data goes. Byte ordering is always little endian (Intel style). Computers using a different endian style must convert to/from little endian when writing/reading mzML</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The structure into which encoded binary data goes. Byte ordering is always little endian (Intel style). Computers using a different endian style must convert to/from little endian when writing/reading mzML</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.BinaryDataArrayList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">BinaryDataArrayList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArrayList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArrayList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.BinaryDataArrayList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">BinaryDataArrayList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#BinaryDataArrayList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.BinaryDataArrayList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List of binary data arrays.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List of binary data arrays.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.CVList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">CVList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cv_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#CVList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.CVList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.CVList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">CVList</code><span class="sig-paren">(</span><em>cv_list=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#CVList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.CVList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Container for one or more controlled vocabulary definitions.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Container for one or more controlled vocabulary definitions.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Chromatogram">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Chromatogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary_data_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_array_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_processing_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Chromatogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Chromatogram" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Chromatogram">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Chromatogram</code><span class="sig-paren">(</span><em>index</em>, <em>binary_data_list=None</em>, <em>precursor=None</em>, <em>product=None</em>, <em>default_array_length=None</em>, <em>data_processing_reference=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Chromatogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Chromatogram" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>A single chromatogram.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A single chromatogram.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ComponentList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ComponentList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ComponentList" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="psims.mzml.components.ComponentList.build">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'type'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentList.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ComponentList.build" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ComponentList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ComponentList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentList" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="classmethod">
+<dt id="psims.mzml.components.ComponentList.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em>, <em>type_key='type'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ComponentList.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ComponentList.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile an ordered set of <a class="reference internal" href="#psims.mzml.components.Source" title="psims.mzml.components.Source"><code class="xref py py-class docutils literal notranslate"><span class="pre">Source</span></code></a>, <a class="reference internal" href="#psims.mzml.components.Analyzer" title="psims.mzml.components.Analyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analyzer</span></code></a>,
 and <a class="reference internal" href="#psims.mzml.components.Detector" title="psims.mzml.components.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a>-like objects into a sorted <a class="reference internal" href="#psims.mzml.components.ComponentList" title="psims.mzml.components.ComponentList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentList</span></code></a>
 instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>members</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list of <a class="reference internal" href="#psims.mzml.components.Source" title="psims.mzml.components.Source"><code class="xref py py-class docutils literal notranslate"><span class="pre">Source</span></code></a>, <a class="reference internal" href="#psims.mzml.components.Analyzer" title="psims.mzml.components.Analyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analyzer</span></code></a>, and
-<a class="reference internal" href="#psims.mzml.components.Detector" title="psims.mzml.components.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a>-like objects.</p></li>
-<li><p><strong>context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentContext</span></code>) – The context of the containing document.</p></li>
-<li><p><strong>type_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The key to use to read the component type.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>members</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list of <a class="reference internal" href="#psims.mzml.components.Source" title="psims.mzml.components.Source"><code class="xref py py-class docutils literal notranslate"><span class="pre">Source</span></code></a>, <a class="reference internal" href="#psims.mzml.components.Analyzer" title="psims.mzml.components.Analyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analyzer</span></code></a>, and
+<a class="reference internal" href="#psims.mzml.components.Detector" title="psims.mzml.components.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a>-like objects.</li>
+<li><strong>context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentContext</span></code>) – The context of the containing document.</li>
+<li><strong>type_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The key to use to read the component type.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#psims.mzml.components.ComponentList" title="psims.mzml.components.ComponentList">ComponentList</a></p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#psims.mzml.components.ComponentList" title="psims.mzml.components.ComponentList">ComponentList</a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List with the different components used in the mass spectrometer. At least one source, one mass analyzer and one detector need to be specified.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List with the different components used in the mass spectrometer. At least one source, one mass analyzer and one detector need to be specified.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Contact">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Contact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Contact" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Contact">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Contact</code><span class="sig-paren">(</span><em>params</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Contact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Contact" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.DataProcessing">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">DataProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processing_methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.DataProcessing" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.DataProcessing">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">DataProcessing</code><span class="sig-paren">(</span><em>processing_methods=None</em>, <em>id=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.DataProcessing" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Description of the way in which a particular software was used.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of the way in which a particular software was used.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.DataProcessingList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">DataProcessingList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessingList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.DataProcessingList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.DataProcessingList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">DataProcessingList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#DataProcessingList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.DataProcessingList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of data processing applied to this data.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of data processing applied to this data.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Detector">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Detector" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Detector">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Detector</code><span class="sig-paren">(</span><em>order</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Detector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Detector" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.FileContent">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">FileContent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#FileContent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.FileContent" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.FileContent">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">FileContent</code><span class="sig-paren">(</span><em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#FileContent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.FileContent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.FileDescription">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">FileDescription</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#FileDescription"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.FileDescription" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.FileDescription">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">FileDescription</code><span class="sig-paren">(</span><em>content</em>, <em>source_files</em>, <em>contacts=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#FileDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.FileDescription" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Information pertaining to the entire mzML file (i.e. not specific to any part of the data set) is stored here.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Information pertaining to the entire mzML file (i.e. not specific to any part of the data set) is stored here.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.IndexedMzML">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">IndexedMzML</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#IndexedMzML"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.IndexedMzML" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.IndexedMzML">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">IndexedMzML</code><span class="sig-paren">(</span><em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#IndexedMzML"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.IndexedMzML" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.InstrumentConfiguration">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">InstrumentConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">software_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfiguration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfiguration" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.InstrumentConfiguration">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">InstrumentConfiguration</code><span class="sig-paren">(</span><em>id</em>, <em>component_list=None</em>, <em>params=None</em>, <em>software_reference=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfiguration" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Description of a particular hardware configuration of a mass spectrometer. Each configuration must have one (and only one) of the three different components used for an analysis. For hybrid instruments, such as an LTQ-FT, there must be one configuration for each permutation of the components that is used in the document. For software configuration, use a ReferenceableParamGroup element.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of a particular hardware configuration of a mass spectrometer. Each configuration must have one (and only one) of the three different components used for an analysis. For hybrid instruments, such as an LTQ-FT, there must be one configuration for each permutation of the components that is used in the document. For software configuration, use a ReferenceableParamGroup element.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.InstrumentConfigurationList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">InstrumentConfigurationList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfigurationList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfigurationList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.InstrumentConfigurationList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">InstrumentConfigurationList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#InstrumentConfigurationList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.InstrumentConfigurationList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of instrument configurations. At least one instrument configuration must be specified, even if it is only to specify that the instrument is unknown. In that case, the &quot;instrument model&quot; term is used to indicate the unknown instrument in the instrumentConfiguration.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of instrument configurations. At least one instrument configuration must be specified, even if it is only to specify that the instrument is unknown. In that case, the &quot;instrument model&quot; term is used to indicate the unknown instrument in the instrumentConfiguration.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.IsolationWindow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">IsolationWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#IsolationWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.IsolationWindow" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.IsolationWindow">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">IsolationWindow</code><span class="sig-paren">(</span><em>lower=None</em>, <em>target=None</em>, <em>upper=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#IsolationWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.IsolationWindow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.MzML">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">MzML</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#MzML"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.MzML" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.MzML">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">MzML</code><span class="sig-paren">(</span><em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#MzML"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.MzML" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>This is the root element for the Proteomics Standards Initiative (PSI) mzML schema, which is intended to capture the use of a mass spectrometer, the data generated, and the initial processing of that data (to the level of the peak list).</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">This is the root element for the Proteomics Standards Initiative (PSI) mzML schema, which is intended to capture the use of a mass spectrometer, the data generated, and the initial processing of that data (to the level of the peak list).</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Organization">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Organization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ORG_DOC_OWNER'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Organization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Organization" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Organization">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Organization</code><span class="sig-paren">(</span><em>name='name'</em>, <em>id='ORG_DOC_OWNER'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Organization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Organization" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Organizations are entities like companies, universities, government agencies. Any additional information such as the address, email etc. should be supplied either as CV parameters or as user parameters. </p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Organizations are entities like companies, universities, government agencies. Any additional information such as the address, email etc. should be supplied either as CV parameters or as user parameters. </p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Person">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Person</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'first_name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'last_name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PERSON_DOC_OWNER'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affiliation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ORG_DOC_OWNER'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Person"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Person" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Person">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Person</code><span class="sig-paren">(</span><em>first_name='first_name'</em>, <em>last_name='last_name'</em>, <em>id='PERSON_DOC_OWNER'</em>, <em>affiliation='ORG_DOC_OWNER'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Person" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>A person's name and contact details. Any additional information such as the address, contact email etc. should be supplied using CV parameters or user parameters.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A person's name and contact details. Any additional information such as the address, contact email etc. should be supplied using CV parameters or user parameters.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Precursor">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Precursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_ion_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isolation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_spectrum_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Precursor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Precursor" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Precursor">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Precursor</code><span class="sig-paren">(</span><em>selected_ion_list</em>, <em>activation=None</em>, <em>isolation_window=None</em>, <em>spectrum_reference=None</em>, <em>source_file_reference=None</em>, <em>external_spectrum_id=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Precursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Precursor" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>The method of precursor ion selection and activation</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The method of precursor ion selection and activation</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.PrecursorList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">PrecursorList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#PrecursorList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.PrecursorList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.PrecursorList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">PrecursorList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#PrecursorList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.PrecursorList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of precursor isolations to the spectrum currently being described, ordered.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of precursor isolations to the spectrum currently being described, ordered.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ProcessingMethod">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ProcessingMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">software_reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProcessingMethod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ProcessingMethod" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ProcessingMethod">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ProcessingMethod</code><span class="sig-paren">(</span><em>order</em>, <em>software_reference</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProcessingMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ProcessingMethod" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>This attributes allows a series of consecutive steps to be placed in the correct order.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">This attributes allows a series of consecutive steps to be placed in the correct order.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Product">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">isolation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Product"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Product" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Product">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Product</code><span class="sig-paren">(</span><em>isolation_window=None</em>, <em>spectrum_reference=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Product"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Product" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>The method of product ion selection and activation in a precursor ion scan</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The method of product ion selection and activation in a precursor ion scan</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ProductList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ProductList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProductList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ProductList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ProductList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ProductList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ProductList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ProductList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of product isolations to the spectrum currently being described, ordered.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of product isolations to the spectrum currently being described, ordered.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ReferenceableParamGroup">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ReferenceableParamGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroup" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ReferenceableParamGroup">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ReferenceableParamGroup</code><span class="sig-paren">(</span><em>params=None</em>, <em>id=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroup" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>A collection of CVParam and UserParam elements that can be referenced from elsewhere in this mzML document by using the 'paramGroupRef' element in that location to reference the 'id' attribute value of this element.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A collection of CVParam and UserParam elements that can be referenced from elsewhere in this mzML document by using the 'paramGroupRef' element in that location to reference the 'id' attribute value of this element.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ReferenceableParamGroupList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ReferenceableParamGroupList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroupList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroupList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ReferenceableParamGroupList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ReferenceableParamGroupList</code><span class="sig-paren">(</span><em>members</em>, <em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ReferenceableParamGroupList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ReferenceableParamGroupList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Container for a list of referenceableParamGroups</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Container for a list of referenceableParamGroups</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Run">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_instrument_configuration_reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chromatogram_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_source_file_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time_stamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Run" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Run">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>default_instrument_configuration_reference</em>, <em>spectrum_list=None</em>, <em>chromatogram_list=None</em>, <em>id=None</em>, <em>default_source_file_reference=None</em>, <em>sample_reference=None</em>, <em>start_time_stamp=None</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Run" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>A run in mzML should correspond to a single, consecutive and coherent set of scans on an instrument.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A run in mzML should correspond to a single, consecutive and coherent set of scans on an instrument.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Sample">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Sample" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Sample">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Sample</code><span class="sig-paren">(</span><em>name</em>, <em>params=None</em>, <em>id=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Sample" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Expansible description of the sample used to generate the dataset, named in sampleName.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Expansible description of the sample used to generate the dataset, named in sampleName.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SampleList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SampleList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SampleList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SampleList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SampleList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SampleList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SampleList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SampleList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of samples.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of samples.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Scan">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scan_window_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrument_configuration_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_spectrum_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Scan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Scan" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Scan">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Scan</code><span class="sig-paren">(</span><em>scan_window_list=None</em>, <em>instrument_configuration_ref=None</em>, <em>source_file_reference=None</em>, <em>spectrum_reference=None</em>, <em>external_spectrum_id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Scan" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Scan or acquisition from original raw file used to create this peak list, as specified in sourceFile.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Scan or acquisition from original raw file used to create this peak list, as specified in sourceFile.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ScanList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ScanList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ScanList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ScanList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanList</code><span class="sig-paren">(</span><em>members</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of scans.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of scans.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ScanSettings">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ScanSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_references</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ScanSettings" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ScanSettings">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanSettings</code><span class="sig-paren">(</span><em>id</em>, <em>source_file_references=None</em>, <em>target_list=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanSettings" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Description of the acquisition settings of the instrument prior to the start of the run.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of the acquisition settings of the instrument prior to the start of the run.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ScanSettingsList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ScanSettingsList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettingsList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ScanSettingsList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ScanSettingsList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanSettingsList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanSettingsList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanSettingsList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List with the descriptions of the acquisition settings applied prior to the start of data acquisition.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List with the descriptions of the acquisition settings applied prior to the start of data acquisition.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ScanWindow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ScanWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ScanWindow" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ScanWindow">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanWindow</code><span class="sig-paren">(</span><em>lower</em>, <em>upper</em>, <em>params=None</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanWindow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.ScanWindowList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">ScanWindowList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanWindowList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.ScanWindowList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.ScanWindowList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">ScanWindowList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#ScanWindowList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.ScanWindowList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>A range of m/z values over which the instrument scans and acquires a spectrum.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">A range of m/z values over which the instrument scans and acquires a spectrum.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SelectedIon">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SelectedIon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_ion_mz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'number</span> <span class="pre">of</span> <span class="pre">detector</span> <span class="pre">counts'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SelectedIon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SelectedIon" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SelectedIon">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SelectedIon</code><span class="sig-paren">(</span><em>selected_ion_mz</em>, <em>intensity=None</em>, <em>charge=None</em>, <em>params=None</em>, <em>intensity_unit='number of detector counts'</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SelectedIon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SelectedIon" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SelectedIonList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SelectedIonList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SelectedIonList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SelectedIonList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SelectedIonList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SelectedIonList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SelectedIonList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SelectedIonList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>The list of selected precursor ions.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The list of selected precursor ions.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Software">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Software</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Software"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Software" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Software">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Software</code><span class="sig-paren">(</span><em>id=None</em>, <em>version='0.0'</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Software"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Software" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Software information.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Software information.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SoftwareList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SoftwareList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SoftwareList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SoftwareList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SoftwareList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SoftwareList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SoftwareList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SoftwareList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of software used to acquire and/or process the data in this mzML file.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of software used to acquire and/or process the data in this mzML file.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Source">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Source" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Source">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Source</code><span class="sig-paren">(</span><em>order</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Source" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SourceFile">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SourceFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SourceFile" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="psims.mzml.components.SourceFile.checksum">
-<span class="sig-name descname"><span class="pre">checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">digest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sha-1'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFile.checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SourceFile.checksum" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SourceFile">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFile</code><span class="sig-paren">(</span><em>location=None</em>, <em>name=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFile" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="psims.mzml.components.SourceFile.checksum">
+<code class="descname">checksum</code><span class="sig-paren">(</span><em>digest='sha-1'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFile.checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFile.checksum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a file integrity checksum of a file if it is local.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>checksum_param</strong> – A CV term denoting the hashing function used and the checksum
-hex-string produced.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../xml.html#psims.xml.CVParam" title="psims.xml.CVParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">CVParam</span></code></a></p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>checksum_param</strong> – A CV term denoting the hashing function used and the checksum
+hex-string produced.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="../xml.html#psims.xml.CVParam" title="psims.xml.CVParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">CVParam</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Description of the source file, including location and type.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Description of the source file, including location and type.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SourceFileList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SourceFileList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SourceFileList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SourceFileList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFileList</code><span class="sig-paren">(</span><em>members</em>, <em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFileList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of the source files this mzML document was generated or derived from</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of the source files this mzML document was generated or derived from</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SourceFileRef">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SourceFileRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SourceFileRef" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SourceFileRef">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SourceFileRef</code><span class="sig-paren">(</span><em>source_file_id</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SourceFileRef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SourceFileRef" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>This attribute must reference the 'id' of the appropriate sourceFile.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">This attribute must reference the 'id' of the appropriate sourceFile.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Spectrum">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary_data_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precursor_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_array_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_processing_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Spectrum" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Spectrum">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Spectrum</code><span class="sig-paren">(</span><em>index</em>, <em>binary_data_list=None</em>, <em>scan_list=None</em>, <em>precursor_list=None</em>, <em>product_list=None</em>, <em>default_array_length=None</em>, <em>source_file_reference=None</em>, <em>data_processing_reference=None</em>, <em>id=None</em>, <em>params=None</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Spectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>The structure that captures the generation of a peak list (including the underlying acquisitions). Also describes some of the parameters for the mass spectrometer for a given acquisition (or list of acquisitions).</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">The structure that captures the generation of a peak list (including the underlying acquisitions). Also describes some of the parameters for the mass spectrometer for a given acquisition (or list of acquisitions).</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.SpectrumList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">SpectrumList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_data_processing_reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SpectrumList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.SpectrumList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.SpectrumList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">SpectrumList</code><span class="sig-paren">(</span><em>members</em>, <em>default_data_processing_reference</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#SpectrumList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.SpectrumList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>List and descriptions of spectra.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">List and descriptions of spectra.</p>
 </div>
 </dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.Target">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">Target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.Target" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.Target">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">Target</code><span class="sig-paren">(</span><em>params</em>, <em>context={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#Target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.Target" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzml.components.TargetList">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzml.components.</span></span><span class="sig-name descname"><span class="pre">TargetList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#TargetList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzml.components.TargetList" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzml.components.TargetList">
+<em class="property">class </em><code class="descclassname">psims.mzml.components.</code><code class="descname">TargetList</code><span class="sig-paren">(</span><em>members</em>, <em>context={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzml/components.html#TargetList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzml.components.TargetList" title="Permalink to this definition">¶</a></dt>
 <dd></dd><div class="admonition">
-<p class="admonition-title">XSD Description</p>
-<p>Target list (or 'inclusion list') configured prior to the run.</p>
+<p class="first admonition-title">XSD Description</p>
+<p class="last">Target list (or 'inclusion list') configured prior to the run.</p>
 </div>
 </dl>
 
@@ -606,16 +610,16 @@ hex-string produced.</p>
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
         </div>
     </div>  
 

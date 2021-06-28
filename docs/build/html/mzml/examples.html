@@ -25,8 +25,6 @@
   <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Components of mzML" href="components.html" />
@@ -151,16 +149,16 @@
 <h2>Writing mzML<a class="headerlink" href="#writing-mzml" title="Permalink to this headline">¶</a></h2>
 <p>In this example, we’ll walk through the steps involved in writing an mzML file containing simulated data.</p>
 <p>Writing an mzML file with <code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code> is done using the <code class="xref py py-class docutils literal notranslate"><span class="pre">MzMLWriter</span></code> class.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">psims.mzml</span> <span class="kn">import</span> <span class="n">MzMLWriter</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">psims.mzml</span> <span class="kn">import</span> <span class="n">MzMLWriter</span>
 </pre></div>
 </div>
 <p>To begin, you create the writer with a file path, or a previously created file-like object:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span> <span class="o">=</span> <span class="n">MzMLWriter</span><span class="p">(</span><span class="s2">&quot;path/to/write.mzML&quot;</span><span class="p">)</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span> <span class="o">=</span> <span class="n">MzMLWriter</span><span class="p">(</span><span class="s2">&quot;path/to/write.mzML&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Before any content can be written out, the writer must start the document, which can be done by either
 using it as a context manager, or by calling it’s <a class="reference internal" href="writer.html#psims.mzml.writer.IndexedMzMLWriter.begin" title="psims.mzml.writer.IndexedMzMLWriter.begin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">begin()</span></code></a> method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">writer</span><span class="p">:</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">writer</span><span class="p">:</span>
     <span class="n">writer</span><span class="o">.</span><span class="n">controlled_vocabularies</span><span class="p">()</span>
     <span class="o">...</span>
 </pre></div>
@@ -173,7 +171,7 @@ remainder of these code samples will take place within this context manager.</p>
 information (where the data came from) and classification of the types of spectra contained (MS1 and/or
 MSn spectra, centroid vs. profile spectra). In this example, we’ll generate some data <em>de novo</em>, and
 so won’t have any <code class="docutils literal notranslate"><span class="pre">&lt;sourceFile&gt;</span></code> elements.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span><span class="o">.</span><span class="n">file_description</span><span class="p">([</span> <span class="c1"># the list of file contents terms</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span><span class="o">.</span><span class="n">file_description</span><span class="p">([</span> <span class="c1"># the list of file contents terms</span>
     <span class="s2">&quot;MS1 spectrum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;MSn spectrum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;centroid spectrum&quot;</span>
@@ -181,13 +179,13 @@ so won’t have any <code class="docutils literal notranslate"><span class="pre"
 </pre></div>
 </div>
 <p>If a <code class="docutils literal notranslate"><span class="pre">&lt;sourceFile&gt;</span></code> is needed, it can be built using</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">SourceFile</span><span class="p">(</span><span class="s2">&quot;file://path/to/the&quot;</span><span class="p">,</span> <span class="s2">&quot;file_name.ext&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;RAW1&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">SourceFile</span><span class="p">(</span><span class="s2">&quot;file://path/to/the&quot;</span><span class="p">,</span> <span class="s2">&quot;file_name.ext&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;RAW1&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
 <span class="c1"># If you need to checksum a local file</span>
 <span class="n">sf</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sf</span><span class="o">.</span><span class="n">checksum</span><span class="p">(</span><span class="s1">&#39;sha-1&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The next required list is <code class="docutils literal notranslate"><span class="pre">&lt;softwareList&gt;</span></code>. Replace the names here with your own tools if needed:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span><span class="o">.</span><span class="n">software_list</span><span class="p">([</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span><span class="o">.</span><span class="n">software_list</span><span class="p">([</span>
     <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;psims-writer&quot;</span><span class="p">,</span>
         <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.1.2&quot;</span><span class="p">,</span>
         <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -198,7 +196,7 @@ so won’t have any <code class="docutils literal notranslate"><span class="pre"
 </div>
 <p>The instrument configuration list is a bit more involved to specify. For example, an ESI FT-ICR
 system would be described by:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">Source</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;electrospray ionization&quot;</span><span class="p">,</span> <span class="s2">&quot;electrospray inlet&quot;</span><span class="p">])</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">Source</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;electrospray ionization&quot;</span><span class="p">,</span> <span class="s2">&quot;electrospray inlet&quot;</span><span class="p">])</span>
 <span class="n">analyzer</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">Analyzer</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span>
         <span class="s2">&quot;&quot;</span><span class="n">fourier</span> <span class="n">transform</span> <span class="n">ion</span> <span class="n">cyclotron</span> <span class="n">resonance</span> <span class="n">mass</span> <span class="n">spectrometer</span><span class="s2">&quot;</span>
     <span class="p">])</span>
@@ -212,7 +210,7 @@ system would be described by:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">&lt;dataProcessing&gt;</span></code> instructions can be as intricate as needed. We’ll throw in some
 extra terms for demonstration purposes. Remember, if you used a different software ID
 above in the <code class="docutils literal notranslate"><span class="pre">&lt;softwareList&gt;</span></code> section, to use that here too instead of <code class="docutils literal notranslate"><span class="pre">&quot;psims-writer&quot;</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
     <span class="n">writer</span><span class="o">.</span><span class="n">ProcessingMethod</span><span class="p">(</span>
@@ -227,7 +225,7 @@ above in the <code class="docutils literal notranslate"><span class="pre">&lt;so
 </pre></div>
 </div>
 <p>Now, we’re nearly ready to start writing spectra. To start, we open the run and spectrum list:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">instrument_configuration</span><span class="o">=</span><span class="s1">&#39;IC1&#39;</span><span class="p">):</span>
     <span class="c1"># we will write 3,000 spectra</span>
@@ -243,7 +241,7 @@ to represent the data arrays. This file contains centroided spectra as previousl
 the file description.</p>
 <p>We’ll assume there’s a function that generates a centroided spectrum, called <code class="docutils literal notranslate"><span class="pre">get_next_arrays</span></code>
 to produce those arrays.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mf">1e3</span><span class="p">:</span>
     <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">ms1_mzs</span><span class="p">,</span> <span class="n">ms1_intensities</span> <span class="o">=</span> <span class="n">get_next_arrays</span><span class="p">()</span>
@@ -285,8 +283,8 @@ to produce those arrays.</p>
 <div class="contents local topic" id="topics">
 <p class="topic-title">Topics</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#precursor-information" id="id1">Precursor Information</a></p></li>
-<li><p><a class="reference internal" href="#binary-data-array-encoding-and-compression" id="id2">Binary Data Array Encoding and Compression</a></p></li>
+<li><a class="reference internal" href="#precursor-information" id="id1">Precursor Information</a></li>
+<li><a class="reference internal" href="#binary-data-array-encoding-and-compression" id="id2">Binary Data Array Encoding and Compression</a></li>
 </ul>
 </div>
 <div class="section" id="precursor-information">
@@ -296,7 +294,7 @@ dealing with tandem mass spectra. The <code class="docutils literal notranslate"
 distinct sub-elements, <code class="docutils literal notranslate"><span class="pre">&lt;selectedIon&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;isolationWindow&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">activation</span></code>, each of which
 contains a list of cvParams with varying requirements. <a class="reference internal" href="writer.html#psims.mzml.writer.IndexedMzMLWriter.precursor_builder" title="psims.mzml.writer.IndexedMzMLWriter.precursor_builder"><code class="xref py py-meth docutils literal notranslate"><span class="pre">precursor_builder()</span></code></a>
 provides you with an object you can use to incrementally build up the value to provide.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">precursor</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">precursor_builder</span><span class="p">()</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">precursor</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">precursor_builder</span><span class="p">()</span>
 <span class="n">si</span> <span class="o">=</span> <span class="n">precursor</span><span class="o">.</span><span class="n">selected_ion</span><span class="p">(</span><span class="n">mz</span><span class="o">=</span><span class="mf">256.05</span><span class="p">)</span>
 <span class="n">si</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">act</span> <span class="o">=</span> <span class="n">precursor</span><span class="o">.</span><span class="n">activation</span><span class="p">()</span>
@@ -369,16 +367,16 @@ at the cost of losing some precision. MS-Numpress methods also require the <code
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
         </div>
     </div>  
 

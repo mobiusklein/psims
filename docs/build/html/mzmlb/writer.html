@@ -25,8 +25,6 @@
   <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Basic XML Components" href="../xml.html" />
@@ -147,96 +145,113 @@
                             
   <div class="section" id="module-psims.mzmlb.writer">
 <span id="writing-mzmlb-documents"></span><h1>Writing mzMLb Documents<a class="headerlink" href="#module-psims.mzmlb.writer" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="psims.mzmlb.writer.MzMLbWriter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzmlb.writer.</span></span><span class="sig-name descname"><span class="pre">MzMLbWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabularies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_reference_is_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabulary_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accession</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5_compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blosc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5_compression_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5_blocksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1048576</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzmlb/writer.html#MzMLbWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="psims.mzmlb.writer.MzMLbWriter">
+<em class="property">class </em><code class="descclassname">psims.mzmlb.writer.</code><code class="descname">MzMLbWriter</code><span class="sig-paren">(</span><em>h5_file</em>, <em>close=False</em>, <em>vocabularies=None</em>, <em>missing_reference_is_error=False</em>, <em>vocabulary_resolver=None</em>, <em>id=None</em>, <em>accession=None</em>, <em>h5_compression='blosc'</em>, <em>h5_compression_options=None</em>, <em>h5_blocksize=1048576</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzmlb/writer.html#MzMLbWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>A high level API for generating mzMLb HDF5 files from simple Python objects.</p>
 <p>This class’s public interface is identical to <a class="reference internal" href="../mzml/writer.html#psims.mzml.writer.IndexedMzMLWriter" title="psims.mzml.writer.IndexedMzMLWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexedMzMLWriter</span></code></a>, with the exception of those
 related to HDF5 compression described below.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although <code class="xref py py-mod docutils literal notranslate"><span class="pre">h5py</span></code> can read and write through Python file-like objects, if they are used they
+<p class="first admonition-title">Note</p>
+<p class="last">Although <code class="xref py py-mod docutils literal notranslate"><span class="pre">h5py</span></code> can read and write through Python file-like objects, if they are used they
 must be opened in read+write mode to allow the file to be partially re-read during an update to
 an existing block.</p>
 </div>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="psims.mzmlb.writer.MzMLbWriter.h5_compression">
-<span class="sig-name descname"><span class="pre">h5_compression</span></span><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.h5_compression" title="Permalink to this definition">¶</a></dt>
+<dl class="attribute">
+<dt id="psims.mzmlb.writer.MzMLbWriter.h5_compression">
+<code class="descname">h5_compression</code><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.h5_compression" title="Permalink to this definition">¶</a></dt>
 <dd><p>A valid HDF5 compressor ID or compression scheme name or <code class="xref py py-const docutils literal notranslate"><span class="pre">None</span></code>. Available compression schemes
 are “gzip”/”zlib”, and if <code class="xref py py-mod docutils literal notranslate"><span class="pre">hdf5plugin</span></code> is installed, “blosc”, “blosc:lz4”, “blosc:zlib”, and
 “blosc:zstd”. All Blosc-based compressors enable byte shuffling.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="psims.mzmlb.writer.MzMLbWriter.h5_compressor_options">
-<span class="sig-name descname"><span class="pre">h5_compressor_options</span></span><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.h5_compressor_options" title="Permalink to this definition">¶</a></dt>
+<dl class="attribute">
+<dt id="psims.mzmlb.writer.MzMLbWriter.h5_compressor_options">
+<code class="descname">h5_compressor_options</code><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.h5_compressor_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>The options to provide to the compressor designated by <code class="xref py py-attr docutils literal notranslate"><span class="pre">h5_compressor</span></code>. For “gzip”, this a single
 integer setting the compression level, while Blosc takes a tuple of integers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a></p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="psims.mzmlb.writer.MzMLbWriter.h5_blocksize">
-<span class="sig-name descname"><span class="pre">h5_blocksize</span></span><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.h5_blocksize" title="Permalink to this definition">¶</a></dt>
+<dl class="attribute">
+<dt id="psims.mzmlb.writer.MzMLbWriter.h5_blocksize">
+<code class="descname">h5_blocksize</code><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.h5_blocksize" title="Permalink to this definition">¶</a></dt>
 <dd><p>The number of bytes to include in a single HDF5 data block. Smaller blocks improve random access speed
 at the expense of compression efficiency and space. Defaults to 2 ** 20, 1MB.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="psims.mzmlb.writer.MzMLbWriter.create_array">
-<span class="sig-name descname"><span class="pre">create_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">name</span></em>, <em class="sig-param"><span class="pre">last=None</span></em>, <em class="sig-param"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></em>, <em class="sig-param"><span class="pre">chunks=True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzmlb/writer.html#MzMLbWriter.create_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.create_array" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="psims.mzmlb.writer.MzMLbWriter.create_array">
+<code class="descname">create_array</code><span class="sig-paren">(</span><em>data</em>, <em>name</em>, <em>last=None</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em>, <em>chunks=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzmlb/writer.html#MzMLbWriter.create_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.create_array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store a typed data array as a named dataset in the HDF5 file.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The array should not be textual unless they’ve already been translated
+<p class="first admonition-title">Note</p>
+<p class="last">The array should not be textual unless they’ve already been translated
 into a byte array with terminal null bytes.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – The data to be stored.</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name to store the dataset by.</p></li>
-<li><p><strong>last</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a><em>, </em><em>optional</em>) – A value to associate with the final entry of the array.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a>) – The type of the entries in the array.</p></li>
-<li><p><strong>chunks</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether or not to store the dataset in chunks.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – The data to be stored.</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name to store the dataset by.</li>
+<li><strong>last</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a><em>, </em><em>optional</em>) – A value to associate with the final entry of the array.</li>
+<li><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a>) – The type of the entries in the array.</li>
+<li><strong>chunks</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether or not to store the dataset in chunks.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="psims.mzmlb.writer.MzMLbWriter.create_buffer">
-<span class="sig-name descname"><span class="pre">create_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzmlb/writer.html#MzMLbWriter.create_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.create_buffer" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="psims.mzmlb.writer.MzMLbWriter.create_buffer">
+<code class="descname">create_buffer</code><span class="sig-paren">(</span><em>name</em>, <em>content</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzmlb/writer.html#MzMLbWriter.create_buffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.mzmlb.writer.MzMLbWriter.create_buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a compressed binary buffer with a name and fixed length in the HDF5 file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the HDF5 dataset</p></li>
-<li><p><strong>content</strong> (<em>bytes-like object</em>) – The data to store. Must be convertable into a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytearray</span></code></a>, e.g. through the
-buffer interface.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the HDF5 dataset</li>
+<li><strong>content</strong> (<em>bytes-like object</em>) – The data to store. Must be convertable into a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytearray</span></code></a>, e.g. through the
+buffer interface.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>n</strong> – The size of the buffer written</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>n</strong> – The size of the buffer written</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -265,16 +280,16 @@ buffer interface.</p></li>
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
         </div>
     </div>  
 
