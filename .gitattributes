@@ -1,1 +1,5 @@
-*.gz binary
+*.gz     binary
+
+*.py     text diff=python
+
+psims/version.py ident
