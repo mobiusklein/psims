@@ -1,12 +1,40 @@
 from collections import deque
 try:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, MutableSequence
 except ImportError:
-    from collections import Mapping
+    from collections import Mapping, MutableSequence
 
 from psims.utils import ensure_iterable
 
 from .type_definition import parse_xsdtype
+
+
+class PredicateList(MutableSequence):
+    def __init__(self, members, parent):
+        self.members = list(members)
+        self.parent = parent
+
+    def __getitem__(self, i):
+        return self.members[i]
+
+    def __setitem__(self, i, v):
+        v = self.parent.add_relationship(v)
+        self.members[i] = v
+
+    def __delitem__(self, i):
+        rel = self.members[i]
+        self.parent.remove_relationship(rel)
+        del self.members[i]
+
+    def __iter__(self):
+        return iter(self.members)
+
+    def __len__(self):
+        return len(self.members)
+
+    def insert(self, v):
+        self.members.insert(v)
+
 
 
 class Entity(Mapping):
@@ -54,6 +82,36 @@ class Entity(Mapping):
             object.__setattr__(self, key, value)
         else:
             self[key] = value
+
+    def add_relationship(self, relationship):
+        from .relationship import Relationship
+        if isinstance(relationship, str):
+            relationship = Relationship.fromstring(relationship)
+        self.setdefault(relationship.predicate, [])
+        self[relationship.predicate].append(relationship)
+        relationships = self.get('relationship')
+        if isinstance(relationships, list):
+            relationships.append(relationship)
+        elif relationships is not None:
+            relationships = [relationships, relationship]
+            self['relationship'] = relationships
+        else:
+            self['relationship'] = relationship
+        return relationship
+
+    def remove_relationship(self, relationship):
+        from .relationship import Relationship
+        if isinstance(relationship, str):
+            relationship = Relationship.fromstring(relationship)
+        predicate_members = self.get(relationship.predicate, [])
+        predicate_members.remove(relationship)
+        relationships = self.get('relationship')
+        if isinstance(relationships, list):
+            relationships.remove(relationship)
+        elif relationship == relationships:
+            self.pop('relationship')
+        else:
+            raise ValueError("Could not find %r" % relationship)
 
     def __dir__(self):
         keys = set(self.keys())

@@ -3,11 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
-## [Unreleased]
+## [v0.1.39] - 2021-06-27
 
 ### Added
+1. The data model for representing entities in OBO was revised to cover a wider range of cases.
+2. `Entity` attributes are automatically type-coerced if their primitive types are recognizable. This
+   does not apply to formula-like attributes as these are formatted in a controlled vocabulary-specific
+   manner.
 
 ### Changed
+1. Updated vendor controlled vocabularies.
 
 ### Deprecated
 
@@ -78,9 +83,10 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.38...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.39...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
-[v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.38
+[v0.1.39]: https://github.com/mobiusklein/psims/releases/v0.1.39
+[v0.1.38]: https://github.com/mobiusklein/psims/releases/v0.1.38
 [v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.37
 [v0.1.35]: https://github.com/mobiusklein/psims/releases/v0.1.35
 [v0.1.34]: https://github.com/mobiusklein/psims/releases/v0.1.34
