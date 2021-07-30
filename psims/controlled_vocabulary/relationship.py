@@ -40,7 +40,7 @@ class Reference(SemanticEdge):
 
 class Relationship(SemanticEdge):
     def __init__(self, predicate, accession, comment=None):
-        self.predicate = predicate
+        self.predicate = predicate.strip(":")
         self.accession = accession
         self.comment = comment
 
