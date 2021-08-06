@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v0.1.41] - 2021-08-05
+
+### Added
+1. Re-wrote the `Entity.value_type` machinery to better take into account
+   compound or vocabulary-defined types.
+2. Modified the `Relationship` type to be able to dispatch to sub-classes for named
+   relationship types.
+
+### Changed
+1. Updated vendor controlled vocabularies.
+
 ## [v0.1.39] - 2021-06-27
 
 ### Added
