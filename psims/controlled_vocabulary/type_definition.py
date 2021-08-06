@@ -97,7 +97,7 @@ def type_inference_guess(string):
     lower_string = string.lower()
     if lower_string == 'none' or not lower_string:
         return None
-    if lower_string[0].isnumeric():
+    if lower_string[0].isnumeric() or lower_string == '-' and lower_string[1].isnumeric():
         try:
             value = int(string)
         except ValueError:
