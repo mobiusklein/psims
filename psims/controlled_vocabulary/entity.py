@@ -6,7 +6,7 @@ except ImportError:
 
 from psims.utils import ensure_iterable
 
-from .type_definition import parse_xsdtype
+from .type_definition import parse_xsdtype, TypeDefinition, ListOfType
 
 
 class PredicateList(MutableSequence):
@@ -34,6 +34,37 @@ class PredicateList(MutableSequence):
 
     def insert(self, v):
         self.members.insert(v)
+
+
+class ValueTypeOf(object):
+    def __init__(self, entity):
+        self.entity = entity
+
+    def __repr__(self):
+        return "{self.__class__.__name__}({self.entity})".format(self=self)
+
+    def __call__(self, value):
+        return self.parse(value)
+
+    def parse(self, value):
+        value_types = self.entity.get('has_value_type')
+        if value_types:
+            for value_type in value_types:
+                try:
+                    return value_type(value)
+                except (ValueError, TypeError, NotImplementedError):
+                    continue
+        return value
+
+    def format(self, value):
+        value_types = self.entity.get('has_value_type')
+        if value_types:
+            for value_type in value_types:
+                try:
+                    return value_type.format(value)
+                except (ValueError, TypeError, NotImplementedError):
+                    continue
+        return str(value)
 
 
 
@@ -193,3 +224,21 @@ class Entity(Mapping):
                 return True
             stack.extend(ensure_iterable(ref.parent()))
         return False
+
+    def as_value_type(self):
+        if self.id in self.vocabulary.type_definitions:
+            return self.vocabulary.type_definitions[self.id]
+        is_list_of = self.is_of_type('list of type')
+        value_type = self.value_type
+        if not value_type:
+            value_type = str
+        if is_list_of:
+            type_def = ListOfType(self.id, self.name, value_type)
+        else:
+            type_def = TypeDefinition(self.id, self.name, value_type)
+        self.vocabulary.type_definitions[self.id] = type_def
+        return type_def
+
+    @property
+    def value_type(self):
+        return ValueTypeOf(self)

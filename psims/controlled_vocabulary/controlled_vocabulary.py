@@ -95,10 +95,11 @@ class ControlledVocabulary(Mapping):
             version = 'unknown'
         self.version = version
         self.name = name
-        self._terms = dict()
-        self.terms = terms
         self.id = id
         self.metadata = metadata
+        self.type_definitions = dict()
+        self._terms = dict()
+        self.terms = terms
 
     def __getitem__(self, key):
         '''A wrapper for :meth:`query`
@@ -210,10 +211,10 @@ class ControlledVocabulary(Mapping):
         self._reindex()
 
     def _reindex(self):
-        self._bind_terms()
         self._build_names()
         self._build_case_normalized()
         self._build_synonyms()
+        self._bind_terms()
 
     def _build_names(self):
         self._names = {
@@ -228,6 +229,10 @@ class ControlledVocabulary(Mapping):
     def _bind_terms(self):
         for term in self.terms.values():
             term.vocabulary = self
+            value_types = term.get('has_value_type')
+            if value_types:
+                for value_type in value_types:
+                    value_type.make_value_type(self)
 
     def _build_synonyms(self):
         self._synonyms = {}
