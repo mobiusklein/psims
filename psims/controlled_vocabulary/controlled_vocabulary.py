@@ -9,6 +9,8 @@ try:
 except ImportError:
     from collections import Mapping, Callable
 
+from six import PY2
+
 from .obo import OBOParser
 from . import unimod
 
@@ -227,12 +229,24 @@ class ControlledVocabulary(Mapping):
         }
 
     def _bind_terms(self):
-        for term in self.terms.values():
-            term.vocabulary = self
-            value_types = term.get('has_value_type')
-            if value_types:
+        if PY2:
+            value_typed = []
+            for term in self.terms.values():
+                term.vocabulary = self
+                value_types = term.get('has_value_type')
+                if value_types:
+                    value_typed.append(value_types)
+            for value_types in value_typed:
                 for value_type in value_types:
                     value_type.make_value_type(self)
+
+        else:
+            for term in self.terms.values():
+                term.vocabulary = self
+                value_types = term.get('has_value_type')
+                if value_types:
+                    for value_type in value_types:
+                        value_type.make_value_type(self)
 
     def _build_synonyms(self):
         self._synonyms = {}
