@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v0.1.42] - 2021-08-05
+
+### Fixed
+1. Made CV-param binding safe to use for Py2 again.
+
 ## [v0.1.41] - 2021-08-05
 
 ### Added
