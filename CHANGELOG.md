@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v0.1.43] - 2021-08-06
+
+### Added
+1. Properly coerce negative numbers
+
+### Fixed
+1. Restored support for Py3.5
+
 ## [v0.1.42] - 2021-08-05
 
 ### Fixed
