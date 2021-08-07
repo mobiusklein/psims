@@ -1,4 +1,5 @@
 import os
+import sys
 try:
     from urllib2 import urlopen, Request
 except ImportError:
@@ -229,7 +230,7 @@ class ControlledVocabulary(Mapping):
         }
 
     def _bind_terms(self):
-        if PY2:
+        if PY2 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
             value_typed = []
             for term in self.terms.values():
                 term.vocabulary = self
