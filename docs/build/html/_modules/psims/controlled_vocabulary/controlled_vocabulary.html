@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 
@@ -139,6 +141,7 @@
                             
   <h1>Source code for psims.controlled_vocabulary.controlled_vocabulary</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span><span class="p">,</span> <span class="n">Request</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -148,6 +151,8 @@
     <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Callable</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Callable</span>
+
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">PY2</span>
 
 <span class="kn">from</span> <span class="nn">.obo</span> <span class="kn">import</span> <span class="n">OBOParser</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">unimod</span>
@@ -235,10 +240,11 @@
             <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">terms</span> <span class="o">=</span> <span class="n">terms</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type_definitions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terms</span> <span class="o">=</span> <span class="n">terms</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;A wrapper for :meth:`query`</span>
@@ -350,10 +356,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reindex</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_reindex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bind_terms</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_names</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_case_normalized</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_synonyms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bind_terms</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_build_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="p">{</span>
@@ -366,8 +372,24 @@
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_bind_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">term</span><span class="o">.</span><span class="n">vocabulary</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="n">PY2</span> <span class="ow">or</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">):</span>
+            <span class="n">value_typed</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">term</span><span class="o">.</span><span class="n">vocabulary</span> <span class="o">=</span> <span class="bp">self</span>
+                <span class="n">value_types</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;has_value_type&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value_types</span><span class="p">:</span>
+                    <span class="n">value_typed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value_types</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">value_types</span> <span class="ow">in</span> <span class="n">value_typed</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">value_type</span> <span class="ow">in</span> <span class="n">value_types</span><span class="p">:</span>
+                    <span class="n">value_type</span><span class="o">.</span><span class="n">make_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">term</span><span class="o">.</span><span class="n">vocabulary</span> <span class="o">=</span> <span class="bp">self</span>
+                <span class="n">value_types</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;has_value_type&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value_types</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">value_type</span> <span class="ow">in</span> <span class="n">value_types</span><span class="p">:</span>
+                        <span class="n">value_type</span><span class="o">.</span><span class="n">make_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_build_synonyms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span> <span class="o">=</span> <span class="p">{}</span>
@@ -719,16 +741,16 @@
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

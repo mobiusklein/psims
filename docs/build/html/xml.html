@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Controlled Vocabularies" href="controlled_vocabulary/index.html" />
@@ -143,229 +145,194 @@
                             
   <div class="section" id="module-psims.xml">
 <span id="basic-xml-components"></span><h1>Basic XML Components<a class="headerlink" href="#module-psims.xml" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="psims.xml.element">
-<code class="descclassname">psims.xml.</code><code class="descname">element</code><span class="sig-paren">(</span><em>xml_file</em>, <em>_tag_name</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.element" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="psims.xml.element">
+<span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_tag_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct and immediately write a subclass instance of
 <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a> with the given tag name. All other arguments
 are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a> constructor</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>xml_file</strong> (<a class="reference internal" href="#psims.xml.XMLWriterMixin" title="psims.xml.XMLWriterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLWriterMixin</span></code></a>) – The XML writer to write to</li>
-<li><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
-<li><strong>*args</strong> – Arbitrary arguments for the tag</li>
-<li><strong>**kwargs</strong> – Key word arguments for the tag</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xml_file</strong> (<a class="reference internal" href="#psims.xml.XMLWriterMixin" title="psims.xml.XMLWriterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLWriterMixin</span></code></a>) – The XML writer to write to</p></li>
+<li><p><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
+<li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="psims.xml._element">
-<code class="descclassname">psims.xml.</code><code class="descname">_element</code><span class="sig-paren">(</span><em>_tag_name</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml._element" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="psims.xml._element">
+<span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_tag_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml._element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct a subclass instance of <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a> with the given
 tag name. All other arguments are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a>
 constructor</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
-<li><strong>*args</strong> – Arbitrary arguments for the tag</li>
-<li><strong>**kwargs</strong> – Key word arguments for the tag</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
+<li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="class">
-<dt id="psims.xml.TagBase">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">TagBase</code><span class="sig-paren">(</span><em>tag_name=None</em>, <em>text=''</em>, <em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#TagBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.TagBase" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.TagBase">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">TagBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#TagBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.TagBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represent a single XML element with arbitrary attributes.</p>
 <p>Mocks the <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code> interface</p>
-<dl class="attribute">
-<dt id="psims.xml.TagBase.attrs">
-<code class="descname">attrs</code><a class="headerlink" href="#psims.xml.TagBase.attrs" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.TagBase.attrs">
+<span class="sig-name descname"><span class="pre">attrs</span></span><a class="headerlink" href="#psims.xml.TagBase.attrs" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attributes of the element. <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__()</span></code> falls back
 to querying <a class="reference internal" href="#psims.xml.TagBase.attrs" title="psims.xml.TagBase.attrs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">attrs</span></code></a>, trying both requested name and <code class="docutils literal notranslate"><span class="pre">camelCase</span></code>
 versions of the name</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.TagBase.is_open">
-<code class="descname">is_open</code><a class="headerlink" href="#psims.xml.TagBase.is_open" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.TagBase.is_open">
+<span class="sig-name descname"><span class="pre">is_open</span></span><a class="headerlink" href="#psims.xml.TagBase.is_open" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether the element has been opened as a context manager</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.TagBase.tag_name">
-<code class="descname">tag_name</code><a class="headerlink" href="#psims.xml.TagBase.tag_name" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.TagBase.tag_name">
+<span class="sig-name descname"><span class="pre">tag_name</span></span><a class="headerlink" href="#psims.xml.TagBase.tag_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of the element</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.TagBase.text">
-<code class="descname">text</code><a class="headerlink" href="#psims.xml.TagBase.text" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.TagBase.text">
+<span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#psims.xml.TagBase.text" title="Permalink to this definition">¶</a></dt>
 <dd><p>The body text of the element</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.TagBase.type_attrs">
-<code class="descname">type_attrs</code><a class="headerlink" href="#psims.xml.TagBase.type_attrs" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.TagBase.type_attrs">
+<span class="sig-name descname"><span class="pre">type_attrs</span></span><a class="headerlink" href="#psims.xml.TagBase.type_attrs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attributes common to all elements of this type</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.TagBase.id">
-<code class="descname">id</code><a class="headerlink" href="#psims.xml.TagBase.id" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.TagBase.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#psims.xml.TagBase.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The &#64;id attribute of the element.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="psims.xml.CVParam">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">CVParam</code><span class="sig-paren">(</span><em>accession=None</em>, <em>name=None</em>, <em>ref=None</em>, <em>value=None</em>, <em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#CVParam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.CVParam" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.CVParam">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">CVParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accession</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#CVParam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.CVParam" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a <code class="docutils literal notranslate"><span class="pre">&lt;cvParam</span> <span class="pre">/&gt;</span></code></p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This element holds additional data or annotation. Only controlled values
+<p class="admonition-title">Note</p>
+<p>This element holds additional data or annotation. Only controlled values
 are allowed here</p>
 </div>
-<dl class="attribute">
-<dt id="psims.xml.CVParam.name">
-<code class="descname">name</code><a class="headerlink" href="#psims.xml.CVParam.name" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CVParam.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#psims.xml.CVParam.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The human-readable name of the parameter</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CVParam.accession">
-<code class="descname">accession</code><a class="headerlink" href="#psims.xml.CVParam.accession" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CVParam.accession">
+<span class="sig-name descname"><span class="pre">accession</span></span><a class="headerlink" href="#psims.xml.CVParam.accession" title="Permalink to this definition">¶</a></dt>
 <dd><p>The within-vocabulary unique identifier of the parameter</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CVParam.value">
-<code class="descname">value</code><a class="headerlink" href="#psims.xml.CVParam.value" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CVParam.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#psims.xml.CVParam.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>The value of the parameter, to be converted to text</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd><div class="admonition">
-<p class="first admonition-title">XSD Description</p>
-<p class="last">This element holds additional data or annotation. Only controlled values are allowed here.</p>
+<p class="admonition-title">XSD Description</p>
+<p>This element holds additional data or annotation. Only controlled values are allowed here.</p>
 </div>
 </dl>
 
-<dl class="class">
-<dt id="psims.xml.UserParam">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">UserParam</code><span class="sig-paren">(</span><em>accession=None</em>, <em>name=None</em>, <em>ref=None</em>, <em>value=None</em>, <em>**attrs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#UserParam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.UserParam" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.UserParam">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">UserParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accession</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#UserParam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.UserParam" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a <code class="docutils literal notranslate"><span class="pre">&lt;userParam</span> <span class="pre">/&gt;</span></code> element</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Uncontrolled user parameters (essentially allowing free text). Before
+<p class="admonition-title">Note</p>
+<p>Uncontrolled user parameters (essentially allowing free text). Before
 using these, one should verify whether there is an appropriate CV term
 available, and if so, use the CV term instead</p>
 </div>
 </dd><div class="admonition">
-<p class="first admonition-title">XSD Description</p>
-<p class="last">Uncontrolled user parameters (essentially allowing free text). Before using these, one should verify whether there is an appropriate CV term available, and if so, use the CV term instead</p>
+<p class="admonition-title">XSD Description</p>
+<p>Uncontrolled user parameters (essentially allowing free text). Before using these, one should verify whether there is an appropriate CV term available, and if so, use the CV term instead</p>
 </div>
 </dl>
 
-<dl class="class">
-<dt id="psims.xml.ParamGroupReference">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">ParamGroupReference</code><span class="sig-paren">(</span><em>ref</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#ParamGroupReference"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.ParamGroupReference" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.ParamGroupReference">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">ParamGroupReference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#ParamGroupReference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.ParamGroupReference" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
-<dt id="psims.xml.CV">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">CV</code><span class="sig-paren">(</span><em>full_name</em>, <em>id</em>, <em>uri</em>, <em>version=None</em>, <em>resolver=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#CV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.CV" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.CV">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">CV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#CV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.CV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represent a Controlled Vocabulary associated with the current document.</p>
 <p>The controlled vocabulary referenced must specify a URI that will be used
 to either download the definitions from, to be matched to a cache of pre-built
@@ -373,376 +340,316 @@ vocabularies, or to be matched with a set of special resolution rules for
 handled by the <a class="reference internal" href="#psims.xml.CV.resolver" title="psims.xml.CV.resolver"><code class="xref py py-attr docutils literal notranslate"><span class="pre">resolver</span></code></a>.</p>
 <p>This object acts as a lazy-loading proxy for
 <a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></a>.</p>
-<dl class="attribute">
-<dt id="psims.xml.CV.full_name">
-<code class="descname">full_name</code><a class="headerlink" href="#psims.xml.CV.full_name" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CV.full_name">
+<span class="sig-name descname"><span class="pre">full_name</span></span><a class="headerlink" href="#psims.xml.CV.full_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The full name of the controlled vocabulary, which may or may not
 be identical to the <a class="reference internal" href="#psims.xml.CV.id" title="psims.xml.CV.id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CV.id">
-<code class="descname">id</code><a class="headerlink" href="#psims.xml.CV.id" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CV.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#psims.xml.CV.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A short unique identifier for the controlled vocabulary</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CV.options">
-<code class="descname">options</code><a class="headerlink" href="#psims.xml.CV.options" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CV.options">
+<span class="sig-name descname"><span class="pre">options</span></span><a class="headerlink" href="#psims.xml.CV.options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional information that may be used during resolution</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CV.resolver">
-<code class="descname">resolver</code><a class="headerlink" href="#psims.xml.CV.resolver" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CV.resolver">
+<span class="sig-name descname"><span class="pre">resolver</span></span><a class="headerlink" href="#psims.xml.CV.resolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>The resolver which will handle all requests for this controlled vocabulary</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">VocabularyResolver</span></code></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">VocabularyResolver</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CV.uri">
-<code class="descname">uri</code><a class="headerlink" href="#psims.xml.CV.uri" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CV.uri">
+<span class="sig-name descname"><span class="pre">uri</span></span><a class="headerlink" href="#psims.xml.CV.uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>The location where the definition can be found</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CV.version">
-<code class="descname">version</code><a class="headerlink" href="#psims.xml.CV.version" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CV.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#psims.xml.CV.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>The version of the vocabulary resolved</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.CV.vocabulary">
-<code class="descname">vocabulary</code><a class="headerlink" href="#psims.xml.CV.vocabulary" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.CV.vocabulary">
+<span class="sig-name descname"><span class="pre">vocabulary</span></span><a class="headerlink" href="#psims.xml.CV.vocabulary" title="Permalink to this definition">¶</a></dt>
 <dd><p>The parsed term graph defining this vocabulary</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd><div class="admonition">
-<p class="first admonition-title">XSD Description</p>
-<p class="last">Information about an ontology or CV source and a short 'lookup' tag to refer to.</p>
+<p class="admonition-title">XSD Description</p>
+<p>Information about an ontology or CV source and a short 'lookup' tag to refer to.</p>
 </div>
 </dl>
 
-<dl class="class">
-<dt id="psims.xml.ProvidedCV">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">ProvidedCV</code><span class="sig-paren">(</span><em>id</em>, <em>uri</em>, <em>converter=&lt;function identity&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#ProvidedCV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.ProvidedCV" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.ProvidedCV">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">ProvidedCV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">id</span></em>, <em class="sig-param"><span class="pre">uri</span></em>, <em class="sig-param"><span class="pre">converter=&lt;function</span> <span class="pre">identity&gt;</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#ProvidedCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.ProvidedCV" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper around another object that provides the same basic interface
 as <a class="reference internal" href="#psims.xml.CV" title="psims.xml.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> from that object, provided through the <a class="reference internal" href="#psims.xml.ProvidedCV.converter" title="psims.xml.ProvidedCV.converter"><code class="xref py py-attr docutils literal notranslate"><span class="pre">converter</span></code></a>
 function</p>
-<dl class="attribute">
-<dt id="psims.xml.ProvidedCV.converter">
-<code class="descname">converter</code><a class="headerlink" href="#psims.xml.ProvidedCV.converter" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.ProvidedCV.converter">
+<span class="sig-name descname"><span class="pre">converter</span></span><a class="headerlink" href="#psims.xml.ProvidedCV.converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>A function that converts elements of the provided vocabulary into
 something matching the <code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code> interface.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Callable</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="psims.xml.XMLWriterMixin">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">XMLWriterMixin</code><a class="reference internal" href="_modules/psims/xml.html#XMLWriterMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLWriterMixin" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.XMLWriterMixin">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">XMLWriterMixin</span></span><a class="reference internal" href="_modules/psims/xml.html#XMLWriterMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLWriterMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>A mixin class to provide methods for writing
 XML elements and aggregate Components.</p>
-<dl class="attribute">
-<dt id="psims.xml.XMLWriterMixin.verbose">
-<code class="descname">verbose</code><a class="headerlink" href="#psims.xml.XMLWriterMixin.verbose" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.XMLWriterMixin.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#psims.xml.XMLWriterMixin.verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Controls debug printing</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.XMLWriterMixin.writer">
-<code class="descname">writer</code><a class="headerlink" href="#psims.xml.XMLWriterMixin.writer" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.XMLWriterMixin.writer">
+<span class="sig-name descname"><span class="pre">writer</span></span><a class="headerlink" href="#psims.xml.XMLWriterMixin.writer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The low-level XML writer used by <code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._IncrementalFileWriter</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>lxml.etree._IncrementalFileWriter</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLWriterMixin.element">
-<code class="descname">element</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLWriterMixin.element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLWriterMixin.element" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLWriterMixin.element">
+<span class="sig-name descname"><span class="pre">element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLWriterMixin.element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLWriterMixin.element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct and immediately open a subclass instance of
 <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a> with the given tag name. All other arguments
 are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a> constructor.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
-<li><strong>*args</strong> – Arbitrary arguments for the tag</li>
-<li><strong>**kwargs</strong> – Key word arguments for the tag</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
+<li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#psims.xml.element" title="psims.xml.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#psims.xml.element" title="psims.xml.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLWriterMixin.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLWriterMixin.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLWriterMixin.write" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLWriterMixin.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLWriterMixin.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLWriterMixin.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Either write a complete XML sub-tree or add free text to the file stream</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arg</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code>) – The entity to be written out.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code>) – The entity to be written out.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="psims.xml.XMLDocumentWriter">
-<em class="property">class </em><code class="descclassname">psims.xml.</code><code class="descname">XMLDocumentWriter</code><span class="sig-paren">(</span><em>outfile</em>, <em>close=False</em>, <em>encoding=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">XMLDocumentWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>A base class for types which are used to
 write complete XML documents.</p>
-<dl class="attribute">
-<dt id="psims.xml.XMLDocumentWriter.outfile">
-<code class="descname">outfile</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.outfile" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.outfile">
+<span class="sig-name descname"><span class="pre">outfile</span></span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.outfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>A writable file object</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">file</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>file</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.XMLDocumentWriter.toplevel">
-<code class="descname">toplevel</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.toplevel" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.toplevel">
+<span class="sig-name descname"><span class="pre">toplevel</span></span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.toplevel" title="Permalink to this definition">¶</a></dt>
 <dd><p>The top-level XML tag</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase">TagBase</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase">TagBase</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.XMLDocumentWriter.xmlfile">
-<code class="descname">xmlfile</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.xmlfile" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.xmlfile">
+<span class="sig-name descname"><span class="pre">xmlfile</span></span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.xmlfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>The XML formatter</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree.xmlfile</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>lxml.etree.xmlfile</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.xml.XMLDocumentWriter.writer">
-<code class="descname">writer</code><a class="headerlink" href="#psims.xml.XMLDocumentWriter.writer" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.writer">
+<span class="sig-name descname"><span class="pre">writer</span></span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.writer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The low-level XML writer used by <a class="reference internal" href="#psims.xml.XMLDocumentWriter.xmlfile" title="psims.xml.XMLDocumentWriter.xmlfile"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xmlfile</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">lxml.etree._IncrementalFileWriter</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>lxml.etree._IncrementalFileWriter</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLDocumentWriter.begin">
-<code class="descname">begin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.begin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.begin" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.begin">
+<span class="sig-name descname"><span class="pre">begin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.begin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the doctype and starts the low-level writing machinery</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLDocumentWriter.controlled_vocabularies">
-<code class="descname">controlled_vocabularies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.controlled_vocabularies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.controlled_vocabularies" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.controlled_vocabularies">
+<span class="sig-name descname"><span class="pre">controlled_vocabularies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.controlled_vocabularies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.controlled_vocabularies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the <cite>&lt;cvList&gt;</cite> element and all its children,
 including both this format’s default controlled vocabularies
 and those passed as arguments to this method.this</p>
 <p>This method requires writing to have begun.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLDocumentWriter.element">
-<code class="descname">element</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.element" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.element">
+<span class="sig-name descname"><span class="pre">element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct and immediately open a subclass instance of
 <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a> with the given tag name. All other arguments
 are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagBase</span></code></a> constructor.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</li>
-<li><strong>*args</strong> – Arbitrary arguments for the tag</li>
-<li><strong>**kwargs</strong> – Key word arguments for the tag</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
+<li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#psims.xml.element" title="psims.xml.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#psims.xml.element" title="psims.xml.element"><code class="xref py py-func docutils literal notranslate"><span class="pre">element()</span></code></a></p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLDocumentWriter.end">
-<code class="descname">end</code><span class="sig-paren">(</span><em>exc_type=None</em>, <em>exc_value=None</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.end" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.end">
+<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.end" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ends the XML document, and flushes and closes the file
 if appropriate.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLDocumentWriter.format">
-<code class="descname">format</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.format" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is deprecated. Previously, the serialization
 process did not indent the XML in-place and the lxml pretty printer
 had to be invoked separately. With the addition of <code class="xref py py-class docutils literal notranslate"><span class="pre">XMLFormattingStreamWriter</span></code>,
 the XML stream is formatted in-place as it is being streamed to file.</p>
 </dd></dl>
 
-<dl class="staticmethod">
-<dt id="psims.xml.XMLDocumentWriter.toplevel_tag">
-<em class="property">static </em><code class="descname">toplevel_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.toplevel_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.toplevel_tag" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.toplevel_tag">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">toplevel_tag</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.toplevel_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.toplevel_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridable method to construct the appropriate
 tag for <a class="reference internal" href="#psims.xml.XMLDocumentWriter.toplevel" title="psims.xml.XMLDocumentWriter.toplevel"><code class="xref py py-attr docutils literal notranslate"><span class="pre">toplevel</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase">TagBase</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#psims.xml.TagBase" title="psims.xml.TagBase">TagBase</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLDocumentWriter.validate">
-<code class="descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.validate" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempt to perform XSD validation on the XML document
 this writer wrote</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
-<li><em>bool</em> – Whether or not the document was valid</li>
-<li><em>lxml.etree.XMLSchema</em> – The schema object where errors are logged</li>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>bool</em> – Whether or not the document was valid</p></li>
+<li><p><em>lxml.etree.XMLSchema</em> – The schema object where errors are logged</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> – When the file cannot be recovered from the writer object,
-a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</td>
-</tr>
-</tbody>
-</table>
+</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – When the file cannot be recovered from the writer object,
+    a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.xml.XMLDocumentWriter.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.write" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psims.xml.XMLDocumentWriter.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Either write a complete XML sub-tree or add free text to the file stream</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arg</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code>) – The entity to be written out.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code>) – The entity to be written out.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -771,16 +678,16 @@ a <a class="reference external" href="https://docs.python.org/3/library/exceptio
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

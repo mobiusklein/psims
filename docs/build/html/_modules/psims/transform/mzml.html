@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 
@@ -186,6 +188,20 @@
 <span class="sd">        read by :class:`pyteomics.mzml.MzML`.</span>
 <span class="sd">    transform_description : :class:`str`</span>
 <span class="sd">        A description of the transformation to include in the written metadata</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_stream : path or file-like</span>
+<span class="sd">        A byte stream from an mzML format data buffer</span>
+<span class="sd">    output_stream : path or file-like</span>
+<span class="sd">        A writable binary stream to copy the contents of :attr:`input_stream` into</span>
+<span class="sd">    transform : :class:`Callable`, optional</span>
+<span class="sd">        A function to call on each spectrum, passed as a :class:`dict` object as</span>
+<span class="sd">        read by :class:`pyteomics.mzml.MzML`.</span>
+<span class="sd">    transform_description : :class:`str`</span>
+<span class="sd">        A description of the transformation to include in the written metadata</span>
+<span class="sd">    sort_by_scan_time : :class:`bool`</span>
+<span class="sd">        Whether or not to sort spectra by scan time prior to writing</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_stream</span><span class="p">,</span> <span class="n">output_stream</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform_description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -469,8 +485,38 @@
 
 
 <div class="viewcode-block" id="MzMLToMzMLb"><a class="viewcode-back" href="../../../transform/mzml.html#psims.transform.mzml.MzMLToMzMLb">[docs]</a><span class="k">class</span> <span class="nc">MzMLToMzMLb</span><span class="p">(</span><span class="n">MzMLTransformer</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Convert an mzML document into an mzMLb file, with an optional transformation along</span>
+<span class="sd">    the way.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_stream : path or file-like</span>
+<span class="sd">        A byte stream from an mzML format data buffer</span>
+<span class="sd">    output_stream : path or file-like</span>
+<span class="sd">        A writable binary stream to copy the contents of :attr:`input_stream` into</span>
+<span class="sd">    transform : :class:`Callable`, optional</span>
+<span class="sd">        A function to call on each spectrum, passed as a :class:`dict` object as</span>
+<span class="sd">        read by :class:`pyteomics.mzml.MzML`.</span>
+<span class="sd">    transform_description : :class:`str`</span>
+<span class="sd">        A description of the transformation to include in the written metadata</span>
+<span class="sd">    sort_by_scan_time : :class:`bool`</span>
+<span class="sd">        Whether or not to sort spectra by scan time prior to writing</span>
+<span class="sd">    h5_compression : :class:`str`, optional</span>
+<span class="sd">        The name of the HDF5 compression method to use. Defaults to</span>
+<span class="sd">        :const:`psims.mzmlb.writer.DEFAULT_COMPRESSOR`</span>
+<span class="sd">    h5_compression_opts : :class:`tuple` or :class:`int`, optional</span>
+<span class="sd">        The configuration options for the selected compressor. For &quot;gzip&quot;,</span>
+<span class="sd">        this a single integer setting the compression level, while Blosc takes</span>
+<span class="sd">        a tuple of integers.</span>
+<span class="sd">    h5_blocksize : :class:`int`, optional</span>
+<span class="sd">        The size of the compression blocks used when building the HDF5 file.</span>
+<span class="sd">        Smaller blocks improve random access speed at the expense of compression</span>
+<span class="sd">        efficiency and space. Defaults to 2 ** 20, 1MB.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_stream</span><span class="p">,</span> <span class="n">output_stream</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform_description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">sort_by_scan_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">hdf5args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">transform</span> <span class="o">=</span> <span class="n">identity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_stream</span> <span class="o">=</span> <span class="n">input_stream</span>
@@ -504,16 +550,16 @@
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

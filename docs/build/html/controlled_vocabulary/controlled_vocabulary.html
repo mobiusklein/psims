@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mzML Transformation Stream" href="../transform/mzml.html" />
@@ -152,196 +154,175 @@ from the file schemas for faster update and maintenance life cycles.</p>
 <p>The <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></a> type represents a parsed and interpreted
 controlled vocabulary, a collection of <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a>
 objects.</p>
-<dl class="class">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary">
-<em class="property">class </em><code class="descclassname">psims.controlled_vocabulary.controlled_vocabulary.</code><code class="descname">ControlledVocabulary</code><span class="sig-paren">(</span><em>terms</em>, <em>id=None</em>, <em>metadata=None</em>, <em>version=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.controlled_vocabulary.controlled_vocabulary.</span></span><span class="sig-name descname"><span class="pre">ControlledVocabulary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">terms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="Permalink to this definition">¶</a></dt>
 <dd><p>A Controlled Vocabulary is a collection
 of terms or entities with controlled meanings
 and semantics.</p>
 <p>This object makes entities resolvable by name,
 accession number, or synonym.</p>
 <p>This object implements the <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> protocol.</p>
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.id">
-<code class="descname">id</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.id" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unique identifier for this collection</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.metadata">
-<code class="descname">metadata</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.metadata" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>A mapping of metadata describing this controlled vocabulary</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.version">
-<code class="descname">version</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.version" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>A string describing the version of this controlled vocabulary.
 Not all vocabularies are versioned the same way, so this is value
 is not interpreted further automatically.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt>
-<code class="descname">id</code></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd><p>An identifier for this controlled vocabulary that is unique within
 a particular context</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.name">
-<code class="descname">name</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.name" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A human-friendly name for this controlled vocabulary</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.terms">
-<code class="descname">terms</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.terms" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.terms">
+<span class="sig-name descname"><span class="pre">terms</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.terms" title="Permalink to this definition">¶</a></dt>
 <dd><p>The storage for storing the primary mapping from term ID to terms</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="classmethod">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.from_obo">
-<em class="property">classmethod </em><code class="descname">from_obo</code><span class="sig-paren">(</span><em>handle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.from_obo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.from_obo" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.from_obo">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_obo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.from_obo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.from_obo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct a new instance from an OBO format stream.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>handle</strong> (<em>file-like</em>) – A file-like object over an OBO format.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary">ControlledVocabulary</a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">ValueError: – When the controlled vocabulary produced contains no terms</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>handle</strong> (<em>file-like</em>) – A file-like object over an OBO format.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary">ControlledVocabulary</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError:</strong> – When the controlled vocabulary produced contains no terms</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.items">
-<code class="descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list of D's (key, value) pairs, as 2-tuples<a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.items" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D’s</span> <span class="pre">items</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.items" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.keys">
-<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list of D's keys<a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.keys" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D’s</span> <span class="pre">keys</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.names">
-<code class="descname">names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.names" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.names">
+<span class="sig-name descname"><span class="pre">names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.names" title="Permalink to this definition">¶</a></dt>
 <dd><p>A key-view over all the names in this controlled vocabulary, distinct
 from accessions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">collections.KeysView</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>collections.KeysView</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query">
-<code class="descname">query</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for a term whose id or name matches <cite>key</cite>, or if it is a synonym.</p>
 <p>This search is case-insensitive, but case-matching is preferred.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The key to look up.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>term</strong> – The found entity, if any.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><em>KeyError :</em> – If there is no match to any term in this vocabulary</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The key to look up.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>term</strong> – The found entity, if any.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError :</strong> – If there is no match to any term in this vocabulary</p>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search"><code class="xref py py-meth docutils literal notranslate"><span class="pre">search()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getitem__()</span></code></p>
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">__getitem__</span></code></p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search">
-<code class="descname">search</code><span class="sig-paren">(</span><em>query</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#ControlledVocabulary.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for any term containing the query in its id, name, or synonyms.</p>
 <p>This algorithm uses substring containment and may return multiple hits,
 and can be ambiguous when given a common or short substring. For exact
 string matches, use <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query()</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>query</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The search query</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>matched</strong> – The matched terms.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>query</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The search query</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>matched</strong> – The matched terms.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query()</span></code></a></p>
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -366,221 +347,191 @@ for future re-use.</p>
 <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">OBOCache</span></code></a> and configure it separately. This custom cache instance can be passed to all
 XML file writing classes as the <code class="xref py py-obj docutils literal notranslate"><span class="pre">vocabulary_resolver</span></code> parameter.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">OBOCache</span></code></a> has two behavioral switches that interact:</dt>
-<dd><ul class="first last simple">
-<li><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OBOCache.enabled</span></code></a> - When this is <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, files from the cache directory will be used
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">OBOCache</span></code></a> has two behavioral switches that interact:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OBOCache.enabled</span></code></a> - When this is <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, files from the cache directory will be used
 and new files will be added to the cache directory. Otherwise, a new copy of each CV
-file will be requested when accessing a vocabulary.</li>
-<li><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OBOCache.use_remote</span></code></a> - When this is <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, new copies of CV files will be requested
+file will be requested when accessing a vocabulary.</p></li>
+<li><p><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OBOCache.use_remote</span></code></a> - When this is <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, new copies of CV files will be requested
 over the network, falling back to packaged copy in <code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code> only when the network
-request fails. Otherwise, the packaged copy will be used automatically.</li>
+request fails. Otherwise, the packaged copy will be used automatically.</p></li>
 </ul>
 </dd>
 </dl>
 </div>
-<dl class="class">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache">
-<em class="property">class </em><code class="descclassname">psims.controlled_vocabulary.controlled_vocabulary.</code><code class="descname">OBOCache</code><span class="sig-paren">(</span><em>cache_path='.obo_cache'</em>, <em>enabled=True</em>, <em>resolvers=None</em>, <em>use_remote=True</em>, <em>user_agent_emulation=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.controlled_vocabulary.controlled_vocabulary.</span></span><span class="sig-name descname"><span class="pre">OBOCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.obo_cache'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolvers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_remote</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_agent_emulation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="Permalink to this definition">¶</a></dt>
 <dd><p>A cache for retrieved ontology sources stored on the file system, and an
 abstraction layer to make registered controlled vocabularies constructable
 from a URI even if they are not in the same format.</p>
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_exists">
-<code class="descname">cache_exists</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_exists" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_exists">
+<span class="sig-name descname"><span class="pre">cache_exists</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether the cache directory exists</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_path">
-<code class="descname">cache_path</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_path" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_path">
+<span class="sig-name descname"><span class="pre">cache_path</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.cache_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>The path to the cache directory</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled">
-<code class="descname">enabled</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled">
+<span class="sig-name descname"><span class="pre">enabled</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.enabled" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether the cache will be used or not</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolvers">
-<code class="descname">resolvers</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolvers" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolvers">
+<span class="sig-name descname"><span class="pre">resolvers</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolvers" title="Permalink to this definition">¶</a></dt>
 <dd><p>A mapping from ontology URL to a function which will be called instead of
 opening the URL to retrieve the <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></a> object. A
 resolver is any callable that takes only an <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">OBOCache</span></code></a> instance as
 a single argument.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote">
-<code class="descname">use_remote</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote">
+<span class="sig-name descname"><span class="pre">use_remote</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.use_remote" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether or not to try to access remote repositories over the network to
 retrieve controlled vocabularies. If not, will automatically default to
 either the cached copy or use the fallback value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.user_agent_emulation">
-<code class="descname">user_agent_emulation</code><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.user_agent_emulation" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.user_agent_emulation">
+<span class="sig-name descname"><span class="pre">user_agent_emulation</span></span><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.user_agent_emulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether or not to try to emulate a web browser’s user agent when trying
 to download a controlled vocabulary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.fallback">
-<code class="descname">fallback</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.fallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.fallback" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.fallback">
+<span class="sig-name descname"><span class="pre">fallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.fallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.fallback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtain a stream for the vocabulary specified by <cite>uri</cite>
 from the packaged bundle distributed with <code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI to retrieve a fallback stream for.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>result</strong> – Returns a backup stream, or <code class="xref py py-const docutils literal notranslate"><span class="pre">None</span></code> if no fallback exists.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">file-like or <code class="xref py py-const docutils literal notranslate"><span class="pre">None</span></code></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI to retrieve a fallback stream for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>result</strong> – Returns a backup stream, or <code class="xref py py-const docutils literal notranslate"><span class="pre">None</span></code> if no fallback exists.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>file-like or <code class="xref py py-const docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.has_custom_resolver">
-<code class="descname">has_custom_resolver</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.has_custom_resolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.has_custom_resolver" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.has_custom_resolver">
+<span class="sig-name descname"><span class="pre">has_custom_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.has_custom_resolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.has_custom_resolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if <cite>uri</cite> has a resolver function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI to test</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI to test</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.path_for">
-<code class="descname">path_for</code><span class="sig-paren">(</span><em>name</em>, <em>setext=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.path_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.path_for" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.path_for">
+<span class="sig-name descname"><span class="pre">path_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.path_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.path_for" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct a path for a given controlled vocabulary file
 in the cache on the file system.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If the cache directory does not exist, this will create it.</p>
+<p class="admonition-title">Note</p>
+<p>If the cache directory does not exist, this will create it.</p>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the controlled vocabulary file</li>
-<li><strong>setext</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether or not to enforce the .obo extension</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the controlled vocabulary file</p></li>
+<li><p><strong>setext</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether or not to enforce the .obo extension</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>path</strong> – The path in the file system cache to use for this name.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – The path in the file system cache to use for this name.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolve">
-<code class="descname">resolve</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.resolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolve" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolve">
+<span class="sig-name descname"><span class="pre">resolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.resolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.resolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an readable file-like object for the controlled vocabulary referred
 to by <cite>uri</cite>.</p>
 <p>If <cite>uri</cite> has a custom resolver, by <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.has_custom_resolver" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.has_custom_resolver"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_custom_resolver()</span></code></a>, the custom
 resolver function will be called instead.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI for the controlled vocabulary to access</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>fp</strong> – If <cite>uri</cite> has a custom resolver, any type may be returned, otherwise a readable
-file-like object in binary mode over the requested controlled vocabulary.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI for the controlled vocabulary to access</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fp</strong> – If <cite>uri</cite> has a custom resolver, any type may be returned, otherwise a readable
+file-like object in binary mode over the requested controlled vocabulary.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.set_resolver">
-<code class="descname">set_resolver</code><span class="sig-paren">(</span><em>uri</em>, <em>resolver</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.set_resolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.set_resolver" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.controlled_vocabulary.OBOCache.set_resolver">
+<span class="sig-name descname"><span class="pre">set_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/controlled_vocabulary.html#OBOCache.set_resolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.set_resolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a resolver callable for <cite>uri</cite></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI to register the custom resolver for</li>
-<li><strong>resolver</strong> (<em>Callable</em>) – A resolver is any callable that takes only an <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">OBOCache</span></code></a> instance as
-a single argument.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URI to register the custom resolver for</p></li>
+<li><p><strong>resolver</strong> (<em>Callable</em>) – A resolver is any callable that takes only an <a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.OBOCache" title="psims.controlled_vocabulary.controlled_vocabulary.OBOCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">OBOCache</span></code></a> instance as
+a single argument.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -591,135 +542,117 @@ a single argument.</li>
 <p>Terms in a controlled vocabulary define entities, categories, properties and relationships between
 them. The <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a> type is how these are represented
 in memory.</p>
-<dl class="class">
-<dt id="psims.controlled_vocabulary.entity.Entity">
-<em class="property">class </em><code class="descclassname">psims.controlled_vocabulary.entity.</code><code class="descname">Entity</code><span class="sig-paren">(</span><em>vocabulary=None</em>, <em>**attributes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.controlled_vocabulary.entity.</span></span><span class="sig-name descname"><span class="pre">Entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocabulary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represent a term in a controlled vocabulary.</p>
 <p>While this type implements the <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>,
 it supports attribute access notation for keys.</p>
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.entity.Entity.children">
-<code class="descname">children</code><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.children" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.children">
+<span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional entities derived from this one</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">list of <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.entity.Entity.data">
-<code class="descname">data</code><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.data" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>An arbitrary attribute store representing key-value pairs</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.entity.Entity.vocabulary">
-<code class="descname">vocabulary</code><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.vocabulary" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.vocabulary">
+<span class="sig-name descname"><span class="pre">vocabulary</span></span><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.vocabulary" title="Permalink to this definition">¶</a></dt>
 <dd><p>The source vocabulary. May be used for upward references</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary" title="psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledVocabulary</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.entity.Entity.id">
-<code class="descname">id</code><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.id" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The CURI-style identifier of this entity, the accession of the term.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.controlled_vocabulary.entity.Entity.definition">
-<code class="descname">definition</code><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.definition" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.definition">
+<span class="sig-name descname"><span class="pre">definition</span></span><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.definition" title="Permalink to this definition">¶</a></dt>
 <dd><p>The “def” field of a term.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.entity.Entity.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>k</em><span class="optional">[</span>, <em>d</em><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; D[k] if k in D, else d.  d defaults to None.<a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.get" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">k</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">d</span></em><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; <span class="pre">D[k]</span> <span class="pre">if</span> <span class="pre">k</span> <span class="pre">in</span> <span class="pre">D,</span> <span class="pre">else</span> <span class="pre">d.</span>&#160; <span class="pre">d</span> <span class="pre">defaults</span> <span class="pre">to</span> <span class="pre">None.</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.get" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.entity.Entity.is_of_type">
-<code class="descname">is_of_type</code><span class="sig-paren">(</span><em>tp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.is_of_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.is_of_type" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.is_of_type">
+<span class="sig-name descname"><span class="pre">is_of_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.is_of_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.is_of_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if <cite>tp</cite> is an ancestor of this <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tp</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The identifier for the entity to test</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tp</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The identifier for the entity to test</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.entity.Entity.items">
-<code class="descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list of D's (key, value) pairs, as 2-tuples<a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.items" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D’s</span> <span class="pre">items</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.items" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.entity.Entity.keys">
-<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list of D's keys<a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.keys" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D’s</span> <span class="pre">keys</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.entity.Entity.parent">
-<code class="descname">parent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.parent" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.parent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.parent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch the parent or parents of this <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a>
 in the bound controlled vocabulary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="#psims.controlled_vocabulary.entity.Entity" title="psims.controlled_vocabulary.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.controlled_vocabulary.entity.Entity.values">
-<code class="descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list of D's values<a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.values" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.controlled_vocabulary.entity.Entity.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">an</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D’s</span> <span class="pre">values</span><a class="reference internal" href="../_modules/psims/controlled_vocabulary/entity.html#Entity.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.controlled_vocabulary.entity.Entity.values" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -748,16 +681,16 @@ in the bound controlled vocabulary.</p>
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Controlled Vocabulary Objects" href="../controlled_vocabulary/controlled_vocabulary.html" /> 
@@ -145,89 +147,86 @@
 <p>Given a file stream from an mzML file, <a class="reference internal" href="#psims.transform.mzml.MzMLTransformer" title="psims.transform.mzml.MzMLTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">psims.transform.mzml.MzMLTransformer</span></code></a>
 will copy it to a new stream, applying a user provided transformation function to modify
 each spectrum en-route. It can also optionally sort the spectra by “scan start time”.</p>
-<span class="target" id="module-psims.transform.mzml"></span><dl class="class">
-<dt id="psims.transform.mzml.MzMLTransformer">
-<em class="property">class </em><code class="descclassname">psims.transform.mzml.</code><code class="descname">MzMLTransformer</code><span class="sig-paren">(</span><em>input_stream</em>, <em>output_stream</em>, <em>transform=None</em>, <em>transform_description=None</em>, <em>sort_by_scan_time=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/transform/mzml.html#MzMLTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-psims.transform.mzml"></span><dl class="py class">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLTransformer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.transform.mzml.</span></span><span class="sig-name descname"><span class="pre">MzMLTransformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_stream</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_stream</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by_scan_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/transform/mzml.html#MzMLTransformer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads an mzML file stream from <a class="reference internal" href="#psims.transform.mzml.MzMLTransformer.input_stream" title="psims.transform.mzml.MzMLTransformer.input_stream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">input_stream</span></code></a>, copying its metadata
 to <a class="reference internal" href="#psims.transform.mzml.MzMLTransformer.output_stream" title="psims.transform.mzml.MzMLTransformer.output_stream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">output_stream</span></code></a>, and then copies its spectra, applying <a class="reference internal" href="#psims.transform.mzml.MzMLTransformer.transform" title="psims.transform.mzml.MzMLTransformer.transform"><code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code></a>
 to each spectrum object as it goes.</p>
 <p>If <code class="xref py py-attr docutils literal notranslate"><span class="pre">sort_by_by_scan_time</span></code> is <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, then prior to writing spectra,
 a first pass will be made over the mzML file and the spectra will be written out
 ordered by <code class="docutils literal notranslate"><span class="pre">MS:1000016:&quot;scan</span> <span class="pre">start</span> <span class="pre">time&quot;</span></code>.</p>
-<dl class="attribute">
-<dt id="psims.transform.mzml.MzMLTransformer.input_stream">
-<code class="descname">input_stream</code><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.input_stream" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLTransformer.input_stream">
+<span class="sig-name descname"><span class="pre">input_stream</span></span><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.input_stream" title="Permalink to this definition">¶</a></dt>
 <dd><p>A byte stream from an mzML format data buffer</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">file-like</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>file-like</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.transform.mzml.MzMLTransformer.output_stream">
-<code class="descname">output_stream</code><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.output_stream" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLTransformer.output_stream">
+<span class="sig-name descname"><span class="pre">output_stream</span></span><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.output_stream" title="Permalink to this definition">¶</a></dt>
 <dd><p>A writable binary stream to copy the contents of <a class="reference internal" href="#psims.transform.mzml.MzMLTransformer.input_stream" title="psims.transform.mzml.MzMLTransformer.input_stream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">input_stream</span></code></a> into</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">file-like</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>file-like</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.transform.mzml.MzMLTransformer.sort_by_scan_time">
-<code class="descname">sort_by_scan_time</code><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.sort_by_scan_time" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLTransformer.sort_by_scan_time">
+<span class="sig-name descname"><span class="pre">sort_by_scan_time</span></span><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.sort_by_scan_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether or not to sort spectra by scan time prior to writing</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.transform.mzml.MzMLTransformer.transform">
-<code class="descname">transform</code><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLTransformer.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>A function to call on each spectrum, passed as a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> object as
 read by <code class="xref py py-class docutils literal notranslate"><span class="pre">pyteomics.mzml.MzML</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>, optional</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>, optional</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="psims.transform.mzml.MzMLTransformer.transform_description">
-<code class="descname">transform_description</code><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.transform_description" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLTransformer.transform_description">
+<span class="sig-name descname"><span class="pre">transform_description</span></span><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.transform_description" title="Permalink to this definition">¶</a></dt>
 <dd><p>A description of the transformation to include in the written metadata</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="psims.transform.mzml.MzMLTransformer.write">
-<code class="descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/transform/mzml.html#MzMLTransformer.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.write" title="Permalink to this definition">¶</a></dt>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_stream</strong> (<em>path</em><em> or </em><em>file-like</em>) – A byte stream from an mzML format data buffer</p></li>
+<li><p><strong>output_stream</strong> (<em>path</em><em> or </em><em>file-like</em>) – A writable binary stream to copy the contents of <a class="reference internal" href="#psims.transform.mzml.MzMLTransformer.input_stream" title="psims.transform.mzml.MzMLTransformer.input_stream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">input_stream</span></code></a> into</p></li>
+<li><p><strong>transform</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>, optional) – A function to call on each spectrum, passed as a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> object as
+read by <code class="xref py py-class docutils literal notranslate"><span class="pre">pyteomics.mzml.MzML</span></code>.</p></li>
+<li><p><strong>transform_description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – A description of the transformation to include in the written metadata</p></li>
+<li><p><strong>sort_by_scan_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether or not to sort spectra by scan time prior to writing</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLTransformer.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/transform/mzml.html#MzMLTransformer.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.transform.mzml.MzMLTransformer.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the the transformed mzML file</p>
 </dd></dl>
 
@@ -238,38 +237,48 @@ read by <code class="xref py py-class docutils literal notranslate"><span class=
 <p><code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code> can also translate mzML into mzMLb automatically using a variant of <code class="xref py py-class docutils literal notranslate"><span class="pre">MzMLtransformer</span></code> called
 <a class="reference internal" href="#psims.transform.mzml.MzMLToMzMLb" title="psims.transform.mzml.MzMLToMzMLb"><code class="xref py py-class docutils literal notranslate"><span class="pre">MzMLToMzMLb</span></code></a>. It works identically to <a class="reference internal" href="#psims.transform.mzml.MzMLTransformer" title="psims.transform.mzml.MzMLTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">MzMLTransformer</span></code></a>, though it can accept additional arguments
 to control the HDF5 block size and compression.</p>
-<dl class="class">
-<dt id="psims.transform.mzml.MzMLToMzMLb">
-<em class="property">class </em><code class="descclassname">psims.transform.mzml.</code><code class="descname">MzMLToMzMLb</code><span class="sig-paren">(</span><em>input_stream</em>, <em>output_stream</em>, <em>transform=None</em>, <em>transform_description=None</em>, <em>sort_by_scan_time=False</em>, <em>**hdf5args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/transform/mzml.html#MzMLToMzMLb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#psims.transform.mzml.MzMLToMzMLb" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="psims.transform.mzml.MzMLToMzMLb">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.transform.mzml.</span></span><span class="sig-name descname"><span class="pre">MzMLToMzMLb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_stream</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_stream</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by_scan_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">hdf5args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/transform/mzml.html#MzMLToMzMLb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.transform.mzml.MzMLToMzMLb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an mzML document into an mzMLb file, with an optional transformation along
+the way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_stream</strong> (<em>path</em><em> or </em><em>file-like</em>) – A byte stream from an mzML format data buffer</p></li>
+<li><p><strong>output_stream</strong> (<em>path</em><em> or </em><em>file-like</em>) – A writable binary stream to copy the contents of <code class="xref py py-attr docutils literal notranslate"><span class="pre">input_stream</span></code> into</p></li>
+<li><p><strong>transform</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>, optional) – A function to call on each spectrum, passed as a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> object as
+read by <code class="xref py py-class docutils literal notranslate"><span class="pre">pyteomics.mzml.MzML</span></code>.</p></li>
+<li><p><strong>transform_description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – A description of the transformation to include in the written metadata</p></li>
+<li><p><strong>sort_by_scan_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether or not to sort spectra by scan time prior to writing</p></li>
+<li><p><strong>h5_compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The name of the HDF5 compression method to use. Defaults to
+<code class="xref py py-const docutils literal notranslate"><span class="pre">psims.mzmlb.writer.DEFAULT_COMPRESSOR</span></code></p></li>
+<li><p><strong>h5_compression_opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The configuration options for the selected compressor. For “gzip”,
+this a single integer setting the compression level, while Blosc takes
+a tuple of integers.</p></li>
+<li><p><strong>h5_blocksize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The size of the compression blocks used when building the HDF5 file.
+Smaller blocks improve random access speed at the expense of compression
+efficiency and space. Defaults to 2 ** 20, 1MB.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">psims.transform.mzml</span> <span class="kn">import</span> <span class="n">MzMLToMzMLb</span>
-
-<span class="n">inpath</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">outpath</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">compression</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-<span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-    <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;blosc&quot;</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">instream</span><span class="p">:</span>
-    <span class="n">MzMLToMzMLb</span><span class="p">(</span><span class="n">instream</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">h5_compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="ch">#!/usr/bin/env python</span>
+<span class="lineno"> 2 </span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="lineno"> 3 </span><span class="kn">from</span> <span class="nn">psims.transform.mzml</span> <span class="kn">import</span> <span class="n">MzMLToMzMLb</span>
+<span class="lineno"> 4 </span>
+<span class="lineno"> 5 </span><span class="n">inpath</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="lineno"> 6 </span><span class="n">outpath</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="lineno"> 7 </span><span class="k">try</span><span class="p">:</span>
+<span class="lineno"> 8 </span>    <span class="n">compression</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="lineno"> 9 </span><span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+<span class="lineno">10 </span>    <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;blosc&quot;</span>
+<span class="lineno">11 </span>
+<span class="lineno">12 </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">instream</span><span class="p">:</span>
+<span class="lineno">13 </span>    <span class="n">MzMLToMzMLb</span><span class="p">(</span><span class="n">instream</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">h5_compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 
@@ -295,16 +304,16 @@ to control the HDF5 block size and compression.</p>
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 

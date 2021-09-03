@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="../../_static/css/theme.min.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.min.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 
@@ -268,7 +270,7 @@
         <span class="k">return</span> <span class="n">text_type</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TagBase"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.TagBase">[docs]</a><span class="nd">@add_metaclass</span><span class="p">(</span><span class="n">ElementType</span><span class="p">)</span>
+<div class="viewcode-block" id="TagBase"><a class="viewcode-back" href="../../xml.html#psims.xml.TagBase">[docs]</a><span class="nd">@add_metaclass</span><span class="p">(</span><span class="n">ElementType</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">TagBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represent a single XML element with arbitrary attributes.</span>
 
@@ -462,7 +464,7 @@
     <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">TagBase</span><span class="p">,),</span> <span class="p">{</span><span class="s2">&quot;tag_name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;type_attrs&quot;</span><span class="p">:</span> <span class="n">attrs</span><span class="p">})</span>
 
 
-<div class="viewcode-block" id="_element"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer._element">[docs]</a><span class="k">def</span> <span class="nf">_element</span><span class="p">(</span><span class="n">_tag_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="_element"><a class="viewcode-back" href="../../xml.html#psims.xml._element">[docs]</a><span class="k">def</span> <span class="nf">_element</span><span class="p">(</span><span class="n">_tag_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Construct a subclass instance of :class:`TagBase` with the given</span>
 <span class="sd">    tag name. All other arguments are forwarded to the :class:`TagBase`</span>
 <span class="sd">    constructor</span>
@@ -488,7 +490,7 @@
     <span class="k">return</span> <span class="n">eltype</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="element"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.element">[docs]</a><span class="k">def</span> <span class="nf">element</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="n">_tag_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="element"><a class="viewcode-back" href="../../xml.html#psims.xml.element">[docs]</a><span class="k">def</span> <span class="nf">element</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="n">_tag_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Construct and immediately write a subclass instance of</span>
 <span class="sd">    :class:`TagBase` with the given tag name. All other arguments</span>
 <span class="sd">    are forwarded to the :class:`TagBase` constructor</span>
@@ -553,7 +555,7 @@
 
 
 
-<div class="viewcode-block" id="CVParam"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.CVParam">[docs]</a><span class="k">class</span> <span class="nc">CVParam</span><span class="p">(</span><span class="n">TagBase</span><span class="p">):</span>
+<div class="viewcode-block" id="CVParam"><a class="viewcode-back" href="../../xml.html#psims.xml.CVParam">[docs]</a><span class="k">class</span> <span class="nc">CVParam</span><span class="p">(</span><span class="n">TagBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a ``&lt;cvParam /&gt;``</span>
 
 <span class="sd">    .. note::</span>
@@ -640,7 +642,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;accession&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">accession</span></div>
 
 
-<div class="viewcode-block" id="UserParam"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.UserParam">[docs]</a><span class="k">class</span> <span class="nc">UserParam</span><span class="p">(</span><span class="n">CVParam</span><span class="p">):</span>
+<div class="viewcode-block" id="UserParam"><a class="viewcode-back" href="../../xml.html#psims.xml.UserParam">[docs]</a><span class="k">class</span> <span class="nc">UserParam</span><span class="p">(</span><span class="n">CVParam</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a ``&lt;userParam /&gt;`` element</span>
 
 <span class="sd">    .. note::</span>
@@ -662,7 +664,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="ParamGroupReference"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.ParamGroupReference">[docs]</a><span class="k">class</span> <span class="nc">ParamGroupReference</span><span class="p">(</span><span class="n">TagBase</span><span class="p">):</span>
+<div class="viewcode-block" id="ParamGroupReference"><a class="viewcode-back" href="../../xml.html#psims.xml.ParamGroupReference">[docs]</a><span class="k">class</span> <span class="nc">ParamGroupReference</span><span class="p">(</span><span class="n">TagBase</span><span class="p">):</span>
     <span class="n">tag_name</span> <span class="o">=</span> <span class="s2">&quot;referenceableParamGroupRef&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
@@ -752,7 +754,7 @@
         <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="o">=</span><span class="n">members</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CV"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.CV">[docs]</a><span class="k">class</span> <span class="nc">CV</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CV"><a class="viewcode-back" href="../../xml.html#psims.xml.CV">[docs]</a><span class="k">class</span> <span class="nc">CV</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represent a Controlled Vocabulary associated with the current document.</span>
 
 <span class="sd">    The controlled vocabulary referenced must specify a URI that will be used</span>
@@ -872,7 +874,7 @@
         <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProvidedCV"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.ProvidedCV">[docs]</a><span class="k">class</span> <span class="nc">ProvidedCV</span><span class="p">(</span><span class="n">CV</span><span class="p">):</span>
+<div class="viewcode-block" id="ProvidedCV"><a class="viewcode-back" href="../../xml.html#psims.xml.ProvidedCV">[docs]</a><span class="k">class</span> <span class="nc">ProvidedCV</span><span class="p">(</span><span class="n">CV</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A wrapper around another object that provides the same basic interface</span>
 <span class="sd">    as :class:`CV` from that object, provided through the :attr:`converter`</span>
 <span class="sd">    function</span>
@@ -906,7 +908,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">ProvidedCV</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="XMLWriterMixin"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLWriterMixin">[docs]</a><span class="k">class</span> <span class="nc">XMLWriterMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLWriterMixin"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLWriterMixin">[docs]</a><span class="k">class</span> <span class="nc">XMLWriterMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A mixin class to provide methods for writing</span>
 <span class="sd">    XML elements and aggregate Components.</span>
 
@@ -919,7 +921,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="XMLWriterMixin.element"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLWriterMixin.element">[docs]</a>    <span class="nd">@contextmanager</span>
+<div class="viewcode-block" id="XMLWriterMixin.element"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLWriterMixin.element">[docs]</a>    <span class="nd">@contextmanager</span>
     <span class="k">def</span> <span class="nf">element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct and immediately open a subclass instance of</span>
 <span class="sd">        :class:`TagBase` with the given tag name. All other arguments</span>
@@ -957,7 +959,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="XMLWriterMixin.write"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLWriterMixin.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLWriterMixin.write"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLWriterMixin.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Either write a complete XML sub-tree or add free text to the file stream</span>
 
 <span class="sd">        Parameters</span>
@@ -1057,7 +1059,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_declaration</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="XMLDocumentWriter"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter">[docs]</a><span class="k">class</span> <span class="nc">XMLDocumentWriter</span><span class="p">(</span><span class="n">XMLWriterMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLDocumentWriter"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLDocumentWriter">[docs]</a><span class="k">class</span> <span class="nc">XMLDocumentWriter</span><span class="p">(</span><span class="n">XMLWriterMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A base class for types which are used to</span>
 <span class="sd">    write complete XML documents.</span>
 
@@ -1072,7 +1074,7 @@
 <span class="sd">    writer : lxml.etree._IncrementalFileWriter</span>
 <span class="sd">        The low-level XML writer used by :attr:`xmlfile`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="XMLDocumentWriter.toplevel_tag"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.toplevel_tag">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="XMLDocumentWriter.toplevel_tag"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLDocumentWriter.toplevel_tag">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">toplevel_tag</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;Overridable method to construct the appropriate</span>
 <span class="sd">        tag for :attr:`toplevel`</span>
@@ -1110,7 +1112,7 @@
     <span class="k">def</span> <span class="nf">writer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="XMLDocumentWriter.begin"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.begin">[docs]</a>    <span class="k">def</span> <span class="nf">begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLDocumentWriter.begin"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLDocumentWriter.begin">[docs]</a>    <span class="k">def</span> <span class="nf">begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Writes the doctype and starts the low-level writing machinery</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_begun</span><span class="p">():</span>
@@ -1140,7 +1142,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
 
-<div class="viewcode-block" id="XMLDocumentWriter.end"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exc_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLDocumentWriter.end"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLDocumentWriter.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exc_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Ends the XML document, and flushes and closes the file</span>
 <span class="sd">        if appropriate.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1163,7 +1165,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_close</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="XMLDocumentWriter.controlled_vocabularies"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.controlled_vocabularies">[docs]</a>    <span class="k">def</span> <span class="nf">controlled_vocabularies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLDocumentWriter.controlled_vocabularies"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLDocumentWriter.controlled_vocabularies">[docs]</a>    <span class="k">def</span> <span class="nf">controlled_vocabularies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write out the `&lt;cvList&gt;` element and all its children,</span>
 <span class="sd">        including both this format&#39;s default controlled vocabularies</span>
 <span class="sd">        and those passed as arguments to this method.this</span>
@@ -1185,7 +1187,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
-<div class="viewcode-block" id="XMLDocumentWriter.format"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLDocumentWriter.format"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLDocumentWriter.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This method is deprecated. Previously, the serialization</span>
 <span class="sd">        process did not indent the XML in-place and the lxml pretty printer</span>
 <span class="sd">        had to be invoked separately. With the addition of :class:`XMLFormattingStreamWriter`,</span>
@@ -1195,7 +1197,7 @@
             <span class="s2">&quot;This method is no longer necessary, XML is formatted automatically&quot;</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XMLDocumentWriter.validate"><a class="viewcode-back" href="../../xml.html#psims.mzid.writer.XMLDocumentWriter.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XMLDocumentWriter.validate"><a class="viewcode-back" href="../../xml.html#psims.xml.XMLDocumentWriter.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Attempt to perform XSD validation on the XML document</span>
 <span class="sd">        this writer wrote</span>
 
@@ -1253,16 +1255,16 @@
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
         </div>
     </div>  
 
