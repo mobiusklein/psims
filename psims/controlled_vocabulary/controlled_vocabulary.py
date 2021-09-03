@@ -1,4 +1,5 @@
 import os
+import sys
 try:
     from urllib2 import urlopen, Request
 except ImportError:
@@ -8,6 +9,8 @@ try:
     from collections.abc import Mapping, Callable
 except ImportError:
     from collections import Mapping, Callable
+
+from six import PY2
 
 from .obo import OBOParser
 from . import unimod
@@ -95,10 +98,11 @@ class ControlledVocabulary(Mapping):
             version = 'unknown'
         self.version = version
         self.name = name
-        self._terms = dict()
-        self.terms = terms
         self.id = id
         self.metadata = metadata
+        self.type_definitions = dict()
+        self._terms = dict()
+        self.terms = terms
 
     def __getitem__(self, key):
         '''A wrapper for :meth:`query`
@@ -210,10 +214,10 @@ class ControlledVocabulary(Mapping):
         self._reindex()
 
     def _reindex(self):
-        self._bind_terms()
         self._build_names()
         self._build_case_normalized()
         self._build_synonyms()
+        self._bind_terms()
 
     def _build_names(self):
         self._names = {
@@ -226,8 +230,24 @@ class ControlledVocabulary(Mapping):
         }
 
     def _bind_terms(self):
-        for term in self.terms.values():
-            term.vocabulary = self
+        if PY2 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
+            value_typed = []
+            for term in self.terms.values():
+                term.vocabulary = self
+                value_types = term.get('has_value_type')
+                if value_types:
+                    value_typed.append(value_types)
+            for value_types in value_typed:
+                for value_type in value_types:
+                    value_type.make_value_type(self)
+
+        else:
+            for term in self.terms.values():
+                term.vocabulary = self
+                value_types = term.get('has_value_type')
+                if value_types:
+                    for value_type in value_types:
+                        value_type.make_value_type(self)
 
     def _build_synonyms(self):
         self._synonyms = {}

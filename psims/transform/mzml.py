@@ -46,6 +46,20 @@ class MzMLTransformer(TransformerBase):
         read by :class:`pyteomics.mzml.MzML`.
     transform_description : :class:`str`
         A description of the transformation to include in the written metadata
+
+    Parameters
+    ----------
+    input_stream : path or file-like
+        A byte stream from an mzML format data buffer
+    output_stream : path or file-like
+        A writable binary stream to copy the contents of :attr:`input_stream` into
+    transform : :class:`Callable`, optional
+        A function to call on each spectrum, passed as a :class:`dict` object as
+        read by :class:`pyteomics.mzml.MzML`.
+    transform_description : :class:`str`
+        A description of the transformation to include in the written metadata
+    sort_by_scan_time : :class:`bool`
+        Whether or not to sort spectra by scan time prior to writing
     """
 
     def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
@@ -329,8 +343,38 @@ class MzMLTransformer(TransformerBase):
 
 
 class MzMLToMzMLb(MzMLTransformer):
+    '''Convert an mzML document into an mzMLb file, with an optional transformation along
+    the way.
+
+    Parameters
+    ----------
+    input_stream : path or file-like
+        A byte stream from an mzML format data buffer
+    output_stream : path or file-like
+        A writable binary stream to copy the contents of :attr:`input_stream` into
+    transform : :class:`Callable`, optional
+        A function to call on each spectrum, passed as a :class:`dict` object as
+        read by :class:`pyteomics.mzml.MzML`.
+    transform_description : :class:`str`
+        A description of the transformation to include in the written metadata
+    sort_by_scan_time : :class:`bool`
+        Whether or not to sort spectra by scan time prior to writing
+    h5_compression : :class:`str`, optional
+        The name of the HDF5 compression method to use. Defaults to
+        :const:`psims.mzmlb.writer.DEFAULT_COMPRESSOR`
+    h5_compression_opts : :class:`tuple` or :class:`int`, optional
+        The configuration options for the selected compressor. For "gzip",
+        this a single integer setting the compression level, while Blosc takes
+        a tuple of integers.
+    h5_blocksize : :class:`int`, optional
+        The size of the compression blocks used when building the HDF5 file.
+        Smaller blocks improve random access speed at the expense of compression
+        efficiency and space. Defaults to 2 ** 20, 1MB.
+    '''
     def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
                  sort_by_scan_time=False, **hdf5args):
+        '''
+        '''
         if transform is None:
             transform = identity
         self.input_stream = input_stream

@@ -1,5 +1,6 @@
 import re
 
+from .type_definition import TypeDefinition, ListOfType, parse_xsdtype
 
 class SemanticEdge(object):
     def __init__(self, accession, comment=None):
@@ -39,8 +40,10 @@ class Reference(SemanticEdge):
 
 
 class Relationship(SemanticEdge):
+    dispatch = {}
+
     def __init__(self, predicate, accession, comment=None):
-        self.predicate = predicate
+        self.predicate = predicate.strip(":")
         self.accession = accession
         self.comment = comment
 
@@ -59,4 +62,38 @@ class Relationship(SemanticEdge):
             raise ValueError("Could not parse relationship from %r" % string)
         else:
             groups = groups_match.groupdict()
+            if groups['predicate'] in cls.dispatch:
+                return cls.dispatch[groups['predicate']](**groups)
             return cls(**groups)
+
+
+class HasValueTypeRelationship(Relationship):
+    name = "has_value_type"
+
+    def __init__(self, predicate, accession, comment=None):
+        super(HasValueTypeRelationship, self).__init__(predicate, accession, comment=comment)
+        self.value_type = None
+
+    def make_value_type(self, vocabulary):
+        # We have a built-in data type with known semantics
+        if 'xsd' in self.accession:
+            self.value_type = TypeDefinition(self.accession, self.comment or self.accession, parse_xsdtype(self.accession))
+        else:
+            term = vocabulary[self.accession]
+            self.value_type = term.as_value_type()
+
+    def parse(self, value):
+        if self.value_type is None:
+            raise NotImplementedError()
+        return self.value_type(value)
+
+    def format(self, value):
+        if self.value_type is None:
+            raise NotImplementedError()
+        return self.value_type.format(value)
+
+    def __call__(self, value):
+        return self.parse(value)
+
+
+Relationship.dispatch[HasValueTypeRelationship.name] = HasValueTypeRelationship

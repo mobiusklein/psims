@@ -3,6 +3,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v0.1.43] - 2021-08-06
+
+### Added
+1. Properly coerce negative numbers
+
+### Fixed
+1. Restored support for Py3.5
+
+## [v0.1.42] - 2021-08-05
+
+### Fixed
+1. Made CV-param binding safe to use for Py2 again.
+
+## [v0.1.41] - 2021-08-05
+
+### Added
+1. Re-wrote the `Entity.value_type` machinery to better take into account
+   compound or vocabulary-defined types.
+2. Modified the `Relationship` type to be able to dispatch to sub-classes for named
+   relationship types.
+
+### Changed
+1. Updated vendor controlled vocabularies.
+
 ## [v0.1.39] - 2021-06-27
 
 ### Added

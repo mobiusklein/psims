@@ -95,9 +95,9 @@ def type_inference_guess(string):
     if string.startswith("\""):
         string = string[1:-1]
     lower_string = string.lower()
-    if lower_string == 'none':
+    if lower_string == 'none' or not lower_string:
         return None
-    if lower_string[0].isnumeric():
+    if lower_string[0].isnumeric() or lower_string == '-' and lower_string[1].isnumeric():
         try:
             value = int(string)
         except ValueError:
@@ -113,3 +113,35 @@ def type_inference_guess(string):
     return string
 
 
+class TypeDefinition(object):
+    def __init__(self, id, name, type_definition):
+        self.id = id
+        self.name = name
+        self.type_definition = type_definition
+
+    def __repr__(self):
+        template = "{self.__class__.__name__}({self.id!r}, {self.name!r}, {self.type_definition!r})"
+        return template.format(self=self)
+
+    def parse(self, value):
+        return self.type_definition(value)
+
+    def __call__(self, value):
+        return self.parse(value)
+
+    def format(self, value):
+        return str(value)
+
+
+class ListOfType(TypeDefinition):
+    def __init__(self, id, name, type_definition):
+        super(ListOfType, self).__init__(id, name, type_definition)
+
+    def tokenize(self, text, sep=','):
+        return filter(bool, map(lambda x: x.strip(), text.split(sep)))
+
+    def parse(self, value, sep=','):
+        return [self.type_definition(v) for v in self.tokenize(value, sep=sep)]
+
+    def format(self, value, sep=','):
+        return sep.join([self.type_definition.format(v) for v in value])

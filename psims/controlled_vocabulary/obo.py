@@ -7,7 +7,7 @@ from six import string_types as basestring
 from psims.utils import ensure_iterable
 
 from .entity import Entity
-from .relationship import Relationship, Reference
+from .relationship import Relationship, Reference, HasValueTypeRelationship
 from .type_definition import parse_xsdtype, type_inference_guess
 
 
@@ -111,7 +111,10 @@ class OBOParser(object):
             return None
 
     def _get_value_type(self, xref_string):
-        return parse_xsdtype(xref_string)
+        # Plug into the HasValueTypeRelationship mechanism to push this off onto
+        # later type conversion determination logic
+        name = xref_string.replace("value-type:", '').strip().split(" ")[0]
+        return HasValueTypeRelationship(HasValueTypeRelationship.name, name, name)
 
     def pack(self):
         """Pack the currently collected OBO entry into an :class:`~.Entity`.
@@ -125,10 +128,10 @@ class OBOParser(object):
         self.current_term['_class'] = self.term_type
         entity = Entity(self, **{k: v[0] if len(v) == 1 else v for k, v in self.current_term.items()})
         self._expand_is_a(entity)
-        self._expand_relationship(entity)
         self._expand_synonym(entity)
         self._expand_xref(entity)
         self._expand_property_value(entity)
+        self._expand_relationship(entity)
         self.terms[entity['id']] = entity
         self.current_term = None
 
@@ -177,14 +180,25 @@ class OBOParser(object):
             if isinstance(xref, basestring):
                 xref = [xref]
             for x in xref:
-                key, value = x.split(":", 1)
+                try:
+                    key, value = x.split(":", 1)
+                except ValueError:
+                    key, value = x.split(' \"', 1)
+                    value = '\"' + value
                 if key == 'value-type':
-                    entity.value_type = self._get_value_type(x)
+                    rel = self._get_value_type(x)
+                    entity.setdefault(rel.predicate, [])
+                    entity[rel.predicate].append(rel)
                 else:
                     if value.startswith("\""):
-                        value, dtype = value.rsplit(" ", 1)
+                        try:
+                            value, dtype = value.rsplit('\" ', 1)
+                            value += '\"'
+                        except ValueError:
+                            dtype = None
                         value = value.strip()
-                        dtype = parse_xsdtype(dtype)
+                        if dtype is not None:
+                            dtype = parse_xsdtype(dtype)
                         if dtype is not None:
                             value = dtype(value[1:-1])
                         else:
