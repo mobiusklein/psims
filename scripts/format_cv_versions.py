@@ -1,6 +1,7 @@
-# http://code.activestate.com/recipes/579054-generate-sphinx-table/
+import json
 
-import string
+with open("./psims/controlled_vocabulary/vendor/record.json") as fh:
+    index = json.load(fh)
 
 
 def translate(self, symbol_table):
@@ -90,3 +91,11 @@ def as_rest_table(data, full=False):
     table.append(template.format(*data[-1]))
     table.append(separator)
     return '\n'.join(table)
+
+
+table_data = [["Name", "Version", "Checksum"]]
+for name, traits in index.items():
+    row = [name, traits['version'] if traits['version'] else "-", traits['checksum']]
+    table_data.append(row)
+
+print(as_rest_table(table_data, True))
