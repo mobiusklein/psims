@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v0.1.44] - 2021-12-04
+
+### CV Versions
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 6e4b70ba06653e2944a7f4e73e30a42b |
+| gno.obo.gz | 2021-08-13 | a0365da4060e84703aaec8baeae753d0 |
+| go.obo.gz | releases/2021-11-16 | 1cc9921ed933b2de6231cdfa4a0acdf6 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 0f6779b432281c47de1f6879262e394d |
+| psi-ms.obo.gz | 4.1.64 | 162f1ab5e81bacd9bfce95088d1f4967 |
+| unimod_tables.xml.gz | - | 61ac665064dd806b536c609fcb775920 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+### Added
+- Improved documentation of HDF5 compressors
+
+
 ## [v0.1.43] - 2021-08-06
 
 ### Added
@@ -107,8 +125,13 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.39...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.44...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v0.1.44]: https://github.com/mobiusklein/psims/releases/v0.1.44
+[v0.1.43]: https://github.com/mobiusklein/psims/releases/v0.1.43
+[v0.1.42]: https://github.com/mobiusklein/psims/releases/v0.1.42
+[v0.1.41]: https://github.com/mobiusklein/psims/releases/v0.1.41
+[v0.1.40]: https://github.com/mobiusklein/psims/releases/v0.1.40
 [v0.1.39]: https://github.com/mobiusklein/psims/releases/v0.1.39
 [v0.1.38]: https://github.com/mobiusklein/psims/releases/v0.1.38
 [v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.37
