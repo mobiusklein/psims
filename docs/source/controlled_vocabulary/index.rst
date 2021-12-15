@@ -5,3 +5,4 @@ Controlled Vocabularies
    :maxdepth: 1
 
    controlled_vocabulary
+   bundled
