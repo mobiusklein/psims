@@ -1,11 +1,23 @@
 # psims
 Prototype work for a unified API for writing Proteomics Standards Initiative standardized formats
 for mass spectrometry:
-    1. mzML
-    2. mzIdentML
-    3. mzMLb
+
+1. mzML
+2. mzIdentML
+3. mzMLb
 
 See the [Documenation](https://mobiusklein.github.io/psims) for more information
+
+## Installation
+With pip:
+```sh
+pip install psims
+```
+
+With conda:
+```sh
+conda install -c bioconda -c conda-forge -c defaults psims
+```
 
 ## mzML Minimal Example
 
