@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v0.1.46] - 2022-03-02
+
+### CV Versions
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-01-13 | 122d68f6cf380a8cbb1abb4a74624416 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 921a87531252fbb49b73c92e0b201ab2 |
+| psi-ms.obo.gz | 4.1.72 | 593ed9190e0d657b0eb249efc9a12e77 |
+| unimod_tables.xml.gz | - | 61ac665064dd806b536c609fcb775920 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+### Changed
+1. Properly use non-standard array `cvParam`, setting the `value` to the custom array name. Still also sets
+   a `userParam`.
+
 ## [v0.1.45]
 
 ### CV Versions
@@ -140,8 +158,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.44...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.46...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v0.1.46]: https://github.com/mobiusklein/psims/releases/v0.1.46
 [v0.1.44]: https://github.com/mobiusklein/psims/releases/v0.1.44
 [v0.1.43]: https://github.com/mobiusklein/psims/releases/v0.1.43
 [v0.1.42]: https://github.com/mobiusklein/psims/releases/v0.1.42
