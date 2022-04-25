@@ -57,11 +57,8 @@ setup(
         "Topic :: Text Processing :: Markup :: XML",
         "Intended Audience :: Science/Research",
         "Development Status :: 5 - Production/Stable",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ]
 )
