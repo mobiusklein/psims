@@ -67,6 +67,9 @@ class ValueTypeOf(object):
         return str(value)
 
 
+class KeyOrAttributeError(KeyError, AttributeError):
+    pass
+
 
 class Entity(Mapping):
     '''Represent a term in a controlled vocabulary.
@@ -106,7 +109,10 @@ class Entity(Mapping):
         self.data[key] = value
 
     def __getattr__(self, key):
-        return self[key]
+        try:
+            return self[key]
+        except KeyError:
+            raise KeyOrAttributeError(key) from None
 
     def __setattr__(self, key, value):
         if key in ("vocabulary", "children", "data"):

@@ -18,20 +18,17 @@ or through inheritance.
 import numbers
 import warnings
 
-from collections import defaultdict
+from typing import List, Optional, Dict, Tuple, Mapping, Iterable, BinaryIO, TypedDict, Union, DefaultDict
 
-try:
-    from collections.abc import Mapping
-except ImportError:
-    from collections import Mapping
+from collections import defaultdict
 
 import numpy as np
 
-from psims.xml import XMLWriterMixin, XMLDocumentWriter
+from psims.xml import CVParam, XMLWriterMixin, XMLDocumentWriter
 from psims.utils import TableStateMachine
 
 from .components import (
-    ComponentDispatcher, element,
+    ComponentDispatcher, Software, Spectrum, element,
     default_cv_list, MzML, InstrumentConfiguration, IndexedMzML)
 
 from .binary_encoding import (
@@ -83,6 +80,14 @@ ARRAY_TYPES = [
     "deconvoluted ion mobility array",
     "deconvoluted inverse reduced ion mobility array"
 ]
+
+
+class ArrayTypeSpec(TypedDict):
+    name: str
+    unit: Union[Mapping[str, str], CVParam]
+
+
+ArrayType = Union[str, ArrayTypeSpec]
 
 
 class DocumentSection(ComponentDispatcher, XMLWriterMixin):
@@ -268,7 +273,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.state_machine.transition("controlled_vocabularies")
         super(PlainMzMLWriter, self).controlled_vocabularies()
 
-    def software_list(self, software_list):
+    def software_list(self, software_list: Iterable[Union[Software, Mapping]]):
         """Writes the ``<softwareList>`` section of the document.
 
         .. note::
@@ -465,11 +470,12 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             self.writer, self.context, count=count,
             data_processing_method=data_processing_method)
 
-    def spectrum(self, mz_array=None, intensity_array=None, charge_array=None, id=None,
+    def spectrum(self, mz_array: Optional[np.ndarray] = None, intensity_array: Optional[np.ndarray] = None,
+                 charge_array: Optional[np.ndarray] = None, id: Optional[str] = None,
                  polarity='positive scan', centroided=True, precursor_information=None,
                  scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                  encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
-                 instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+                 instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT) -> Spectrum:
         '''Create a new :class:`~.Spectrum` instance to be written.
 
         This method does not immediately write and close the spectrum element, leaving it
@@ -546,11 +552,11 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             scan_window_list = list(scan_window_list)
 
         if isinstance(encoding, Mapping):
-            encoding = defaultdict(lambda: np.float32, encoding)
+            encoding = DefaultDict(lambda: np.float32, encoding)
         else:
             # create new variable to capture in closure
             _encoding = encoding
-            encoding = defaultdict(lambda: _encoding)
+            encoding = DefaultDict(lambda: _encoding)
         if polarity is not None:
             if isinstance(polarity, int):
                 if polarity > 0:

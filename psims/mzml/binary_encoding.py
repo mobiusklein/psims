@@ -1,3 +1,4 @@
+import os
 import base64
 import zlib
 
@@ -12,7 +13,10 @@ else:
 
 
 try:
-    import pynumpress
+    if os.environ.get("PSIMS_NO_PYNUMPRESS"):
+        pynumpress = False
+    else:
+        import pynumpress
 except ImportError:
     pynumpress = None
 
