@@ -34,7 +34,7 @@ setup(
     maintainer='Joshua Klein',
     maintainer_email="jaklein@bu.edu",
     zip_safe=False,
-    python_requires=">3.7",
+    python_requires=">3.8",
     packages=find_packages(),
     url="https://github.com/mobiusklein/psims",
     include_package_data=True,
