@@ -2,6 +2,11 @@ import os
 import base64
 import zlib
 
+try:
+    from isal import isal_zlib as zlib
+except ImportError:
+    pass
+
 import numpy as np
 
 import six
