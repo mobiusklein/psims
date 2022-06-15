@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.0.0] - 2022-06-15
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-05-16 | 3408f54d9b0e2c7a1e71322ee17fda55 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.91 | fd8c3970411f47d57ec47c470f5c2db2 |
+| unimod_tables.xml.gz | - | 523d0bb41eeb41bb1554fa405915e310 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+### Changed
+1. **Breaking** The default behavior for all writer classes (`MzMLWriter`, `MzIdentMLWriter`, etc.) will now be to *close* files if they are closable. To preserve the
+   previous behavior, explicitly pass `close=False`.
+
+
 ## [v0.1.47] - 2022-04-25
 
 | Name | Version | Checksum |

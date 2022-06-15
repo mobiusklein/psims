@@ -173,7 +173,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     context : :class:`.DocumentContext`
     """
 
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+    def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, version='1.2.0', **kwargs):
         if vocabularies is None:
             vocabularies = []

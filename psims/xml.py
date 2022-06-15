@@ -943,7 +943,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         return _element("xmldocument")
 
-    def __init__(self, outfile, close=False, encoding=None, **kwargs):
+    def __init__(self, outfile, close=None, encoding=None, **kwargs):
         if encoding is None:
             encoding = 'utf-8'
         self.outfile = outfile
@@ -951,6 +951,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         self.xmlfile = XMLFormattingStreamWriter(outfile, encoding=encoding, **kwargs)
         self._writer = None
         self.toplevel = None
+        self._ended = False
         self._close = close
 
     def _should_close(self):
@@ -1020,8 +1021,9 @@ class XMLDocumentWriter(XMLWriterMixin):
             self.flush()
         except Exception:
             pass
+        self._ended = True
         if self._should_close():
-            self.close()
+            self._do_close()
 
     def controlled_vocabularies(self):
         """Write out the `<cvList>` element and all its children,
@@ -1033,11 +1035,20 @@ class XMLDocumentWriter(XMLWriterMixin):
         cvlist = self.CVList(self.vocabularies)
         cvlist.write(self.writer)
 
-    def close(self):
+    def _do_close(self):
         try:
             self.outfile.close()
         except AttributeError:
             pass
+
+    def close(self):
+        if not self._ended:
+            self.end()
+        # end() will close the file if _should_close() returns True,
+        # otherwise the user must be asking to close explicitly.
+        if not self._should_close():
+            self._do_close()
+
 
     def flush(self):
         try:

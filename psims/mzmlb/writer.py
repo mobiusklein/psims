@@ -117,7 +117,7 @@ class MzMLbWriter(_MzMLWriter):
 
     offset_tracker: Counter
 
-    def __init__(self, h5_file, close=False, vocabularies=None, missing_reference_is_error=False,
+    def __init__(self, h5_file, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, h5_compression=DEFAULT_COMPRESSOR,
                  h5_compression_options=None, h5_blocksize: int=2**20, buffer_blocks: int=10, **kwargs):
         if h5_compression in HDF5_COMPRESSORS:

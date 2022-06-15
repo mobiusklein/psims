@@ -11,7 +11,7 @@ from lxml import etree
 import pytest
 
 from psims import compression as compression_registry
-from psims.test.utils import output_path, compressor
+from psims.test.utils import output_path, compressor, identity
 
 
 mz_array = [
@@ -101,7 +101,7 @@ def test_param_unit_resolution():
 
 
 def test_write(output_path, compressor):
-    with MzMLWriter(compressor(output_path, 'wb'), close=True) as f:
+    with MzMLWriter(compressor(output_path, 'wb'), close=None) as f:
         f.register("Software", 'psims')
         f.controlled_vocabularies()
         f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
@@ -154,7 +154,8 @@ def test_write(output_path, compressor):
                     polarity='negative scan', precursor_information=pb)
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)
-    assert opener == compressor
+    if compressor != identity:
+        assert opener == compressor
     reader = mzml.read(opener(output_path, 'rb'))
 
     def reset():

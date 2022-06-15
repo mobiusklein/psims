@@ -229,7 +229,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     DEFAULT_TIME_UNIT = DEFAULT_TIME_UNIT
     DEFAULT_INTENSITY_UNIT = DEFAULT_INTENSITY_UNIT
 
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+    def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, **kwargs):
         if vocabularies is None:
             vocabularies = []
@@ -1058,7 +1058,7 @@ class IndexedMzMLWriter(PlainMzMLWriter):
         A writing stream that automatically tokenizes and records byte offsets for
         specific XML tags.
     """
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+    def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, **kwargs):
         outfile = IndexingStream(outfile)
         super(IndexedMzMLWriter, self).__init__(
