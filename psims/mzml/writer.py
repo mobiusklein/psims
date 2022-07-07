@@ -37,6 +37,7 @@ from .binary_encoding import (
 
 from .utils import ensure_iterable
 from .index import IndexingStream
+from .native_id import NativeIDParser
 
 from .element_builder import ElementBuilder, ParamManagingProperty
 
@@ -100,6 +101,10 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.section = section
         self.writer = writer
         self.section_args = section_args
+
+    @property
+    def native_id_format(self):
+        return self.writer.native_id_format
 
     def __enter__(self):
         return self.begin()
@@ -259,6 +264,15 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ('spectrum_list', ['chromatogram_list']),
             ('chromatogram_list', [])
         ])
+        self.native_id_format = self._find_native_id_parser('multiple peak list nativeID format')
+        self.add_context_key('native_id_formatter', self._native_id_maker)
+
+    def _find_native_id_parser(self, name) -> NativeIDParser:
+        term = self.term(name)
+        return NativeIDParser.from_term(term)
+
+    def _native_id_maker(self, _tag_name, number):
+        return self.native_id_format.format_integer(number)
 
     def toplevel_tag(self):
         return MzML(id=self.id, accession=self.accession)
@@ -311,6 +325,11 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         fd = self.FileDescription(
             file_contents, [self.SourceFile.ensure(sf) for sf in ensure_iterable(source_files)],
             contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
+        native_id_formats = fd.native_id_formats
+        if native_id_formats:
+            if len(native_id_formats) > 1:
+                warnings.warn(f"Found multiple nativeID formats: {native_id_formats}. Using only the first")
+            self.native_id_format = NativeIDParser.from_term(native_id_formats[0])
         fd.write(self.writer)
 
     def instrument_configuration_list(self, instrument_configurations):

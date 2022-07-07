@@ -527,6 +527,9 @@ class ComponentDispatcherBase(object):
     def get_vocabulary(self, *args, **kwargs):
         return self.context.get_vocabulary(*args, **kwargs)
 
+    def add_context_key(self, key, value):
+        self.context[key] = value
+
 
 class XMLBindingDispatcherBase(ComponentDispatcherBase):
 

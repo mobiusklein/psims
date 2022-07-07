@@ -105,7 +105,9 @@ def test_write(output_path, compressor):
         f.register("Software", 'psims')
         f.controlled_vocabularies()
         f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
-            dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
+            dict(id="SPAM1", name="Spam.raw", location="file:///", params=[
+                dict(name="Thermo RAW format"), dict(name="Agilent MassHunter nativeID format")])
+                ])
         f.reference_param_group_list([
             {'id': 'common_params', 'params': [{"proven": "inductively"}]}
         ])
@@ -132,7 +134,7 @@ def test_write(output_path, compressor):
         ])
         with f.run(id='test'):
             with f.spectrum_list(count=2):
-                f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
+                f.write_spectrum(mz_array, intensity_array, charge_array, id=1, params=[
                     {"name": "ms level", "value": 1}, {"ref": 'common_params'}],
                     polarity='negative scan', encoding=encodings,
                     compression='zlib')
@@ -142,7 +144,7 @@ def test_write(output_path, compressor):
                         "mz": 1230, "intensity": None, "charge": None, "params": [
                             "no peak detected"
                         ],
-                        "scan_id": "scanId=1", "activation": ["collision-induced dissociation",
+                        "scan_id": 1, "activation": ["collision-induced dissociation",
                                                               {"collision energy": 56.}]
                 }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
                 pb = f.precursor_builder(mz=12030, scan_id='scanId=2')
