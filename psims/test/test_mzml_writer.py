@@ -104,6 +104,7 @@ def test_write(output_path, compressor):
     with MzMLWriter(compressor(output_path, 'wb'), close=None) as f:
         f.register("Software", 'psims')
         f.controlled_vocabularies()
+        f.native_id_format = "Agilent MassHunter nativeID format"
         f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
             dict(id="SPAM1", name="Spam.raw", location="file:///", params=[
                 dict(name="Thermo RAW format"), dict(name="Agilent MassHunter nativeID format")])

@@ -358,7 +358,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         fd: FileDescription = self.FileDescription(
             file_contents, [self.SourceFile.ensure(sf) for sf in ensure_iterable(source_files)],
             contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
-        native_id_format = fd.contents.native_id_format
+        native_id_format = fd.content.native_id_format
         if native_id_format and not self.native_id_format_configured:
             self.native_id_format = NativeIDParser.from_term(native_id_format)
         elif self.native_id_format_configured:
