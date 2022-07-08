@@ -292,6 +292,18 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     @native_id_format.setter
     def native_id_format(self, native_id_format: str):
         '''Set the nativeID format to use for this file.
+
+        You can specify the name the ID format using either the format's name
+        or its CV ID, e.g. "MS:1000774", or a :class:`~psims.controlled_vocabulary.entity.Entity`
+        describing the same term.
+
+        Explicitly setting this attribute will *prevent* automatically using
+        the nativeID format specified in ``<fileContent>``.
+
+        Parameters
+        ----------
+        native_id_format : :class:`~.Union`[str, :class:`~psims.controlled_vocabulary.entity.Entity`]
+            The nativeID format to use for this file.
         '''
         self._native_id_format = self._find_native_id_parser(native_id_format)
         self.native_id_format_configured = True
