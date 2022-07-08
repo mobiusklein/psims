@@ -106,7 +106,10 @@ class OBOParser(object):
     @property
     def name(self):
         try:
-            return self.header['ontology'].upper()
+            names = self.header['ontology']
+            if isinstance(names, str):
+                return names.upper()
+            return names[0].upper()
         except KeyError:
             return None
 
