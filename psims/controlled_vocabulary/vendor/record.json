@@ -12,8 +12,8 @@
     "version": "releases/2022-07-01"
   },
   "pato.obo.gz": {
-    "checksum": "443de10a418cba2b0a6f4a9c3b73c60c",
-    "version": "releases/2019-09-05"
+    "checksum": "20122e6f42081582787f4f5f273e84de",
+    "version": "releases/2022-06-17/pato.obo"
   },
   "psi-mod.obo.gz": {
     "checksum": "713e6dd17632d0388802f1b0e06800f0",
@@ -28,7 +28,7 @@
     "version": null
   },
   "unit.obo.gz": {
-    "checksum": "4e45267605698d1fcda533c27853a8fc",
-    "version": "releases/2020-03-10"
+    "checksum": "1f6e1b5122ea4c2d3797bae72f140ab1",
+    "version": null
   }
 }

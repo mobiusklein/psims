@@ -67,10 +67,10 @@ class ComponentBase(_ComponentBase):
 
 default_cv_list = [
     CV(id='PSI-MS',
-       uri='https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo',
+       uri='http://purl.obolibrary.org/obo/ms/psi-ms.obo',
        full_name='PSI-MS'),
     CV(id='UO',
-       uri='http://ontologies.berkeleybop.org/uo.obo',
+       uri='http://purl.obolibrary.org/obo/uo.obo',
        full_name='UNIT-ONTOLOGY')
 ]
 
