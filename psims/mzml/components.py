@@ -114,7 +114,23 @@ class IDGenericCollection(GenericCollection):
             member.write(xml_file)
 
 
-class FileContent(ComponentBase):
+class HasNativeIDFormat(object):
+
+    @property
+    def native_id_format(self):
+        formats = []
+        for param in self.params:
+            param = self.context.param(param)
+            try:
+                term = self.context.term(param.accession)
+            except (AttributeError, KeyError):
+                continue
+            if term.is_of_type("MS:1000767"):
+                formats.append(term)
+        return formats
+
+
+class FileContent(ComponentBase, HasNativeIDFormat):
     requires_id = False
 
     def __init__(self, params=None, context=NullMap, **kwargs):
@@ -138,7 +154,7 @@ class SourceFileList(GenericCollection):
         return formats
 
 
-class SourceFile(ComponentBase):
+class SourceFile(ComponentBase, HasNativeIDFormat):
     requires_id = True
 
     def __init__(self, location=None, name=None, id=None,
@@ -186,19 +202,6 @@ class SourceFile(ComponentBase):
     def write_content(self, xml_file):
         self.write_params(xml_file)
 
-    @property
-    def native_id_format(self):
-        formats = []
-        for param in self.params:
-            param = self.context.param(param)
-            try:
-                term = self.context.term(param.accession)
-            except (AttributeError, KeyError):
-                continue
-            if term.is_of_type("MS:1000767"):
-                formats.append(term)
-        return formats
-
 
 class FileDescription(ComponentBase):
     requires_id = False
@@ -224,6 +227,9 @@ class FileDescription(ComponentBase):
 
     @property
     def native_id_formats(self):
+        content_id_format = self.content.native_id_format
+        if content_id_format:
+            return [content_id_format] + self.source_files.native_id_formats
         return self.source_files.native_id_formats
 
     def write_content(self, xml_file):

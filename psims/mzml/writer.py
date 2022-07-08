@@ -29,7 +29,7 @@ from psims.controlled_vocabulary import Entity
 from psims.utils import TableStateMachine
 
 from .components import (
-    ComponentDispatcher, Software, Spectrum, element,
+    ComponentDispatcher, FileDescription, Software, Spectrum, element,
     default_cv_list, MzML, InstrumentConfiguration, IndexedMzML)
 
 from .binary_encoding import (
@@ -265,14 +265,35 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ('spectrum_list', ['chromatogram_list']),
             ('chromatogram_list', [])
         ])
-        self.native_id_format = self._find_native_id_parser('multiple peak list nativeID format')
+        self._native_id_format = self._find_native_id_parser('multiple peak list nativeID format')
         self.native_id_format_configured = False
         self.add_context_key('native_id_formatter', self._native_id_maker)
 
-    def set_native_id_format(self, native_id_format: str):
-        '''Set the nativeID format to use for this file
+    @property
+    def native_id_format(self):
+        '''The nativeID format of the spectra to assume for this data file.
+
+        This is used to determine how to convert an integer into a spectrum's :attr:`~.Spectrum.id`.
+        Defaults to ``MS:1000774``: "multiple peak list nativeID format" which has a pattern of
+        ``index=<number>``.
+
+        This attribute has no effect on spectrum id values specified as strings already formatted.
+
+        .. note::
+            If not explicitly specified, but a term naming an ID format is passed as a parameter in
+            file contents, that will be used. The ID format from source files will **not** be used.
+
+        Returns
+        -------
+        :class:`~.NativeIDParser`
         '''
-        self.native_id_format = self._find_native_id_parser(native_id_format)
+        return self._native_id_format
+
+    @native_id_format.setter
+    def native_id_format(self, native_id_format: str):
+        '''Set the nativeID format to use for this file.
+        '''
+        self._native_id_format = self._find_native_id_parser(native_id_format)
         self.native_id_format_configured = True
 
     def _find_native_id_parser(self, name: Union[str, Entity]) -> NativeIDParser:
@@ -281,7 +302,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         return NativeIDParser.from_term(term)
 
     def _native_id_maker(self, _tag_name, number):
-        return self.native_id_format.format_integer(number)
+        return self._native_id_format.format_integer(number)
 
     def toplevel_tag(self):
         return MzML(id=self.id, accession=self.accession)
@@ -317,6 +338,9 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def file_description(self, file_contents=None, source_files=None, contacts=None):
         r"""Writes the ``<fileDescription>`` section of the document.
 
+        If ``file_contents`` contains a nativeID term, and :attr:`native_id_format` has
+        not been set explicitly, that ID format will be used for this document.
+
         .. note::
             Information pertaining to the entire mzML file (i.e. not specific
             to any part of the data set) is stored here.
@@ -331,14 +355,14 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             to be placed in the ``<sourceFileList>`` element
         """
         self.state_machine.transition("file_description")
-        fd = self.FileDescription(
+        fd: FileDescription = self.FileDescription(
             file_contents, [self.SourceFile.ensure(sf) for sf in ensure_iterable(source_files)],
             contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
-        native_id_formats = fd.native_id_formats
-        if native_id_formats and not self.native_id_format_configured:
-            if len(native_id_formats) > 1:
-                warnings.warn(f"Found multiple nativeID formats: {native_id_formats}. Using only the first")
-            self.native_id_format = NativeIDParser.from_term(native_id_formats[0])
+        native_id_format = fd.contents.native_id_format
+        if native_id_format and not self.native_id_format_configured:
+            self.native_id_format = NativeIDParser.from_term(native_id_format)
+        elif self.native_id_format_configured:
+            fd.content.add_param(self.native_id_format.name)
         fd.write(self.writer)
 
     def instrument_configuration_list(self, instrument_configurations):

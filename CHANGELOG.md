@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v.1.1.0] - 2022-07-07
+
+### Added
+- Added `MzMLWriter.native_id_format` attribute that governs how integers are converted into strings for the
+  spectrum id attribute. This will default to `MS:1000774` `multiple peak list nativeID format`. If `fileContents`
+  includes a nativeID format term and it is not been explicitly specified, that format will be used. This has no
+  effect when specifying a a spectrum id with a string.
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [v1.0.0] - 2022-06-15
 
 | Name | Version | Checksum |
