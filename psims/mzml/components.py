@@ -52,9 +52,6 @@ class IndexedMzML(TagBase):
 
 class ComponentDispatcher(XMLBindingDispatcherBase):
 
-    _native_id_maker = None
-    native_id_format = None
-
     def __init__(self, *args, **kwargs):
         super(
             ComponentDispatcher,
@@ -630,7 +627,7 @@ class Spectrum(ComponentBase):
             sourceFileRef=self._source_file_reference,
             defaultArrayLength=self.default_array_length,
             dataProcessingRef=self._data_processing_reference,
-            id_formatter=context['native_id_formatter'])
+            id_formatter=context.get('native_id_formatter'))
         self.context = context
         self.context['Spectrum'][id] = self.element.id
         self.params = self.prepare_params(params, **kwargs)

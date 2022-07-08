@@ -18,13 +18,14 @@ or through inheritance.
 import numbers
 import warnings
 
-from typing import List, Optional, Dict, Tuple, Mapping, Iterable, BinaryIO, TypedDict, Union, DefaultDict
+from typing import List, Optional, Dict, Tuple, Mapping, Iterable, TypedDict, Union, DefaultDict
 
 from collections import defaultdict
 
 import numpy as np
 
 from psims.xml import CVParam, XMLWriterMixin, XMLDocumentWriter
+from psims.controlled_vocabulary import Entity
 from psims.utils import TableStateMachine
 
 from .components import (
@@ -265,10 +266,18 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ('chromatogram_list', [])
         ])
         self.native_id_format = self._find_native_id_parser('multiple peak list nativeID format')
+        self.native_id_format_configured = False
         self.add_context_key('native_id_formatter', self._native_id_maker)
 
-    def _find_native_id_parser(self, name) -> NativeIDParser:
-        term = self.term(name)
+    def set_native_id_format(self, native_id_format: str):
+        '''Set the nativeID format to use for this file
+        '''
+        self.native_id_format = self._find_native_id_parser(native_id_format)
+        self.native_id_format_configured = True
+
+    def _find_native_id_parser(self, name: Union[str, Entity]) -> NativeIDParser:
+        if not isinstance(name, Entity):
+            term = self.term(name)
         return NativeIDParser.from_term(term)
 
     def _native_id_maker(self, _tag_name, number):
@@ -326,7 +335,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             file_contents, [self.SourceFile.ensure(sf) for sf in ensure_iterable(source_files)],
             contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
         native_id_formats = fd.native_id_formats
-        if native_id_formats:
+        if native_id_formats and not self.native_id_format_configured:
             if len(native_id_formats) > 1:
                 warnings.warn(f"Found multiple nativeID formats: {native_id_formats}. Using only the first")
             self.native_id_format = NativeIDParser.from_term(native_id_formats[0])
