@@ -236,9 +236,12 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     DEFAULT_INTENSITY_UNIT = DEFAULT_INTENSITY_UNIT
 
     def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
-                 vocabulary_resolver=None, id=None, accession=None, **kwargs):
+                 vocabulary_resolver=None, id=None, accession=None, native_id_format: str=None,
+                 **kwargs):
         if vocabularies is None:
             vocabularies = []
+        if native_id_format is None:
+            native_id_format = "multiple peak list nativeID format"
         vocabularies = list(default_cv_list) + list(vocabularies)
         ComponentDispatcher.__init__(
             self,
@@ -265,7 +268,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ('spectrum_list', ['chromatogram_list']),
             ('chromatogram_list', [])
         ])
-        self._native_id_format = self._find_native_id_parser('multiple peak list nativeID format')
+        self._native_id_format = self._find_native_id_parser(native_id_format)
         self.native_id_format_configured = False
         self.add_context_key('native_id_formatter', self._native_id_maker)
 
