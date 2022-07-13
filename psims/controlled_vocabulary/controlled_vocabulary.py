@@ -1,16 +1,15 @@
 import os
 import sys
-try:
-    from urllib2 import urlopen, Request
-except ImportError:
-    from urllib.request import urlopen, Request
+import re
 
-try:
-    from collections.abc import Mapping, Callable
-except ImportError:
-    from collections import Mapping, Callable
+from urllib.request import urlopen, Request
+from typing import Any, Dict, Hashable, Mapping, Callable, Optional, Union
 
 from six import PY2
+
+from psims.utils import ensure_iterable
+from psims.controlled_vocabulary.entity import Entity
+from psims.controlled_vocabulary.relationship import Reference
 
 from .obo import OBOParser
 from . import unimod
@@ -37,6 +36,22 @@ fallback = {
     "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo": _use_vendored_psimod_obo,
     "http://purl.obolibrary.org/obo/gno.obo": _use_vendored_gno_obo,
 }
+
+
+def _default_import_resolver(url: str) -> Optional['ControlledVocabulary']:
+    if url.endswith("obo"):
+        obo_handle = obo_cache.resolve(url)
+        return ControlledVocabulary.from_obo(obo_handle)
+
+
+def is_curie(text: Union[str, Reference]) -> bool:
+    if isinstance(text, Reference):
+        text = text.accession
+    if isinstance(text, str):
+        return re.match(r"(\S+):(\S+)", text)
+    else:
+        return False
+
 
 
 class ControlledVocabulary(Mapping):
@@ -67,6 +82,16 @@ class ControlledVocabulary(Mapping):
     terms : dict
         The storage for storing the primary mapping from term ID to terms
     """
+
+    version: str
+    name: str
+    id: str
+    metadata: Dict[str, Any]
+    import_resolver: Callable[[str], 'ControlledVocabulary']
+    terms: Dict[str, Entity]
+    type_definitions: Dict[str, Any]
+    imports: Dict[str, 'ControlledVocabulary']
+
     @classmethod
     def from_obo(cls, handle):
         '''Construct a new instance from an OBO format stream.
@@ -91,11 +116,13 @@ class ControlledVocabulary(Mapping):
             raise ValueError("Empty Vocabulary")
         return inst
 
-    def __init__(self, terms, id=None, metadata=None, version=None, name=None):
+    def __init__(self, terms, id=None, metadata=None, version=None, name=None, import_resolver: Optional[Callable[[str], 'ControlledVocabulary']]=None):
         if metadata is None:
             metadata = dict()
         if version is None:
             version = 'unknown'
+        if import_resolver is None:
+            import_resolver = _default_import_resolver
         self.version = version
         self.name = name
         self.id = id
@@ -103,6 +130,8 @@ class ControlledVocabulary(Mapping):
         self.type_definitions = dict()
         self._terms = dict()
         self.terms = terms
+        self.import_resolver = import_resolver
+        self.imports = {}
 
     def __getitem__(self, key):
         '''A wrapper for :meth:`query`
@@ -134,6 +163,8 @@ class ControlledVocabulary(Mapping):
         search
         __getitem__
         '''
+        if isinstance(key, Reference):
+            key = key.accession
         if key in self.terms:
             return self.terms[key]
         elif key in self._names:
@@ -154,7 +185,12 @@ class ControlledVocabulary(Mapping):
             elif lower_key in self._obsolete_names:
                 return self._obsolete_names[lower_key]
             else:
-                raise KeyError("%s and %s were not found." % (key, normalized_key))
+                if is_curie(key):
+
+                    result = self._query_imported(key)
+                    if result is not None:
+                        return result
+                raise KeyError("%s and %s were not found." % (key, normalized_key)) from None
 
     def search(self, query):
         '''Search for any term containing the query in its id, name, or synonyms.
@@ -222,11 +258,11 @@ class ControlledVocabulary(Mapping):
     def _build_names(self):
         self._names = {
             v['name']: v for v in self.terms.values()
-            if not v.get("is_obsolete", False)
+            if not v.get("is_obsolete", False) and isinstance(v['name'], Hashable)
         }
         self._obsolete_names = {
             v['name'].lower(): v for v in self.terms.values()
-            if v.get("is_obsolete", False)
+            if v.get("is_obsolete", False) and isinstance(v['name'], Hashable)
         }
 
     def _bind_terms(self):
@@ -260,6 +296,7 @@ class ControlledVocabulary(Mapping):
         self._normalized = {
             v['name'].lower(): v['name']
             for v in self.terms.values()
+            if isinstance(v['name'], str)
         }
 
     def keys(self):
@@ -280,6 +317,22 @@ class ControlledVocabulary(Mapping):
 
     def normalize_name(self, name):
         return self._normalized[name.lower()]
+
+    def _query_imported(self, query):
+        term = None
+        for url in ensure_iterable(self.metadata['import']):
+            if url in self.imports:
+                cv = self.imports[url]
+            else:
+                cv = self.imports[url] = self.import_resolver(url)
+            if cv is None:
+                continue
+            try:
+                term = cv.query(query)
+                break
+            except KeyError:
+                continue
+        return term
 
 
 DEFAULT_USER_AGENT = (
@@ -532,7 +585,8 @@ def register_resolver(name, fn):
 
 def load_psims():
     try:
-        cv = obo_cache.resolve(("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"))
+        cv = obo_cache.resolve(
+            ("http://purl.obolibrary.org/obo/ms/psi-ms.obo"))
         return ControlledVocabulary.from_obo(cv)
     except TypeError:
         cv = _use_vendored_psims_obo()
@@ -540,12 +594,12 @@ def load_psims():
 
 
 def load_uo():
-    cv = obo_cache.resolve("http://ontologies.berkeleybop.org/uo.obo")
+    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/uo.obo")
     return ControlledVocabulary.from_obo(cv)
 
 
 def load_pato():
-    cv = obo_cache.resolve("http://ontologies.berkeleybop.org/pato.obo")
+    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/pato.obo")
     return ControlledVocabulary.from_obo(cv)
 
 
