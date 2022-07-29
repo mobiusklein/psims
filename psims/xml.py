@@ -162,6 +162,7 @@ class TagBase(object):
     def __init__(self, tag_name=None, text="", **attrs):
         self.tag_name = tag_name or self.tag_name
         _id = attrs.pop('id', None)
+        _id_formatter = attrs.pop('id_formatter', id_maker)
         self.attrs = {}
         self.attrs.update(self.type_attrs)
         self.text = text
@@ -170,6 +171,7 @@ class TagBase(object):
         # and any set ids will be passed through the attrs dictionary, but the `with_id`
         # flag won't be propagated. `_force_id` preserves this.
         self._force_id = True
+        self._id_formatter = _id_formatter
         if _id is None:
             self._id_number = None
             self._id_string = None
@@ -210,7 +212,7 @@ class TagBase(object):
     @property
     def id(self):
         if self._id_string is None and self._id_number is not None:
-            self._id_string = id_maker(self.tag_name, self._id_number)
+            self._id_string = self._id_formatter(self.tag_name, self._id_number)
         return self._id_string
 
     def element(self, xml_file=None, with_id=False):
