@@ -7,6 +7,9 @@ retest:
 update-cvs:
 	cd psims/controlled_vocabulary/vendor && python update_vendored_cvs.py && python list_cvs.py
 
+cv-versions:
+	python scripts/format_cv_versions.py
+
 update-docs:
 	git checkout gh-pages
 	git pull origin master

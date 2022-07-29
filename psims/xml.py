@@ -2,14 +2,19 @@ import re
 import warnings
 
 from contextlib import contextmanager
-from collections import deque, OrderedDict
+from collections import deque
+
+from typing import Any, Dict, Iterable, Optional, OrderedDict, Union
+
 
 from lxml import etree
 
 from six import string_types as basestring, add_metaclass, text_type, PY3
 
+from psims.controlled_vocabulary.controlled_vocabulary import ControlledVocabulary
+
 from . import controlled_vocabulary
-from .controlled_vocabulary import obj_to_xsdtype
+from .controlled_vocabulary import obj_to_xsdtype, VocabularyResolverBase
 from .validation import validate
 
 
@@ -533,15 +538,21 @@ class ParamGroupReference(TagBase):
         self.write(*args, **kwargs)
 
 
+CVTypes = Union['CV', 'ProvidedCV']
+
+
 class CVCollection(object):
     """A partially unique collection of :class:`CV` objects.
     """
+
+    storage: OrderedDict[str, CVTypes]
+
     def __init__(self, cvs=None):
         self.storage = OrderedDict()
         if cvs:
             self.update(cvs)
 
-    def add(self, cv):
+    def add(self, cv: CVTypes):
         """Add `cv` to the collection.
 
         If the :attr:`CV.id` is aleady present in the collection, a warning
@@ -560,7 +571,7 @@ class CVCollection(object):
         self.storage[cv.id] = cv
         return self
 
-    def update(self, collection):
+    def update(self, collection: Iterable[CVTypes]):
         """Add each element of `collection` to `self`, calling :meth:`add` on each
         element.
 
@@ -588,7 +599,7 @@ class CVCollection(object):
         """
         return self.__class__(self)
 
-    def __add__(self, other):
+    def __add__(self, other: Iterable[CVTypes]):
         copy = self.copy()
         copy.update(other)
         return copy
@@ -642,6 +653,15 @@ class CV(object):
         The parsed term graph defining this vocabulary
     """
 
+    full_name: str
+    id: str
+    uri: str
+    resolver: VocabularyResolverBase
+    options: Dict[str, Any]
+    _version: Optional[str]
+    _vocabulary: ControlledVocabulary
+
+
     def __init__(self, full_name, id, uri, version=None, resolver=None, **kwargs):
         self.full_name = full_name
         self.id = id
@@ -649,7 +669,7 @@ class CV(object):
         self._version = version
         self.options = kwargs
         self._vocabulary = None
-        self.resolver = None
+        self.resolver = resolver
 
     def __hash__(self):
         return hash(self.uri)
@@ -700,17 +720,9 @@ class CV(object):
         """
         resolver = self.resolver or controlled_vocabulary.obo_cache
         if handle is None:
-            try:
-                fp = resolver.resolve(self.uri)
-                cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
-            except ValueError:
-                fp = resolver.fallback(self.uri)
-                if fp is not None:
-                    cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
-                else:
-                    raise KeyError(self.uri)
+            cv = resolver.load(self.uri)
         else:
-            cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle)
+            cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle, import_handler=self.resolver.load)
         try:
             cv.id = self.id
         except Exception:

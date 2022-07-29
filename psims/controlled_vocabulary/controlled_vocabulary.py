@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+import logging
 
 from urllib.request import urlopen, Request
 from typing import Any, Dict, Hashable, Mapping, Callable, Optional, Union
@@ -19,15 +20,20 @@ from .vendor import (
     _use_vendored_pato_obo, _use_vendored_psimod_obo, _use_vendored_psims_obo,
     _use_vendored_unimod_xml, _use_vendored_unit_obo, _use_vendored_xlmod_obo)
 
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
+
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
     ("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"): _use_vendored_psims_obo,
+    "http://purl.obolibrary.org/obo/ms/psi-ms.obo": _use_vendored_psims_obo,
     ("http://obo.cvs.sourceforge.net/*checkout*/"
      "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/uo.obo"): _use_vendored_unit_obo,
+    "http://purl.obolibrary.org/obo/uo.obo": _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/pato.obo"): _use_vendored_pato_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo"): _use_vendored_xlmod_obo,
     ("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
@@ -93,7 +99,7 @@ class ControlledVocabulary(Mapping):
     imports: Dict[str, 'ControlledVocabulary']
 
     @classmethod
-    def from_obo(cls, handle):
+    def from_obo(cls, handle, **kwargs):
         '''Construct a new instance from an OBO format stream.
 
         Parameters
@@ -111,7 +117,7 @@ class ControlledVocabulary(Mapping):
             When the controlled vocabulary produced contains no terms
         '''
         parser = OBOParser(handle)
-        inst = cls(parser.terms, metadata=parser.header, version=parser.version, name=parser.name)
+        inst = cls(parser.terms, metadata=parser.header, version=parser.version, name=parser.name, **kwargs)
         if len(parser.terms) == 0:
             raise ValueError("Empty Vocabulary")
         return inst
@@ -324,7 +330,11 @@ class ControlledVocabulary(Mapping):
             if url in self.imports:
                 cv = self.imports[url]
             else:
-                cv = self.imports[url] = self.import_resolver(url)
+                try:
+                    logger.debug(f"Importing {url} for {self.name}")
+                    cv = self.imports[url] = self.import_resolver(url)
+                except ValueError:
+                    cv = None
             if cv is None:
                 continue
             try:
@@ -340,7 +350,21 @@ DEFAULT_USER_AGENT = (
     ' Gecko) Chrome/68.0.3440.106 Safari/537.36')
 
 
-class OBOCache(Callable):
+class VocabularyResolverBase(Callable):
+    def load(self, uri: str):
+        raise NotImplementedError()
+
+    def resolve(self, uri: str):
+        raise NotImplementedError()
+
+    def fallback(self, uri: str):
+        raise NotImplementedError()
+
+    def __call__(self, uri: str):
+        return self.resolve(uri)
+
+
+class OBOCache(VocabularyResolverBase):
     """A cache for retrieved ontology sources stored on the file system, and an
     abstraction layer to make registered controlled vocabularies constructable
     from a URI even if they are not in the same format.
@@ -527,6 +551,19 @@ class OBOCache(Callable):
             traceback.print_exc()
             raise
 
+    def load(self, uri: str):
+        if self.has_custom_resolver(uri):
+            return self.resolvers[uri](self)
+        try:
+            fh = self.resolve(uri)
+        except ValueError:
+            fh = self.fallback(uri)
+        if uri.endswith("obo"):
+            cv = ControlledVocabulary.from_obo(fh, import_resolver=self.load)
+            return cv
+        else:
+            raise ValueError(f"Don't know how to load {uri}")
+
     def set_resolver(self, uri, resolver):
         '''Register a resolver callable for `uri`
 
@@ -543,9 +580,6 @@ class OBOCache(Callable):
     def __repr__(self):
         return "OBOCache(cache_path=%r, enabled=%r, resolvers=%s)" % (
             self.cache_path, self.enabled, self.resolvers)
-
-    def __call__(self, uri):
-        return self.resolve(uri)
 
 
 def _make_relative_sqlite_sqlalchemy_uri(path):

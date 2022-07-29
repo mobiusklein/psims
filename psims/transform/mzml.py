@@ -340,6 +340,7 @@ class MzMLTransformer(TransformerBase):
                         self.writer.write_spectrum(**self.format_spectrum(spectrum))
                         if i % 1000 == 0:
                             self.log("Handled %d spectra" % (i, ))
+                    self.log("Handled %d spectra" % (i, ))
 
 
 class MzMLToMzMLb(MzMLTransformer):
