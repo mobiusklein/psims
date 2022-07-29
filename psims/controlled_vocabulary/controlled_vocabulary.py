@@ -1,16 +1,16 @@
 import os
 import sys
-try:
-    from urllib2 import urlopen, Request
-except ImportError:
-    from urllib.request import urlopen, Request
+import re
+import logging
 
-try:
-    from collections.abc import Mapping, Callable
-except ImportError:
-    from collections import Mapping, Callable
+from urllib.request import urlopen, Request
+from typing import Any, Dict, Hashable, Mapping, Callable, Optional, Union
 
 from six import PY2
+
+from psims.utils import ensure_iterable
+from psims.controlled_vocabulary.entity import Entity
+from psims.controlled_vocabulary.relationship import Reference
 
 from .obo import OBOParser
 from . import unimod
@@ -20,15 +20,20 @@ from .vendor import (
     _use_vendored_pato_obo, _use_vendored_psimod_obo, _use_vendored_psims_obo,
     _use_vendored_unimod_xml, _use_vendored_unit_obo, _use_vendored_xlmod_obo)
 
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
+
 fallback = {
     ("http://psidev.cvs.sourceforge.net/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
     ("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/"
      "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"): _use_vendored_psims_obo,
+    "http://purl.obolibrary.org/obo/ms/psi-ms.obo": _use_vendored_psims_obo,
     ("http://obo.cvs.sourceforge.net/*checkout*/"
      "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/uo.obo"): _use_vendored_unit_obo,
+    "http://purl.obolibrary.org/obo/uo.obo": _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/pato.obo"): _use_vendored_pato_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo"): _use_vendored_xlmod_obo,
     ("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
@@ -37,6 +42,22 @@ fallback = {
     "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo": _use_vendored_psimod_obo,
     "http://purl.obolibrary.org/obo/gno.obo": _use_vendored_gno_obo,
 }
+
+
+def _default_import_resolver(url: str) -> Optional['ControlledVocabulary']:
+    if url.endswith("obo"):
+        obo_handle = obo_cache.resolve(url)
+        return ControlledVocabulary.from_obo(obo_handle)
+
+
+def is_curie(text: Union[str, Reference]) -> bool:
+    if isinstance(text, Reference):
+        text = text.accession
+    if isinstance(text, str):
+        return re.match(r"(\S+):(\S+)", text)
+    else:
+        return False
+
 
 
 class ControlledVocabulary(Mapping):
@@ -67,8 +88,18 @@ class ControlledVocabulary(Mapping):
     terms : dict
         The storage for storing the primary mapping from term ID to terms
     """
+
+    version: str
+    name: str
+    id: str
+    metadata: Dict[str, Any]
+    import_resolver: Callable[[str], 'ControlledVocabulary']
+    terms: Dict[str, Entity]
+    type_definitions: Dict[str, Any]
+    imports: Dict[str, 'ControlledVocabulary']
+
     @classmethod
-    def from_obo(cls, handle):
+    def from_obo(cls, handle, **kwargs):
         '''Construct a new instance from an OBO format stream.
 
         Parameters
@@ -86,16 +117,18 @@ class ControlledVocabulary(Mapping):
             When the controlled vocabulary produced contains no terms
         '''
         parser = OBOParser(handle)
-        inst = cls(parser.terms, metadata=parser.header, version=parser.version, name=parser.name)
+        inst = cls(parser.terms, metadata=parser.header, version=parser.version, name=parser.name, **kwargs)
         if len(parser.terms) == 0:
             raise ValueError("Empty Vocabulary")
         return inst
 
-    def __init__(self, terms, id=None, metadata=None, version=None, name=None):
+    def __init__(self, terms, id=None, metadata=None, version=None, name=None, import_resolver: Optional[Callable[[str], 'ControlledVocabulary']]=None):
         if metadata is None:
             metadata = dict()
         if version is None:
             version = 'unknown'
+        if import_resolver is None:
+            import_resolver = _default_import_resolver
         self.version = version
         self.name = name
         self.id = id
@@ -103,6 +136,8 @@ class ControlledVocabulary(Mapping):
         self.type_definitions = dict()
         self._terms = dict()
         self.terms = terms
+        self.import_resolver = import_resolver
+        self.imports = {}
 
     def __getitem__(self, key):
         '''A wrapper for :meth:`query`
@@ -134,6 +169,8 @@ class ControlledVocabulary(Mapping):
         search
         __getitem__
         '''
+        if isinstance(key, Reference):
+            key = key.accession
         if key in self.terms:
             return self.terms[key]
         elif key in self._names:
@@ -154,7 +191,12 @@ class ControlledVocabulary(Mapping):
             elif lower_key in self._obsolete_names:
                 return self._obsolete_names[lower_key]
             else:
-                raise KeyError("%s and %s were not found." % (key, normalized_key))
+                if is_curie(key):
+
+                    result = self._query_imported(key)
+                    if result is not None:
+                        return result
+                raise KeyError("%s and %s were not found." % (key, normalized_key)) from None
 
     def search(self, query):
         '''Search for any term containing the query in its id, name, or synonyms.
@@ -222,11 +264,11 @@ class ControlledVocabulary(Mapping):
     def _build_names(self):
         self._names = {
             v['name']: v for v in self.terms.values()
-            if not v.get("is_obsolete", False)
+            if not v.get("is_obsolete", False) and isinstance(v['name'], Hashable)
         }
         self._obsolete_names = {
             v['name'].lower(): v for v in self.terms.values()
-            if v.get("is_obsolete", False)
+            if v.get("is_obsolete", False) and isinstance(v['name'], Hashable)
         }
 
     def _bind_terms(self):
@@ -260,6 +302,7 @@ class ControlledVocabulary(Mapping):
         self._normalized = {
             v['name'].lower(): v['name']
             for v in self.terms.values()
+            if isinstance(v['name'], str)
         }
 
     def keys(self):
@@ -281,13 +324,47 @@ class ControlledVocabulary(Mapping):
     def normalize_name(self, name):
         return self._normalized[name.lower()]
 
+    def _query_imported(self, query):
+        term = None
+        for url in ensure_iterable(self.metadata['import']):
+            if url in self.imports:
+                cv = self.imports[url]
+            else:
+                try:
+                    logger.debug(f"Importing {url} for {self.name}")
+                    cv = self.imports[url] = self.import_resolver(url)
+                except ValueError:
+                    cv = None
+            if cv is None:
+                continue
+            try:
+                term = cv.query(query)
+                break
+            except KeyError:
+                continue
+        return term
+
 
 DEFAULT_USER_AGENT = (
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like'
     ' Gecko) Chrome/68.0.3440.106 Safari/537.36')
 
 
-class OBOCache(Callable):
+class VocabularyResolverBase(Callable):
+    def load(self, uri: str):
+        raise NotImplementedError()
+
+    def resolve(self, uri: str):
+        raise NotImplementedError()
+
+    def fallback(self, uri: str):
+        raise NotImplementedError()
+
+    def __call__(self, uri: str):
+        return self.resolve(uri)
+
+
+class OBOCache(VocabularyResolverBase):
     """A cache for retrieved ontology sources stored on the file system, and an
     abstraction layer to make registered controlled vocabularies constructable
     from a URI even if they are not in the same format.
@@ -474,6 +551,19 @@ class OBOCache(Callable):
             traceback.print_exc()
             raise
 
+    def load(self, uri: str):
+        if self.has_custom_resolver(uri):
+            return self.resolvers[uri](self)
+        try:
+            fh = self.resolve(uri)
+        except ValueError:
+            fh = self.fallback(uri)
+        if uri.endswith("obo"):
+            cv = ControlledVocabulary.from_obo(fh, import_resolver=self.load)
+            return cv
+        else:
+            raise ValueError(f"Don't know how to load {uri}")
+
     def set_resolver(self, uri, resolver):
         '''Register a resolver callable for `uri`
 
@@ -490,9 +580,6 @@ class OBOCache(Callable):
     def __repr__(self):
         return "OBOCache(cache_path=%r, enabled=%r, resolvers=%s)" % (
             self.cache_path, self.enabled, self.resolvers)
-
-    def __call__(self, uri):
-        return self.resolve(uri)
 
 
 def _make_relative_sqlite_sqlalchemy_uri(path):
@@ -532,7 +619,8 @@ def register_resolver(name, fn):
 
 def load_psims():
     try:
-        cv = obo_cache.resolve(("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"))
+        cv = obo_cache.resolve(
+            ("http://purl.obolibrary.org/obo/ms/psi-ms.obo"))
         return ControlledVocabulary.from_obo(cv)
     except TypeError:
         cv = _use_vendored_psims_obo()
@@ -540,12 +628,12 @@ def load_psims():
 
 
 def load_uo():
-    cv = obo_cache.resolve("http://ontologies.berkeleybop.org/uo.obo")
+    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/uo.obo")
     return ControlledVocabulary.from_obo(cv)
 
 
 def load_pato():
-    cv = obo_cache.resolve("http://ontologies.berkeleybop.org/pato.obo")
+    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/pato.obo")
     return ControlledVocabulary.from_obo(cv)
 
 

@@ -1,4 +1,4 @@
-from io import BytesIO
+import itertools
 from psims.transform import mzml, utils
 
 from psims.test.test_data import datafile
@@ -14,13 +14,13 @@ def test_mzml_pipe():
     ref_reader = st.reader
     ref_reader.reset()
 
-    for ref_spec, test_spec in zip(ref_reader, test_reader):
+    for ref_spec, test_spec in itertools.zip_longest(ref_reader, test_reader):
         assert utils.differ(ref_spec, test_spec)
 
     ref_reader.reset()
     test_reader.reset()
-    for ref_spec, test_spec in zip(ref_reader.iterfind("fileDescription"),
-                                   test_reader.iterfind("fileDescription")):
+    for ref_spec, test_spec in itertools.zip_longest(ref_reader.iterfind("fileDescription"),
+                                                     test_reader.iterfind("fileDescription")):
         assert utils.differ(ref_spec, test_spec)
     super(UnclosableBuffer, buff).close()
 

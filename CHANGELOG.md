@@ -2,6 +2,40 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
+## [v1.1.0] - 2022-07-29
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-07-01 | 1b557078fdb541dbed5ee3fb1f51cbed |
+| pato.obo.gz | releases/2022-07-21/pato.obo | 1b9d2d654020da497b0ebb5934451acb |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.95 | c9a6c38ae4ec451a839f2a200b7bf601 |
+| unimod_tables.xml.gz | - | 523d0bb41eeb41bb1554fa405915e310 |
+| unit.obo.gz | - | 1f6e1b5122ea4c2d3797bae72f140ab1 |
+
+### Added
+1. `OBOCache.load` wraps the resolve/fallback and `OBOParser` parsing steps in a single call to produce a
+   `ControlledVocabulary` instance.
+
+### Changed
+1. `DocumentContext` objects are always truthy, regardless of whether they have any keys.
+2. `ControlledVocabulary` instances will now also query their imports (restricted to OBO imports for now)
+   when looking up missing terms.
+3. `VocabularyResolver` instances now cache CVs loaded through them to avoid having multiple copies of
+   the same CV for the same document. This applies to CVs imported indirectly as well.
+
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 
 ## [v.1.1.0] - 2022-07-07
 
@@ -213,8 +247,10 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.47...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.1.0...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v1.1.0]: https://github.com/mobiusklein/psims/releases/v1.1.0
+[v1.0.0]: https://github.com/mobiusklein/psims/releases/v1.0.0
 [v0.1.47]: https://github.com/mobiusklein/psims/releases/v0.1.47
 [v0.1.46]: https://github.com/mobiusklein/psims/releases/v0.1.46
 [v0.1.44]: https://github.com/mobiusklein/psims/releases/v0.1.44

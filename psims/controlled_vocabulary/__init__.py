@@ -1,5 +1,5 @@
 from .controlled_vocabulary import (
-    ControlledVocabulary, obo_cache, OBOCache, load_psims)
+    ControlledVocabulary, obo_cache, OBOCache, load_psims, VocabularyResolverBase)
 
 
 from . import unimod
@@ -18,5 +18,5 @@ __all__ = [
     "ControlledVocabulary", "obo_cache", "OBOCache", "OBOParser",
     "obo_cache", "load_psims", "unimod", "load_unimod",
     "Entity", "UNIMODEntity", "Reference", "Relationship",
-    "obj_to_xsdtype", "parse_xsdtype",
+    "obj_to_xsdtype", "parse_xsdtype", 'VocabularyResolverBase',
 ]

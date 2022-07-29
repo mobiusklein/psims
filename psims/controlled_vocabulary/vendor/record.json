@@ -12,16 +12,16 @@
     "version": "releases/2022-07-01"
   },
   "pato.obo.gz": {
-    "checksum": "20122e6f42081582787f4f5f273e84de",
-    "version": "releases/2022-06-17/pato.obo"
+    "checksum": "1b9d2d654020da497b0ebb5934451acb",
+    "version": "releases/2022-07-21/pato.obo"
   },
   "psi-mod.obo.gz": {
     "checksum": "713e6dd17632d0388802f1b0e06800f0",
     "version": null
   },
   "psi-ms.obo.gz": {
-    "checksum": "4dfbadfd81162dff05fec4c34068187a",
-    "version": "4.1.92"
+    "checksum": "c9a6c38ae4ec451a839f2a200b7bf601",
+    "version": "4.1.95"
   },
   "unimod_tables.xml.gz": {
     "checksum": "523d0bb41eeb41bb1554fa405915e310",
