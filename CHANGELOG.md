@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
+
+## [v1.2.0] - 2022-07-29
+
+### Changed
+1. When giving a `Spectrum` an ID value which is just an integer, the writer will attempt to convert it into
+   the appropriate nativeID format. To control the nativeID format, set `MzMLWriter.native_id_format` or include
+   an appropriate `cvParam` term in the `MzMLWriter.file_description` parameters.
+
+### Fixed
+1. When a CV fails to import another CV, that failure will be noted and it won't attempt to download again.
+
+
 ## [v1.1.0] - 2022-07-29
 
 | Name | Version | Checksum |
