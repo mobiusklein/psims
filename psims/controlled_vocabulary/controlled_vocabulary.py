@@ -334,7 +334,7 @@ class ControlledVocabulary(Mapping):
                     logger.debug(f"Importing {url} for {self.name}")
                     cv = self.imports[url] = self.import_resolver(url)
                 except ValueError:
-                    cv = None
+                    cv = self.imports[url] = None
             if cv is None:
                 continue
             try:
