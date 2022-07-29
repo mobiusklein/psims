@@ -259,7 +259,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.0...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
 [v1.1.0]: https://github.com/mobiusklein/psims/releases/v1.1.0
 [v1.0.0]: https://github.com/mobiusklein/psims/releases/v1.0.0
