@@ -1,4 +1,5 @@
 import os
+from typing import List, Optional, Union
 import warnings
 import operator
 import re
@@ -32,6 +33,10 @@ try:
     FileNotFoundError
 except Exception as e:
     FileNotFoundError = OSError
+
+
+ParamOrStr = Union[str, Mapping, CVParam, UserParam]
+IdStrOrInt = Union[str, int]
 
 
 class MzIdentML(TagBase):
@@ -269,8 +274,11 @@ class SequenceCollection(GenericCollection):
 class DBSequence(ComponentBase):
     requires_id = True
 
-    def __init__(self, accession, sequence=None, id=None,
-                 search_database_id=1, params=None, name=None, context=NullMap, **kwargs):
+    def __init__(self, accession: str, sequence: Optional[str]=None,
+                 id: Optional[IdStrOrInt]=None,
+                 search_database_id: Optional[IdStrOrInt]=1,
+                 params: Optional[List[ParamOrStr]]=None,
+                 name: Optional[str]=None, context=NullMap, **kwargs):
         self.sequence = sequence
         self.search_database_ref = context[
             'SearchDatabase'][search_database_id]

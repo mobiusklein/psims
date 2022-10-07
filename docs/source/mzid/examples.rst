@@ -1,0 +1,146 @@
+Usage Examples
+--------------
+
+Writing mzIdentML
+=================
+
+In this example, we'll walk through the steps involved in writing an mzIdentML file from
+some fictional search engine that we have a tabular file for and some information about
+search parameters.
+
+
+.. code-block:: python
+
+    from psims.mzid import MzIdentMLWriter
+
+To begin, you create the writer with a file path, or a previously created file-like object:
+
+.. code-block:: python
+
+    writer = MzIdentMLWriter("path/to/write.mzid")
+
+
+The following step is identical to the mzML example. Before any content can be written out, the writer must start the document, which can be done by either
+using it as a context manager, or by calling it's :meth:`~.MzIdentMLWriter.begin` method.
+
+.. code-block:: python
+
+    with writer:
+        writer.controlled_vocabularies()
+        ...
+
+The above example uses the context manager syntax, and immediately writes the controlled vocabulary
+list to the document. This starts the standard-compliance state-machine, which checks to make sure that
+a document proceeds through each section in the expected order, without skipping required sections. The
+remainder of these code samples will take place within this context manager.
+
+The next step involves registering the provenance of the document, naming the software(s) that
+generated the content and optionally the person and/or organization that was responsible for executing
+that software (or the analysis). We can specify the software either using :class:`dict` objects or
+directly instantiate :class:`~psims.mzid.components.AnalysisSoftware` instances (pass a :class:`list`
+to register multiple software tools).
+
+.. code-block:: python
+
+    software = {
+        "name": "my search tool", # Dynamically translated into a cvParam if the name maps to a
+                                  # a term in the PSI-MS controlled vocabulary, otherwise
+                                  # into `MS:1000799` with the name as the value.
+        "id": 1, # If you have only one analysis software, you may omit this
+        "version": "v0.1.0",
+        "uri": "https://my.tool.site/",
+    }
+    writer.provenance(software=software)
+
+Before we begin writing the actual information content of the file, we may need to do a bit of
+preparation first. The mzIdentML schema involves making references to entites that are by definition
+written later than they are referenced, but :mod:`psims` does not like to reference things it doesn't
+yet know about. :meth:`~MzIdentMLWriter.register` can be used to pre-declare any type of entity so
+:mod:`psims` knows about it before it is used. Alternatively, you can simply ignore the warning
+messages :mod:`psims` generates when you reference an unknown identifier. Alternatively, you may
+use :meth:`~.ReprBorrowingPartial.register` when accessing a component type as an attribute on an
+instance of :class:`~MzIdentMLWriter`, e.g. ``writer.SpectraData.register(1)``.
+
+.. note::
+    Registered identifiers should be unique strings and not integers as they do not go
+    through the normal identifier conversion process!
+
+The next step is to write the sequence collection by opening the :meth:`~.MzIdentMLWriter.sequence_collection`
+context manager and begin writing database sequences. We'll assume that we searched a FASTA database
+stored in ``"search_database.fasta"`` with UniProt deflines and that peptides are connected to their
+protein via their accession number (``protein.description['id']``).
+
+.. code-block:: python
+
+        from pyteomics import fasta, proforma
+
+        writer.SearchDatabase.register("search_db_1")
+
+        with writer.sequence_collection():
+            for protein in fasta.UniProt("search_database.fasta"):
+                writer.write_db_sequence(
+                    protein.description['id'],
+                    protein.sequence,
+                    id=protein.description['id'],
+                    name=protein.description['entry'],
+                    search_database_id="search_db_1",
+                    params=[{"protein description": "{entry} {name}".format(**protein.description)}])
+            ...
+
+We'll next generate the peptide list. We assume that the peptide spectrum matches are stored in ``"peptides.csv"``
+and that the sequences are represented with ``ProForma 2`` notation.
+
+.. code-block:: python
+
+    import csv
+
+    with open("peptides.csv", 'rt') as peptide_fh:
+        peptides_seen = dict()
+        for psm in csv.DictReader(peptide_fh):
+            peptide_seq = psm['peptide']
+            protein_acc = psm['protein']
+
+            key = f"{protein_acc}_$_{peptide_seq}"
+            if key in peptides_seen:
+                continue
+            peptides_seen[key] = (psm['peptide_start'], psm['peptide_end'])
+
+            peptide_seq = proforma.Proforma.parse(peptide_seq)
+            unmodified_seq = ''.join([pos[0] for pos in peptide_seq])
+            modifications = []
+            for i, (aa, mods) in enumerate(peptide_seq, 1):
+                for mod in mods:
+                    if mod.type in (proforma.TagTypeEnum.generic, proforma.TagTypeEnum.unimod):
+                        modifications.append({
+                            "location": i,
+                            "name": mod.name,
+                            "monoisotopic_mass_delta": mod.mass,
+                        })
+                    else:
+                        print(f"... Skipping tag {mod}, don't know how to convert to UNIMOD modification")
+            writer.write_peptide(
+                unmodified_seq,
+                key,
+                modifications)
+    ...
+
+After the peptides are written, we must write out the ``<PeptideEvidence />``.
+
+.. code-block:: python
+
+    for peptide_key, (peptide_start, peptide_end) in peptides_seen.items():
+        protein_id = peptide_key.split("_$_")[0]
+
+        writer.write_peptide_evidence(
+            peptide_key,
+            protein_id,
+            id=f"{peptide_key}_EVIDENCE",
+            start_position=peptide_start,
+            end_position=peptide_end)
+    ...
+
+
+.. code-block:: python
+
+    writer.SpectraData.register("mgf_1")
+    writer.SpectraData.register("mgf_2")

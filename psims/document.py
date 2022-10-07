@@ -422,6 +422,9 @@ class ReprBorrowingPartial(partial):
     def ensure_all(self, objs):
         return [self.ensure(obj or {}) for obj in ensure_iterable(objs)]
 
+    def register(self, identifier):
+        return self.kwargs['context'].register(self._func.__name__, identifier)
+
 
 class CallbackBindingPartial(ReprBorrowingPartial):
 

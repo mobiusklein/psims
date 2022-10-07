@@ -488,6 +488,7 @@ class OBOCache(VocabularyResolverBase):
         if uri in fallback:
             f = fallback[uri]()
         else:
+            logger.warning("Failed to locate fallback for %r", uri)
             f = None
         return f
 
@@ -558,6 +559,8 @@ class OBOCache(VocabularyResolverBase):
             fh = self.resolve(uri)
         except ValueError:
             fh = self.fallback(uri)
+            if fh is None:
+                raise ValueError(f"Failed to resolve {uri} or via its fall-back")
         if uri.endswith("obo"):
             cv = ControlledVocabulary.from_obo(fh, import_resolver=self.load)
             return cv
