@@ -31,10 +31,11 @@ def output_path(request):
     fixtured_files.append(path)
 
     def fin():
+        os.close(fd)
         try:
             os.remove(path)
         except OSError as e:
-            print(e)
+            print(e, fd)
     request.addfinalizer(fin)
     return path
 

@@ -101,7 +101,8 @@ def test_param_unit_resolution():
 
 
 def test_write(output_path, compressor):
-    with MzMLWriter(compressor(output_path, 'wb'), close=None) as f:
+    handle = compressor(output_path, 'wb')
+    with MzMLWriter(handle, close=True) as f:
         f.register("Software", 'psims')
         f.controlled_vocabularies()
         f.native_id_format = "Agilent MassHunter nativeID format"

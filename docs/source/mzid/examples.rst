@@ -144,3 +144,30 @@ After the peptides are written, we must write out the ``<PeptideEvidence />``.
 
     writer.SpectraData.register("mgf_1")
     writer.SpectraData.register("mgf_2")
+    writer.SpectraData.register("mgf_3")
+
+    with writer.analysis_collection():
+        writer.SpectrumIdentification(spectra_data_ids_used=[
+            "mgf_1", "mgf_2", "mgf_3"
+        ], search_database_ids_used=[
+            "search_db_1"
+        ]).write()
+
+    with writer.analysis_protocol_collection():
+        writer.spectrum_identification_protocol(
+            enzymes=[{'missed_cleavages': 1, 'name': 'trypsin', 'id': 1}],
+            modification_params=[
+                        {'fixed': True,
+                         'mass_delta': 57.021465,
+                         'params': ['Carbamidomethyl'],
+                         'residues': ['C']},
+                        {'fixed': False,
+                         'mass_delta': 0.984,
+                         'params': ['Deamidation'],
+                         'residues': ['N']}
+            ],
+
+        )
+
+
+
