@@ -3,6 +3,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.2.1]
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-09-19 | 8f0f6557c8140bc68af67ac57239236d |
+| pato.obo.gz | releases/2022-08-31/pato.obo | f84ce80b421e6f693a6e8031a70fe95f |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.104 | 6b5051c9a66b3c15cf0334920099bac1 |
+| unimod_tables.xml.gz | - | 523d0bb41eeb41bb1554fa405915e310 |
+| unit.obo.gz | - | 1f6e1b5122ea4c2d3797bae72f140ab1 |
+
+### Added
+1. Controlled vocabularies fail to resolve, a more descriptive error message will be
+   used in the error. If failing to import a CV fails, it is not treated as an error.
+2. Wrapped component classes on writer types now expose a `register` method which is
+   shorthand for `writer.register("component type name", identifier)`.
+
+
 ## [v1.2.0] - 2022-07-29
 
 ### Changed
