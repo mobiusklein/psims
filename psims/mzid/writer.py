@@ -341,6 +341,8 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 fragment_tolerance = self.FragmentTolerance(fragment_tolerance * 1e6, None, "parts per million")
             else:
                 fragment_tolerance = self.FragmentTolerance(fragment_tolerance, None, "dalton")
+        else:
+            fragment_tolerance = self.FragmentTolerance.ensure(fragment_tolerance)
 
         if isinstance(parent_tolerance, (list, tuple)):
             parent_tolerance = self.ParentTolerance(*parent_tolerance)
@@ -349,6 +351,8 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 parent_tolerance = self.ParentTolerance(parent_tolerance * 1e6, None, "parts per million")
             else:
                 parent_tolerance = self.ParentTolerance(parent_tolerance, None, "dalton")
+        else:
+            parent_tolerance = self.ParentTolerance.ensure(parent_tolerance)
         threshold = self.Threshold(threshold)
         protocol = self.SpectrumIdentificationProtocol(
             search_type, analysis_software_id, id, additional_search_params,
