@@ -1,13 +1,15 @@
 from collections import deque
-try:
-    from collections.abc import Mapping, MutableSequence
-except ImportError:
-    from collections import Mapping, MutableSequence
+from typing import Any, Dict, List, Union, TYPE_CHECKING
+
+from collections.abc import Mapping, MutableSequence
 
 from psims.utils import ensure_iterable
 
 from .type_definition import parse_xsdtype, TypeDefinition, ListOfType
 
+if TYPE_CHECKING:
+    from psims.controlled_vocabulary.controlled_vocabulary import ControlledVocabulary
+    from psims.controlled_vocabulary.relationship import Relationship, Reference
 
 class PredicateList(MutableSequence):
     def __init__(self, members, parent):
@@ -91,6 +93,11 @@ class Entity(Mapping):
         The "def" field of a term.
 
     '''
+
+    data: Dict[str, Any]
+    children: List['Entity']
+    vocabulary: 'ControlledVocabulary'
+
     def __init__(self, vocabulary=None, **attributes):
         self.data = dict(attributes)
         self.children = []
@@ -120,7 +127,7 @@ class Entity(Mapping):
         else:
             self[key] = value
 
-    def add_relationship(self, relationship):
+    def add_relationship(self, relationship: Union[str, 'Relationship']) -> 'Relationship':
         from .relationship import Relationship
         if isinstance(relationship, str):
             relationship = Relationship.fromstring(relationship)
@@ -136,7 +143,7 @@ class Entity(Mapping):
             self['relationship'] = relationship
         return relationship
 
-    def remove_relationship(self, relationship):
+    def remove_relationship(self, relationship: Union[str, 'Relationship']):
         from .relationship import Relationship
         if isinstance(relationship, str):
             relationship = Relationship.fromstring(relationship)
@@ -185,7 +192,7 @@ class Entity(Mapping):
     def definition(self, value):
         self.data['def'] = value
 
-    def parent(self):
+    def parent(self) -> Union[None, 'Entity', List['Entity']]:
         '''Fetch the parent or parents of this :class:`Entity`
         in the bound controlled vocabulary.
 
@@ -206,7 +213,7 @@ class Entity(Mapping):
         template = 'Entity({self.id!r}, {self.name!r}, {self.definition!r})'
         return template.format(self=self)
 
-    def is_of_type(self, tp):
+    def is_of_type(self, tp: Union[str, 'Entity']) -> bool:
         '''Test if `tp` is an ancestor of this :class:`Entity`
 
         Parameters
@@ -231,7 +238,7 @@ class Entity(Mapping):
             stack.extend(ensure_iterable(ref.parent()))
         return False
 
-    def as_value_type(self):
+    def as_value_type(self) -> Union[ListOfType, TypeDefinition]:
         if self.id in self.vocabulary.type_definitions:
             return self.vocabulary.type_definitions[self.id]
         is_list_of = self.is_of_type('list of type')

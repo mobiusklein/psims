@@ -1,3 +1,5 @@
+import io
+from typing import DefaultDict, Dict, List, Optional, Any
 import warnings
 
 from collections import defaultdict
@@ -85,6 +87,11 @@ class OBOParser(object):
     OBO
         http://owlcollab.github.io/oboformat/doc/GO.format.obo-1_2.html
     """
+
+    handle: io.IOBase
+    terms: Dict[str, Entity]
+    current_term: Optional[Dict[str, Any]]
+    header: DefaultDict[str, List[str]]
 
     def __init__(self, handle, type_inference_rules=None):
         if type_inference_rules is None:
@@ -230,6 +237,8 @@ class OBOParser(object):
         """Walk the semantic graph up the parent hierarchy, binding child
         to parent through ``is_a`` :class:`~.Reference` connections.
         """
+        term: Entity
+        rel: Relationship
         for term in self.terms.values():
             try:
                 if isinstance(term.is_a, Reference):
@@ -238,7 +247,15 @@ class OBOParser(object):
                     for is_a in term.is_a:
                         self.terms[is_a].children.append(term)
             except KeyError:
-                continue
+                pass
+            try:
+                for rel in term.relationship:
+                    if rel.predicate == 'part_of':
+                        larger = self.terms[rel.accession]
+                        larger.setdefault('parts', [])
+                        larger.parts.append(term)
+            except KeyError:
+                pass
 
     def _pack_if_occupied(self):
         if self.current_term is not None:
