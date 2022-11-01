@@ -93,6 +93,7 @@ and that the sequences are represented with ``ProForma 2`` notation.
 .. code-block:: python
 
     import csv
+    import os
 
     with open("peptides.csv", 'rt') as peptide_fh:
         peptides_seen = dict()
@@ -139,6 +140,13 @@ After the peptides are written, we must write out the ``<PeptideEvidence />``.
             end_position=peptide_end)
     ...
 
+Now, we can begin to define the analysis workflow used. Let's imagine our search engine
+searched three MGF files, with identifiers ``mgf_1`` - ``mgf_3`` which we'll pre-register now.
+We open the ``<AnalysisCollection>`` element and declare a single ``<SpectrumIdentification>``
+workflow using those MGF files and the search database we registered earlier. We'll also
+pre-declare the spectrum identification list ``spectrum_identified_list1`` where we'll
+write the identified spectra, and that the workflow took its parameters from
+a to-be-defined list of parameters in ``spectrum_idification_params_1``.
 
 .. code-block:: python
 
@@ -146,12 +154,34 @@ After the peptides are written, we must write out the ``<PeptideEvidence />``.
     writer.SpectraData.register("mgf_2")
     writer.SpectraData.register("mgf_3")
 
+    writer.SpectrumIdentificationList.register('spectra_identified_list_1')
+    writer.SpectrumIdentificationProtocol.register('spectrum_identification_params_1')
+
     with writer.analysis_collection():
         writer.SpectrumIdentification(spectra_data_ids_used=[
             "mgf_1", "mgf_2", "mgf_3"
         ], search_database_ids_used=[
             "search_db_1"
-        ]).write()
+        ], spectrum_identification_list_id='spectra_identified_list_1',
+        spectrum_identification_protocol_id='spectrum_identification_params_1').write()
+
+Next, we'll actually declare those parameters. The :meth:`~.MzIdentMLWriter.spectrum_identification_protocol`
+method is a wrapper for writing ``<SpectrumIdentificationProtocol>`` that does some extra work to
+interpret parameters for you. Here is where we list things like mass tolerances, search modification
+rules, and any other options that your search engine has that you want to share with the reader.
+
+We'll say we searched our database using trypsin cleavage rules and a constant or "fixed" modification of
+"Carbamidomethyl" on all cysteines as is common in shotgun proteomics, but for some bizarre reason we chose
+to also consider a variable "Deamidation" on any asparagines. We could also specify these modifications by
+their UNIMOD accession numbers, or define custom rules here as well.
+
+The ``parent_tolerance`` and ``fragment_tolerance`` list the mass accuracy error tolerances for
+MS1 and MSn spectra respectively, using symmetric upper and lower bounds, but different units (parts-per-million
+vs. Da). We'll also specify that we considered monoisotopic masses in the ``additional_search_params``
+list, along with a custom parameter "frobnication level", to indicate that we tuned the results
+"very carefully".
+
+.. code-block:: python
 
     with writer.analysis_protocol_collection():
         writer.spectrum_identification_protocol(
@@ -166,8 +196,95 @@ After the peptides are written, we must write out the ``<PeptideEvidence />``.
                          'params': ['Deamidation'],
                          'residues': ['N']}
             ],
+            parent_tolerance=(10, 10, "parts per million"),
+            fragment_tolerance=(0.02, 0.02, "dalton"),
+            additional_search_params=[
+                "parent mass type mono",
+                "fragment mass type mono",
+                {"frobnication level": "high"} # a custom paramater that will map to a userparam
+            ],
+            id="spectrum_identification_params_1"
+        )
+    ...
 
+
+We're nearly done. The next thing to do is to actually point to the local files that we searched,
+namely the sequence database file, the source file for these results, and the spectra data files.
+
+.. code-block:: python
+
+    with writer.data_collection():
+        source_file = {
+            'file_format': 'tab delimited text format',
+            'id': 1,
+            'location': f"file://{os.path.realpath('peptides.csv')}"
+        }
+
+        search_database = {
+            'file_format': 'fasta format',
+            'id': 'search_db_1',
+            'location': f'file://{os.path.realpath("search_database.fasta")}',
+            'name': 'Uniprot Proteins'}
+
+        spectra_data = []
+        spectra_data = [{'file_format': 'Mascot MGF format',
+                'id': f'mgf_{i}',
+                'location': f"file://{os.path.realpath('data' + str(i) + '.mgf')}",
+                'spectrum_id_format': 'multiple peak list nativeID format'} for i in range(1, 4)
+        ]
+
+        writer.inputs(
+            source_file, search_database, spectra_data
         )
 
+        ...
 
+Finally, we can write out those peptide spectrum matches we wanted to report!. Now, we can exploit some
+of those mappings and string encoding rules we used earlier to connect PSMs back to their peptides and
+their proteins.
 
+We'll read back through our ``"peptides.csv"`` file and reconstruct the peptide ID as we defined it earlier,
+and use a few *convenient* columns to fill in spectrum match properties. If we were using a search engine with
+one or more registered ``score`` terms, we can specify them here as `params` of the spectrum
+identification items. Since we're using an imaginary one, we can use `userParam` "imagine-raw-score" for our
+score statistic, and then use generic, a search engine agnostic term for our FDR q-value statistic.
+
+.. code-block:: python
+
+    data_file_to_id = {os.path.realpath('data' + str(i) + '.mgf'): f"mgf_{i}"
+                       for i in range(1, 4)}
+
+    with writer.analysis_data():
+        with writer.spectrum_identification_list(id='spec_id_list_1'):
+            with open("peptides.csv", 'rt') as peptide_fh:
+                for i, psm in enumerate(csv.DictReader(peptide_fh)):
+                    peptide_seq = psm['peptide']
+                    protein_acc = psm['protein']
+                    scan_id = psm['scan_id']
+                    source_file = psm['ms_data_file']
+                    peptide_id = f"{protein_acc}_$_{peptide_seq}"
+
+                    with writer.spectrum_identification_result(
+                            spectrum_id=scan_id,
+                            id=f'SIR_{i}',
+                            spectra_data_id=data_file_to_id[source_file]):
+
+                        writer.write_spectrum_identification_item(
+                            calculated_mass_to_charge=psm['theoretical_mz'],
+                            charge_state=psm['precursor_charge'],
+                            experimental_mass_to_charge=psm['precursor_mz'],
+                            id=f'SII_{i}',
+                            peptide_id=peptide_id,
+                            peptide_evidence_id=f'{peptide_id}_EVIDENCE',
+                            params=[
+                                {
+                                    "imagine-raw-score": psm['raw-score'],
+                                },
+                                {
+                                    "PSM-level q-value": psm['q-value'],
+                                }
+                            ]
+                        )
+
+And with that, we're done! let all the context managers close and the file will
+be written and closed correctly.
