@@ -8,8 +8,8 @@
     "version": "2022-02-23"
   },
   "go.obo.gz": {
-    "checksum": "8f0f6557c8140bc68af67ac57239236d",
-    "version": "releases/2022-09-19"
+    "checksum": "3ee1ef170ed8080f71dfa1ccb07ff02a",
+    "version": "releases/2022-10-07"
   },
   "pato.obo.gz": {
     "checksum": "f84ce80b421e6f693a6e8031a70fe95f",
@@ -20,15 +20,15 @@
     "version": null
   },
   "psi-ms.obo.gz": {
-    "checksum": "6b5051c9a66b3c15cf0334920099bac1",
-    "version": "4.1.104"
+    "checksum": "f793b2f2fb70c87029005eb6cdbc072f",
+    "version": "4.1.105"
   },
   "unimod_tables.xml.gz": {
-    "checksum": "523d0bb41eeb41bb1554fa405915e310",
+    "checksum": "7e6f1cffe9ad27fecbf5b394103b9836",
     "version": null
   },
   "unit.obo.gz": {
-    "checksum": "1f6e1b5122ea4c2d3797bae72f140ab1",
+    "checksum": "1616553109ee3ebc85ffc978d8e39ce8",
     "version": null
   }
 }
