@@ -166,7 +166,7 @@ class VocabularyResolver(object):
     def param_group_reference(self, id):
         return ParamGroupReference(id)
 
-    def param(self, name, value=None, cv_ref=None, **kwargs):
+    def param(self, name, value=None, cv_ref=None, **kwargs) -> Union[CVParam, UserParam, ParamGroupReference]:
         accession = kwargs.get("accession")
         if isinstance(name, CVParam):
             return name
