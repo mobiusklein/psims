@@ -7,6 +7,14 @@ try:
 except ImportError:
     pass
 
+try:
+    import pyzstd
+    zstd_compress = pyzstd.compress
+    zstd_decompress = pyzstd.decompress
+except ImportError:
+    zstd_compress = zstd_decompress = None
+
+
 import numpy as np
 
 import six
@@ -28,6 +36,7 @@ except ImportError:
 
 COMPRESSION_NONE = 'none'
 COMPRESSION_ZLIB = 'zlib'
+COMPRESSION_ZSTD = 'zstd'
 COMPRESSION_LINEAR = 'linear'
 COMPRESSION_DELTA = 'delta'
 COMPRESSION_NUMPRESS_LINEAR_PREDICTION = "MS-Numpress linear prediction compression"
@@ -96,6 +105,7 @@ dtype_to_encoding = {
 compression_map = {
     COMPRESSION_ZLIB: "zlib compression",
     COMPRESSION_NONE: 'no compression',
+    COMPRESSION_ZSTD: 'zstd compression',
     None: 'no compression',
     False: 'no compression',
     True: "zlib compression",
@@ -159,6 +169,8 @@ def encode_array(array, compression=COMPRESSION_NONE, dtype=np.float32):
         bytestring = bytestring
     elif compression == COMPRESSION_ZLIB:
         bytestring = zlib.compress(bytestring)
+    elif compression == COMPRESSION_ZSTD:
+        bytestring = zstd_compress(bytestring)
     else:
         raise ValueError("Unknown compression: %s" % compression)
     encoded_string = base64.standard_b64encode(bytestring)
