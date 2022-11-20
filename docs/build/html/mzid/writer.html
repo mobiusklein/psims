@@ -106,7 +106,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../mzml/writer.html">Writing mzML Documents</a></li>
@@ -117,6 +117,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">mzIdentML</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mzmlb/index.html">mzMLb</a><ul>
@@ -129,9 +130,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -149,7 +152,7 @@
 <span id="writing-mzidentml-documents"></span><h1>Writing mzIdentML Documents<a class="headerlink" href="#module-psims.mzid.writer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="psims.mzid.writer.MzIdentMLWriter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzid.writer.</span></span><span class="sig-name descname"><span class="pre">MzIdentMLWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabularies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_reference_is_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabulary_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1.2.0'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.mzid.writer.</span></span><span class="sig-name descname"><span class="pre">MzIdentMLWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabularies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_reference_is_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabulary_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1.2.0'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/psims/mzid/writer.html#MzIdentMLWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.mzid.writer.MzIdentMLWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>A high level API for generating MzIdentML XML files from simple Python objects.</p>
 <p>This class depends heavily on lxml’s incremental file writing API which in turn
 depends heavily on context managers. Almost all logic is handled inside a context
@@ -236,7 +239,7 @@ version of all <code class="xref py py-class docutils literal notranslate"><span
 use this instance’s context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Component Name</p>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Component Name</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A partially parameterized instance constructor for
@@ -272,7 +275,7 @@ are forwarded to the <code class="xref py py-class docutils literal notranslate"
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name of the tag type to create</p></li>
 <li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
 <li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
@@ -309,9 +312,9 @@ analysis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>software</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em> or </em><em>list of dict</em><em>, </em><em>optional</em>) – A single dictionary or list of dictionaries specifying an <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSoftware</span></code> instance</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> instance. If missing, a default person will be created</p></li>
-<li><p><strong>organization</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Organization</span></code> instance. If missing, a default organization will
+<li><p><strong>software</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a><em> or </em><em>list of dict</em><em>, </em><em>optional</em>) – A single dictionary or list of dictionaries specifying an <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSoftware</span></code> instance</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> instance. If missing, a default person will be created</p></li>
+<li><p><strong>organization</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Organization</span></code> instance. If missing, a default organization will
 be created</p></li>
 </ul>
 </dd>
@@ -326,15 +329,15 @@ a reference look up will be satisfied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – An entity type, either a tag name or a component name</p></li>
-<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The unique id number for the thing registered</p></li>
+<li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – An entity type, either a tag name or a component name</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The unique id number for the thing registered</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The constructed reference id</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -353,8 +356,8 @@ this writer wrote</p>
 </p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – When the file cannot be recovered from the writer object,
-    a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.11)"><strong>TypeError</strong></a> – When the file cannot be recovered from the writer object,
+    a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</p>
 </dd>
 </dl>
 </dd></dl>
@@ -405,7 +408,7 @@ this writer wrote</p>
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

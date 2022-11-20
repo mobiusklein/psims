@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Usage Examples &mdash; psims  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.min.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mzMLb" href="../mzmlb/index.html" />
+    <link rel="prev" title="Components of mzIdentML" href="components.html" /> 
+
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a class="site-nav-toggle hidden-lg-up"><i class="icon-menu"></i></a>
+            <a class="site-title" href="../index.html">
+                psims
+            </a>
+        </div>
+    </header>
+
+
+<div class="breadcrumbs-outer hidden-xs-down">
+    <div class="container">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a></li>
+        
+          <li><a href="index.html">mzIdentML</a></li>
+        
+      <li>Usage Examples</li>
+    
+    
+      <li class="breadcrumbs-aside">
+        
+            
+            <a href="../_sources/mzid/examples.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+</div>
+    </div>
+</div>
+    <div class="main-outer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 site-nav">
+                    
+<div role="search">
+    <form class="search" action="../search.html" method="get">
+        <div class="icon-input">
+            <input type="text" name="q" placeholder="Search" />
+            <span class="icon-search"></span>
+        </div>
+        <input type="submit" value="Go" class="d-hidden" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+                    <div class="site-nav-tree">
+                        
+                            
+                            
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../mzml/index.html">mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/writer.html">Writing mzML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/examples.html">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzml/components.html">Components of mzML</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">mzIdentML</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="writer.html">Writing mzIdentML Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Usage Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mzmlb/index.html">mzMLb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mzmlb/writer.html">Writing mzMLb Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzmlb/index.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../xml.html">XML Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../controlled_vocabulary/index.html">Controlled Vocabularies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
+</ul>
+</li>
+</ul>
+
+                            
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="document">
+                        
+                            
+  <div class="section" id="usage-examples">
+<h1>Usage Examples<a class="headerlink" href="#usage-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="writing-mzidentml">
+<h2>Writing mzIdentML<a class="headerlink" href="#writing-mzidentml" title="Permalink to this headline">¶</a></h2>
+<p>In this example, we’ll walk through the steps involved in writing an mzIdentML file from
+some fictional search engine that we have a tabular file for and some information about
+search parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">psims.mzid</span> <span class="kn">import</span> <span class="n">MzIdentMLWriter</span>
+</pre></div>
+</div>
+<p>To begin, you create the writer with a file path, or a previously created file-like object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span> <span class="o">=</span> <span class="n">MzIdentMLWriter</span><span class="p">(</span><span class="s2">&quot;path/to/write.mzid&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following step is identical to the mzML example. Before any content can be written out, the writer must start the document, which can be done by either
+using it as a context manager, or by calling it’s <a class="reference internal" href="writer.html#psims.mzid.writer.MzIdentMLWriter.begin" title="psims.mzid.writer.MzIdentMLWriter.begin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">begin()</span></code></a> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">writer</span><span class="p">:</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">controlled_vocabularies</span><span class="p">()</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>The above example uses the context manager syntax, and immediately writes the controlled vocabulary
+list to the document. This starts the standard-compliance state-machine, which checks to make sure that
+a document proceeds through each section in the expected order, without skipping required sections. The
+remainder of these code samples will take place within this context manager.</p>
+<p>The next step involves registering the provenance of the document, naming the software(s) that
+generated the content and optionally the person and/or organization that was responsible for executing
+that software (or the analysis). We can specify the software either using <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> objects or
+directly instantiate <a class="reference internal" href="components.html#psims.mzid.components.AnalysisSoftware" title="psims.mzid.components.AnalysisSoftware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSoftware</span></code></a> instances (pass a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+to register multiple software tools).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">software</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;my search tool&quot;</span><span class="p">,</span> <span class="c1"># Dynamically translated into a cvParam if the name maps to a</span>
+                              <span class="c1"># a term in the PSI-MS controlled vocabulary, otherwise</span>
+                              <span class="c1"># into `MS:1000799` with the name as the value.</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># If you have only one analysis software, you may omit this</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;v0.1.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://my.tool.site/&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">provenance</span><span class="p">(</span><span class="n">software</span><span class="o">=</span><span class="n">software</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Before we begin writing the actual information content of the file, we may need to do a bit of
+preparation first. The mzIdentML schema involves making references to entites that are by definition
+written later than they are referenced, but <code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code> does not like to reference things it doesn’t
+yet know about. <code class="xref py py-meth docutils literal notranslate"><span class="pre">register()</span></code> can be used to pre-declare any type of entity so
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code> knows about it before it is used. Alternatively, you can simply ignore the warning
+messages <code class="xref py py-mod docutils literal notranslate"><span class="pre">psims</span></code> generates when you reference an unknown identifier. Alternatively, you may
+use <code class="xref py py-meth docutils literal notranslate"><span class="pre">register()</span></code> when accessing a component type as an attribute on an
+instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">MzIdentMLWriter</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">writer.SpectraData.register(1)</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Registered identifiers should be unique strings and not integers as they do not go
+through the normal identifier conversion process!</p>
+</div>
+<p>The next step is to write the sequence collection by opening the <code class="xref py py-meth docutils literal notranslate"><span class="pre">sequence_collection()</span></code>
+context manager and begin writing database sequences. We’ll assume that we searched a FASTA database
+stored in <code class="docutils literal notranslate"><span class="pre">&quot;search_database.fasta&quot;</span></code> with UniProt deflines and that peptides are connected to their
+protein via their accession number (<code class="docutils literal notranslate"><span class="pre">protein.description['id']</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyteomics</span> <span class="kn">import</span> <span class="n">fasta</span><span class="p">,</span> <span class="n">proforma</span>
+
+<span class="n">writer</span><span class="o">.</span><span class="n">SearchDatabase</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;search_db_1&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">sequence_collection</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">fasta</span><span class="o">.</span><span class="n">UniProt</span><span class="p">(</span><span class="s2">&quot;search_database.fasta&quot;</span><span class="p">):</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write_db_sequence</span><span class="p">(</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">description</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">sequence</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">protein</span><span class="o">.</span><span class="n">description</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">protein</span><span class="o">.</span><span class="n">description</span><span class="p">[</span><span class="s1">&#39;entry&#39;</span><span class="p">],</span>
+            <span class="n">search_database_id</span><span class="o">=</span><span class="s2">&quot;search_db_1&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;protein description&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{entry}</span><span class="s2"> </span><span class="si">{name}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">protein</span><span class="o">.</span><span class="n">description</span><span class="p">)}])</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>We’ll next generate the peptide list. We assume that the peptide spectrum matches are stored in <code class="docutils literal notranslate"><span class="pre">&quot;peptides.csv&quot;</span></code>
+and that the sequences are represented with <code class="docutils literal notranslate"><span class="pre">ProForma</span> <span class="pre">2</span></code> notation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;peptides.csv&quot;</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">peptide_fh</span><span class="p">:</span>
+    <span class="n">peptides_seen</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">psm</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">peptide_fh</span><span class="p">):</span>
+        <span class="n">peptide_seq</span> <span class="o">=</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;peptide&#39;</span><span class="p">]</span>
+        <span class="n">protein_acc</span> <span class="o">=</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;protein&#39;</span><span class="p">]</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">protein_acc</span><span class="si">}</span><span class="s2">_$_</span><span class="si">{</span><span class="n">peptide_seq</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">peptides_seen</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">peptides_seen</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">psm</span><span class="p">[</span><span class="s1">&#39;peptide_start&#39;</span><span class="p">],</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;peptide_end&#39;</span><span class="p">])</span>
+
+        <span class="n">peptide_seq</span> <span class="o">=</span> <span class="n">proforma</span><span class="o">.</span><span class="n">Proforma</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">peptide_seq</span><span class="p">)</span>
+        <span class="n">unmodified_seq</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">peptide_seq</span><span class="p">])</span>
+        <span class="n">modifications</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">aa</span><span class="p">,</span> <span class="n">mods</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peptide_seq</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">mods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mod</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">proforma</span><span class="o">.</span><span class="n">TagTypeEnum</span><span class="o">.</span><span class="n">generic</span><span class="p">,</span> <span class="n">proforma</span><span class="o">.</span><span class="n">TagTypeEnum</span><span class="o">.</span><span class="n">unimod</span><span class="p">):</span>
+                    <span class="n">modifications</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">mod</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;monoisotopic_mass_delta&quot;</span><span class="p">:</span> <span class="n">mod</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                    <span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... Skipping tag </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">, don&#39;t know how to convert to UNIMOD modification&quot;</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write_peptide</span><span class="p">(</span>
+            <span class="n">unmodified_seq</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">,</span>
+            <span class="n">modifications</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>After the peptides are written, we must write out the <code class="docutils literal notranslate"><span class="pre">&lt;PeptideEvidence</span> <span class="pre">/&gt;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">peptide_key</span><span class="p">,</span> <span class="p">(</span><span class="n">peptide_start</span><span class="p">,</span> <span class="n">peptide_end</span><span class="p">)</span> <span class="ow">in</span> <span class="n">peptides_seen</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">protein_id</span> <span class="o">=</span> <span class="n">peptide_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_$_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">writer</span><span class="o">.</span><span class="n">write_peptide_evidence</span><span class="p">(</span>
+        <span class="n">peptide_key</span><span class="p">,</span>
+        <span class="n">protein_id</span><span class="p">,</span>
+        <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peptide_key</span><span class="si">}</span><span class="s2">_EVIDENCE&quot;</span><span class="p">,</span>
+        <span class="n">start_position</span><span class="o">=</span><span class="n">peptide_start</span><span class="p">,</span>
+        <span class="n">end_position</span><span class="o">=</span><span class="n">peptide_end</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Now, we can begin to define the analysis workflow used. Let’s imagine our search engine
+searched three MGF files, with identifiers <code class="docutils literal notranslate"><span class="pre">mgf_1</span></code> - <code class="docutils literal notranslate"><span class="pre">mgf_3</span></code> which we’ll pre-register now.
+We open the <code class="docutils literal notranslate"><span class="pre">&lt;AnalysisCollection&gt;</span></code> element and declare a single <code class="docutils literal notranslate"><span class="pre">&lt;SpectrumIdentification&gt;</span></code>
+workflow using those MGF files and the search database we registered earlier. We’ll also
+pre-declare the spectrum identification list <code class="docutils literal notranslate"><span class="pre">spectrum_identified_list1</span></code> where we’ll
+write the identified spectra, and that the workflow took its parameters from
+a to-be-defined list of parameters in <code class="docutils literal notranslate"><span class="pre">spectrum_idification_params_1</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span><span class="o">.</span><span class="n">SpectraData</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mgf_1&quot;</span><span class="p">)</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">SpectraData</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mgf_2&quot;</span><span class="p">)</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">SpectraData</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mgf_3&quot;</span><span class="p">)</span>
+
+<span class="n">writer</span><span class="o">.</span><span class="n">SpectrumIdentificationList</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;spectra_identified_list_1&#39;</span><span class="p">)</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">SpectrumIdentificationProtocol</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;spectrum_identification_params_1&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">analysis_collection</span><span class="p">():</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">SpectrumIdentification</span><span class="p">(</span><span class="n">spectra_data_ids_used</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;mgf_1&quot;</span><span class="p">,</span> <span class="s2">&quot;mgf_2&quot;</span><span class="p">,</span> <span class="s2">&quot;mgf_3&quot;</span>
+    <span class="p">],</span> <span class="n">search_database_ids_used</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;search_db_1&quot;</span>
+    <span class="p">],</span> <span class="n">spectrum_identification_list_id</span><span class="o">=</span><span class="s1">&#39;spectra_identified_list_1&#39;</span><span class="p">,</span>
+    <span class="n">spectrum_identification_protocol_id</span><span class="o">=</span><span class="s1">&#39;spectrum_identification_params_1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Next, we’ll actually declare those parameters. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrum_identification_protocol()</span></code>
+method is a wrapper for writing <code class="docutils literal notranslate"><span class="pre">&lt;SpectrumIdentificationProtocol&gt;</span></code> that does some extra work to
+interpret parameters for you. Here is where we list things like mass tolerances, search modification
+rules, and any other options that your search engine has that you want to share with the reader.</p>
+<p>We’ll say we searched our database using trypsin cleavage rules and a constant or “fixed” modification of
+“Carbamidomethyl” on all cysteines as is common in shotgun proteomics, but for some bizarre reason we chose
+to also consider a variable “Deamidation” on any asparagines. We could also specify these modifications by
+their UNIMOD accession numbers, or define custom rules here as well.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">parent_tolerance</span></code> and <code class="docutils literal notranslate"><span class="pre">fragment_tolerance</span></code> list the mass accuracy error tolerances for
+MS1 and MSn spectra respectively, using symmetric upper and lower bounds, but different units (parts-per-million
+vs. Da). We’ll also specify that we considered monoisotopic masses in the <code class="docutils literal notranslate"><span class="pre">additional_search_params</span></code>
+list, along with a custom parameter “frobnication level”, to indicate that we tuned the results
+“very carefully”.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">analysis_protocol_collection</span><span class="p">():</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">spectrum_identification_protocol</span><span class="p">(</span>
+        <span class="n">enzymes</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;missed_cleavages&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;trypsin&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}],</span>
+        <span class="n">modification_params</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">{</span><span class="s1">&#39;fixed&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="s1">&#39;mass_delta&#39;</span><span class="p">:</span> <span class="mf">57.021465</span><span class="p">,</span>
+                     <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Carbamidomethyl&#39;</span><span class="p">],</span>
+                     <span class="s1">&#39;residues&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]},</span>
+                    <span class="p">{</span><span class="s1">&#39;fixed&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;mass_delta&#39;</span><span class="p">:</span> <span class="mf">0.984</span><span class="p">,</span>
+                     <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Deamidation&#39;</span><span class="p">],</span>
+                     <span class="s1">&#39;residues&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">]}</span>
+        <span class="p">],</span>
+        <span class="n">parent_tolerance</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;parts per million&quot;</span><span class="p">),</span>
+        <span class="n">fragment_tolerance</span><span class="o">=</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s2">&quot;dalton&quot;</span><span class="p">),</span>
+        <span class="n">additional_search_params</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;parent mass type mono&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fragment mass type mono&quot;</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;frobnication level&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">}</span> <span class="c1"># a custom paramater that will map to a userparam</span>
+        <span class="p">],</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;spectrum_identification_params_1&quot;</span>
+    <span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>We’re nearly done. The next thing to do is to actually point to the local files that we searched,
+namely the sequence database file, the source file for these results, and the spectra data files.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">data_collection</span><span class="p">():</span>
+    <span class="n">source_file</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;file_format&#39;</span><span class="p">:</span> <span class="s1">&#39;tab delimited text format&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;file://</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s1">&#39;peptides.csv&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">search_database</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;file_format&#39;</span><span class="p">:</span> <span class="s1">&#39;fasta format&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;search_db_1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;file://</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s2">&quot;search_database.fasta&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uniprot Proteins&#39;</span><span class="p">}</span>
+
+    <span class="n">spectra_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">spectra_data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;file_format&#39;</span><span class="p">:</span> <span class="s1">&#39;Mascot MGF format&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;mgf_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;file://</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s1">&#39;data&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.mgf&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;spectrum_id_format&#39;</span><span class="p">:</span> <span class="s1">&#39;multiple peak list nativeID format&#39;</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">writer</span><span class="o">.</span><span class="n">inputs</span><span class="p">(</span>
+        <span class="n">source_file</span><span class="p">,</span> <span class="n">search_database</span><span class="p">,</span> <span class="n">spectra_data</span>
+    <span class="p">)</span>
+
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Finally, we can write out those peptide spectrum matches we wanted to report!. Now, we can exploit some
+of those mappings and string encoding rules we used earlier to connect PSMs back to their peptides and
+their proteins.</p>
+<p>We’ll read back through our <code class="docutils literal notranslate"><span class="pre">&quot;peptides.csv&quot;</span></code> file and reconstruct the peptide ID as we defined it earlier,
+and use a few <em>convenient</em> columns to fill in spectrum match properties. If we were using a search engine with
+one or more registered <code class="docutils literal notranslate"><span class="pre">score</span></code> terms, we can specify them here as <cite>params</cite> of the spectrum
+identification items. Since we’re using an imaginary one, we can use <cite>userParam</cite> “imagine-raw-score” for our
+score statistic, and then use generic, a search engine agnostic term for our FDR q-value statistic.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_file_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s1">&#39;data&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.mgf&#39;</span><span class="p">):</span> <span class="sa">f</span><span class="s2">&quot;mgf_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+                   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)}</span>
+
+<span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">analysis_data</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">spectrum_identification_list</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;spec_id_list_1&#39;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;peptides.csv&quot;</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">peptide_fh</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">psm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">peptide_fh</span><span class="p">)):</span>
+                <span class="n">peptide_seq</span> <span class="o">=</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;peptide&#39;</span><span class="p">]</span>
+                <span class="n">protein_acc</span> <span class="o">=</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;protein&#39;</span><span class="p">]</span>
+                <span class="n">scan_id</span> <span class="o">=</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;scan_id&#39;</span><span class="p">]</span>
+                <span class="n">source_file</span> <span class="o">=</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;ms_data_file&#39;</span><span class="p">]</span>
+                <span class="n">peptide_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">protein_acc</span><span class="si">}</span><span class="s2">_$_</span><span class="si">{</span><span class="n">peptide_seq</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="k">with</span> <span class="n">writer</span><span class="o">.</span><span class="n">spectrum_identification_result</span><span class="p">(</span>
+                        <span class="n">spectrum_id</span><span class="o">=</span><span class="n">scan_id</span><span class="p">,</span>
+                        <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;SIR_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                        <span class="n">spectra_data_id</span><span class="o">=</span><span class="n">data_file_to_id</span><span class="p">[</span><span class="n">source_file</span><span class="p">]):</span>
+
+                    <span class="n">writer</span><span class="o">.</span><span class="n">write_spectrum_identification_item</span><span class="p">(</span>
+                        <span class="n">calculated_mass_to_charge</span><span class="o">=</span><span class="n">psm</span><span class="p">[</span><span class="s1">&#39;theoretical_mz&#39;</span><span class="p">],</span>
+                        <span class="n">charge_state</span><span class="o">=</span><span class="n">psm</span><span class="p">[</span><span class="s1">&#39;precursor_charge&#39;</span><span class="p">],</span>
+                        <span class="n">experimental_mass_to_charge</span><span class="o">=</span><span class="n">psm</span><span class="p">[</span><span class="s1">&#39;precursor_mz&#39;</span><span class="p">],</span>
+                        <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;SII_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                        <span class="n">peptide_id</span><span class="o">=</span><span class="n">peptide_id</span><span class="p">,</span>
+                        <span class="n">peptide_evidence_id</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">peptide_id</span><span class="si">}</span><span class="s1">_EVIDENCE&#39;</span><span class="p">,</span>
+                        <span class="n">params</span><span class="o">=</span><span class="p">[</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;imagine-raw-score&quot;</span><span class="p">:</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;raw-score&#39;</span><span class="p">],</span>
+                            <span class="p">},</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;PSM-level q-value&quot;</span><span class="p">:</span> <span class="n">psm</span><span class="p">[</span><span class="s1">&#39;q-value&#39;</span><span class="p">],</span>
+                            <span class="p">}</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+</pre></div>
+</div>
+<p>And with that, we’re done! let all the context managers close and the file will
+be written and closed correctly.</p>
+</div>
+</div>
+
+
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+    <div class="footer" role="contentinfo">
+        <div class="container">
+            &#169; Copyright 2018, Joshua Klein.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
+        </div>
+    </div>  
+
+</body>
+</html>

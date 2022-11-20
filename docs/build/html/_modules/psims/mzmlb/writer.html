@@ -100,7 +100,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzmlb/index.html">mzMLb</a><ul>
@@ -123,9 +124,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -144,6 +147,8 @@
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">numbers</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -241,10 +246,25 @@
 <span class="sd">    h5_blocksize : int</span>
 <span class="sd">        The number of bytes to include in a single HDF5 data block. Smaller blocks improve random access speed</span>
 <span class="sd">        at the expense of compression efficiency and space. Defaults to 2 ** 20, 1MB.</span>
+<span class="sd">    buffer_blocks: int</span>
+<span class="sd">        The number of array blocks to buffer in memory before syncing to disk to reduce the number of</span>
+<span class="sd">        resize operations. This applies to each array independently. Defaults to 10.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5_file</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+
+    <span class="n">buffer_blocks</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">h5_blocksize</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="n">h5_compression</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">h5_compression_options</span><span class="p">:</span> <span class="n">Dict</span>
+
+    <span class="n">array_name_cache</span><span class="p">:</span> <span class="n">Dict</span>
+    <span class="n">array_buffers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ArrayBuffer</span><span class="p">]</span>
+
+    <span class="n">offset_tracker</span><span class="p">:</span> <span class="n">Counter</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5_file</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">vocabulary_resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h5_compression</span><span class="o">=</span><span class="n">DEFAULT_COMPRESSOR</span><span class="p">,</span>
-                 <span class="n">h5_compression_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h5_blocksize</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                 <span class="n">h5_compression_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h5_blocksize</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">,</span> <span class="n">buffer_blocks</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">h5_compression</span> <span class="ow">in</span> <span class="n">HDF5_COMPRESSORS</span><span class="p">:</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">h5_compression</span>
             <span class="n">h5_compression</span> <span class="o">=</span> <span class="n">HDF5_COMPRESSORS</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;compression&#39;</span><span class="p">]</span>
@@ -266,6 +286,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span> <span class="o">=</span> <span class="n">h5_blocksize</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span> <span class="o">=</span> <span class="n">h5_compression</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span> <span class="o">=</span> <span class="n">h5_compression_options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_blocks</span> <span class="o">=</span> <span class="n">buffer_blocks</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">array_name_cache</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array_buffers</span> <span class="o">=</span> <span class="p">{}</span>
@@ -309,7 +330,7 @@
             <span class="n">tag_name</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">,</span> <span class="p">),</span>
             <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression</span><span class="p">,</span>
             <span class="n">compression_opts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_compression_options</span><span class="p">,</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">array_buffers</span><span class="p">[</span><span class="n">tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArrayBuffer</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_buffers</span><span class="p">[</span><span class="n">tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArrayBuffer</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h5_blocksize</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_blocks</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tag_name</span>
 
     <span class="k">def</span> <span class="nf">_prepare_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_NONE</span><span class="p">,</span> <span class="n">array_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -479,7 +500,7 @@
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

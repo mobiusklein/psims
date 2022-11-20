@@ -104,7 +104,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mzml/writer.html">Writing mzML Documents</a></li>
@@ -115,6 +115,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mzmlb/index.html">mzMLb</a><ul>
@@ -127,9 +128,11 @@
 <li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -155,7 +158,7 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>xml_file</strong> (<a class="reference internal" href="#psims.xml.XMLWriterMixin" title="psims.xml.XMLWriterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLWriterMixin</span></code></a>) – The XML writer to write to</p></li>
-<li><p><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name of the tag type to create</p></li>
 <li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
 <li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
@@ -172,7 +175,7 @@ constructor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>_tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name of the tag type to create</p></li>
 <li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
 <li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
@@ -199,7 +202,7 @@ to querying <a class="reference internal" href="#psims.xml.TagBase.attrs" title=
 versions of the name</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -210,7 +213,7 @@ versions of the name</p>
 <dd><p>Whether the element has been opened as a context manager</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -221,7 +224,7 @@ versions of the name</p>
 <dd><p>The name of the element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -232,7 +235,7 @@ versions of the name</p>
 <dd><p>The body text of the element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -243,7 +246,7 @@ versions of the name</p>
 <dd><p>Attributes common to all elements of this type</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -254,7 +257,7 @@ versions of the name</p>
 <dd><p>The &#64;id attribute of the element.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -276,7 +279,7 @@ are allowed here</p>
 <dd><p>The human-readable name of the parameter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -287,7 +290,7 @@ are allowed here</p>
 <dd><p>The within-vocabulary unique identifier of the parameter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -298,7 +301,7 @@ are allowed here</p>
 <dd><p>The value of the parameter, to be converted to text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)">object</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -347,7 +350,7 @@ handled by the <a class="reference internal" href="#psims.xml.CV.resolver" title
 be identical to the <a class="reference internal" href="#psims.xml.CV.id" title="psims.xml.CV.id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -358,7 +361,7 @@ be identical to the <a class="reference internal" href="#psims.xml.CV.id" title=
 <dd><p>A short unique identifier for the controlled vocabulary</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -369,7 +372,7 @@ be identical to the <a class="reference internal" href="#psims.xml.CV.id" title=
 <dd><p>Additional information that may be used during resolution</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -391,7 +394,7 @@ be identical to the <a class="reference internal" href="#psims.xml.CV.id" title=
 <dd><p>The location where the definition can be found</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -402,7 +405,7 @@ be identical to the <a class="reference internal" href="#psims.xml.CV.id" title=
 <dd><p>The version of the vocabulary resolved</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -455,7 +458,7 @@ XML elements and aggregate Components.</p>
 <dd><p>Controls debug printing</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -480,7 +483,7 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name of the tag type to create</p></li>
 <li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
 <li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
@@ -507,7 +510,7 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 
 <dl class="py class">
 <dt class="sig sig-object py" id="psims.xml.XMLDocumentWriter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">XMLDocumentWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psims.xml.</span></span><span class="sig-name descname"><span class="pre">XMLDocumentWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psims/xml.html#XMLDocumentWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psims.xml.XMLDocumentWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>A base class for types which are used to
 write complete XML documents.</p>
 <dl class="py attribute">
@@ -578,7 +581,7 @@ are forwarded to the <a class="reference internal" href="#psims.xml.TagBase" tit
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The name of the tag type to create</p></li>
+<li><p><strong>element_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name of the tag type to create</p></li>
 <li><p><strong>*args</strong> – Arbitrary arguments for the tag</p></li>
 <li><p><strong>**kwargs</strong> – Key word arguments for the tag</p></li>
 </ul>
@@ -635,8 +638,8 @@ this writer wrote</p>
 </p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – When the file cannot be recovered from the writer object,
-    a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.11)"><strong>TypeError</strong></a> – When the file cannot be recovered from the writer object,
+    a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> is thrown</p>
 </dd>
 </dl>
 </dd></dl>
@@ -687,7 +690,7 @@ this writer wrote</p>
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

@@ -100,7 +100,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzmlb/index.html">mzMLb</a><ul>
@@ -123,9 +124,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -141,15 +144,17 @@
                             
   <h1>Source code for psims.controlled_vocabulary.entity</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">MutableSequence</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">MutableSequence</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">MutableSequence</span>
 
 <span class="kn">from</span> <span class="nn">psims.utils</span> <span class="kn">import</span> <span class="n">ensure_iterable</span>
 
 <span class="kn">from</span> <span class="nn">.type_definition</span> <span class="kn">import</span> <span class="n">parse_xsdtype</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">ListOfType</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">psims.controlled_vocabulary.controlled_vocabulary</span> <span class="kn">import</span> <span class="n">ControlledVocabulary</span>
+    <span class="kn">from</span> <span class="nn">psims.controlled_vocabulary.relationship</span> <span class="kn">import</span> <span class="n">Relationship</span><span class="p">,</span> <span class="n">Reference</span>
 
 <span class="k">class</span> <span class="nc">PredicateList</span><span class="p">(</span><span class="n">MutableSequence</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
@@ -209,6 +214,9 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
 
+<span class="k">class</span> <span class="nc">KeyOrAttributeError</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
 
 <div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Represent a term in a controlled vocabulary.</span>
@@ -230,6 +238,11 @@
 <span class="sd">        The &quot;def&quot; field of a term.</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Entity&#39;</span><span class="p">]</span>
+    <span class="n">vocabulary</span><span class="p">:</span> <span class="s1">&#39;ControlledVocabulary&#39;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocabulary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attributes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
@@ -248,7 +261,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">KeyOrAttributeError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;vocabulary&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">):</span>
@@ -256,7 +272,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">add_relationship</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relationship</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_relationship</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relationship</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Relationship&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Relationship&#39;</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">.relationship</span> <span class="kn">import</span> <span class="n">Relationship</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">relationship</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">relationship</span> <span class="o">=</span> <span class="n">Relationship</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">relationship</span><span class="p">)</span>
@@ -272,7 +288,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;relationship&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span>
         <span class="k">return</span> <span class="n">relationship</span>
 
-    <span class="k">def</span> <span class="nf">remove_relationship</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relationship</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">remove_relationship</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relationship</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Relationship&#39;</span><span class="p">]):</span>
         <span class="kn">from</span> <span class="nn">.relationship</span> <span class="kn">import</span> <span class="n">Relationship</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">relationship</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">relationship</span> <span class="o">=</span> <span class="n">Relationship</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">relationship</span><span class="p">)</span>
@@ -321,7 +337,7 @@
     <span class="k">def</span> <span class="nf">definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;def&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="Entity.parent"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Entity.parent"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Entity&#39;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Entity&#39;</span><span class="p">]]:</span>
         <span class="sd">&#39;&#39;&#39;Fetch the parent or parents of this :class:`Entity`</span>
 <span class="sd">        in the bound controlled vocabulary.</span>
 
@@ -342,7 +358,7 @@
         <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;Entity(</span><span class="si">{self.id!r}</span><span class="s1">, </span><span class="si">{self.name!r}</span><span class="s1">, </span><span class="si">{self.definition!r}</span><span class="s1">)&#39;</span>
         <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Entity.is_of_type"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.is_of_type">[docs]</a>    <span class="k">def</span> <span class="nf">is_of_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tp</span><span class="p">):</span>
+<div class="viewcode-block" id="Entity.is_of_type"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.entity.Entity.is_of_type">[docs]</a>    <span class="k">def</span> <span class="nf">is_of_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Entity&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;Test if `tp` is an ancestor of this :class:`Entity`</span>
 
 <span class="sd">        Parameters</span>
@@ -367,7 +383,7 @@
             <span class="n">stack</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ensure_iterable</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">parent</span><span class="p">()))</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-    <span class="k">def</span> <span class="nf">as_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">as_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ListOfType</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocabulary</span><span class="o">.</span><span class="n">type_definitions</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocabulary</span><span class="o">.</span><span class="n">type_definitions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
         <span class="n">is_list_of</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s1">&#39;list of type&#39;</span><span class="p">)</span>
@@ -416,7 +432,7 @@
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

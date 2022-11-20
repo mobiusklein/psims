@@ -100,7 +100,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mzml/writer.html">Writing mzML Documents</a></li>
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mzmlb/index.html">mzMLb</a><ul>
@@ -123,9 +124,11 @@
 <li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -246,6 +249,8 @@
       <li><a href="mzml/components.html#psims.mzml.components.BinaryDataArray">BinaryDataArray (class in psims.mzml.components)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.BinaryDataArrayList">BinaryDataArrayList (class in psims.mzml.components)</a>
+</li>
+      <li><a href="mzmlb/writer.html#psims.mzmlb.writer.MzMLbWriter.buffer_blocks">buffer_blocks (psims.mzmlb.writer.MzMLbWriter attribute)</a>
 </li>
       <li><a href="mzml/components.html#psims.mzml.components.ComponentList.build">build() (psims.mzml.components.ComponentList class method)</a>
 </li>
@@ -557,6 +562,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.names">names() (psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary method)</a>
+</li>
+      <li><a href="mzml/writer.html#psims.mzml.writer.IndexedMzMLWriter.native_id_format">native_id_format (psims.mzml.writer.IndexedMzMLWriter property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -997,7 +1004,7 @@
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

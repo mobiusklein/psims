@@ -100,7 +100,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzmlb/index.html">mzMLb</a><ul>
@@ -123,9 +124,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -160,20 +163,18 @@
 <span class="kn">import</span> <span class="nn">numbers</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">TypedDict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">DefaultDict</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">psims.xml</span> <span class="kn">import</span> <span class="n">XMLWriterMixin</span><span class="p">,</span> <span class="n">XMLDocumentWriter</span>
+<span class="kn">from</span> <span class="nn">psims.xml</span> <span class="kn">import</span> <span class="n">CVParam</span><span class="p">,</span> <span class="n">XMLWriterMixin</span><span class="p">,</span> <span class="n">XMLDocumentWriter</span>
+<span class="kn">from</span> <span class="nn">psims.controlled_vocabulary</span> <span class="kn">import</span> <span class="n">Entity</span>
 <span class="kn">from</span> <span class="nn">psims.utils</span> <span class="kn">import</span> <span class="n">TableStateMachine</span>
 
 <span class="kn">from</span> <span class="nn">.components</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ComponentDispatcher</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span>
+    <span class="n">ComponentDispatcher</span><span class="p">,</span> <span class="n">FileDescription</span><span class="p">,</span> <span class="n">Software</span><span class="p">,</span> <span class="n">Spectrum</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span>
     <span class="n">default_cv_list</span><span class="p">,</span> <span class="n">MzML</span><span class="p">,</span> <span class="n">InstrumentConfiguration</span><span class="p">,</span> <span class="n">IndexedMzML</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.binary_encoding</span> <span class="kn">import</span> <span class="p">(</span>
@@ -182,6 +183,7 @@
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ensure_iterable</span>
 <span class="kn">from</span> <span class="nn">.index</span> <span class="kn">import</span> <span class="n">IndexingStream</span>
+<span class="kn">from</span> <span class="nn">.native_id</span> <span class="kn">import</span> <span class="n">NativeIDParser</span>
 
 <span class="kn">from</span> <span class="nn">.element_builder</span> <span class="kn">import</span> <span class="n">ElementBuilder</span><span class="p">,</span> <span class="n">ParamManagingProperty</span>
 
@@ -227,6 +229,14 @@
 <span class="p">]</span>
 
 
+<span class="k">class</span> <span class="nc">ArrayTypeSpec</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">CVParam</span><span class="p">]</span>
+
+
+<span class="n">ArrayType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ArrayTypeSpec</span><span class="p">]</span>
+
+
 <span class="k">class</span> <span class="nc">DocumentSection</span><span class="p">(</span><span class="n">ComponentDispatcher</span><span class="p">,</span> <span class="n">XMLWriterMixin</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">parent_context</span><span class="p">,</span> <span class="n">section_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -237,6 +247,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">section</span> <span class="o">=</span> <span class="n">section</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">writer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">section_args</span> <span class="o">=</span> <span class="n">section_args</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">native_id_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">native_id_format</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
@@ -366,10 +380,13 @@
     <span class="n">DEFAULT_TIME_UNIT</span> <span class="o">=</span> <span class="n">DEFAULT_TIME_UNIT</span>
     <span class="n">DEFAULT_INTENSITY_UNIT</span> <span class="o">=</span> <span class="n">DEFAULT_INTENSITY_UNIT</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">vocabulary_resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">vocabulary_resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">native_id_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">vocabularies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">vocabularies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">native_id_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">native_id_format</span> <span class="o">=</span> <span class="s2">&quot;multiple peak list nativeID format&quot;</span>
         <span class="n">vocabularies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">default_cv_list</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">vocabularies</span><span class="p">)</span>
         <span class="n">ComponentDispatcher</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -396,6 +413,56 @@
             <span class="p">(</span><span class="s1">&#39;spectrum_list&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;chromatogram_list&#39;</span><span class="p">]),</span>
             <span class="p">(</span><span class="s1">&#39;chromatogram_list&#39;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_native_id_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_native_id_parser</span><span class="p">(</span><span class="n">native_id_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">native_id_format_configured</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_context_key</span><span class="p">(</span><span class="s1">&#39;native_id_formatter&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_native_id_maker</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">native_id_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;The nativeID format of the spectra to assume for this data file.</span>
+
+<span class="sd">        This is used to determine how to convert an integer into a spectrum&#39;s :attr:`~.Spectrum.id`.</span>
+<span class="sd">        Defaults to ``MS:1000774``: &quot;multiple peak list nativeID format&quot; which has a pattern of</span>
+<span class="sd">        ``index=&lt;number&gt;``.</span>
+
+<span class="sd">        This attribute has no effect on spectrum id values specified as strings already formatted.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If not explicitly specified, but a term naming an ID format is passed as a parameter in</span>
+<span class="sd">            file contents, that will be used. The ID format from source files will **not** be used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :class:`~.NativeIDParser`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_native_id_format</span>
+
+    <span class="nd">@native_id_format</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">native_id_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_id_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the nativeID format to use for this file.</span>
+
+<span class="sd">        You can specify the name the ID format using either the format&#39;s name</span>
+<span class="sd">        or its CV ID, e.g. &quot;MS:1000774&quot;, or a :class:`~psims.controlled_vocabulary.entity.Entity`</span>
+<span class="sd">        describing the same term.</span>
+
+<span class="sd">        Explicitly setting this attribute will *prevent* automatically using</span>
+<span class="sd">        the nativeID format specified in ``&lt;fileContent&gt;``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        native_id_format : :class:`~.Union`[str, :class:`~psims.controlled_vocabulary.entity.Entity`]</span>
+<span class="sd">            The nativeID format to use for this file.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_native_id_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_native_id_parser</span><span class="p">(</span><span class="n">native_id_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">native_id_format_configured</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_find_native_id_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Entity</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NativeIDParser</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Entity</span><span class="p">):</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">term</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">NativeIDParser</span><span class="o">.</span><span class="n">from_term</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_native_id_maker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_tag_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_native_id_format</span><span class="o">.</span><span class="n">format_integer</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">toplevel_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">MzML</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">accession</span><span class="p">)</span>
@@ -410,7 +477,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;controlled_vocabularies&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PlainMzMLWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">controlled_vocabularies</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">software_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">software_list</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">software_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">software_list</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Software</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">]]):</span>
         <span class="sd">&quot;&quot;&quot;Writes the ``&lt;softwareList&gt;`` section of the document.</span>
 
 <span class="sd">        .. note::</span>
@@ -431,6 +498,9 @@
     <span class="k">def</span> <span class="nf">file_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_contents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">contacts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Writes the ``&lt;fileDescription&gt;`` section of the document.</span>
 
+<span class="sd">        If ``file_contents`` contains a nativeID term, and :attr:`native_id_format` has</span>
+<span class="sd">        not been set explicitly, that ID format will be used for this document.</span>
+
 <span class="sd">        .. note::</span>
 <span class="sd">            Information pertaining to the entire mzML file (i.e. not specific</span>
 <span class="sd">            to any part of the data set) is stored here.</span>
@@ -445,9 +515,14 @@
 <span class="sd">            to be placed in the ``&lt;sourceFileList&gt;`` element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="s2">&quot;file_description&quot;</span><span class="p">)</span>
-        <span class="n">fd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FileDescription</span><span class="p">(</span>
+        <span class="n">fd</span><span class="p">:</span> <span class="n">FileDescription</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FileDescription</span><span class="p">(</span>
             <span class="n">file_contents</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SourceFile</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span> <span class="k">for</span> <span class="n">sf</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">source_files</span><span class="p">)],</span>
             <span class="n">contacts</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Contact</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="n">contacts</span><span class="p">)])</span>
+        <span class="n">native_id_format</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">native_id_format</span>
+        <span class="k">if</span> <span class="n">native_id_format</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_id_format_configured</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">native_id_format</span> <span class="o">=</span> <span class="n">NativeIDParser</span><span class="o">.</span><span class="n">from_term</span><span class="p">(</span><span class="n">native_id_format</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_id_format_configured</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">native_id_format</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">instrument_configuration_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instrument_configurations</span><span class="p">):</span>
@@ -607,11 +682,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
             <span class="n">data_processing_method</span><span class="o">=</span><span class="n">data_processing_method</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charge_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz_array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">intensity_array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">charge_array</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">polarity</span><span class="o">=</span><span class="s1">&#39;positive scan&#39;</span><span class="p">,</span> <span class="n">centroided</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">precursor_information</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">scan_start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">COMPRESSION_ZLIB</span><span class="p">,</span>
                  <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">other_arrays</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_window_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">instrument_configuration_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">):</span>
+                 <span class="n">instrument_configuration_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity_unit</span><span class="o">=</span><span class="n">DEFAULT_INTENSITY_UNIT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;Create a new :class:`~.Spectrum` instance to be written.</span>
 
 <span class="sd">        This method does not immediately write and close the spectrum element, leaving it</span>
@@ -688,11 +764,11 @@
             <span class="n">scan_window_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">scan_window_list</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
-            <span class="n">encoding</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># create new variable to capture in closure</span>
             <span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
-            <span class="n">encoding</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_encoding</span><span class="p">)</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_encoding</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">polarity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polarity</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">polarity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -946,7 +1022,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">array_type_</span> <span class="o">=</span> <span class="n">array_type</span>
             <span class="k">if</span> <span class="n">array_type_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ARRAY_TYPES</span><span class="p">:</span>
-                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NON_STANDARD_ARRAY</span><span class="p">)</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">NON_STANDARD_ARRAY</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">array_type_</span><span class="p">})</span>
         <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compression_map</span><span class="p">[</span><span class="n">compression</span><span class="p">])</span>
         <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtype_to_encoding</span><span class="p">[</span><span class="n">dtype</span><span class="p">])</span>
         <span class="n">encoded_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded_binary</span><span class="p">)</span>
@@ -1194,7 +1270,7 @@
 <span class="sd">        A writing stream that automatically tokenizes and records byte offsets for</span>
 <span class="sd">        specific XML tags.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vocabularies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_reference_is_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">vocabulary_resolver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">outfile</span> <span class="o">=</span> <span class="n">IndexingStream</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">IndexedMzMLWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -1245,7 +1321,7 @@
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

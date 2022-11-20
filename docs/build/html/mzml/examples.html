@@ -106,7 +106,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">mzML</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="writer.html">Writing mzML Documents</a></li>
@@ -117,6 +117,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mzmlb/index.html">mzMLb</a><ul>
@@ -129,9 +130,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -325,7 +328,7 @@ provides you with an object you can use to incrementally build up the value to p
 </pre></div>
 </div>
 <p>Alternatively, you can pass these arguments to <a class="reference internal" href="writer.html#psims.mzml.writer.IndexedMzMLWriter.prepare_precursor_information" title="psims.mzml.writer.IndexedMzMLWriter.prepare_precursor_information"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_precursor_information()</span></code></a>
-to go through the same value translation. This will be done automatically when a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> was passed as the <cite>precursor_information</cite> argument to
+to go through the same value translation. This will be done automatically when a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> was passed as the <cite>precursor_information</cite> argument to
 <a class="reference internal" href="writer.html#psims.mzml.writer.IndexedMzMLWriter.spectrum" title="psims.mzml.writer.IndexedMzMLWriter.spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrum()</span></code></a>/<a class="reference internal" href="writer.html#psims.mzml.writer.IndexedMzMLWriter.write_spectrum" title="psims.mzml.writer.IndexedMzMLWriter.write_spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_spectrum()</span></code></a>.</p>
 </div>
 <div class="section" id="binary-data-array-encoding-and-compression">
@@ -335,7 +338,7 @@ important piece of content. These numerical arrays are encoded using specific pr
 schemes. The standard practice is to encode m/z arrays using 64-bit floating point numbers and everything else
 using 32-bit floating point numbers or integers where appropriate.</p>
 <p>To configure the encoding of a particular array, when calling <a class="reference internal" href="writer.html#psims.mzml.writer.IndexedMzMLWriter.spectrum" title="psims.mzml.writer.IndexedMzMLWriter.spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrum()</span></code></a>,
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">chromatogram()</span></code>, you may pass an <code class="docutils literal notranslate"><span class="pre">encoding</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> parameter which maps
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">chromatogram()</span></code>, you may pass an <code class="docutils literal notranslate"><span class="pre">encoding</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> parameter which maps
 array type to encoding data type. By default, this will map <code class="docutils literal notranslate"><span class="pre">m/z</span> <span class="pre">array</span></code> to 64-bit float and <code class="docutils literal notranslate"><span class="pre">charge</span> <span class="pre">array</span></code>
 to 32-bit integer and all other arrays will map to 32-bit float.</p>
 <p>The mzML standard specifies a binary data array may be compressed too. The <code class="docutils literal notranslate"><span class="pre">compression</span></code> argument controls which
@@ -378,7 +381,7 @@ at the cost of losing some precision. MS-Numpress methods also require the <code
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

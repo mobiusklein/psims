@@ -100,7 +100,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzmlb/index.html">mzMLb</a><ul>
@@ -123,9 +124,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -142,17 +145,17 @@
   <h1>Source code for psims.controlled_vocabulary.controlled_vocabulary</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span><span class="p">,</span> <span class="n">Request</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Callable</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">PY2</span>
+
+<span class="kn">from</span> <span class="nn">psims.utils</span> <span class="kn">import</span> <span class="n">ensure_iterable</span>
+<span class="kn">from</span> <span class="nn">psims.controlled_vocabulary.entity</span> <span class="kn">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">psims.controlled_vocabulary.relationship</span> <span class="kn">import</span> <span class="n">Reference</span>
 
 <span class="kn">from</span> <span class="nn">.obo</span> <span class="kn">import</span> <span class="n">OBOParser</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">unimod</span>
@@ -162,15 +165,20 @@
     <span class="n">_use_vendored_pato_obo</span><span class="p">,</span> <span class="n">_use_vendored_psimod_obo</span><span class="p">,</span> <span class="n">_use_vendored_psims_obo</span><span class="p">,</span>
     <span class="n">_use_vendored_unimod_xml</span><span class="p">,</span> <span class="n">_use_vendored_unit_obo</span><span class="p">,</span> <span class="n">_use_vendored_xlmod_obo</span><span class="p">)</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
+
 <span class="n">fallback</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">(</span><span class="s2">&quot;http://psidev.cvs.sourceforge.net/*checkout*/&quot;</span>
      <span class="s2">&quot;psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo&quot;</span><span class="p">):</span> <span class="n">_use_vendored_psims_obo</span><span class="p">,</span>
     <span class="p">(</span><span class="s2">&quot;http://psidev.cvs.sourceforge.net/viewvc/*checkout*/&quot;</span>
      <span class="s2">&quot;psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo&quot;</span><span class="p">):</span> <span class="n">_use_vendored_psims_obo</span><span class="p">,</span>
     <span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo&quot;</span><span class="p">):</span> <span class="n">_use_vendored_psims_obo</span><span class="p">,</span>
+    <span class="s2">&quot;http://purl.obolibrary.org/obo/ms/psi-ms.obo&quot;</span><span class="p">:</span> <span class="n">_use_vendored_psims_obo</span><span class="p">,</span>
     <span class="p">(</span><span class="s2">&quot;http://obo.cvs.sourceforge.net/*checkout*/&quot;</span>
      <span class="s2">&quot;obo/obo/ontology/phenotype/unit.obo&quot;</span><span class="p">):</span> <span class="n">_use_vendored_unit_obo</span><span class="p">,</span>
     <span class="p">(</span><span class="s2">&quot;http://ontologies.berkeleybop.org/uo.obo&quot;</span><span class="p">):</span> <span class="n">_use_vendored_unit_obo</span><span class="p">,</span>
+    <span class="s2">&quot;http://purl.obolibrary.org/obo/uo.obo&quot;</span><span class="p">:</span> <span class="n">_use_vendored_unit_obo</span><span class="p">,</span>
     <span class="p">(</span><span class="s2">&quot;http://ontologies.berkeleybop.org/pato.obo&quot;</span><span class="p">):</span> <span class="n">_use_vendored_pato_obo</span><span class="p">,</span>
     <span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo&quot;</span><span class="p">):</span> <span class="n">_use_vendored_xlmod_obo</span><span class="p">,</span>
     <span class="p">(</span><span class="s2">&quot;http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO&quot;</span>
@@ -179,6 +187,22 @@
     <span class="s2">&quot;https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo&quot;</span><span class="p">:</span> <span class="n">_use_vendored_psimod_obo</span><span class="p">,</span>
     <span class="s2">&quot;http://purl.obolibrary.org/obo/gno.obo&quot;</span><span class="p">:</span> <span class="n">_use_vendored_gno_obo</span><span class="p">,</span>
 <span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_default_import_resolver</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;ControlledVocabulary&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;obo&quot;</span><span class="p">):</span>
+        <span class="n">obo_handle</span> <span class="o">=</span> <span class="n">obo_cache</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ControlledVocabulary</span><span class="o">.</span><span class="n">from_obo</span><span class="p">(</span><span class="n">obo_handle</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">is_curie</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Reference</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">Reference</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">accession</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\S+):(\S+)&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
 
 
 <div class="viewcode-block" id="ControlledVocabulary"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary">[docs]</a><span class="k">class</span> <span class="nc">ControlledVocabulary</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
@@ -209,8 +233,18 @@
 <span class="sd">    terms : dict</span>
 <span class="sd">        The storage for storing the primary mapping from term ID to terms</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="n">import_resolver</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="s1">&#39;ControlledVocabulary&#39;</span><span class="p">]</span>
+    <span class="n">terms</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Entity</span><span class="p">]</span>
+    <span class="n">type_definitions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="n">imports</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;ControlledVocabulary&#39;</span><span class="p">]</span>
+
 <div class="viewcode-block" id="ControlledVocabulary.from_obo"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.from_obo">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_obo</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_obo</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Construct a new instance from an OBO format stream.</span>
 
 <span class="sd">        Parameters</span>
@@ -228,16 +262,18 @@
 <span class="sd">            When the controlled vocabulary produced contains no terms</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">OBOParser</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
-        <span class="n">inst</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">terms</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">parser</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">parser</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">parser</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">terms</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">parser</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">parser</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">parser</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">terms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty Vocabulary&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">inst</span></div>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">import_resolver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="s1">&#39;ControlledVocabulary&#39;</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+        <span class="k">if</span> <span class="n">import_resolver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">import_resolver</span> <span class="o">=</span> <span class="n">_default_import_resolver</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
@@ -245,6 +281,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">type_definitions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">terms</span> <span class="o">=</span> <span class="n">terms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">import_resolver</span> <span class="o">=</span> <span class="n">import_resolver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imports</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;A wrapper for :meth:`query`</span>
@@ -276,6 +314,8 @@
 <span class="sd">        search</span>
 <span class="sd">        __getitem__</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Reference</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">accession</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">:</span>
@@ -296,7 +336,12 @@
             <span class="k">elif</span> <span class="n">lower_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obsolete_names</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obsolete_names</span><span class="p">[</span><span class="n">lower_key</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2"> were not found.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">normalized_key</span><span class="p">))</span></div>
+                <span class="k">if</span> <span class="n">is_curie</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_imported</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">result</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2"> were not found.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">normalized_key</span><span class="p">))</span> <span class="kn">from</span> <span class="bp">None</span></div>
 
 <div class="viewcode-block" id="ControlledVocabulary.search"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Search for any term containing the query in its id, name, or synonyms.</span>
@@ -364,11 +409,11 @@
     <span class="k">def</span> <span class="nf">_build_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_obsolete&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_obsolete&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">Hashable</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obsolete_names</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_obsolete&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_obsolete&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">Hashable</span><span class="p">)</span>
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_bind_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -402,6 +447,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_normalized</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="ControlledVocabulary.keys"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.ControlledVocabulary.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -421,7 +467,27 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalized</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalized</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+
+    <span class="k">def</span> <span class="nf">_query_imported</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">ensure_iterable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;import&#39;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
+                <span class="n">cv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">[</span><span class="n">url</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Importing </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">cv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">[</span><span class="n">url</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">import_resolver</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">cv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">[</span><span class="n">url</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">cv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="k">return</span> <span class="n">term</span></div>
 
 
 <span class="n">DEFAULT_USER_AGENT</span> <span class="o">=</span> <span class="p">(</span>
@@ -429,7 +495,21 @@
     <span class="s1">&#39; Gecko) Chrome/68.0.3440.106 Safari/537.36&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="OBOCache"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache">[docs]</a><span class="k">class</span> <span class="nc">OBOCache</span><span class="p">(</span><span class="n">Callable</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">VocabularyResolverBase</span><span class="p">(</span><span class="n">Callable</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">fallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="OBOCache"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache">[docs]</a><span class="k">class</span> <span class="nc">OBOCache</span><span class="p">(</span><span class="n">VocabularyResolverBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A cache for retrieved ontology sources stored on the file system, and an</span>
 <span class="sd">    abstraction layer to make registered controlled vocabularies constructable</span>
 <span class="sd">    from a URI even if they are not in the same format.</span>
@@ -553,6 +633,7 @@
         <span class="k">if</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">fallback</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">fallback</span><span class="p">[</span><span class="n">uri</span><span class="p">]()</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to locate fallback for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
             <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">f</span></div>
 
@@ -616,6 +697,21 @@
             <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
             <span class="k">raise</span></div>
 
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_custom_resolver</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolvers</span><span class="p">[</span><span class="n">uri</span><span class="p">](</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">fh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to resolve </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2"> or via its fall-back&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uri</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;obo&quot;</span><span class="p">):</span>
+            <span class="n">cv</span> <span class="o">=</span> <span class="n">ControlledVocabulary</span><span class="o">.</span><span class="n">from_obo</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">import_resolver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cv</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Don&#39;t know how to load </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="OBOCache.set_resolver"><a class="viewcode-back" href="../../../controlled_vocabulary/controlled_vocabulary.html#psims.controlled_vocabulary.controlled_vocabulary.OBOCache.set_resolver">[docs]</a>    <span class="k">def</span> <span class="nf">set_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">resolver</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Register a resolver callable for `uri`</span>
 
@@ -631,10 +727,7 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;OBOCache(cache_path=</span><span class="si">%r</span><span class="s2">, enabled=</span><span class="si">%r</span><span class="s2">, resolvers=</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolvers</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolvers</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_make_relative_sqlite_sqlalchemy_uri</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -674,7 +767,8 @@
 
 <span class="k">def</span> <span class="nf">load_psims</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">cv</span> <span class="o">=</span> <span class="n">obo_cache</span><span class="o">.</span><span class="n">resolve</span><span class="p">((</span><span class="s2">&quot;https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo&quot;</span><span class="p">))</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="n">obo_cache</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;http://purl.obolibrary.org/obo/ms/psi-ms.obo&quot;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">ControlledVocabulary</span><span class="o">.</span><span class="n">from_obo</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="n">cv</span> <span class="o">=</span> <span class="n">_use_vendored_psims_obo</span><span class="p">()</span>
@@ -682,12 +776,12 @@
 
 
 <span class="k">def</span> <span class="nf">load_uo</span><span class="p">():</span>
-    <span class="n">cv</span> <span class="o">=</span> <span class="n">obo_cache</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;http://ontologies.berkeleybop.org/uo.obo&quot;</span><span class="p">)</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">obo_cache</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;http://purl.obolibrary.org/obo/uo.obo&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ControlledVocabulary</span><span class="o">.</span><span class="n">from_obo</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">load_pato</span><span class="p">():</span>
-    <span class="n">cv</span> <span class="o">=</span> <span class="n">obo_cache</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;http://ontologies.berkeleybop.org/pato.obo&quot;</span><span class="p">)</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">obo_cache</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;http://purl.obolibrary.org/obo/pato.obo&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ControlledVocabulary</span><span class="o">.</span><span class="n">from_obo</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span>
 
 
@@ -750,7 +844,7 @@
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 

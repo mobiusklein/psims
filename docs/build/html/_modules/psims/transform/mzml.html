@@ -100,7 +100,7 @@
                         
                             
                             
-                                <p class="caption"><span class="caption-text">Contents:</span></p>
+                                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzml/index.html">mzML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzml/writer.html">Writing mzML Documents</a></li>
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mzid/index.html">mzIdentML</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/writer.html">Writing mzIdentML Documents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../mzid/components.html">Components of mzIdentML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../mzid/examples.html">Usage Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mzmlb/index.html">mzMLb</a><ul>
@@ -123,9 +124,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html">Controlled Vocabulary Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#caching">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/controlled_vocabulary.html#semantic-data">Semantic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../controlled_vocabulary/bundled.html">Bundled Controlled Vocabularies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transform/mzml.html">Transforming mzML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#transforming-mzml-files">Transforming mzML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../transform/mzml.html#mzmlb-translation">MzMLb Translation</a></li>
 </ul>
 </li>
@@ -140,12 +143,66 @@
                         
                             
   <h1>Source code for psims.transform.mzml</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pyteomics</span> <span class="kn">import</span> <span class="n">mzml</span>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Transforming mzML Files</span>
+<span class="sd">-----------------------</span>
+
+<span class="sd">Often, we start with an mzML file we want to manipulate or change, but don&#39;t want to write out</span>
+<span class="sd">explicitly unpacking it and re-packing it.</span>
+
+<span class="sd">The :class:`MzMLTransformer` class is intended to give you a way to wrap an input file-like object</span>
+<span class="sd">over an mzML file and an output file-like object to write the manipulated mzML file to, along with</span>
+<span class="sd">a transformation function to modify spectra, and have it do the rest of the work. It uses :mod:`pyteomics.mzml`</span>
+<span class="sd">to do the parsing internally.</span>
+
+
+<span class="sd">Transformation Function Semantics</span>
+<span class="sd">=================================</span>
+
+<span class="sd">The transformation function passed receives a :class:`dict` object representing</span>
+<span class="sd">the spectrum as parsed by :mod:`pyteomics.mzml` and expects the function to return</span>
+<span class="sd">the dictionary modified or :const:`None` (in which case the spectrum is not written out).</span>
+
+<span class="sd">You are free to modify existing keys in the spectrum dictionary, but *new* keys that are</span>
+<span class="sd">intended to be recognized as either ``&lt;cvParam /&gt;`` or ``&lt;userParam /&gt;`` elements must</span>
+<span class="sd">be instances of :class:`pyteomics.auxiliary.cvstr`, or otherwise have an &quot;``accession``&quot;</span>
+<span class="sd">attribute to be picked up. Alternatively, the converter will make an effort to coerce keys</span>
+<span class="sd">whose values which are scalars, or :class:`dict`s which look like parameters (having a &quot;name&quot;</span>
+<span class="sd">or &quot;accession&quot; key, at least).</span>
+
+<span class="sd">Alternatively, you can inherit from :class:`MzMLTransformer` and override :meth:`~.MzMLTransformer.format_spectrum`</span>
+<span class="sd">to modify the spectrum before or after conversion (letting you directly append to the &quot;params&quot; key of the</span>
+<span class="sd">converted spectrum and avoid needing to mark new params with :class:`cvstr`). Additionally, you</span>
+<span class="sd">can override all other ``format_`` methods to customize how other elements are converted.</span>
+
+
+<span class="sd">Usage and Examples</span>
+<span class="sd">==================</span>
+
+<span class="sd">In its simplest form, we would use the :class:`MzMLTransformer` like so:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from psims.transform.mzml import MzMLTransformer, cvstr</span>
+
+<span class="sd">    def transform_drop_ms2(spectrum):</span>
+<span class="sd">        if spectrum[&#39;ms level&#39;] &gt; 1:</span>
+<span class="sd">            return None</span>
+<span class="sd">        return spectrum</span>
+
+<span class="sd">    with open(&quot;input.mzML&quot;, &#39;rb&#39;) as in_stream, open(&quot;ms1_only.mzML&quot;, &#39;wb&#39;) as out_stream:</span>
+<span class="sd">        MzMLTransformer(in_stream, out_stream, transform_drop_ms2).write()</span>
+
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
+<span class="kn">from</span> <span class="nn">pyteomics</span> <span class="kn">import</span> <span class="n">mzml</span>
 
 <span class="kn">from</span> <span class="nn">psims</span> <span class="kn">import</span> <span class="n">MzMLWriter</span><span class="p">,</span> <span class="n">MzMLbWriter</span>
 <span class="kn">from</span> <span class="nn">psims.utils</span> <span class="kn">import</span> <span class="n">ensure_iterable</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TransformerBase</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TransformerBase</span><span class="p">,</span> <span class="n">cvstr</span>
 
 
 <span class="k">class</span> <span class="nc">MzMLParser</span><span class="p">(</span><span class="n">mzml</span><span class="o">.</span><span class="n">MzML</span><span class="p">):</span>
@@ -173,7 +230,7 @@
 
 <span class="sd">    If :attr:`sort_by_by_scan_time` is :const:`True`, then prior to writing spectra,</span>
 <span class="sd">    a first pass will be made over the mzML file and the spectra will be written out</span>
-<span class="sd">    ordered by ``MS:1000016:&quot;scan start time&quot;``.</span>
+<span class="sd">    ordered by ``MS:1000016|scan start time``.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -185,7 +242,8 @@
 <span class="sd">        Whether or not to sort spectra by scan time prior to writing</span>
 <span class="sd">    transform : :class:`Callable`, optional</span>
 <span class="sd">        A function to call on each spectrum, passed as a :class:`dict` object as</span>
-<span class="sd">        read by :class:`pyteomics.mzml.MzML`.</span>
+<span class="sd">        read by :class:`pyteomics.mzml.MzML`. A spectrum will be skipped if this function</span>
+<span class="sd">        returns :const:`None`.</span>
 <span class="sd">    transform_description : :class:`str`</span>
 <span class="sd">        A description of the transformation to include in the written metadata</span>
 
@@ -390,24 +448,40 @@
             <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;polarity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">temp</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">attrs_to_skip</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;sourceFileRef&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;defaultArrayLength&#39;</span><span class="p">,</span> <span class="s1">&#39;dataProcessingRef&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">accession</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;accession&#39;</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="n">accession</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">accession</span>
+                <span class="c1"># Guess if this is looks like it could be a param tag or was added by the user</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">or</span> <span class="s2">&quot;accession&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Number</span><span class="p">))</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs_to_skip</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">accession</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">accession</span>
             <span class="k">if</span> <span class="n">accession</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">accession</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
                     <span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
                 <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span><span class="p">[</span><span class="n">accession</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum representation&quot;</span><span class="p">):</span>
-                <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;centroided&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;MS:1000127&quot;</span>
-                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum property&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum attribute&quot;</span><span class="p">):</span>
-                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
-                    <span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
-                <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psims_cv</span><span class="p">[</span><span class="n">accession</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum representation&quot;</span><span class="p">):</span>
+                    <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;centroided&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;MS:1000127&quot;</span>
+                    <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum property&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">term</span><span class="o">.</span><span class="n">is_of_type</span><span class="p">(</span><span class="s2">&quot;spectrum attribute&quot;</span><span class="p">):</span>
+                    <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;unit_info&#39;</span><span class="p">):</span>
+                        <span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;unit_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">unit_info</span>
+                    <span class="n">temp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;scan_start_time&quot;</span><span class="p">],</span> <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;scan_params&#39;</span><span class="p">],</span> <span class="n">spec_data</span><span class="p">[</span><span class="s2">&quot;scan_window_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_scan</span><span class="p">(</span>
             <span class="n">spectrum</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scanList&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scan&#39;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">])</span>
@@ -481,7 +555,8 @@
                             <span class="k">continue</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_spectrum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">format_spectrum</span><span class="p">(</span><span class="n">spectrum</span><span class="p">))</span>
                         <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Handled </span><span class="si">%d</span><span class="s2"> spectra&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">))</span></div></div>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Handled </span><span class="si">%d</span><span class="s2"> spectra&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Handled </span><span class="si">%d</span><span class="s2"> spectra&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="MzMLToMzMLb"><a class="viewcode-back" href="../../../transform/mzml.html#psims.transform.mzml.MzMLToMzMLb">[docs]</a><span class="k">class</span> <span class="nc">MzMLToMzMLb</span><span class="p">(</span><span class="n">MzMLTransformer</span><span class="p">):</span>
@@ -559,7 +634,7 @@
     <div class="footer" role="contentinfo">
         <div class="container">
             &#169; Copyright 2018, Joshua Klein.
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.
         </div>
     </div>  
 
