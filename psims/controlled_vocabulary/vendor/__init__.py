@@ -1,3 +1,5 @@
+import io
+import json
 try:
     from importlib import resources
     _load = resources.open_binary
@@ -41,3 +43,9 @@ def _use_vendored_go_obo():
 
 def _use_vendored_gno_obo():
     return GzipFile(fileobj=_load(__name__, "gno.obo.gz"))
+
+
+def version_table():
+    fh = _load(__name__, "record.json")
+    stream = io.TextIOWrapper(fh, 'utf8')
+    return json.load(stream)

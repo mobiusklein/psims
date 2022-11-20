@@ -3,6 +3,178 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.2.1]
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-09-19 | 8f0f6557c8140bc68af67ac57239236d |
+| pato.obo.gz | releases/2022-08-31/pato.obo | f84ce80b421e6f693a6e8031a70fe95f |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.104 | 6b5051c9a66b3c15cf0334920099bac1 |
+| unimod_tables.xml.gz | - | 523d0bb41eeb41bb1554fa405915e310 |
+| unit.obo.gz | - | 1f6e1b5122ea4c2d3797bae72f140ab1 |
+
+### Added
+1. Controlled vocabularies fail to resolve, a more descriptive error message will be
+   used in the error. If failing to import a CV fails, it is not treated as an error.
+2. Wrapped component classes on writer types now expose a `register` method which is
+   shorthand for `writer.register("component type name", identifier)`.
+
+
+## [v1.2.0] - 2022-07-29
+
+### Changed
+1. When giving a `Spectrum` an ID value which is just an integer, the writer will attempt to convert it into
+   the appropriate nativeID format. To control the nativeID format, set `MzMLWriter.native_id_format` or include
+   an appropriate `cvParam` term in the `MzMLWriter.file_description` parameters.
+
+### Fixed
+1. When a CV fails to import another CV, that failure will be noted and it won't attempt to download again.
+
+
+## [v1.1.0] - 2022-07-29
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-07-01 | 1b557078fdb541dbed5ee3fb1f51cbed |
+| pato.obo.gz | releases/2022-07-21/pato.obo | 1b9d2d654020da497b0ebb5934451acb |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.95 | c9a6c38ae4ec451a839f2a200b7bf601 |
+| unimod_tables.xml.gz | - | 523d0bb41eeb41bb1554fa405915e310 |
+| unit.obo.gz | - | 1f6e1b5122ea4c2d3797bae72f140ab1 |
+
+### Added
+1. `OBOCache.load` wraps the resolve/fallback and `OBOParser` parsing steps in a single call to produce a
+   `ControlledVocabulary` instance.
+
+### Changed
+1. `DocumentContext` objects are always truthy, regardless of whether they have any keys.
+2. `ControlledVocabulary` instances will now also query their imports (restricted to OBO imports for now)
+   when looking up missing terms.
+3. `VocabularyResolver` instances now cache CVs loaded through them to avoid having multiple copies of
+   the same CV for the same document. This applies to CVs imported indirectly as well.
+
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+
+## [v.1.1.0] - 2022-07-07
+
+### Added
+- Added `MzMLWriter.native_id_format` attribute that governs how integers are converted into strings for the
+  spectrum id attribute. This will default to `MS:1000774` `multiple peak list nativeID format`. If `fileContents`
+  includes a nativeID format term and it is not been explicitly specified, that format will be used. This has no
+  effect when specifying a a spectrum id with a string.
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [v1.0.0] - 2022-06-15
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-05-16 | 3408f54d9b0e2c7a1e71322ee17fda55 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.91 | fd8c3970411f47d57ec47c470f5c2db2 |
+| unimod_tables.xml.gz | - | 523d0bb41eeb41bb1554fa405915e310 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+### Changed
+1. **Breaking** The default behavior for all writer classes (`MzMLWriter`, `MzIdentMLWriter`, etc.) will now be to *close* files if they are closable. To preserve the
+   previous behavior, explicitly pass `close=False`.
+
+
+## [v0.1.47] - 2022-04-25
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-03-22 | b24ea119f8b86d8ab7c680ec23047f56 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 921a87531252fbb49b73c92e0b201ab2 |
+| psi-ms.obo.gz | 4.1.84 | ace0024e6845eec1d375b6e81a3e90e0 |
+| unimod_tables.xml.gz | - | 523d0bb41eeb41bb1554fa405915e310 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+### Added
+1. Added an option to test if the environment variable `PSIMS_NO_PYNUMPRESS` to prevent loading the `pynumpress`
+   C extension library.
+
+
+## [v0.1.46] - 2022-03-02
+
+### CV Versions
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-01-13 | 122d68f6cf380a8cbb1abb4a74624416 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 921a87531252fbb49b73c92e0b201ab2 |
+| psi-ms.obo.gz | 4.1.72 | 593ed9190e0d657b0eb249efc9a12e77 |
+| unimod_tables.xml.gz | - | 61ac665064dd806b536c609fcb775920 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+### Changed
+1. Properly use non-standard array `cvParam`, setting the `value` to the custom array name. Still also sets
+   a `userParam`.
+
+## [v0.1.45]
+
+### CV Versions
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 6e4b70ba06653e2944a7f4e73e30a42b |
+| gno.obo.gz | 2021-08-13 | a0365da4060e84703aaec8baeae753d0 |
+| go.obo.gz | releases/2021-11-16 | 1cc9921ed933b2de6231cdfa4a0acdf6 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 0f6779b432281c47de1f6879262e394d |
+| psi-ms.obo.gz | 4.1.64 | 162f1ab5e81bacd9bfce95088d1f4967 |
+| unimod_tables.xml.gz | - | 61ac665064dd806b536c609fcb775920 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+
+## [v0.1.44] - 2021-12-04
+
+### CV Versions
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 6e4b70ba06653e2944a7f4e73e30a42b |
+| gno.obo.gz | 2021-08-13 | a0365da4060e84703aaec8baeae753d0 |
+| go.obo.gz | releases/2021-11-16 | 1cc9921ed933b2de6231cdfa4a0acdf6 |
+| pato.obo.gz | releases/2019-09-05 | 443de10a418cba2b0a6f4a9c3b73c60c |
+| psi-mod.obo.gz | - | 0f6779b432281c47de1f6879262e394d |
+| psi-ms.obo.gz | 4.1.64 | 162f1ab5e81bacd9bfce95088d1f4967 |
+| unimod_tables.xml.gz | - | 61ac665064dd806b536c609fcb775920 |
+| unit.obo.gz | releases/2020-03-10 | 4e45267605698d1fcda533c27853a8fc |
+
+### Added
+- Improved documentation of HDF5 compressors
+
+
 ## [v0.1.43] - 2021-08-06
 
 ### Added
@@ -107,8 +279,17 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v0.1.39...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.0...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v1.1.0]: https://github.com/mobiusklein/psims/releases/v1.1.0
+[v1.0.0]: https://github.com/mobiusklein/psims/releases/v1.0.0
+[v0.1.47]: https://github.com/mobiusklein/psims/releases/v0.1.47
+[v0.1.46]: https://github.com/mobiusklein/psims/releases/v0.1.46
+[v0.1.44]: https://github.com/mobiusklein/psims/releases/v0.1.44
+[v0.1.43]: https://github.com/mobiusklein/psims/releases/v0.1.43
+[v0.1.42]: https://github.com/mobiusklein/psims/releases/v0.1.42
+[v0.1.41]: https://github.com/mobiusklein/psims/releases/v0.1.41
+[v0.1.40]: https://github.com/mobiusklein/psims/releases/v0.1.40
 [v0.1.39]: https://github.com/mobiusklein/psims/releases/v0.1.39
 [v0.1.38]: https://github.com/mobiusklein/psims/releases/v0.1.38
 [v0.1.37]: https://github.com/mobiusklein/psims/releases/v0.1.37

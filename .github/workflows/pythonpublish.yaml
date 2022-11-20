@@ -4,7 +4,7 @@
 name: publish
 
 on:
-  create:
+  push:
     tags:
       - "v*"
 
@@ -27,5 +27,5 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         TWINE_USERNAME: __token__
       run: |
-        python setup.py build sdist bdist_wheel --universal
+        python setup.py build sdist bdist_wheel
         twine upload dist/*.whl dist/*.tar.gz

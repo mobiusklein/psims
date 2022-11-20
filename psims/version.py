@@ -1,3 +1,1 @@
-version = '0.1.44'
-
-checkout = "$Id$".replace("Id:", '').replace("$", '').strip()
+version = '1.2.1'

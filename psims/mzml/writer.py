@@ -18,20 +18,18 @@ or through inheritance.
 import numbers
 import warnings
 
-from collections import defaultdict
+from typing import List, Optional, Dict, Tuple, Mapping, Iterable, TypedDict, Union, DefaultDict
 
-try:
-    from collections.abc import Mapping
-except ImportError:
-    from collections import Mapping
+from collections import defaultdict
 
 import numpy as np
 
-from psims.xml import XMLWriterMixin, XMLDocumentWriter
+from psims.xml import CVParam, XMLWriterMixin, XMLDocumentWriter
+from psims.controlled_vocabulary import Entity
 from psims.utils import TableStateMachine
 
 from .components import (
-    ComponentDispatcher, element,
+    ComponentDispatcher, FileDescription, Software, Spectrum, element,
     default_cv_list, MzML, InstrumentConfiguration, IndexedMzML)
 
 from .binary_encoding import (
@@ -40,6 +38,7 @@ from .binary_encoding import (
 
 from .utils import ensure_iterable
 from .index import IndexingStream
+from .native_id import NativeIDParser
 
 from .element_builder import ElementBuilder, ParamManagingProperty
 
@@ -85,6 +84,14 @@ ARRAY_TYPES = [
 ]
 
 
+class ArrayTypeSpec(TypedDict):
+    name: str
+    unit: Union[Mapping[str, str], CVParam]
+
+
+ArrayType = Union[str, ArrayTypeSpec]
+
+
 class DocumentSection(ComponentDispatcher, XMLWriterMixin):
 
     def __init__(self, section, writer, parent_context, section_args=None, **kwargs):
@@ -95,6 +102,10 @@ class DocumentSection(ComponentDispatcher, XMLWriterMixin):
         self.section = section
         self.writer = writer
         self.section_args = section_args
+
+    @property
+    def native_id_format(self):
+        return self.writer.native_id_format
 
     def __enter__(self):
         return self.begin()
@@ -224,10 +235,13 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     DEFAULT_TIME_UNIT = DEFAULT_TIME_UNIT
     DEFAULT_INTENSITY_UNIT = DEFAULT_INTENSITY_UNIT
 
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
-                 vocabulary_resolver=None, id=None, accession=None, **kwargs):
+    def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
+                 vocabulary_resolver=None, id=None, accession=None, native_id_format: str=None,
+                 **kwargs):
         if vocabularies is None:
             vocabularies = []
+        if native_id_format is None:
+            native_id_format = "multiple peak list nativeID format"
         vocabularies = list(default_cv_list) + list(vocabularies)
         ComponentDispatcher.__init__(
             self,
@@ -254,6 +268,56 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             ('spectrum_list', ['chromatogram_list']),
             ('chromatogram_list', [])
         ])
+        self._native_id_format = self._find_native_id_parser(native_id_format)
+        self.native_id_format_configured = False
+        self.add_context_key('native_id_formatter', self._native_id_maker)
+
+    @property
+    def native_id_format(self):
+        '''The nativeID format of the spectra to assume for this data file.
+
+        This is used to determine how to convert an integer into a spectrum's :attr:`~.Spectrum.id`.
+        Defaults to ``MS:1000774``: "multiple peak list nativeID format" which has a pattern of
+        ``index=<number>``.
+
+        This attribute has no effect on spectrum id values specified as strings already formatted.
+
+        .. note::
+            If not explicitly specified, but a term naming an ID format is passed as a parameter in
+            file contents, that will be used. The ID format from source files will **not** be used.
+
+        Returns
+        -------
+        :class:`~.NativeIDParser`
+        '''
+        return self._native_id_format
+
+    @native_id_format.setter
+    def native_id_format(self, native_id_format: str):
+        '''Set the nativeID format to use for this file.
+
+        You can specify the name the ID format using either the format's name
+        or its CV ID, e.g. "MS:1000774", or a :class:`~psims.controlled_vocabulary.entity.Entity`
+        describing the same term.
+
+        Explicitly setting this attribute will *prevent* automatically using
+        the nativeID format specified in ``<fileContent>``.
+
+        Parameters
+        ----------
+        native_id_format : :class:`~.Union`[str, :class:`~psims.controlled_vocabulary.entity.Entity`]
+            The nativeID format to use for this file.
+        '''
+        self._native_id_format = self._find_native_id_parser(native_id_format)
+        self.native_id_format_configured = True
+
+    def _find_native_id_parser(self, name: Union[str, Entity]) -> NativeIDParser:
+        if not isinstance(name, Entity):
+            term = self.term(name)
+        return NativeIDParser.from_term(term)
+
+    def _native_id_maker(self, _tag_name, number):
+        return self._native_id_format.format_integer(number)
 
     def toplevel_tag(self):
         return MzML(id=self.id, accession=self.accession)
@@ -268,7 +332,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.state_machine.transition("controlled_vocabularies")
         super(PlainMzMLWriter, self).controlled_vocabularies()
 
-    def software_list(self, software_list):
+    def software_list(self, software_list: Iterable[Union[Software, Mapping]]):
         """Writes the ``<softwareList>`` section of the document.
 
         .. note::
@@ -289,6 +353,9 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
     def file_description(self, file_contents=None, source_files=None, contacts=None):
         r"""Writes the ``<fileDescription>`` section of the document.
 
+        If ``file_contents`` contains a nativeID term, and :attr:`native_id_format` has
+        not been set explicitly, that ID format will be used for this document.
+
         .. note::
             Information pertaining to the entire mzML file (i.e. not specific
             to any part of the data set) is stored here.
@@ -303,9 +370,14 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             to be placed in the ``<sourceFileList>`` element
         """
         self.state_machine.transition("file_description")
-        fd = self.FileDescription(
+        fd: FileDescription = self.FileDescription(
             file_contents, [self.SourceFile.ensure(sf) for sf in ensure_iterable(source_files)],
             contacts=[self.Contact.ensure(c) for c in ensure_iterable(contacts)])
+        native_id_format = fd.content.native_id_format
+        if native_id_format and not self.native_id_format_configured:
+            self.native_id_format = NativeIDParser.from_term(native_id_format)
+        elif self.native_id_format_configured:
+            fd.content.add_param(self.native_id_format.name)
         fd.write(self.writer)
 
     def instrument_configuration_list(self, instrument_configurations):
@@ -465,11 +537,12 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             self.writer, self.context, count=count,
             data_processing_method=data_processing_method)
 
-    def spectrum(self, mz_array=None, intensity_array=None, charge_array=None, id=None,
+    def spectrum(self, mz_array: Optional[np.ndarray] = None, intensity_array: Optional[np.ndarray] = None,
+                 charge_array: Optional[np.ndarray] = None, id: Optional[str] = None,
                  polarity='positive scan', centroided=True, precursor_information=None,
                  scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                  encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
-                 instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
+                 instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT) -> Spectrum:
         '''Create a new :class:`~.Spectrum` instance to be written.
 
         This method does not immediately write and close the spectrum element, leaving it
@@ -546,11 +619,11 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             scan_window_list = list(scan_window_list)
 
         if isinstance(encoding, Mapping):
-            encoding = defaultdict(lambda: np.float32, encoding)
+            encoding = DefaultDict(lambda: np.float32, encoding)
         else:
             # create new variable to capture in closure
             _encoding = encoding
-            encoding = defaultdict(lambda: _encoding)
+            encoding = DefaultDict(lambda: _encoding)
         if polarity is not None:
             if isinstance(polarity, int):
                 if polarity > 0:
@@ -804,7 +877,7 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             else:
                 array_type_ = array_type
             if array_type_ not in ARRAY_TYPES:
-                params.append(NON_STANDARD_ARRAY)
+                params.append({"name": NON_STANDARD_ARRAY, "value": array_type_})
         params.append(compression_map[compression])
         params.append(dtype_to_encoding[dtype])
         encoded_length = len(encoded_binary)
@@ -1052,7 +1125,7 @@ class IndexedMzMLWriter(PlainMzMLWriter):
         A writing stream that automatically tokenizes and records byte offsets for
         specific XML tags.
     """
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+    def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, **kwargs):
         outfile = IndexingStream(outfile)
         super(IndexedMzMLWriter, self).__init__(

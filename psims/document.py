@@ -1,15 +1,22 @@
 import warnings
+import logging
+
+from typing import List, Union
 from collections import defaultdict, OrderedDict
 from functools import partial, update_wrapper
 from contextlib import contextmanager
 
-from .controlled_vocabulary import obo_cache, ControlledVocabulary
+from .controlled_vocabulary import obo_cache, VocabularyResolverBase
 from .utils import add_metaclass, ensure_iterable, Mapping
 
 from .xml import (
-    id_maker, CVParam, UserParam,
+    CVTypes, id_maker, CVParam, UserParam,
     ParamGroupReference, _element, CVCollection,
-    XMLWriterMixin)
+    XMLWriterMixin, CV, ProvidedCV)
+
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 class ChildTrackingMeta(type):
@@ -101,9 +108,26 @@ class AmbiguousTermWarning(UserWarning):
     pass
 
 
+class _VocabularyResolverFacet(VocabularyResolverBase):
+    parent: 'VocabularyResolver'
+
+    def __init__(self, parent):
+        self.parent = parent
+
+    def load(self, uri: str):
+        return self.parent.load(uri)
+
+    def resolve(self, uri: str):
+        return self.parent.vocabulary_resolver.resolve(uri)
+
+    def fallback(self, uri: str):
+        return self.parent.vocabulary_resolver.fallback(uri)
+
+
 class VocabularyResolver(object):
     warn_on_ambiguous_missing_units = True
     validate_units = True
+    vocabularies: CVCollection
 
     def __init__(self, vocabularies=None, vocabulary_resolver=None):
         if vocabularies is None:
@@ -113,9 +137,19 @@ class VocabularyResolver(object):
         self.vocabulary_resolver = vocabulary_resolver
         self.vocabularies = CVCollection(
             map(self._bind_vocabulary, vocabularies))
+        self.namespaces = {}
 
-    def _bind_vocabulary(self, cv):
-        cv.resolver = self.vocabulary_resolver
+    def load(self, url: str):
+        if url in self.namespaces:
+            logger.debug(f"Returning {url!r} from namespace cache")
+            return self.namespaces[url]
+        logger.debug(f"Fetching {url!r} from source")
+        cv = self.namespaces[url] = self.vocabulary_resolver.load(url)
+        cv.import_resolver = self.load
+        return self.namespaces[url]
+
+    def _bind_vocabulary(self, cv: CVTypes):
+        cv.resolver = _VocabularyResolverFacet(self)
         return cv
 
     def get_vocabulary(self, id):
@@ -132,7 +166,7 @@ class VocabularyResolver(object):
     def param_group_reference(self, id):
         return ParamGroupReference(id)
 
-    def param(self, name, value=None, cv_ref=None, **kwargs):
+    def param(self, name, value=None, cv_ref=None, **kwargs) -> Union[CVParam, UserParam, ParamGroupReference]:
         accession = kwargs.get("accession")
         if isinstance(name, CVParam):
             return name
@@ -350,6 +384,10 @@ class DocumentContext(dict, VocabularyResolver):
             key, missing_reference_is_error=self.missing_reference_is_error)
         return self[key]
 
+    # DocumentContext is always truthy
+    def __bool__(self):
+        return True
+
 
 NullMap = DocumentContext()
 
@@ -383,6 +421,9 @@ class ReprBorrowingPartial(partial):
 
     def ensure_all(self, objs):
         return [self.ensure(obj or {}) for obj in ensure_iterable(objs)]
+
+    def register(self, identifier):
+        return self.kwargs['context'].register(self._func.__name__, identifier)
 
 
 class CallbackBindingPartial(ReprBorrowingPartial):
@@ -526,6 +567,9 @@ class ComponentDispatcherBase(object):
 
     def get_vocabulary(self, *args, **kwargs):
         return self.context.get_vocabulary(*args, **kwargs)
+
+    def add_context_key(self, key, value):
+        self.context[key] = value
 
 
 class XMLBindingDispatcherBase(ComponentDispatcherBase):

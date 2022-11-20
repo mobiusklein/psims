@@ -1,8 +1,12 @@
 import re
+from typing import Optional
 
 from .type_definition import TypeDefinition, ListOfType, parse_xsdtype
 
 class SemanticEdge(object):
+    accession: str
+    comment: str
+
     def __init__(self, accession, comment=None):
         self.accession = accession
         self.comment = comment
@@ -42,7 +46,9 @@ class Reference(SemanticEdge):
 class Relationship(SemanticEdge):
     dispatch = {}
 
-    def __init__(self, predicate, accession, comment=None):
+    predicate: str
+
+    def __init__(self, predicate: str, accession: str, comment: Optional[str]=None):
         self.predicate = predicate.strip(":")
         self.accession = accession
         self.comment = comment
@@ -54,7 +60,7 @@ class Relationship(SemanticEdge):
         return "{self.__class__.__name__}({self.predicate}, {self.accession}, {self.comment})".format(self=self)
 
     @classmethod
-    def fromstring(cls, string):
+    def fromstring(cls, string: str):
         groups_match = re.search(
             r"(?P<predicate>\S+):?\s(?P<accession>\S+)\s?(?:!\s(?P<comment>.*))?",
             string)
@@ -70,8 +76,11 @@ class Relationship(SemanticEdge):
 class HasValueTypeRelationship(Relationship):
     name = "has_value_type"
 
+    value_type: Optional[TypeDefinition]
+
     def __init__(self, predicate, accession, comment=None):
-        super(HasValueTypeRelationship, self).__init__(predicate, accession, comment=comment)
+        super(HasValueTypeRelationship, self).__init__(
+            predicate, accession, comment=comment)
         self.value_type = None
 
     def make_value_type(self, vocabulary):

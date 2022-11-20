@@ -4,18 +4,15 @@ import hashlib
 import sys
 import gzip
 
-try:
-    from urllib2 import urlopen, Request
-except ImportError:
-    from urllib.request import urlopen, Request
+from urllib.request import urlopen, Request
 
 
 registry = {
-    "psi-ms.obo": "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo",
-    "unit.obo": "http://ontologies.berkeleybop.org/uo.obo",
-    'pato.obo': "http://ontologies.berkeleybop.org/pato.obo",
+    "psi-ms.obo": "http://purl.obolibrary.org/obo/ms/psi-ms.obo",
+    "unit.obo": "http://purl.obolibrary.org/obo/uo.obo",
+    'pato.obo': "http://purl.obolibrary.org/obo/pato.obo",
     "unimod_tables.xml": "http://www.unimod.org/xml/unimod_tables.xml",
-    "XLMOD.obo": "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo",
+    "XLMOD.obo": "https://raw.githubusercontent.com/HUPO-PSI/xlmod-CV/main/XLMOD.obo",
     # appears to reject automated download unless User-Agent is set and is very large
     # "bto.obo": "http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO",
     "go.obo": "http://purl.obolibrary.org/obo/go.obo",

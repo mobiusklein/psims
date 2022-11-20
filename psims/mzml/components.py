@@ -67,10 +67,10 @@ class ComponentBase(_ComponentBase):
 
 default_cv_list = [
     CV(id='PSI-MS',
-       uri='https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo',
+       uri='http://purl.obolibrary.org/obo/ms/psi-ms.obo',
        full_name='PSI-MS'),
     CV(id='UO',
-       uri='http://ontologies.berkeleybop.org/uo.obo',
+       uri='http://purl.obolibrary.org/obo/uo.obo',
        full_name='UNIT-ONTOLOGY')
 ]
 
@@ -114,7 +114,23 @@ class IDGenericCollection(GenericCollection):
             member.write(xml_file)
 
 
-class FileContent(ComponentBase):
+class HasNativeIDFormat(object):
+
+    @property
+    def native_id_format(self):
+        formats = []
+        for param in self.params:
+            param = self.context.param(param)
+            try:
+                term = self.context.term(param.accession)
+            except (AttributeError, KeyError):
+                continue
+            if term.is_of_type("MS:1000767"):
+                formats.append(term)
+        return formats
+
+
+class FileContent(ComponentBase, HasNativeIDFormat):
     requires_id = False
 
     def __init__(self, params=None, context=NullMap, **kwargs):
@@ -132,8 +148,13 @@ class SourceFileList(GenericCollection):
         super(SourceFileList, self).__init__(
             'sourceFileList', members, context)
 
+    @property
+    def native_id_formats(self):
+        formats = list({fid.id: fid for f in self for fid in f.native_id_format}.values())
+        return formats
 
-class SourceFile(ComponentBase):
+
+class SourceFile(ComponentBase, HasNativeIDFormat):
     requires_id = True
 
     def __init__(self, location=None, name=None, id=None,
@@ -203,6 +224,13 @@ class FileDescription(ComponentBase):
         self.contacts = contacts
         self.context = context
         self.element = _element('fileDescription')
+
+    @property
+    def native_id_formats(self):
+        content_id_format = self.content.native_id_format
+        if content_id_format:
+            return [content_id_format] + self.source_files.native_id_formats
+        return self.source_files.native_id_formats
 
     def write_content(self, xml_file):
         self.content.write(xml_file)
@@ -604,7 +632,8 @@ class Spectrum(ComponentBase):
             index=index,
             sourceFileRef=self._source_file_reference,
             defaultArrayLength=self.default_array_length,
-            dataProcessingRef=self._data_processing_reference)
+            dataProcessingRef=self._data_processing_reference,
+            id_formatter=context.get('native_id_formatter'))
         self.context = context
         self.context['Spectrum'][id] = self.element.id
         self.params = self.prepare_params(params, **kwargs)

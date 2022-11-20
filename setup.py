@@ -34,6 +34,7 @@ setup(
     maintainer='Joshua Klein',
     maintainer_email="jaklein@bu.edu",
     zip_safe=False,
+    python_requires=">3.8",
     packages=find_packages(),
     url="https://github.com/mobiusklein/psims",
     include_package_data=True,
@@ -57,11 +58,8 @@ setup(
         "Topic :: Text Processing :: Markup :: XML",
         "Intended Audience :: Science/Research",
         "Development Status :: 5 - Production/Stable",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ]
 )

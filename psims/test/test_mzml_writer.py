@@ -11,7 +11,7 @@ from lxml import etree
 import pytest
 
 from psims import compression as compression_registry
-from psims.test.utils import output_path, compressor
+from psims.test.utils import output_path, compressor, identity
 
 
 mz_array = [
@@ -101,11 +101,15 @@ def test_param_unit_resolution():
 
 
 def test_write(output_path, compressor):
-    with MzMLWriter(compressor(output_path, 'wb'), close=True) as f:
+    handle = compressor(output_path, 'wb')
+    with MzMLWriter(handle, close=True) as f:
         f.register("Software", 'psims')
         f.controlled_vocabularies()
+        f.native_id_format = "Agilent MassHunter nativeID format"
         f.file_description(["spam", "MS1 spectrum", "MSn spectrum"], [
-            dict(id="SPAM1", name="Spam.raw", location="file:///", params=[dict(name="Thermo RAW format")])])
+            dict(id="SPAM1", name="Spam.raw", location="file:///", params=[
+                dict(name="Thermo RAW format"), dict(name="Agilent MassHunter nativeID format")])
+                ])
         f.reference_param_group_list([
             {'id': 'common_params', 'params': [{"proven": "inductively"}]}
         ])
@@ -132,7 +136,7 @@ def test_write(output_path, compressor):
         ])
         with f.run(id='test'):
             with f.spectrum_list(count=2):
-                f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=1', params=[
+                f.write_spectrum(mz_array, intensity_array, charge_array, id=1, params=[
                     {"name": "ms level", "value": 1}, {"ref": 'common_params'}],
                     polarity='negative scan', encoding=encodings,
                     compression='zlib')
@@ -142,7 +146,7 @@ def test_write(output_path, compressor):
                         "mz": 1230, "intensity": None, "charge": None, "params": [
                             "no peak detected"
                         ],
-                        "scan_id": "scanId=1", "activation": ["collision-induced dissociation",
+                        "scan_id": 1, "activation": ["collision-induced dissociation",
                                                               {"collision energy": 56.}]
                 }, instrument_configuration_id=2, encoding=encodings, compression='zlib')
                 pb = f.precursor_builder(mz=12030, scan_id='scanId=2')
@@ -154,7 +158,8 @@ def test_write(output_path, compressor):
                     polarity='negative scan', precursor_information=pb)
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)
-    assert opener == compressor
+    if compressor != identity:
+        assert opener == compressor
     reader = mzml.read(opener(output_path, 'rb'))
 
     def reset():

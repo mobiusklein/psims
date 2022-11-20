@@ -2,10 +2,11 @@ from io import BytesIO
 from psims.transform import mzid, utils
 
 from psims.test.test_data import datafile
+from psims.test.utils import UnclosableBuffer
 
 
 def test_mzid_pipe():
-    buff = BytesIO()
+    buff = UnclosableBuffer()
     path = datafile("xiFDR-CrossLinkExample_single_run.mzid")
     st = mzid.MzIdentMLTranslator(path, buff)
     st.write()
@@ -22,6 +23,7 @@ def test_mzid_pipe():
         for ref, test in zip(ref_reader.iterfind(tag, retrieve_refs=False),
                              test_reader.iterfind(tag, retrieve_refs=False)):
             assert utils.differ(ref, test)
+    super(UnclosableBuffer, buff).close()
 
 
 if __name__ == '__main__':

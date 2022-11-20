@@ -7,3 +7,4 @@ mzIdentML
 
    writer
    components
+   examples

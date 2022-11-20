@@ -1,9 +1,63 @@
+'''
+Transforming mzML Files
+-----------------------
+
+Often, we start with an mzML file we want to manipulate or change, but don't want to write out
+explicitly unpacking it and re-packing it.
+
+The :class:`MzMLTransformer` class is intended to give you a way to wrap an input file-like object
+over an mzML file and an output file-like object to write the manipulated mzML file to, along with
+a transformation function to modify spectra, and have it do the rest of the work. It uses :mod:`pyteomics.mzml`
+to do the parsing internally.
+
+
+Transformation Function Semantics
+=================================
+
+The transformation function passed receives a :class:`dict` object representing
+the spectrum as parsed by :mod:`pyteomics.mzml` and expects the function to return
+the dictionary modified or :const:`None` (in which case the spectrum is not written out).
+
+You are free to modify existing keys in the spectrum dictionary, but *new* keys that are
+intended to be recognized as either ``<cvParam />`` or ``<userParam />`` elements must
+be instances of :class:`pyteomics.auxiliary.cvstr`, or otherwise have an "``accession``"
+attribute to be picked up. Alternatively, the converter will make an effort to coerce keys
+whose values which are scalars, or :class:`dict`s which look like parameters (having a "name"
+or "accession" key, at least).
+
+Alternatively, you can inherit from :class:`MzMLTransformer` and override :meth:`~.MzMLTransformer.format_spectrum`
+to modify the spectrum before or after conversion (letting you directly append to the "params" key of the
+converted spectrum and avoid needing to mark new params with :class:`cvstr`). Additionally, you
+can override all other ``format_`` methods to customize how other elements are converted.
+
+
+Usage and Examples
+==================
+
+In its simplest form, we would use the :class:`MzMLTransformer` like so:
+
+.. code-block:: python
+
+    from psims.transform.mzml import MzMLTransformer, cvstr
+
+    def transform_drop_ms2(spectrum):
+        if spectrum['ms level'] > 1:
+            return None
+        return spectrum
+
+    with open("input.mzML", 'rb') as in_stream, open("ms1_only.mzML", 'wb') as out_stream:
+        MzMLTransformer(in_stream, out_stream, transform_drop_ms2).write()
+
+
+
+'''
+from numbers import Number
 from pyteomics import mzml
 
 from psims import MzMLWriter, MzMLbWriter
 from psims.utils import ensure_iterable
 
-from .utils import TransformerBase
+from .utils import TransformerBase, cvstr
 
 
 class MzMLParser(mzml.MzML):
@@ -31,7 +85,7 @@ class MzMLTransformer(TransformerBase):
 
     If :attr:`sort_by_by_scan_time` is :const:`True`, then prior to writing spectra,
     a first pass will be made over the mzML file and the spectra will be written out
-    ordered by ``MS:1000016:"scan start time"``.
+    ordered by ``MS:1000016|scan start time``.
 
     Attributes
     ----------
@@ -43,7 +97,8 @@ class MzMLTransformer(TransformerBase):
         Whether or not to sort spectra by scan time prior to writing
     transform : :class:`Callable`, optional
         A function to call on each spectrum, passed as a :class:`dict` object as
-        read by :class:`pyteomics.mzml.MzML`.
+        read by :class:`pyteomics.mzml.MzML`. A spectrum will be skipped if this function
+        returns :const:`None`.
     transform_description : :class:`str`
         A description of the transformation to include in the written metadata
 
@@ -248,24 +303,40 @@ class MzMLTransformer(TransformerBase):
             spec_data['polarity'] = None
 
         temp = spectrum.copy()
+        attrs_to_skip = {'id', 'index', 'sourceFileRef',
+                 'defaultArrayLength', 'dataProcessingRef', 'count'}
         for key, value in list(temp.items()):
+            accession = None
             if not hasattr(key, 'accession'):
-                continue
-            accession = key.accession
+                # Guess if this is looks like it could be a param tag or was added by the user
+                if isinstance(value, dict) and ("name" in value or "accession" in value):
+                    pass
+                elif isinstance(value, list):
+                    continue
+                elif isinstance(value, (str, int, float, Number)) and key not in attrs_to_skip:
+                    pass
+                else:
+                    continue
+            else:
+                accession = key.accession
             if accession == '' or accession is None:
-                params.append({key: value})
+                if isinstance(value, dict):
+                    params.append(value)
+                else:
+                    params.append({key: value})
                 if hasattr(value, 'unit_info'):
                     params[-1]['unit_name'] = value.unit_info
                 temp.pop(key)
-            term = self.psims_cv[accession]
-            if term.is_of_type("spectrum representation"):
-                spec_data["centroided"] = term.id == "MS:1000127"
-                temp.pop(key)
-            elif term.is_of_type("spectrum property") or term.is_of_type("spectrum attribute"):
-                params.append({"name": term.id, "value": value})
-                if hasattr(value, 'unit_info'):
-                    params[-1]['unit_name'] = value.unit_info
-                temp.pop(key)
+            else:
+                term = self.psims_cv[accession]
+                if term.is_of_type("spectrum representation"):
+                    spec_data["centroided"] = term.id == "MS:1000127"
+                    temp.pop(key)
+                elif term.is_of_type("spectrum property") or term.is_of_type("spectrum attribute"):
+                    params.append({"name": term.id, "value": value})
+                    if hasattr(value, 'unit_info'):
+                        params[-1]['unit_name'] = value.unit_info
+                    temp.pop(key)
 
         spec_data["scan_start_time"], spec_data['scan_params'], spec_data["scan_window_list"] = self.format_scan(
             spectrum.get("scanList", {}).get('scan', [{}])[0])
@@ -340,6 +411,7 @@ class MzMLTransformer(TransformerBase):
                         self.writer.write_spectrum(**self.format_spectrum(spectrum))
                         if i % 1000 == 0:
                             self.log("Handled %d spectra" % (i, ))
+                    self.log("Handled %d spectra" % (i, ))
 
 
 class MzMLToMzMLb(MzMLTransformer):

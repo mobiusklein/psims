@@ -2,6 +2,8 @@ import logging
 import io
 import numbers
 import warnings
+
+from typing import Dict
 from collections import Counter
 
 import numpy as np
@@ -99,10 +101,25 @@ class MzMLbWriter(_MzMLWriter):
     h5_blocksize : int
         The number of bytes to include in a single HDF5 data block. Smaller blocks improve random access speed
         at the expense of compression efficiency and space. Defaults to 2 ** 20, 1MB.
+    buffer_blocks: int
+        The number of array blocks to buffer in memory before syncing to disk to reduce the number of
+        resize operations. This applies to each array independently. Defaults to 10.
     '''
-    def __init__(self, h5_file, close=False, vocabularies=None, missing_reference_is_error=False,
+
+    buffer_blocks: int
+    h5_blocksize: int
+
+    h5_compression: str
+    h5_compression_options: Dict
+
+    array_name_cache: Dict
+    array_buffers: Dict[str, ArrayBuffer]
+
+    offset_tracker: Counter
+
+    def __init__(self, h5_file, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, h5_compression=DEFAULT_COMPRESSOR,
-                 h5_compression_options=None, h5_blocksize=2**20, **kwargs):
+                 h5_compression_options=None, h5_blocksize: int=2**20, buffer_blocks: int=10, **kwargs):
         if h5_compression in HDF5_COMPRESSORS:
             key = h5_compression
             h5_compression = HDF5_COMPRESSORS[key]['compression']
@@ -124,6 +141,7 @@ class MzMLbWriter(_MzMLWriter):
         self.h5_blocksize = h5_blocksize
         self.h5_compression = h5_compression
         self.h5_compression_options = h5_compression_options
+        self.buffer_blocks = buffer_blocks
 
         self.array_name_cache = {}
         self.array_buffers = {}
@@ -167,7 +185,7 @@ class MzMLbWriter(_MzMLWriter):
             tag_name, chunks=(self.h5_blocksize, ),
             shape=(self.h5_blocksize, ), dtype=dtype, compression=self.h5_compression,
             compression_opts=self.h5_compression_options, maxshape=(None, ))
-        self.array_buffers[tag_name] = ArrayBuffer(dset, dtype, self.h5_blocksize)
+        self.array_buffers[tag_name] = ArrayBuffer(dset, dtype, self.h5_blocksize * self.buffer_blocks)
         return tag_name
 
     def _prepare_array(self, array, encoding=32, compression=COMPRESSION_NONE, array_type=None,

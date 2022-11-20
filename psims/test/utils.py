@@ -1,3 +1,4 @@
+import io
 import os
 import tempfile
 import gzip
@@ -7,7 +8,16 @@ import pytest
 fixtured_files = []
 
 
-compression_openers = [open, gzip.GzipFile]
+def identity(x, y):
+    return x
+
+compression_openers = [open, gzip.GzipFile, identity]
+
+
+class UnclosableBuffer(io.BytesIO):
+
+    def close(self):
+        return
 
 
 @pytest.fixture(scope='function', params=compression_openers)
@@ -21,10 +31,11 @@ def output_path(request):
     fixtured_files.append(path)
 
     def fin():
+        os.close(fd)
         try:
             os.remove(path)
         except OSError as e:
-            print(e)
+            print(e, fd)
     request.addfinalizer(fin)
     return path
 

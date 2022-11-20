@@ -2,14 +2,19 @@ import re
 import warnings
 
 from contextlib import contextmanager
-from collections import deque, OrderedDict
+from collections import deque
+
+from typing import Any, Dict, Iterable, Optional, OrderedDict, Union
+
 
 from lxml import etree
 
 from six import string_types as basestring, add_metaclass, text_type, PY3
 
+from psims.controlled_vocabulary.controlled_vocabulary import ControlledVocabulary
+
 from . import controlled_vocabulary
-from .controlled_vocabulary import obj_to_xsdtype
+from .controlled_vocabulary import obj_to_xsdtype, VocabularyResolverBase
 from .validation import validate
 
 
@@ -157,6 +162,7 @@ class TagBase(object):
     def __init__(self, tag_name=None, text="", **attrs):
         self.tag_name = tag_name or self.tag_name
         _id = attrs.pop('id', None)
+        _id_formatter = attrs.pop('id_formatter', id_maker)
         self.attrs = {}
         self.attrs.update(self.type_attrs)
         self.text = text
@@ -165,6 +171,7 @@ class TagBase(object):
         # and any set ids will be passed through the attrs dictionary, but the `with_id`
         # flag won't be propagated. `_force_id` preserves this.
         self._force_id = True
+        self._id_formatter = _id_formatter
         if _id is None:
             self._id_number = None
             self._id_string = None
@@ -205,7 +212,7 @@ class TagBase(object):
     @property
     def id(self):
         if self._id_string is None and self._id_number is not None:
-            self._id_string = id_maker(self.tag_name, self._id_number)
+            self._id_string = self._id_formatter(self.tag_name, self._id_number)
         return self._id_string
 
     def element(self, xml_file=None, with_id=False):
@@ -533,15 +540,21 @@ class ParamGroupReference(TagBase):
         self.write(*args, **kwargs)
 
 
+CVTypes = Union['CV', 'ProvidedCV']
+
+
 class CVCollection(object):
     """A partially unique collection of :class:`CV` objects.
     """
+
+    storage: OrderedDict[str, CVTypes]
+
     def __init__(self, cvs=None):
         self.storage = OrderedDict()
         if cvs:
             self.update(cvs)
 
-    def add(self, cv):
+    def add(self, cv: CVTypes):
         """Add `cv` to the collection.
 
         If the :attr:`CV.id` is aleady present in the collection, a warning
@@ -560,7 +573,7 @@ class CVCollection(object):
         self.storage[cv.id] = cv
         return self
 
-    def update(self, collection):
+    def update(self, collection: Iterable[CVTypes]):
         """Add each element of `collection` to `self`, calling :meth:`add` on each
         element.
 
@@ -588,7 +601,7 @@ class CVCollection(object):
         """
         return self.__class__(self)
 
-    def __add__(self, other):
+    def __add__(self, other: Iterable[CVTypes]):
         copy = self.copy()
         copy.update(other)
         return copy
@@ -642,6 +655,15 @@ class CV(object):
         The parsed term graph defining this vocabulary
     """
 
+    full_name: str
+    id: str
+    uri: str
+    resolver: VocabularyResolverBase
+    options: Dict[str, Any]
+    _version: Optional[str]
+    _vocabulary: ControlledVocabulary
+
+
     def __init__(self, full_name, id, uri, version=None, resolver=None, **kwargs):
         self.full_name = full_name
         self.id = id
@@ -649,7 +671,7 @@ class CV(object):
         self._version = version
         self.options = kwargs
         self._vocabulary = None
-        self.resolver = None
+        self.resolver = resolver
 
     def __hash__(self):
         return hash(self.uri)
@@ -700,17 +722,9 @@ class CV(object):
         """
         resolver = self.resolver or controlled_vocabulary.obo_cache
         if handle is None:
-            try:
-                fp = resolver.resolve(self.uri)
-                cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
-            except ValueError:
-                fp = resolver.fallback(self.uri)
-                if fp is not None:
-                    cv = controlled_vocabulary.ControlledVocabulary.from_obo(fp)
-                else:
-                    raise KeyError(self.uri)
+            cv = resolver.load(self.uri)
         else:
-            cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle)
+            cv = controlled_vocabulary.ControlledVocabulary.from_obo(handle, import_handler=self.resolver.load)
         try:
             cv.id = self.id
         except Exception:
@@ -943,7 +957,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         """
         return _element("xmldocument")
 
-    def __init__(self, outfile, close=False, encoding=None, **kwargs):
+    def __init__(self, outfile, close=None, encoding=None, **kwargs):
         if encoding is None:
             encoding = 'utf-8'
         self.outfile = outfile
@@ -951,6 +965,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         self.xmlfile = XMLFormattingStreamWriter(outfile, encoding=encoding, **kwargs)
         self._writer = None
         self.toplevel = None
+        self._ended = False
         self._close = close
 
     def _should_close(self):
@@ -1020,8 +1035,9 @@ class XMLDocumentWriter(XMLWriterMixin):
             self.flush()
         except Exception:
             pass
+        self._ended = True
         if self._should_close():
-            self.close()
+            self._do_close()
 
     def controlled_vocabularies(self):
         """Write out the `<cvList>` element and all its children,
@@ -1033,11 +1049,20 @@ class XMLDocumentWriter(XMLWriterMixin):
         cvlist = self.CVList(self.vocabularies)
         cvlist.write(self.writer)
 
-    def close(self):
+    def _do_close(self):
         try:
             self.outfile.close()
         except AttributeError:
             pass
+
+    def close(self):
+        if not self._ended:
+            self.end()
+        # end() will close the file if _should_close() returns True,
+        # otherwise the user must be asking to close explicitly.
+        if not self._should_close():
+            self._do_close()
+
 
     def flush(self):
         try:

@@ -173,7 +173,7 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
     context : :class:`.DocumentContext`
     """
 
-    def __init__(self, outfile, close=False, vocabularies=None, missing_reference_is_error=False,
+    def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, version='1.2.0', **kwargs):
         if vocabularies is None:
             vocabularies = []
@@ -341,6 +341,10 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 fragment_tolerance = self.FragmentTolerance(fragment_tolerance * 1e6, None, "parts per million")
             else:
                 fragment_tolerance = self.FragmentTolerance(fragment_tolerance, None, "dalton")
+        elif fragment_tolerance is not None:
+            fragment_tolerance = self.FragmentTolerance.ensure(fragment_tolerance)
+        else:
+            fragment_tolerance = None
 
         if isinstance(parent_tolerance, (list, tuple)):
             parent_tolerance = self.ParentTolerance(*parent_tolerance)
@@ -349,6 +353,10 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
                 parent_tolerance = self.ParentTolerance(parent_tolerance * 1e6, None, "parts per million")
             else:
                 parent_tolerance = self.ParentTolerance(parent_tolerance, None, "dalton")
+        if parent_tolerance is not None:
+            parent_tolerance = self.ParentTolerance.ensure(parent_tolerance)
+        else:
+            parent_tolerance = None
         threshold = self.Threshold(threshold)
         protocol = self.SpectrumIdentificationProtocol(
             search_type, analysis_software_id, id, additional_search_params,
