@@ -3,6 +3,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.2.2] - 2022-11-21
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-02-23 | a397dc95d8d809acea44209818a0f77f |
+| go.obo.gz | releases/2022-11-03 | 704f04eb6308c28cb2139a9803b7da3a |
+| pato.obo.gz | releases/2022-11-09/pato.obo | 1b269eb54e4848c56885fa2d66b83b9b |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.108 | 9e5ffabe9c045ad2078f1bcc49a5214e |
+| unimod_tables.xml.gz | - | 7e6f1cffe9ad27fecbf5b394103b9836 |
+| unit.obo.gz | - | 1616553109ee3ebc85ffc978d8e39ce8 |
+
+### Added
+- Added more documentation for mzIdentML writing.
+- `MzMLTransformer` now coerces `cvParam` and `userParam` from key-value pairs without requiring `cvstr` instances for keys.
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [v1.2.1]
 
 | Name | Version | Checksum |
