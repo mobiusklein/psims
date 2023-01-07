@@ -225,4 +225,3 @@ def test_write(output_path, compressor):
     line = reader.readline()
     assert line.startswith(b"""<?xml version='1.0' encoding='utf-8'?>""")
     reader.close()
-    return f
