@@ -11,6 +11,7 @@ Writing mzML Documents
     :special-members: __enter__, __exit__, __getattr__
 
 .. data:: compression_map
+
     The compression methods available:
 
     .. exec::
@@ -19,7 +20,7 @@ Writing mzML Documents
         from rst_table import as_rest_table
 
         rows = [("Name", "Compression Scheme")]
-        for key, value in sorted(compression_map.items()):
+        for key, value in sorted(compression_map.items(), key=lambda x: len(x[1])):
             rows.append((repr(key), value))
 
         print(as_rest_table(rows))
