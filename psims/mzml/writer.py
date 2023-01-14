@@ -368,6 +368,49 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         source_files : list
             A list or other iterable of dict or :class:`~psims.mzml.components.SourceFile`-like objects
             to be placed in the ``<sourceFileList>`` element
+
+        Examples
+        --------
+        An example of how one might describe a file, in this case a remote file, but it could be a local file
+        denoted with a file URI instead.
+
+        .. code-block:: python
+
+            w = writer.MzMLWriter("./bar.mzML")
+            with w:
+                w.controlled_vocabularies()
+                ...
+                source = w.SourceFile(
+                    location="http://proteowizard.sourceforge.net/example_data/",
+                    name="small.RAW",
+                    params=[
+                        "Thermo nativeID format",
+                        "Thermo RAW format",
+                        {"SHA-1": "b43e9286b40e8b5dbc0dfa2e428495769ca96a96"}
+                    ]
+                )
+                w.file_description(["MS1 spectrum", "MSn spectrum"], [source])
+
+
+        An example with a local file that we compute the SHA-1 checksum of ourselves:
+
+        .. code-block:: python
+
+            w = writer.MzMLWriter("./bar.mzML")
+            with w:
+                w.controlled_vocabularies()
+                ...
+                source = w.SourceFile(
+                    location="file:///psims/test/test_data/",
+                    name="small.mzML",
+                    params=[
+                        "Thermo nativeID format",
+                        "mzML format",
+                    ]
+                )
+                source.add_param(source.checksum("sha-1"))
+                w.file_description(["MS1 spectrum", "MSn spectrum"], [source])
+
         """
         self.state_machine.transition("file_description")
         fd: FileDescription = self.FileDescription(
@@ -393,6 +436,75 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         instrument_configurations : list
             A list or other iterable of :class:`dict` or :class:`~.InstrumentConfiguration`-like
             objects
+
+
+        Examples
+        --------
+        When attempting to encode examples coming from real instruments, there may be multiple instrument
+        configurations with shared information. Here is an example for a Thermo Orbitrap Fusion Lumos
+        instrument, skipping over the unrelated sections before the instrument configuration list is
+        defined.
+
+        .. code-block:: python
+
+            w = writer.MzMLWriter("./bar.mzML")
+            with w:
+                w.controlled_vocabularies()
+                ...
+                # Here we create a parameter group that is shared amongst two configurations, similar to
+                # how ProteoWizard encodes this information. We'll reference it later.
+                param_group = w.ReferenceableParamGroup([
+                    "Orbitrap Fusion Lumos",
+                    {"instrument serial number": "SERIALNUMBER"}
+                ], "CommonInstrumentParams")
+
+                w.reference_param_group_list([param_group])
+
+                ...
+                # Next, we define the components in the first configuration, feeding into the LTQ
+                # ion trap.
+                source = w.Source(1, ['electrospray ionization', "electrospray inlet"])
+                analyzer = w.Analyzer(2, ['radial ejection linear ion trap'])
+                detector = w.Detector(3, ['electron multiplier'])
+
+                # We can wrap the components in a :class:`~.ComponentList`, but it isn't mandatory.
+                components = w.ComponentList([source, analyzer, detector])
+
+                # Now, we create the first instrument configuration. We could also pass a `software_reference`
+                # if we had the ID of the instrument control software. Note the ``{"ref": param_group.id}``
+                # is used to pass a reference to the parameter group we registered earlier.
+                config1 = w.InstrumentConfiguration("IC1", components, [
+                    {"ref": param_group.id},
+                ])
+
+                # Next, we create the configuration that uses the Orbitrap, we don't need to duplicate the
+                # other components as their order and other properties are identical.
+                analyzer2 = w.Analyzer(2, ['orbitrap'])
+                config2 = w.InstrumentConfiguration("IC2", [source, analyzer2, detector], [
+                    {"ref": param_group.id},
+                ])
+
+                # Finally, we submit both configurations to be written out.
+                w.instrument_configuration_list([config1, config2])
+
+        If you're creating synthetic data and don't want to mark it as being from a specific instrument,
+        or just don't know the instrument's details, you can still create a specification-compliant document
+        by using the generic base terms like this:
+
+        .. code-block:: python
+
+            w = writer.MzMLWriter("./bar.mzML")
+            with w:
+                w.controlled_vocabularies()
+                ...
+                source = w.Source(1, ['ionization type'])
+                analyzer = w.Analyzer(2, ['mass analyzer type'])
+                detector = w.Detector(3, ['detector type'])
+                components = w.ComponentList([source, analyzer, detector])
+                config = w.InstrumentConfiguration("IC1", components, [
+                    "instrument model",
+                ], software_reference="instrument_software")
+                w.instrument_configuration_list([config])
         """
         self.state_machine.transition("instrument_configuration_list")
         configs = [
