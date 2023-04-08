@@ -1,3 +1,21 @@
+# -*- coding: utf8 -*-
+"""
+mzMLb Writing
+-------------
+
+mzMLb is an HDF5 container format wrapping around the standard rich XML-format
+for raw mass spectrometry data storage. Please refer to [1]_ for more information
+about mzMLb and its features. Please refer to `psidev.info <https://www.psidev.info/mzML>`_
+for the detailed specification of the format and structure of mzML files.
+
+References
+----------
+.. [1] Bhamber, R. S., Jankevics, A., Deutsch, E. W., Jones, A. R., & Dowsey, A. W. (2021).
+    MzMLb: A Future-Proof Raw Mass Spectrometry Data Format Based on Standards-Compliant
+    mzML and Optimized for Speed and Storage Requirements. Journal of Proteome Research,
+    20(1), 172–183. https://doi.org/10.1021/acs.jproteome.0c00192
+
+"""
 import logging
 import io
 import numbers
@@ -7,11 +25,9 @@ from typing import Dict
 from collections import Counter
 
 import numpy as np
-
-logging.getLogger('hdf5plugin').addHandler(logging.NullHandler())
-
 import h5py
 try:
+    logging.getLogger('hdf5plugin').addHandler(logging.NullHandler())
     import hdf5plugin
 except ImportError:
     warnings.warn(
@@ -19,8 +35,21 @@ except ImportError:
         "Please install hdf5plugin to be able to use Blosc.")
     hdf5plugin = None
 
-from ..mzml.binary_encoding import encode_array_direct, encoding_map, compression_map, dtype_to_encoding, COMPRESSION_NONE
-from ..mzml.writer import PlainMzMLWriter as _MzMLWriter, NON_STANDARD_ARRAY, ARRAY_TYPES, Mapping
+from ..mzml.binary_encoding import (
+    encode_array_direct,
+    encoding_map,
+    compression_map,
+    dtype_to_encoding,
+    COMPRESSION_NONE
+)
+
+from ..mzml.writer import (
+    PlainMzMLWriter as _MzMLWriter,
+    NON_STANDARD_ARRAY,
+    ARRAY_TYPES,
+    Mapping
+)
+
 from ..mzml.index import IndexingStream
 
 from . import components
@@ -50,23 +79,81 @@ HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME = {
 
 
 class ArrayBuffer(object):
-    def __init__(self, dataset, dtype, size=1024 ** 2):
+    """
+    An in-memory buffer for accumulating HDF5 array data until a new chunk is
+    ready and only then issuing an I/O operation that resizes the on-disk array.
+
+    .. note::
+        This type assumes total control over the underlying :class:`h5py.Dataset`
+        object
+
+    The :attr:`size` attribute governs memory consumption and the frequency vs.
+    size of the I/O bursts. It is independent of the :attr:`h5py.Dataset.chunksize`
+    property which impacts how data is stored on disk and compressed.
+
+    Attributes
+    ----------
+    dataset : :class:`h5py.Dataset`
+        The underlying HDF5 dataset object being grown
+    dtype : :class:`numpy.dtype`
+        The data layout for :attr:`dataset`
+    size : int
+        The chunk size to buffer in memory before writing to :attr:`dataset`
+    buffer : :class:`io.BytesIO`
+        The in-memory buffer for the current chunk
+    offset : int
+        The number of bytes already in :attr:`dataset`, used to compute the total size
+        during resizing
+    """
+
+    dataset: h5py.Dataset
+    dtype: np.dtype
+    size: int
+    offset: int
+    buffer: io.BytesIO
+
+    def __init__(self, dataset: h5py.Dataset, dtype: np.dtype, size: int=1024 ** 2):
         self.dataset = dataset
         self.dtype = dtype
         self.size = size
         self.buffer = io.BytesIO()
         self.offset = 0
 
-    def add(self, array):
+    def add(self, array: np.ndarray):
+        """
+        Add the incoming data to :attr:`buffer` and check if we are ready to flush to disk.
+
+        .. note::
+
+            This method may cause large memory reallocation and/or disk I/O
+
+        See Also
+        --------
+        check
+        flush
+        """
         self.buffer.write(array.tobytes())
         self.check()
 
     def check(self):
+        """
+        Check if the in-memory buffer has exceeded :attr:`size` and if so flush to disk.
+
+        See Also
+        --------
+        flush
+        """
         v = self.buffer.tell()
         if v >= self.size:
             self.flush()
 
     def flush(self):
+        """
+        Write the current in-memory buffer to :attr:`dataset` and clear the in-memory buffer.
+
+        When this method runs, it resizes :attr:`dataset` exactly have the capacity for
+        the new incoming data. This may cause excessive disk I/O if called too frequently.
+        """
         array = np.frombuffer(self.buffer.getvalue(), dtype=self.dtype)
         n = len(array)
         total_size = self.offset + n
@@ -79,7 +166,8 @@ class ArrayBuffer(object):
 
 
 class MzMLbWriter(_MzMLWriter):
-    '''A high level API for generating mzMLb HDF5 files from simple Python objects.
+    '''
+    A high level API for generating mzMLb HDF5 files from simple Python objects.
 
     This class's public interface is identical to :class:`~.IndexedMzMLWriter`, with the exception of those
     related to HDF5 compression described below.
@@ -189,7 +277,7 @@ class MzMLbWriter(_MzMLWriter):
         return tag_name
 
     def _prepare_array(self, array, encoding=32, compression=COMPRESSION_NONE, array_type=None,
-                       default_array_length=None, scope='spectrum'):
+                       default_array_length=None, scope='spectrum') -> components.ExternalBinaryDataArray:
         if isinstance(encoding, numbers.Number):
             _encoding = int(encoding)
         else:
@@ -199,10 +287,6 @@ class MzMLbWriter(_MzMLWriter):
         encoded_array = encode_array_direct(
             array, compression=compression, dtype=dtype)
 
-        if default_array_length is not None and len(array) != default_array_length:
-            override_length = True
-        else:
-            override_length = False
         is_non_standard = False
         params = []
         if array_type is not None:
@@ -242,7 +326,8 @@ class MzMLbWriter(_MzMLWriter):
             params=params)
 
     def _prepare_offset_index(self, index, name, last):
-        '''Prepare an offset index.
+        '''
+        Prepare an offset index.
 
         Parameters
         ----------
@@ -273,7 +358,8 @@ class MzMLbWriter(_MzMLWriter):
             compression_opts=self.h5_compression_options)
 
     def create_array(self, data, name, last=None, dtype=np.float32, chunks=True):
-        '''Store a typed data array as a named dataset in the HDF5 file.
+        '''
+        Store a typed data array as a named dataset in the HDF5 file.
 
         .. note::
             The array should not be textual unless they've already been translated
@@ -302,7 +388,8 @@ class MzMLbWriter(_MzMLWriter):
             chunks=min(self.h5_blocksize, n) if chunks else None)
 
     def create_buffer(self, name, content):
-        '''Create a compressed binary buffer with a name and fixed length in the HDF5 file.
+        '''
+        Create a compressed binary buffer with a name and fixed length in the HDF5 file.
 
         Parameters
         ----------
