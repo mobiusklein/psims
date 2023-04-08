@@ -29,7 +29,7 @@ class MzML(TagBase):
         'xmlns': 'http://psi.hupo.org/ms/mzml',
         'version': '1.1.0',
         'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-        'xsi:schemaLocation': 'http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd'}
+        'xsi:schemaLocation': 'http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.1.xsd'}
 
     def __init__(self, **attrs):
         super(MzML, self).__init__('mzML', **attrs)
@@ -43,7 +43,7 @@ class IndexedMzML(TagBase):
     type_attrs = {
         "xmlns": "http://psi.hupo.org/ms/mzml",
         'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
-        'xsi:schemaLocation': "http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd"
+        'xsi:schemaLocation': "http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.3_idx.xsd"
     }
 
     def __init__(self, **attrs):
