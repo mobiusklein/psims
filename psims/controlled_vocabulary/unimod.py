@@ -8,7 +8,7 @@ from lxml import etree
 
 try:
     from sqlalchemy.orm import declarative_base, DeclarativeMeta
-except ImportError:
+except ImportError: # sqlalchemy 1/2 compat
     from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 
 from sqlalchemy.orm import relationship, backref, object_session

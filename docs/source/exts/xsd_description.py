@@ -75,6 +75,7 @@ def process_xsd_description_nodes(app, doctree, fromdocname):
 
     schemata = []
     for xsd in env.config.xsd_description_xsd_paths:
+        print("Parsing", xsd)
         tree = etree.parse(xsd)
         nsmap = {'xs': 'http://www.w3.org/2001/XMLSchema'}
         component_map = {}

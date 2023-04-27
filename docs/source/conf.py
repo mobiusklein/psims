@@ -77,10 +77,11 @@ exclude_patterns = []
 pygments_style = 'sphinx'
 
 
+_DIRNAME = os.path.dirname(__file__)
 xsd_description_include_xsd_descriptions = True
 xsd_description_xsd_paths = [
-    '../psims/validation/xsd/mzML1.1.0.xsd',
-    '../psims/validation/xsd/mzIdentML1.2.0.xsd',
+    '/'.join((_DIRNAME, '../../psims/validation/xsd/mzML1.1.0.xsd')),
+    '/'.join((_DIRNAME, '../../psims/validation/xsd/mzIdentML1.2.0.xsd')),
 ]
 
 # -- Options for HTML output -------------------------------------------------
