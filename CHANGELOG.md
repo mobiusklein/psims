@@ -3,6 +3,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.2.4] - 2023-04-30
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2022-12-20 | 2af78cbf0e6256586a5499babe3f59b9 |
+| go.obo.gz | releases/2023-04-01 | 299355f7feb050cab4edab556f2e5c7e |
+| pato.obo.gz | releases/2023-02-17/pato.obo | 3b9bc35244bbb8e9ba9c4952d80980dd |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.119 | f646e5364d10e6bac37b43e31debe99a |
+| unimod_tables.xml.gz | - | 7e6f1cffe9ad27fecbf5b394103b9836 |
+| unit.obo.gz | - | c7d0dedfdc0223d42a9cf66ffb03f2a2 |
+
+### Fixed
+- The SQLAlchemy dependency should no longer issue deprecation warnings when used with SQLAlchemy v2+.
+- More docstrings are formatted properly and cleaned up.
+
 ## [v1.2.3] - 2023-01-07
 
 | Name | Version | Checksum |
