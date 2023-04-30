@@ -4,7 +4,7 @@ import re
 import logging
 
 from urllib.request import urlopen, Request
-from typing import Any, Dict, Hashable, Mapping, Callable, Optional, Union
+from typing import Any, Dict, Hashable, Mapping, Callable, Optional, Union, List
 
 from six import PY2
 
@@ -60,8 +60,9 @@ def is_curie(text: Union[str, Reference]) -> bool:
 
 
 
-class ControlledVocabulary(Mapping):
-    """A Controlled Vocabulary is a collection
+class ControlledVocabulary(Mapping[str, Entity]):
+    """
+    A Controlled Vocabulary is a collection
     of terms or entities with controlled meanings
     and semantics.
 
@@ -80,18 +81,15 @@ class ControlledVocabulary(Mapping):
         A string describing the version of this controlled vocabulary.
         Not all vocabularies are versioned the same way, so this is value
         is not interpreted further automatically.
-    id : str
-        An identifier for this controlled vocabulary that is unique within
-        a particular context
     name : str
         A human-friendly name for this controlled vocabulary
     terms : dict
         The storage for storing the primary mapping from term ID to terms
     """
 
+    id: str
     version: str
     name: str
-    id: str
     metadata: Dict[str, Any]
     import_resolver: Callable[[str], 'ControlledVocabulary']
     terms: Dict[str, Entity]
@@ -100,12 +98,15 @@ class ControlledVocabulary(Mapping):
 
     @classmethod
     def from_obo(cls, handle, **kwargs):
-        '''Construct a new instance from an OBO format stream.
+        '''
+        Construct a new instance from an OBO format stream.
 
         Parameters
         ----------
         handle : file-like
             A file-like object over an OBO format.
+        **kwargs
+            Passed to :meth:`__init__`
 
         Returns
         -------
@@ -139,13 +140,13 @@ class ControlledVocabulary(Mapping):
         self.import_resolver = import_resolver
         self.imports = {}
 
-    def __getitem__(self, key):
-        '''A wrapper for :meth:`query`
-        '''
+    def __getitem__(self, key: str) -> Entity:
+        '''A wrapper for :meth:`query`'''
         return self.query(key)
 
-    def query(self, key):
-        '''Search for a term whose id or name matches `key`, or if it is a synonym.
+    def query(self, key: str) -> Entity:
+        '''
+        Search for a term whose id or name matches `key`, or if it is a synonym.
 
         This search is case-insensitive, but case-matching is preferred.
 
@@ -198,8 +199,9 @@ class ControlledVocabulary(Mapping):
                         return result
                 raise KeyError("%s and %s were not found." % (key, normalized_key)) from None
 
-    def search(self, query):
-        '''Search for any term containing the query in its id, name, or synonyms.
+    def search(self, query: str) -> List[Entity]:
+        '''
+        Search for any term containing the query in its id, name, or synonyms.
 
         This algorithm uses substring containment and may return multiple hits,
         and can be ambiguous when given a common or short substring. For exact
@@ -309,7 +311,8 @@ class ControlledVocabulary(Mapping):
         return self.terms.keys()
 
     def names(self):
-        '''A key-view over all the names in this controlled vocabulary, distinct
+        '''
+        A key-view over all the names in this controlled vocabulary, distinct
         from accessions.
 
         Returns
@@ -365,7 +368,8 @@ class VocabularyResolverBase(Callable):
 
 
 class OBOCache(VocabularyResolverBase):
-    """A cache for retrieved ontology sources stored on the file system, and an
+    """
+    A cache for retrieved ontology sources stored on the file system, and an
     abstraction layer to make registered controlled vocabularies constructable
     from a URI even if they are not in the same format.
 
@@ -417,7 +421,8 @@ class OBOCache(VocabularyResolverBase):
         self.cache_exists = os.path.exists(self.cache_path)
 
     def path_for(self, name, setext=False):
-        '''Construct a path for a given controlled vocabulary file
+        '''
+        Construct a path for a given controlled vocabulary file
         in the cache on the file system.
 
         .. note::
@@ -472,7 +477,8 @@ class OBOCache(VocabularyResolverBase):
         return f
 
     def fallback(self, uri):
-        '''Obtain a stream for the vocabulary specified by `uri`
+        '''
+        Obtain a stream for the vocabulary specified by `uri`
         from the packaged bundle distributed with :mod:`psims`.
 
         Parameters
@@ -493,7 +499,8 @@ class OBOCache(VocabularyResolverBase):
         return f
 
     def has_custom_resolver(self, uri):
-        '''Test if `uri` has a resolver function.
+        '''
+        Test if `uri` has a resolver function.
 
         Parameters
         ----------
@@ -507,7 +514,8 @@ class OBOCache(VocabularyResolverBase):
         return uri in self.resolvers
 
     def resolve(self, uri):
-        '''Get an readable file-like object for the controlled vocabulary referred
+        '''
+        Get an readable file-like object for the controlled vocabulary referred
         to by `uri`.
 
         If `uri` has a custom resolver, by :meth:`has_custom_resolver`, the custom
@@ -567,8 +575,9 @@ class OBOCache(VocabularyResolverBase):
         else:
             raise ValueError(f"Don't know how to load {uri}")
 
-    def set_resolver(self, uri, resolver):
-        '''Register a resolver callable for `uri`
+    def set_resolver(self, uri: str, resolver: Callable[[], ControlledVocabulary]):
+        '''
+        Register a resolver callable for `uri`
 
         Parameters
         ----------
@@ -590,6 +599,7 @@ def _make_relative_sqlite_sqlalchemy_uri(path):
 
 
 def resolve_unimod(cache):
+    '''Custom resolver for UNIMOD store'''
     if cache.enabled:
         path = _make_relative_sqlite_sqlalchemy_uri(
             cache.path_for("unimod.db", False))
@@ -609,6 +619,14 @@ obo_cache = OBOCache(enabled=False)
 
 
 def configure_obo_store(path):
+    """
+    Specify where the default :class:`OBOCache` instance should cache files to.
+
+    Parameters
+    ----------
+    path : :class:`str` or :const:`None`
+        The path to store the OBO cache, or :const:`None` disables it.
+    """
     if path is None:
         obo_cache.enabled = False
     else:
@@ -616,11 +634,13 @@ def configure_obo_store(path):
         obo_cache.enabled = True
 
 
-def register_resolver(name, fn):
+def register_resolver(name: str, fn: Callable[[], ControlledVocabulary]):
+    """Register a resolver on the default :class:`OBOCache` instance"""
     obo_cache.set_resolver(name, fn)
 
 
-def load_psims():
+def load_psims() -> ControlledVocabulary:
+    """Load the PSI-MS controlled vocabulary"""
     try:
         cv = obo_cache.resolve(
             ("http://purl.obolibrary.org/obo/ms/psi-ms.obo"))
@@ -631,6 +651,7 @@ def load_psims():
 
 
 def load_uo():
+    """Load the Unit ontology"""
     cv = obo_cache.resolve("http://purl.obolibrary.org/obo/uo.obo")
     return ControlledVocabulary.from_obo(cv)
 
@@ -641,11 +662,13 @@ def load_pato():
 
 
 def load_xlmod():
+    """Load the XL-MOD cross linking modification controlled vocabulary"""
     cv = obo_cache.resolve("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo")
     return ControlledVocabulary.from_obo(cv)
 
 
 def load_unimod():
+    """Load the UNIMOD protein modification controlled vocabulary"""
     return obo_cache.resolve("http://www.unimod.org/obo/unimod.obo")
 
 
