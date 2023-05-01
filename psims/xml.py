@@ -1,10 +1,11 @@
 import re
 import warnings
+import pathlib
 
 from contextlib import contextmanager
 from collections import deque
 
-from typing import Any, Dict, Iterable, Optional, OrderedDict, Union
+from typing import IO, Any, Dict, Iterable, Optional, OrderedDict, Union
 
 
 from lxml import etree
@@ -45,7 +46,8 @@ def make_counter(start=1):
 
 
 def camelize(name):
-    """Adapts an attribute name from "snake_case" to "camelCase"
+    """
+    Adapts an attribute name from "snake_case" to "camelCase"
     to make lookups on Element.attrib easier.
 
     Parameters
@@ -66,19 +68,22 @@ def camelize(name):
 
 
 def id_maker(type_name, id_number):
-    '''Generate a consistent ID that is unique within a document,
+    '''
+    Generate a consistent ID that is unique within a document,
     assuming `id_number` is unique within the tag type.
     '''
     return "%s_%s" % (type_name.upper(), str(id_number))
 
 
 def sanitize_id(string):
-    """Remove characters from a string which would be invalid
+    """
+    Remove characters from a string which would be invalid
     in XML identifiers
 
     Parameters
     ----------
     string : str
+        The string identifier to clean
 
     Returns
     -------
@@ -93,9 +98,11 @@ NO_TRACK = object()
 
 
 class ElementType(type):
-    """A metaclass to keep a count of the number of times
+    """
+    A metaclass to keep a count of the number of times
     an instance of each derived class is created.
     """
+
     _cache = {}
 
     def __new__(mcs, name, parents, attrs):
@@ -112,7 +119,8 @@ class ElementType(type):
 
 
 def attrencode(o):
-    """A simple function to convert most
+    """
+    A simple function to convert most
     basic python types to a string form
     which is safe to serialize in XML
     attributes
@@ -135,7 +143,8 @@ def attrencode(o):
 
 @add_metaclass(ElementType)
 class TagBase(object):
-    """Represent a single XML element with arbitrary attributes.
+    """
+    Represent a single XML element with arbitrary attributes.
 
     Mocks the :class:`Mapping` interface
 
@@ -216,7 +225,8 @@ class TagBase(object):
         return self._id_string
 
     def element(self, xml_file=None, with_id=False):
-        """Create an XML element using either a materialized :class:`lxml.etree.Element`
+        """
+        Create an XML element using either a materialized :class:`lxml.etree.Element`
         if ``xml_file`` is :const:`None` or the ephemeral context manager element
         :class:`lxml.etree._FileWriterElement`.
 
@@ -255,7 +265,8 @@ class TagBase(object):
             return xml_file.element(self.tag_name, **attrs)
 
     def write(self, xml_file, with_id=False):
-        """Write this element to file
+        """
+        Write this element to file
 
         Parameters
         ----------
@@ -282,8 +293,7 @@ class TagBase(object):
         self.is_open = False
 
     def __call__(self, xml_file=None, with_id=False):
-        """Alias of :meth:`element`
-        """
+        """Alias of :meth:`element`"""
         return self.element(xml_file, with_id)
 
     def __repr__(self):
@@ -311,7 +321,8 @@ def identity(x):
 
 
 def _make_tag_type(name, **attrs):
-    """Creates a new TagBase-derived class dynamically at runtime.
+    """
+    Creates a new TagBase-derived class dynamically at runtime.
     The new type will be cached.
 
     Parameters
@@ -330,7 +341,8 @@ def _make_tag_type(name, **attrs):
 
 
 def _element(_tag_name, *args, **kwargs):
-    """Construct a subclass instance of :class:`TagBase` with the given
+    """
+    Construct a subclass instance of :class:`TagBase` with the given
     tag name. All other arguments are forwarded to the :class:`TagBase`
     constructor
 
@@ -347,7 +359,6 @@ def _element(_tag_name, *args, **kwargs):
     -------
     :class:`TagBase`
     """
-
     try:
         eltype = ElementType._cache[_tag_name]
     except KeyError:
@@ -356,7 +367,8 @@ def _element(_tag_name, *args, **kwargs):
 
 
 def element(xml_file, _tag_name, *args, **kwargs):
-    """Construct and immediately write a subclass instance of
+    """
+    Construct and immediately write a subclass instance of
     :class:`TagBase` with the given tag name. All other arguments
     are forwarded to the :class:`TagBase` constructor
 
@@ -421,7 +433,8 @@ class XSDTypingProperty(AttrProperty):
 
 
 class CVParam(TagBase):
-    """Represents a ``<cvParam />``
+    """
+    Represents a ``<cvParam />``
 
     .. note::
         This element holds additional data or annotation. Only controlled values
@@ -508,7 +521,8 @@ class CVParam(TagBase):
 
 
 class UserParam(CVParam):
-    """Represents a ``<userParam />`` element
+    """
+    Represents a ``<userParam />`` element
 
     .. note::
         Uncontrolled user parameters (essentially allowing free text). Before
@@ -544,8 +558,7 @@ CVTypes = Union['CV', 'ProvidedCV']
 
 
 class CVCollection(object):
-    """A partially unique collection of :class:`CV` objects.
-    """
+    """A partially unique collection of :class:`CV` objects."""
 
     storage: OrderedDict[str, CVTypes]
 
@@ -555,7 +568,8 @@ class CVCollection(object):
             self.update(cvs)
 
     def add(self, cv: CVTypes):
-        """Add `cv` to the collection.
+        """
+        Add `cv` to the collection.
 
         If the :attr:`CV.id` is aleady present in the collection, a warning
         will be issued.
@@ -574,7 +588,8 @@ class CVCollection(object):
         return self
 
     def update(self, collection: Iterable[CVTypes]):
-        """Add each element of `collection` to `self`, calling :meth:`add` on each
+        """
+        Add each element of `collection` to `self`, calling :meth:`add` on each
         element.
 
         Parameters
@@ -593,7 +608,8 @@ class CVCollection(object):
     extend = update
 
     def copy(self):
-        """Create a copy of `self`
+        """
+        Create a copy of `self`
 
         Returns
         -------
@@ -626,7 +642,8 @@ class CVCollection(object):
 
 
 class CV(object):
-    """Represent a Controlled Vocabulary associated with the current document.
+    """
+    Represent a Controlled Vocabulary associated with the current document.
 
     The controlled vocabulary referenced must specify a URI that will be used
     to either download the definitions from, to be matched to a cache of pre-built
@@ -701,7 +718,8 @@ class CV(object):
         return self._vocabulary
 
     def load(self, handle=None):
-        """Load the vocabulary definition from source
+        """
+        Load the vocabulary definition from source
 
         Assumes that the definition is in OBO format
 
@@ -747,7 +765,8 @@ class CV(object):
 
 
 class ProvidedCV(CV):
-    """A wrapper around another object that provides the same basic interface
+    """
+    A wrapper around another object that provides the same basic interface
     as :class:`CV` from that object, provided through the :attr:`converter`
     function
 
@@ -781,7 +800,8 @@ class ProvidedCV(CV):
 
 
 class XMLWriterMixin(object):
-    """A mixin class to provide methods for writing
+    """
+    A mixin class to provide methods for writing
     XML elements and aggregate Components.
 
     Attributes
@@ -791,11 +811,13 @@ class XMLWriterMixin(object):
     writer: lxml.etree._IncrementalFileWriter
         The low-level XML writer used by :attr:`xmlfile`
     """
+
     verbose = False
 
     @contextmanager
     def element(self, element_name, **kwargs):
-        """Construct and immediately open a subclass instance of
+        """
+        Construct and immediately open a subclass instance of
         :class:`TagBase` with the given tag name. All other arguments
         are forwarded to the :class:`TagBase` constructor.
 
@@ -832,7 +854,8 @@ class XMLWriterMixin(object):
                 raise
 
     def write(self, *args, **kwargs):
-        """Either write a complete XML sub-tree or add free text to the file stream
+        """
+        Either write a complete XML sub-tree or add free text to the file stream
 
         Parameters
         ----------
@@ -857,8 +880,16 @@ class XMLWriterMixin(object):
         self.writer.flush()
 
 
+def _coerce_file(stream_or_path) -> Union[str, IO]:
+    if isinstance(stream_or_path, pathlib.Path):
+        return str(stream_or_path)
+    else:
+        return stream_or_path
+
+
 class XMLFormattingStreamWriter(object):
-    """Wraps a writable stream with a layer emulating the
+    """
+    Wraps a writable stream with a layer emulating the
      class:`lxml.etree.xmlfile` interface, save that it automatically
      formats and indents the XML generated without requiring a separate
      pass through the XML pretty printing processing
@@ -882,7 +913,7 @@ class XMLFormattingStreamWriter(object):
 
     def __init__(self, stream, encoding=None, indent='  ', **kwargs):
         self.stream = stream
-        self.xmlfile = etree.xmlfile(self.stream, encoding=encoding, buffered=False, **kwargs)
+        self.xmlfile = etree.xmlfile(_coerce_file(self.stream), encoding=encoding, buffered=False, **kwargs)
         self.writer = None
         self.indent_level = 0
         self.indent_chars = indent
@@ -932,7 +963,8 @@ class XMLFormattingStreamWriter(object):
 
 
 class XMLDocumentWriter(XMLWriterMixin):
-    """A base class for types which are used to
+    """
+    A base class for types which are used to
     write complete XML documents.
 
     Attributes
@@ -946,9 +978,11 @@ class XMLDocumentWriter(XMLWriterMixin):
     writer : lxml.etree._IncrementalFileWriter
         The low-level XML writer used by :attr:`xmlfile`
     """
+
     @staticmethod
     def toplevel_tag():
-        """Overridable method to construct the appropriate
+        """
+        Overridable method to construct the appropriate
         tag for :attr:`toplevel`
 
         Returns
@@ -986,8 +1020,7 @@ class XMLDocumentWriter(XMLWriterMixin):
         self._writer = value
 
     def begin(self):
-        """Writes the doctype and starts the low-level writing machinery
-        """
+        """Writes the doctype and starts the low-level writing machinery"""
         if self._has_begun():
             return
         self.writer = self.xmlfile.__enter__()
@@ -1004,19 +1037,20 @@ class XMLDocumentWriter(XMLWriterMixin):
         return self.toplevel is not None
 
     def __enter__(self):
-        """Begins writing, opening the top-level tag
-        """
+        """Begins writing, opening the top-level tag"""
         self.begin()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Closes the top-level tag, the XML formatter,
+        """
+        Closes the top-level tag, the XML formatter,
         and the file itself.
         """
         self.end(exc_type, exc_value, traceback)
 
     def end(self, exc_type=None, exc_value=None, traceback=None):
-        """Ends the XML document, and flushes and closes the file
+        """
+        Ends the XML document, and flushes and closes the file
         if appropriate.
         """
         self.toplevel.__exit__(exc_type, exc_value, traceback)
@@ -1040,7 +1074,8 @@ class XMLDocumentWriter(XMLWriterMixin):
             self._do_close()
 
     def controlled_vocabularies(self):
-        """Write out the `<cvList>` element and all its children,
+        """
+        Write out the `<cvList>` element and all its children,
         including both this format's default controlled vocabularies
         and those passed as arguments to this method.this
 
@@ -1071,7 +1106,8 @@ class XMLDocumentWriter(XMLWriterMixin):
             self.writer.flush()
 
     def format(self, outfile=None):
-        """This method is deprecated. Previously, the serialization
+        """
+        This method is deprecated. Previously, the serialization
         process did not indent the XML in-place and the lxml pretty printer
         had to be invoked separately. With the addition of :class:`XMLFormattingStreamWriter`,
         the XML stream is formatted in-place as it is being streamed to file.
@@ -1081,7 +1117,8 @@ class XMLDocumentWriter(XMLWriterMixin):
             DeprecationWarning, 2)
 
     def validate(self):
-        """Attempt to perform XSD validation on the XML document
+        """
+        Attempt to perform XSD validation on the XML document
         this writer wrote
 
         Returns
