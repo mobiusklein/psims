@@ -4,31 +4,31 @@
     "version": "release/2019-10-28"
   },
   "gno.obo.gz": {
-    "checksum": "2af78cbf0e6256586a5499babe3f59b9",
-    "version": "2022-12-20"
+    "checksum": "40808f9d7b3b2589ec272f2d36db80c8",
+    "version": "2023-05-08"
   },
   "go.obo.gz": {
-    "checksum": "299355f7feb050cab4edab556f2e5c7e",
-    "version": "releases/2023-04-01"
+    "checksum": "e9845499eadaef2418f464cd7e9ac92e",
+    "version": "releases/2023-05-10"
   },
   "pato.obo.gz": {
-    "checksum": "3b9bc35244bbb8e9ba9c4952d80980dd",
-    "version": "releases/2023-02-17/pato.obo"
+    "checksum": "8a14f0e3b3318c13d029d84d693a01e3",
+    "version": "releases/2023-05-18/pato.obo"
   },
   "psi-mod.obo.gz": {
     "checksum": "713e6dd17632d0388802f1b0e06800f0",
     "version": null
   },
   "psi-ms.obo.gz": {
-    "checksum": "f646e5364d10e6bac37b43e31debe99a",
-    "version": "4.1.119"
+    "checksum": "851867a39838c846425fbc96f408506f",
+    "version": "4.1.121"
   },
   "unimod_tables.xml.gz": {
     "checksum": "7e6f1cffe9ad27fecbf5b394103b9836",
     "version": null
   },
   "unit.obo.gz": {
-    "checksum": "c7d0dedfdc0223d42a9cf66ffb03f2a2",
-    "version": null
+    "checksum": "5a04e9d871730a1ee04764055e841785",
+    "version": "releases/2023-05-25"
   }
 }

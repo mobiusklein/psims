@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.2.5] - 2023-05-25
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2023-05-08 | 40808f9d7b3b2589ec272f2d36db80c8 |
+| go.obo.gz | releases/2023-05-10 | e9845499eadaef2418f464cd7e9ac92e |
+| pato.obo.gz | releases/2023-05-18/pato.obo | 8a14f0e3b3318c13d029d84d693a01e3 |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.121 | 851867a39838c846425fbc96f408506f |
+| unimod_tables.xml.gz | - | 7e6f1cffe9ad27fecbf5b394103b9836 |
+| unit.obo.gz | releases/2023-05-25 | 5a04e9d871730a1ee04764055e841785 |
+
+### Fixed
+1. `Entity` objects now compare as equal if their ids are equal instead of doing a deep comparison.
+
 ## [v1.2.4] - 2023-04-30
 
 | Name | Version | Checksum |
@@ -337,8 +353,10 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.5...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v1.2.5]: https://github.com/mobiusklein/psims/releases/v1.2.5
+[v1.2.4]: https://github.com/mobiusklein/psims/releases/v1.2.4
 [v1.1.0]: https://github.com/mobiusklein/psims/releases/v1.1.0
 [v1.0.0]: https://github.com/mobiusklein/psims/releases/v1.0.0
 [v0.1.47]: https://github.com/mobiusklein/psims/releases/v0.1.47
