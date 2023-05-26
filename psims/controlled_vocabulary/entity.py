@@ -74,7 +74,8 @@ class KeyOrAttributeError(KeyError, AttributeError):
 
 
 class Entity(Mapping):
-    '''Represent a term in a controlled vocabulary.
+    '''
+    Represent a term in a controlled vocabulary.
 
     While this type implements the :class:`~collections.abc.Mapping`,
     it supports attribute access notation for keys.
@@ -102,6 +103,15 @@ class Entity(Mapping):
         self.data = dict(attributes)
         self.children = []
         self.vocabulary = vocabulary
+
+    def __eq__(self, other: 'Entity'):
+        try:
+            return self.id == other.id
+        except AttributeError:
+            return super().__eq__(other)
+
+    def __ne__(self, other: 'Entity'):
+        return not self == other
 
     def get(self, key, default=None):
         return self.data.get(key, default)
@@ -214,7 +224,8 @@ class Entity(Mapping):
         return template.format(self=self)
 
     def is_of_type(self, tp: Union[str, 'Entity']) -> bool:
-        '''Test if `tp` is an ancestor of this :class:`Entity`
+        '''
+        Test if `tp` is an ancestor of this :class:`Entity`
 
         Parameters
         ----------
