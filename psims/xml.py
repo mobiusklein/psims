@@ -861,6 +861,8 @@ class XMLWriterMixin(object):
         ----------
         arg: str or :class:`lxml.etree.Element`
             The entity to be written out.
+        *args, **kwargs
+            Forwarded to :attr:`writer` write method.
         """
         if self.verbose:
             print(args[0])

@@ -384,6 +384,26 @@ class DocumentContext(dict, VocabularyResolver):
             key, missing_reference_is_error=self.missing_reference_is_error)
         return self[key]
 
+    def register(self, entity_type, id):
+        """
+        Pre-declare an entity in the document context. Ensures that
+        a reference look up will be satisfied.
+
+        Parameters
+        ----------
+        entity_type : str
+            An entity type, either a tag name or a component name
+        id : int
+            The unique id number for the thing registered
+
+        Returns
+        -------
+        str
+            The constructed reference id
+        """
+        value = self[entity_type].register(id)
+        return value
+
     # DocumentContext is always truthy
     def __bool__(self):
         return True
@@ -397,6 +417,7 @@ class ReprBorrowingPartial(partial):
     Create a partial instance that uses the wrapped callable's
     `__repr__` method instead of a generic partial
     """
+
     def __init__(self, func, *args, **kwargs):
         self._func = func
         update_wrapper(self, func)
@@ -423,7 +444,7 @@ class ReprBorrowingPartial(partial):
         return [self.ensure(obj or {}) for obj in ensure_iterable(objs)]
 
     def register(self, identifier):
-        return self.kwargs['context'].register(self._func.__name__, identifier)
+        return self.keywords['context'].register(self._func.__name__, identifier)
 
 
 class CallbackBindingPartial(ReprBorrowingPartial):
@@ -449,6 +470,7 @@ class ComponentDispatcherBase(object):
         The mapping responsible for managing the global
         state of all created components.
     """
+
     _component_partial_type = CallbackBindingPartial
 
     def __init__(self, context=None, vocabularies=None, vocabulary_resolver=None, component_namespace=None,
@@ -546,8 +568,7 @@ class ComponentDispatcherBase(object):
         str
             The constructed reference id
         """
-        value = self.context[entity_type].register(id)
-        return value
+        return self.context.register(entity_type, id)
 
     @property
     def vocabularies(self):
@@ -584,7 +605,8 @@ class XMLBindingDispatcherBase(ComponentDispatcherBase):
 
 @add_metaclass(ChildTrackingMeta)
 class ComponentBase(object):
-    """A base class for all parts of an XML document which
+    """
+    A base class for all parts of an XML document which
     describe structures composed of more than a single XML
     tag without any children. In addition to wrapping additional
     descriptive data, this type's metaclass is :class:`ChildTrackingMeta`
@@ -622,7 +644,12 @@ class ComponentBase(object):
             self._after_queue = []
         self._after_queue.append(callback)
 
-    def write(self, xml_file):
+    def write(self, xml_file=None):
+        if xml_file is None:
+            if self.writer is None:
+                raise ValueError("Must provide an value for `xml_file` argument when component is unbound")
+            xml_file = self.writer
+
         with self.begin(xml_file):
             pass
 
@@ -752,7 +779,8 @@ class ComponentBase(object):
 
 
 class ParameterContainer(ComponentBase):
-    """An base class for a component whose only purpose
+    """
+    An base class for a component whose only purpose
     is to contain one or more cv- or userParams.
 
     Attributes
@@ -764,6 +792,7 @@ class ParameterContainer(ComponentBase):
     params : list
         The list of parameters to include
     """
+
     requires_id = False
 
     def __init__(self, tag_name, params=None, element_args=None, context=NullMap, **kwargs):

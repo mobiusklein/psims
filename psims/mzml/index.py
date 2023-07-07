@@ -3,6 +3,7 @@ import re
 import io
 from io import BytesIO
 from collections import defaultdict, OrderedDict
+from typing import Tuple
 
 from six import string_types as basestring, PY2
 
@@ -63,7 +64,7 @@ class TagIndexerBase(object):
     def __iter__(self):
         return iter(self.index.items())
 
-    def scan(self, data, distance):
+    def scan(self, data: bytes, distance: int) -> bool:
         is_match = self.pattern.search(data)
         if is_match:
             attrs = dict(self.attr_pattern.findall(data))
@@ -72,7 +73,16 @@ class TagIndexerBase(object):
             self.index[xid] = offset
         return bool(is_match)
 
-    def __call__(self, data, distance):
+    def match_element(self, element: etree.Element, distance: int) -> bool:
+        if element.tag == self.name:
+            attrs = {k.encode("utf8"): v.encode("utf8") for k, v in element.attrib.items()}
+            xid = attrs[b"id"]
+            offset = Offset(distance, attrs)
+            self.index[xid] = offset
+            return True
+        return False
+
+    def __call__(self, data: bytes, distance: int):
         return self.scan(data, distance)
 
     def write(self, writer):
@@ -106,8 +116,8 @@ class ChromatogramIndexer(TagIndexerBase):
 
 
 class IndexList(Sequence):
-
-    """Wrap an arbitrary collection of :class:`TagIndexerBase`-derived
+    """
+    Wrap an arbitrary collection of :class:`TagIndexerBase`-derived
     objects, and support building XML indices.
 
     Attributes
@@ -155,8 +165,8 @@ class IndexList(Sequence):
 
 
 class StreamWrapperBase(object):
-    '''A base class for wrapping an output stream to intercept operations.
-    '''
+    '''A base class for wrapping an output stream to intercept operations.'''
+
     def __init__(self, stream):
         if isinstance(stream, basestring):
             stream = io.open(stream, 'wb')
@@ -198,9 +208,11 @@ class StreamWrapperBase(object):
 
 
 class HashingStream(StreamWrapperBase):
-    '''A write stream wrapper to compute a running SHA1 checksum as bytes are written to
+    '''
+    A write stream wrapper to compute a running SHA1 checksum as bytes are written to
     the output stream.
     '''
+
     def __init__(self, stream):
         super(HashingStream, self).__init__(stream)
         self._checksum = sha1()
@@ -211,7 +223,8 @@ class HashingStream(StreamWrapperBase):
         return n
 
     def checksum(self):
-        '''Get the current checksum.
+        '''
+        Get the current checksum.
 
         Returns
         -------
@@ -221,7 +234,8 @@ class HashingStream(StreamWrapperBase):
 
 
 class IndexingStream(StreamWrapperBase):
-    '''An output stream wrapper that tracks running byte offsets for specific patterns.
+    '''
+    An output stream wrapper that tracks running byte offsets for specific patterns.
 
     The output stream is also wrapped in a :class:`HashingStream`. If the innermost stream
     supports :class:`io.BufferedWriter`, this will also wrap the output stream too to reduce

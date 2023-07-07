@@ -166,9 +166,11 @@ class ChromatogramListSection(DocumentSection):
 
 
 class RunSection(DocumentSection):
-    """Describes a `<run>` tag. Implemented as a section to provide a more
+    """
+    Describes a `<run>` tag. Implemented as a section to provide a more
     expressive API
     """
+
     def __init__(self, writer, parent_context, section_args=None, **kwargs):
         super(RunSection, self).__init__(
             "run", writer, parent_context, section_args=section_args, **kwargs)
@@ -212,7 +214,8 @@ class IndexedmzMLSection(DocumentSection):
 
 
 class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
-    """A high level API for generating mzML XML files from simple Python objects.
+    """
+    A high level API for generating mzML XML files from simple Python objects.
 
     This class depends heavily on lxml's incremental file writing API which in turn
     depends heavily on context managers. Almost all logic is handled inside a context
@@ -274,7 +277,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     @property
     def native_id_format(self):
-        '''The nativeID format of the spectra to assume for this data file.
+        '''
+        The nativeID format of the spectra to assume for this data file.
 
         This is used to determine how to convert an integer into a spectrum's :attr:`~.Spectrum.id`.
         Defaults to ``MS:1000774``: "multiple peak list nativeID format" which has a pattern of
@@ -294,7 +298,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
 
     @native_id_format.setter
     def native_id_format(self, native_id_format: str):
-        '''Set the nativeID format to use for this file.
+        '''
+        Set the nativeID format to use for this file.
 
         You can specify the name the ID format using either the format's name
         or its CV ID, e.g. "MS:1000774", or a :class:`~psims.controlled_vocabulary.entity.Entity`
@@ -323,7 +328,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         return MzML(id=self.id, accession=self.accession)
 
     def controlled_vocabularies(self):
-        """Write out the `<cvList>` element and all its children,
+        """
+        Write out the `<cvList>` element and all its children,
         including both this format's default controlled vocabularies
         and those passed as arguments to this method.this
 
@@ -333,7 +339,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         super(PlainMzMLWriter, self).controlled_vocabularies()
 
     def software_list(self, software_list: Iterable[Union[Software, Mapping]]):
-        """Writes the ``<softwareList>`` section of the document.
+        """
+        Writes the ``<softwareList>`` section of the document.
 
         .. note::
             List and descriptions of software used to acquire and/or process the
@@ -351,7 +358,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.SoftwareList(software_list).write(self)
 
     def file_description(self, file_contents=None, source_files=None, contacts=None):
-        r"""Writes the ``<fileDescription>`` section of the document.
+        r"""
+        Writes the ``<fileDescription>`` section of the document.
 
         If ``file_contents`` contains a nativeID term, and :attr:`native_id_format` has
         not been set explicitly, that ID format will be used for this document.
@@ -365,9 +373,11 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         file_contents : list, optional
             A list or other iterable of :class:`str`, :class:`dict`, or \*Param-types which will
             be placed in the ``<fileContent>`` element.
-        source_files : list
+        source_files : list, optional
             A list or other iterable of dict or :class:`~psims.mzml.components.SourceFile`-like objects
             to be placed in the ``<sourceFileList>`` element
+        contacts : list, optional
+            Contact persons describing the mzML file or its sources.
 
         Examples
         --------
@@ -515,7 +525,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.InstrumentConfigurationList(configs).write(self)
 
     def data_processing_list(self, data_processing):
-        """Writes the ``<dataProcessingList>`` section of the document.
+        """
+        Writes the ``<dataProcessingList>`` section of the document.
 
         .. note::
             List and descriptions of data processing applied to this data
@@ -533,7 +544,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.DataProcessingList(methods).write(self)
 
     def reference_param_group_list(self, groups):
-        """Writes the ``<referenceableParamGroupList>`` section of the document.
+        """
+        Writes the ``<referenceableParamGroupList>`` section of the document.
 
         Parameters
         ----------
@@ -548,7 +560,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.ReferenceableParamGroupList(groups).write(self)
 
     def sample_list(self, samples):
-        """Writes the ``<sampleList>`` section of the document
+        """
+        Writes the ``<sampleList>`` section of the document
 
         Parameters
         ----------
@@ -583,7 +596,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         self.ScanSettingsList(scan_settings).write(self)
 
     def run(self, id=None, instrument_configuration=None, source_file=None, start_time=None, sample=None):
-        """Begins the `<run>` section of the document, describing a single
+        """
+        Begins the `<run>` section of the document, describing a single
         sample run.
 
         Parameters
@@ -655,7 +669,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                  scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                  encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                  instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT) -> Spectrum:
-        '''Create a new :class:`~.Spectrum` instance to be written.
+        '''
+        Create a new :class:`~.Spectrum` instance to be written.
 
         This method does not immediately write and close the spectrum element, leaving it
         open for modification and embedding.
@@ -701,6 +716,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         instrument_configuration_id: str, optional
             The `id` of the `instrumentConfiguration` to associate with this spectrum
             if not the default one.
+        intensity_unit : str, optional
+            The unit for the intensity measurement, defaults to "Number of detector counts".
 
         Returns
         -------
@@ -824,7 +841,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                        scan_start_time=None, params=None, compression=COMPRESSION_ZLIB,
                        encoding=None, other_arrays=None, scan_params=None, scan_window_list=None,
                        instrument_configuration_id=None, intensity_unit=DEFAULT_INTENSITY_UNIT):
-        '''Write a :class:`~.Spectrum` with the provided data.
+        '''
+        Write a :class:`~.Spectrum` with the provided data.
 
         To create a spectrum element but not immediately close it off, see the :meth:`spectrum` method.
 
@@ -869,6 +887,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
         instrument_configuration_id: str, optional
             The `id` of the `instrumentConfiguration` to associate with this spectrum
             if not the default one.
+        intensity_unit : str, optional
+            The unit for the intensity measurement, defaults to "Number of detector counts".
 
         See Also
         --------
@@ -1028,7 +1048,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                                        isolation_window_args=None, params=None,
                                        intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None, external_spectrum_id=None,
                                        source_file_reference=None, **kwargs):
-        '''Prepare a :class:`Precursor` element from disparate data structures.
+        '''
+        Prepare a :class:`Precursor` element from disparate data structures.
 
         Parameters
         ----------
@@ -1056,6 +1077,12 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             The `externalSpectrumID` attribute of the precursor
         source_file_reference: str, optional
             The `sourceFileRef` attribute of the precursor
+        isolation_window : list or dict, optional
+            An alias for isolation_window_args
+        selected_ion_mz : float, optional
+            Alias for mz
+        **kwargs
+            Unpacked for alternative namings of parameters
 
         Returns
         -------
@@ -1099,7 +1126,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
                           intensity_unit=DEFAULT_INTENSITY_UNIT, scan_id=None,
                           external_spectrum_id=None, source_file_reference=None,
                           isolation_window=None):
-        '''Create a :class:`PrecursorBuilder`, an object to help populate the precursor information
+        '''
+        Create a :class:`PrecursorBuilder`, an object to help populate the precursor information
         data structure.
 
         The helper object should be used to incrementally populate the precursor information passed
@@ -1137,6 +1165,8 @@ class PlainMzMLWriter(ComponentDispatcher, XMLDocumentWriter):
             The `externalSpectrumID` attribute of the precursor
         source_file_reference: str, optional
             The `sourceFileRef` attribute of the precursor
+        isolation_window : list or dict, optional
+            An alias for isolation_window_args
 
         Returns
         -------
@@ -1215,7 +1245,8 @@ class PrecursorBuilder(ElementBuilder):
 
 
 class IndexedMzMLWriter(PlainMzMLWriter):
-    """A high level API for generating indexed mzML XML files from simple Python objects.
+    """
+    A high level API for generating indexed mzML XML files from simple Python objects.
 
     This class depends heavily on :mod:`lxml`'s incremental file writing API which in turn
     depends heavily on context managers. Almost all logic is handled inside a context
@@ -1237,6 +1268,7 @@ class IndexedMzMLWriter(PlainMzMLWriter):
         A writing stream that automatically tokenizes and records byte offsets for
         specific XML tags.
     """
+
     def __init__(self, outfile, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, **kwargs):
         outfile = IndexingStream(outfile)

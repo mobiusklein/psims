@@ -183,7 +183,8 @@ class SourceFile(ComponentBase, HasNativeIDFormat):
         return os.path.exists(path)
 
     def checksum(self, digest='sha-1'):
-        '''Compute a file integrity checksum of a file if it is local.
+        '''
+        Compute a file integrity checksum of a file if it is local.
 
         Returns
         -------
@@ -442,7 +443,8 @@ class ComponentList(GenericCollection):
 
     @classmethod
     def build(cls, members, context=NullMap, type_key='type'):
-        '''Compile an ordered set of :class:`~.Source`, :class:`~.Analyzer`,
+        '''
+        Compile an ordered set of :class:`~.Source`, :class:`~.Analyzer`,
         and :class:`~.Detector`-like objects into a sorted :class:`ComponentList`
         instance.
 

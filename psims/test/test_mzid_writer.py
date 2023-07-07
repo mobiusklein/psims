@@ -27,7 +27,8 @@ def test_write(output_path):
     with f:
         f.controlled_vocabularies()
         f.provenance(software=software)
-        f.register("SpectraData", spectra_data['id'])
+        # f.register("SpectraData", spectra_data['id'])
+        f.SpectraData.register(spectra_data['id'])
         f.register("SearchDatabase", search_database['id'])
         f.register("SpectrumIdentificationList", spectrum_identification_list["id"])
         f.register("SpectrumIdentificationProtocol", spectrum_id_protocol['id'])

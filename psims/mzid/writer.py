@@ -211,7 +211,8 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         return MzIdentML(version=self.version)
 
     def controlled_vocabularies(self):
-        """Write out the `<cvList>` element and all its children,
+        """
+        Write out the `<cvList>` element and all its children,
         including both this format's default controlled vocabularies
         and those passed as arguments to this method.this
 
@@ -240,6 +241,8 @@ class MzIdentMLWriter(ComponentDispatcher, XMLDocumentWriter):
         organization : dict, optional
             A dictionary specifying a :class:`Organization` instance. If missing, a default organization will
             be created
+        provider : dict, optional
+            A dictionary specifying a :class:`Provider` instance.
         """
         self.state_machine.transition('audit_collection')
         organization = self.Organization.ensure_all(organization)

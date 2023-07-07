@@ -1,4 +1,4 @@
-'''
+"""
 Transforming mzML Files
 -----------------------
 
@@ -50,7 +50,7 @@ In its simplest form, we would use the :class:`MzMLTransformer` like so:
 
 
 
-'''
+"""
 from numbers import Number
 from pyteomics import mzml
 
@@ -79,7 +79,8 @@ def identity(x):
 
 
 class MzMLTransformer(TransformerBase):
-    """Reads an mzML file stream from :attr:`input_stream`, copying its metadata
+    """
+    Reads an mzML file stream from :attr:`input_stream`, copying its metadata
     to :attr:`output_stream`, and then copies its spectra, applying :attr:`transform`
     to each spectrum object as it goes.
 
@@ -415,7 +416,8 @@ class MzMLTransformer(TransformerBase):
 
 
 class MzMLToMzMLb(MzMLTransformer):
-    '''Convert an mzML document into an mzMLb file, with an optional transformation along
+    """
+    Convert an mzML document into an mzMLb file, with an optional transformation along
     the way.
 
     Parameters
@@ -442,11 +444,10 @@ class MzMLToMzMLb(MzMLTransformer):
         The size of the compression blocks used when building the HDF5 file.
         Smaller blocks improve random access speed at the expense of compression
         efficiency and space. Defaults to 2 ** 20, 1MB.
-    '''
+    """
+
     def __init__(self, input_stream, output_stream, transform=None, transform_description=None,
                  sort_by_scan_time=False, **hdf5args):
-        '''
-        '''
         if transform is None:
             transform = identity
         self.input_stream = input_stream

@@ -23,7 +23,8 @@ from psims import compression
 
 
 def ensure_iterable(obj):
-    """Ensure ``obj`` is either a sequential iterable object that is not a
+    """
+    Ensure ``obj`` is either a sequential iterable object that is not a
     string type.
 
         1. If ``obj`` is :const:`None` return an empty :class:`tuple`.
@@ -67,7 +68,8 @@ def make_file_uri(path):
 
 
 def checksum_file(path, hash_type='sha-1'):
-    """Calculate the cryptographic hash checksum of the given file
+    """
+    Calculate the cryptographic hash checksum of the given file
     path
 
     Parameters
@@ -93,7 +95,8 @@ def checksum_file(path, hash_type='sha-1'):
 
 
 def pretty_xml(path, outpath=None, encoding=b'utf-8'):
-    """Format an XML document using :func:`lxml.etree.tostring` with
+    """
+    Format an XML document using :func:`lxml.etree.tostring` with
     ``pretty_print=True``.
 
     Attempts to do the right thing when given file paths and
@@ -157,7 +160,8 @@ def simple_repr(self):  # pragma: no cover
 
 @total_ordering
 class SimpleVersion(object):
-    """A simple representation of a versioning system with a three part verison
+    """
+    A simple representation of a versioning system with a three part verison
     of the form "major"."minor"."patch".
 
     Used to represent different schema versions and to make schema version comparison
@@ -227,7 +231,8 @@ class SimpleVersion(object):
 
 
 class KeyToAttrProxy(object):
-    """Proxies requests for keys through :meth:`__getitem__` into
+    """
+    Proxies requests for keys through :meth:`__getitem__` into
     calls to :meth:`__getattr__` and mock most methods of the :class:`Mapping`
     interface for objects with a :attr:`__dict__`
 
@@ -274,7 +279,8 @@ class StateSpaceBase(object):
 
 
 class StateTable(StateSpaceBase):
-    """A simple state transition table that maps a current
+    """
+    A simple state transition table that maps a current
     state to a list of valid new states
 
     Attributes
@@ -308,7 +314,8 @@ class StateTransitionWarning(Warning):
 
 
 class StateMachineBase(object):
-    """A base class implementing the logic for
+    """
+    A base class implementing the logic for
     handling state transitions, state checking,
     and error reporting when an invalid transition
     or failed check occurs
@@ -328,7 +335,8 @@ class StateMachineBase(object):
         self.enabled = True
 
     def transition(self, state):
-        """Move from the current state to the specified state.
+        """
+        Move from the current state to the specified state.
 
         If the transition was invalid and warnings are enabled,
         this will call :meth:`transition_error`
@@ -363,7 +371,8 @@ class StateMachineBase(object):
         return self._previous_state
 
     def expects_state(self, state):
-        """Check whether the current state matches the expected
+        """
+        Check whether the current state matches the expected
         state
 
         If the expectation was invalid and warnings are enabled,
@@ -386,7 +395,8 @@ class StateMachineBase(object):
         return is_valid
 
     def expects_error(self, state):
-        """Warns that the expectation of `state` was invalid
+        """
+        Warns that the expectation of `state` was invalid
 
         Parameters
         ----------
@@ -398,7 +408,8 @@ class StateMachineBase(object):
                 self=self, state=state), StateTransitionWarning)
 
     def transition_error(self):
-        """Warn that the last transition was invalid, and list
+        """
+        Warn that the last transition was invalid, and list
         the set of valid transitions.
         """
         next_states = self.states.next_states(self.previous_state)
@@ -409,7 +420,8 @@ class StateMachineBase(object):
 
 
 class TableStateMachine(StateMachineBase):
-    """An implementation of :class:`StateMachineBase` which
+    """
+    An implementation of :class:`StateMachineBase` which
     uses a :class:`StateTable` to represent the set of transtions
     allowed.
 
