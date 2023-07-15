@@ -141,9 +141,25 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ### Security
 
+## [v1.2.6] - 2023-07-15
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2023-05-08 | 40808f9d7b3b2589ec272f2d36db80c8 |
+| go.obo.gz | releases/2023-06-11 | b4aafb08e95a7c5c5852872e3d4a8959 |
+| pato.obo.gz | releases/2023-05-18/pato.obo | 8a14f0e3b3318c13d029d84d693a01e3 |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.130 | 693097be4d0d1d16ed1162c4313cb9f5 |
+| unimod_tables.xml.gz | - | 7e6f1cffe9ad27fecbf5b394103b9836 |
+| unit.obo.gz | releases/2023-05-25 | 5a04e9d871730a1ee04764055e841785 |
+
+### Fixed
+1. Actually implement parameter-less version of bound `Component.write()` (GH #20)
+2. Actually implement bound `Component.register()` (GH #19)
 
 
-## [v.1.1.0] - 2022-07-07
+## [v1.1.0] - 2022-07-07
 
 ### Added
 - Added `MzMLWriter.native_id_format` attribute that governs how integers are converted into strings for the
@@ -353,8 +369,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.5...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.6...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v1.2.6]: https://github.com/mobiusklein/psims/releases/v1.2.7
 [v1.2.5]: https://github.com/mobiusklein/psims/releases/v1.2.5
 [v1.2.4]: https://github.com/mobiusklein/psims/releases/v1.2.4
 [v1.1.0]: https://github.com/mobiusklein/psims/releases/v1.1.0
