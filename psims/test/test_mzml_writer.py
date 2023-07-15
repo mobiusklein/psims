@@ -1,15 +1,14 @@
 import itertools
-import gzip
-import os
-import tempfile
 
-from psims.mzml import MzMLWriter, binary_encoding, components
-from pyteomics import mzml
+from collections import Counter
+
 import numpy as np
+
 from lxml import etree
 
-import pytest
+from pyteomics import mzml
 
+from psims.mzml import MzMLWriter, binary_encoding, components
 from psims import compression as compression_registry
 from psims.test.utils import output_path, compressor, identity
 
@@ -156,6 +155,11 @@ def test_write(output_path, compressor):
                 f.write_spectrum(mz_array, intensity_array, charge_array, id='scanId=3', params=[
                     {"name": "ms level", "value": 2}, {"ref": 'common_params'}],
                     polarity='negative scan', precursor_information=pb)
+
+                spectrum = f.spectrum(mz_array, intensity_array, charge_array, id='scanId=4', params=[
+                    {"name": "ms level", "value": 2}, {"ref": 'common_params'}],
+                    polarity='negative scan', precursor_information=pb)
+                spectrum.write()
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)
     if compressor != identity:
@@ -187,6 +191,13 @@ def test_write(output_path, compressor):
         if reference is None:
             continue
     assert reference == "INSTRUMENTCONFIGURATION_2"
+
+    reset()
+    spectra = list(reader.iterfind("spectrum"))
+    assert len(spectra) == 4
+    ms_levels = Counter([s['ms level'] for s in spectra])
+    assert ms_levels[1] == 1
+    assert ms_levels[2] == 3
 
     reset()
     inst_config = next(reader.iterfind("instrumentConfiguration"))
