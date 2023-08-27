@@ -125,7 +125,7 @@ class ControlledVocabulary(Mapping[str, Entity]):
 
     def __init__(self, terms, id=None, metadata=None, version=None, name=None, import_resolver: Optional[Callable[[str], 'ControlledVocabulary']]=None):
         if metadata is None:
-            metadata = dict()
+            metadata = {}
         if version is None:
             version = 'unknown'
         if import_resolver is None:
@@ -134,8 +134,9 @@ class ControlledVocabulary(Mapping[str, Entity]):
         self.name = name
         self.id = id
         self.metadata = metadata
-        self.type_definitions = dict()
-        self._terms = dict()
+        self.type_definitions = {}
+        self._terms = {}
+        self._translation_cache = {}
         self.terms = terms
         self.import_resolver = import_resolver
         self.imports = {}
@@ -172,6 +173,8 @@ class ControlledVocabulary(Mapping[str, Entity]):
         '''
         if isinstance(key, Reference):
             key = key.accession
+        if key in self._translation_cache:
+            return self._translation_cache[key]
         if key in self.terms:
             return self.terms[key]
         elif key in self._names:
@@ -180,22 +183,27 @@ class ControlledVocabulary(Mapping[str, Entity]):
             try:
                 normalized_key = self.normalize_name(key)
                 if normalized_key in self._names:
-                    return self._names[normalized_key]
+                    val = self._translation_cache[key] = self._names[normalized_key]
+                    return val
             except KeyError:
                 # Just to have a value to show.
                 normalized_key = key.lower()
             lower_key = key.lower()
             if lower_key in self._synonyms:
-                return self._synonyms[lower_key]
+                val = self._translation_cache[key] = self._synonyms[lower_key]
+                return val
             elif lower_key in self.terms:
-                return self.terms[lower_key]
+                val = self._translation_cache[key] = self.terms[lower_key]
+                return val
             elif lower_key in self._obsolete_names:
-                return self._obsolete_names[lower_key]
+                val = self._translation_cache[key] = self._obsolete_names[lower_key]
+                return val
             else:
                 if is_curie(key):
 
                     result = self._query_imported(key)
                     if result is not None:
+                        self._translation_cache[key] = result
                         return result
                 raise KeyError("%s and %s were not found." % (key, normalized_key)) from None
 

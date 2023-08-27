@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.2.7] - 2023-08-27
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2023-08-09 | 6178d787e38a8a1b5d7506e3c1a880d0 |
+| go.obo.gz | releases/2023-07-27 | 326bc165ad57ee38d87a380098e49ca7 |
+| pato.obo.gz | releases/2023-05-18/pato.obo | 8a14f0e3b3318c13d029d84d693a01e3 |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.132 | e5520f1823470c3c05b9eb94b0cdd06b |
+| unimod_tables.xml.gz | - | 7e6f1cffe9ad27fecbf5b394103b9836 |
+| unit.obo.gz | releases/2023-05-25 | 5a04e9d871730a1ee04764055e841785 |
+
+### Added
+1. Added a translation cache to `ControlledVocabulary` objects to avoid repeatedly resolving the same names
+   over and over again.
+
+
 ## [v1.2.5] - 2023-05-25
 
 | Name | Version | Checksum |
