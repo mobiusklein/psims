@@ -1,9 +1,9 @@
 from .controlled_vocabulary import (
-    ControlledVocabulary, obo_cache, OBOCache, load_psims, VocabularyResolverBase)
+    ControlledVocabulary, obo_cache, OBOCache, load_psims, VocabularyResolverBase, load_unimod)
 
 
 from . import unimod
-from .unimod import load as load_unimod, UNIMODEntity
+from .unimod import UNIMODEntity
 
 from .obo import (
     OBOParser)

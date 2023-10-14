@@ -573,7 +573,7 @@ class OBOCache(VocabularyResolverBase):
             return self.resolvers[uri](self)
         try:
             fh = self.resolve(uri)
-        except ValueError:
+        except (ValueError, TypeError):
             fh = self.fallback(uri)
             if fh is None:
                 raise ValueError(f"Failed to resolve {uri} or via its fall-back")
@@ -613,12 +613,12 @@ def resolve_unimod(cache):
             cache.path_for("unimod.db", False))
         try:
             return unimod.Unimod(path)
-        except IOError:
+        except OSError:
             return unimod.Unimod(path, _use_vendored_unimod_xml())
     else:
         try:
             return unimod.Unimod()
-        except IOError:
+        except OSError:
             return unimod.Unimod(None, _use_vendored_unimod_xml())
 
 
@@ -650,9 +650,9 @@ def register_resolver(name: str, fn: Callable[[], ControlledVocabulary]):
 def load_psims() -> ControlledVocabulary:
     """Load the PSI-MS controlled vocabulary"""
     try:
-        cv = obo_cache.resolve(
+        cv = obo_cache.load(
             ("http://purl.obolibrary.org/obo/ms/psi-ms.obo"))
-        return ControlledVocabulary.from_obo(cv)
+        return cv
     except TypeError:
         cv = _use_vendored_psims_obo()
         return ControlledVocabulary.from_obo(cv)
@@ -660,41 +660,41 @@ def load_psims() -> ControlledVocabulary:
 
 def load_uo():
     """Load the Unit ontology"""
-    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/uo.obo")
-    return ControlledVocabulary.from_obo(cv)
+    cv = obo_cache.load("http://purl.obolibrary.org/obo/uo.obo")
+    return cv
 
 
 def load_pato():
-    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/pato.obo")
-    return ControlledVocabulary.from_obo(cv)
+    cv = obo_cache.load("http://purl.obolibrary.org/obo/pato.obo")
+    return cv
 
 
 def load_xlmod():
     """Load the XL-MOD cross linking modification controlled vocabulary"""
-    cv = obo_cache.resolve("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo")
-    return ControlledVocabulary.from_obo(cv)
+    cv = obo_cache.load("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo")
+    return cv
 
 
 def load_unimod():
     """Load the UNIMOD protein modification controlled vocabulary"""
-    return obo_cache.resolve("http://www.unimod.org/obo/unimod.obo")
+    return obo_cache.load("http://www.unimod.org/obo/unimod.obo")
 
 
 def load_bto():
-    cv = obo_cache.resolve("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO")
-    return ControlledVocabulary.from_obo(cv)
+    cv = obo_cache.load("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO")
+    return cv
 
 
 def load_go():
-    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/go.obo")
-    return ControlledVocabulary.from_obo(cv)
+    cv = obo_cache.load("http://purl.obolibrary.org/obo/go.obo")
+    return cv
 
 
 def load_psimod():
-    cv = obo_cache.resolve("https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo")
-    return ControlledVocabulary.from_obo(cv)
+    cv = obo_cache.load("https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo")
+    return cv
 
 
 def load_gno():
-    cv = obo_cache.resolve("http://purl.obolibrary.org/obo/gno.obo")
-    return ControlledVocabulary.from_obo(cv)
+    cv = obo_cache.load("http://purl.obolibrary.org/obo/gno.obo")
+    return cv

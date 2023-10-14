@@ -2,7 +2,8 @@ from six import add_metaclass
 
 
 class ParamManagingProperty(object):
-    '''A descriptor that will delegate value storage to
+    '''
+    A descriptor that will delegate value storage to
     the bound instance's :attr:`binding`, and can be
     enumerated by :class:`ParamManagingMeta` to set up
     defaults.
@@ -47,7 +48,8 @@ class ParamManagingProperty(object):
 
 
 class ParamManagingMeta(type):
-    '''Register :class:`ParamManagingProperty` bound to
+    '''
+    Register :class:`ParamManagingProperty` bound to
     the initializing class so they can be enumerated
     at a later point.
 
@@ -71,8 +73,11 @@ class ParamManagingMeta(type):
 
 @add_metaclass(ParamManagingMeta)
 class ElementBuilder(object):
-    '''A type to accumulate information in to allow
     '''
+    A base type to accumulate information in to allow easy construction of
+    a potentially nested component construct.
+    '''
+
     binding_name = None
 
     def __init__(self, source, binding=None, params=None, **kwargs):
