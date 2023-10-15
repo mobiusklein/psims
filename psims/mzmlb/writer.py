@@ -297,7 +297,8 @@ class MzMLbWriter(_MzMLWriter):
                 array_type_ = array_type
             if array_type_ not in ARRAY_TYPES:
                 is_non_standard = True
-                params.append(NON_STANDARD_ARRAY)
+                params.append(
+                    {"name": NON_STANDARD_ARRAY, "value": array_type_})
         params.append(compression_map[compression])
         params.append(dtype_to_encoding[dtype])
 
