@@ -139,6 +139,34 @@ class VocabularyResolver(object):
             map(self._bind_vocabulary, vocabularies))
         self.namespaces = {}
 
+    @property
+    def use_remote_controlled_vocabularies(self) -> bool:
+        """
+        Whether or not to use remote controlled vocabularies retrieved from the internet.
+
+        If set to :const:`False`, this will force :mod:`psims` to use its locally cached version
+        or use the back-up version bundled with that version of the library if caching was disabled.
+
+        Returns
+        -------
+        bool
+        """
+        return self.vocabulary_resolver.use_remote
+
+    @use_remote_controlled_vocabularies.setter
+    def use_remote_controlled_vocabularies(self, value: bool):
+        """
+        Sets whether or not to use remote controlled vocabularies retrieved from the internet.
+
+        If set to :const:`False`, this will force :mod:`psims` to use its locally cached version
+        or use the back-up version bundled with that version of the library if caching was disabled.
+
+        Returns
+        -------
+        bool
+        """
+        self.vocabulary_resolver.use_remote = value
+
     def load(self, url: str):
         if url in self.namespaces:
             logger.debug(f"Returning {url!r} from namespace cache")

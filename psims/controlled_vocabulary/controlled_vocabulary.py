@@ -548,14 +548,14 @@ class OBOCache(VocabularyResolverBase):
                 if os.path.exists(name) and os.path.getsize(name) > 0:
                     return open(name, 'rb')
                 else:
-                    f = self._open_url(uri)
-                    with open(name, 'wb') as cache_f:
-                        n_chars = 0
-                        for i, line in enumerate(f.readlines()):
-                            n_chars += len(line)
-                            cache_f.write(line)
-                        if n_chars < 5:
-                            raise ValueError("No bytes written")
+                    with self._open_url(uri) as f:
+                        with open(name, 'wb') as cache_f:
+                            n_chars = 0
+                            for i, line in enumerate(f.readlines()):
+                                n_chars += len(line)
+                                cache_f.write(line)
+                            if n_chars < 5:
+                                raise ValueError("No bytes written")
                     if os.path.getsize(name) > 0:
                         return open(name, 'rb')
                     else:
@@ -578,7 +578,8 @@ class OBOCache(VocabularyResolverBase):
             if fh is None:
                 raise ValueError(f"Failed to resolve {uri} or via its fall-back")
         if uri.endswith("obo"):
-            cv = ControlledVocabulary.from_obo(fh, import_resolver=self.load)
+            with fh:
+                cv = ControlledVocabulary.from_obo(fh, import_resolver=self.load)
             return cv
         else:
             raise ValueError(f"Don't know how to load {uri}")
@@ -655,7 +656,8 @@ def load_psims() -> ControlledVocabulary:
         return cv
     except TypeError:
         cv = _use_vendored_psims_obo()
-        return ControlledVocabulary.from_obo(cv)
+        with cv:
+            return ControlledVocabulary.from_obo(cv)
 
 
 def load_uo():
