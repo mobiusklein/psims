@@ -109,8 +109,8 @@ compression_map = {
     None: 'no compression',
     False: 'no compression',
     True: "zlib compression",
-    COMPRESSION_LINEAR: "linear prediction",
-    COMPRESSION_DELTA: "delta prediction"
+    COMPRESSION_LINEAR: "MS:1003090",
+    COMPRESSION_DELTA: "MS:1003089"
 }
 
 if pynumpress is not None:
@@ -183,6 +183,8 @@ def encode_array_direct(array, compression=COMPRESSION_NONE, dtype=np.float32):
         array = linear_encode(array, copy=True)
     elif compression == COMPRESSION_DELTA:
         array = delta_encode(array, copy=True)
+    elif compression == COMPRESSION_NUMPRESS_LINEAR_PREDICTION:
+        array = pynumpress.encode_linear(array, pynumpress.optimal_linear_fixed_point(array))
     return array
 
 
@@ -203,7 +205,8 @@ def decode_array(bytestring, compression=COMPRESSION_NONE, dtype=np.float32):
 
 
 def delta_predict(data, copy=True):
-    '''Reverse the lossy transformation of the delta compression
+    '''
+    Reverse the lossy transformation of the delta compression
     helper.
 
     Parameters
@@ -228,7 +231,8 @@ def delta_predict(data, copy=True):
 
 
 def linear_predict(data, copy=True):
-    '''Reverse the lossy transformation of the linear interpolation compression
+    '''
+    Reverse the lossy transformation of the linear interpolation compression
     helper.
 
     Parameters

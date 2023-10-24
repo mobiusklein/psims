@@ -132,7 +132,7 @@ class ArrayBuffer(object):
         check
         flush
         """
-        self.buffer.write(array.tobytes())
+        self.buffer.write(array)
         self.check()
 
     def check(self):
@@ -260,7 +260,8 @@ class MzMLbWriter(_MzMLWriter):
         if self._should_close():
             self.close()
 
-    def _generate_array_name(self, array_type, is_non_standard=False, scope='spectrum', dtype=None):
+    def _generate_array_name(self, array_type, is_non_standard=False, scope='spectrum', dtype=None,
+                             is_opaque: bool=False):
         if not is_non_standard:
             cv_ref, name, accession, term = self.context._resolve_cv_ref(array_type, None, None)
             key = accession.replace(":", "_")
@@ -269,6 +270,8 @@ class MzMLbWriter(_MzMLWriter):
         tag_name = "{scope}_{key}".format(scope=scope, key=key)
         if dtype is not None:
             tag_name += '_' + dtype.__name__
+        if is_opaque:
+            dtype = h5py.opaque_dtype(np.uint8)
         dset = self.h5_file.create_dataset(
             tag_name, chunks=(self.h5_blocksize, ),
             shape=(self.h5_blocksize, ), dtype=dtype, compression=self.h5_compression,
@@ -286,7 +289,6 @@ class MzMLbWriter(_MzMLWriter):
         array = np.array(array, dtype=dtype)
         encoded_array = encode_array_direct(
             array, compression=compression, dtype=dtype)
-
         is_non_standard = False
         params = []
         if array_type is not None:
@@ -312,7 +314,12 @@ class MzMLbWriter(_MzMLWriter):
         try:
             storage_name = self.array_name_cache[array_name, is_non_standard, scope, dtype]
         except KeyError:
-            storage_name = self._generate_array_name(array_name, is_non_standard, scope, dtype)
+            # Opaque data will be returned by `encode_array_direct` as a byte array, not the original
+            # array itself. This tells the future reading HDF5 library to not try to convert to a particular
+            # data type and leave it to the caller to convert back to float/int as needed.
+            is_opaque = encoded_array.dtype == np.uint8 and dtype != np.uint8
+            storage_name = self._generate_array_name(
+                array_name, is_non_standard, scope, dtype, is_opaque=is_opaque)
             self.array_name_cache[array_name, is_non_standard, scope, dtype] = storage_name
 
         length = len(encoded_array)

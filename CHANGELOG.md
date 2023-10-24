@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [Unreleased]
+
+### Changed
+1. The `compression` parameter for mzML and mzMLb `spectrum` and `chromatogram` writing methods may now be a
+   `Mapping`-like object mapping array name to compressor name. This supports using Numpress on m/z arrays and
+   zlib on intensity arrays, for example, or two different Numpress compressors as the linear compression Numpress
+   proposes for m/z isn't appropriate for intensity.
+2. The mzMLb writer will now detect when a compressor has occluded the data type of an array and mark that array as
+   opaque so that the future reading HDF5 library doesn't try to cast that array to its "real" data type. This leaves
+   it up to the caller to properly decode the opaque bytes back into their proper representation.
+
+
 ## [v1.2.8] - 2023-10-13
 
 | Name | Version | Checksum |
