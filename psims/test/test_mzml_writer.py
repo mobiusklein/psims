@@ -158,7 +158,10 @@ def test_write(output_path, compressor):
 
                 spectrum = f.spectrum(mz_array, intensity_array, charge_array, id='scanId=4', params=[
                     {"name": "ms level", "value": 2}, {"ref": 'common_params'}],
-                    polarity='negative scan', precursor_information=pb)
+                    polarity='negative scan', precursor_information=pb, compression={
+                        "m/z array": "zlib",
+                        "intensity array": "none",
+                    })
                 spectrum.write()
     output_path = f.outfile.name
     opener = compression_registry.get(output_path)

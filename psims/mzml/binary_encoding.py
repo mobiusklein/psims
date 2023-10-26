@@ -106,6 +106,7 @@ compression_map = {
     COMPRESSION_ZLIB: "zlib compression",
     COMPRESSION_NONE: 'no compression',
     COMPRESSION_ZSTD: 'zstd compression',
+    'no compression': 'no compression',
     None: 'no compression',
     False: 'no compression',
     True: "zlib compression",
@@ -139,6 +140,8 @@ def build_null_terminated_string_byte_array(array):
 
 
 def encode_array(array, compression=COMPRESSION_NONE, dtype=np.float32):
+    if compression is None:
+        compression = COMPRESSION_NONE
     if compression == COMPRESSION_LINEAR or compression == COMPRESSION_DELTA:
         array = coerce_array(array, dtype)
         if compression == COMPRESSION_LINEAR:

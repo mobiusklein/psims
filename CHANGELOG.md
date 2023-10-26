@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ## [Unreleased]
 
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2023-08-09 | 6178d787e38a8a1b5d7506e3c1a880d0 |
+| go.obo.gz | releases/2023-10-09 | a827a54e43185170c973afe1add92941 |
+| pato.obo.gz | releases/2023-05-18/pato.obo | 8a14f0e3b3318c13d029d84d693a01e3 |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.134 | d3eea6067a44a85dc72fef90acafbfb5 |
+| unimod_tables.xml.gz | - | efc94f333458012a77203d09a64d7d38 |
+| unit.obo.gz | releases/2023-05-25 | 5a04e9d871730a1ee04764055e841785 |
+
 ### Changed
 1. The `compression` parameter for mzML and mzMLb `spectrum` and `chromatogram` writing methods may now be a
    `Mapping`-like object mapping array name to compressor name. This supports using Numpress on m/z arrays and
