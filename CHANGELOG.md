@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
-## [Unreleased]
+## [v1.2.9] - 2023-10-26
 
 | Name | Version | Checksum |
 |  :---: |  :---: |  :---: |
@@ -428,8 +428,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.8...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.2.9...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v1.2.9]: https://github.com/mobiusklein/psims/releases/v1.2.9
 [v1.2.8]: https://github.com/mobiusklein/psims/releases/v1.2.8
 [v1.2.7]: https://github.com/mobiusklein/psims/releases/v1.2.7
 [v1.2.6]: https://github.com/mobiusklein/psims/releases/v1.2.6
