@@ -68,9 +68,11 @@ if hdf5plugin is not None:
         "blosc:zstd": hdf5plugin.Blosc('zstd'),
     }
     HDF5_COMPRESSORS = {k: dict(v) for k, v in HDF5_COMPRESSORS.items()}
-    DEFAULT_COMPRESSOR = 'blosc'
+    # DEFAULT_COMPRESSOR = 'blosc'
 
 HDF5_COMPRESSORS['zlib'] = HDF5_COMPRESSORS['gzip'] = {'compression': 'gzip', 'compression_opts': 4}
+HDF5_COMPRESSORS['gzip:9'] = {
+    'compression': 'gzip', 'compression_opts': 9}
 
 
 HDF5_COMPRESSOR_MAGIC_NUMBERS_TO_NAME = {
@@ -205,6 +207,8 @@ class MzMLbWriter(_MzMLWriter):
 
     offset_tracker: Counter
 
+    schema_version = "mzMLb 1.0"
+
     def __init__(self, h5_file, close=None, vocabularies=None, missing_reference_is_error=False,
                  vocabulary_resolver=None, id=None, accession=None, h5_compression=DEFAULT_COMPRESSOR,
                  h5_compression_options=None, h5_blocksize: int=2**20, buffer_blocks: int=10, **kwargs):
@@ -245,7 +249,9 @@ class MzMLbWriter(_MzMLWriter):
         super(MzMLbWriter, self).end(type, value, traceback)
         xml_bytes = self.xml_buffer.getvalue()
         n = self.create_buffer("mzML", xml_bytes)
-        self.h5_file['mzML'].attrs['version'] = "mzMLb 1.0"
+
+        self.h5_file['mzML'].attrs['version'] = np.array(self.schema_version.encode('utf8'),
+                                                         dtype=h5py.string_dtype('utf8', len(self.schema_version)))
         for array, z in self.offset_tracker.items():
             buff = self.array_buffers[array]
             buff.flush()
