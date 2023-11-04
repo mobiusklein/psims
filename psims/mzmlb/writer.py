@@ -57,7 +57,7 @@ from . import components
 
 HDF5_COMPRESSORS = {}
 
-DEFAULT_COMPRESSOR = 'gzip'
+DEFAULT_COMPRESSOR = 'zlib:9'
 
 if hdf5plugin is not None:
     HDF5_COMPRESSORS = {
