@@ -71,7 +71,7 @@ if hdf5plugin is not None:
     # DEFAULT_COMPRESSOR = 'blosc'
 
 HDF5_COMPRESSORS['zlib'] = HDF5_COMPRESSORS['gzip'] = {'compression': 'gzip', 'compression_opts': 4}
-HDF5_COMPRESSORS['gzip:9'] = {
+HDF5_COMPRESSORS['zlib:9'] = HDF5_COMPRESSORS['gzip:9'] = {
     'compression': 'gzip', 'compression_opts': 9}
 
 
@@ -250,8 +250,7 @@ class MzMLbWriter(_MzMLWriter):
         xml_bytes = self.xml_buffer.getvalue()
         n = self.create_buffer("mzML", xml_bytes)
 
-        self.h5_file['mzML'].attrs['version'] = np.array(self.schema_version.encode('utf8'),
-                                                         dtype=h5py.string_dtype('utf8', len(self.schema_version)))
+        self._create_fixed_length_attribute(self.h5_file['mzML'], 'version', self.schema_version, 'utf8')
         for array, z in self.offset_tracker.items():
             buff = self.array_buffers[array]
             buff.flush()
@@ -424,3 +423,7 @@ class MzMLbWriter(_MzMLWriter):
             dtype=np.int8, data=bytearray(content), compression=self.h5_compression,
             compression_opts=self.h5_compression_options)
         return n
+
+    def _create_fixed_length_attribute(self, group: h5py.Group, name: str, value: str, encoding: str='ascii'):
+        encoded = value.encode(encoding)
+        group.attrs.create(name, encoded, dtype=h5py.string_dtype('ascii', len(encoded)))
