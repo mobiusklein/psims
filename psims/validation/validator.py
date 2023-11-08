@@ -1,12 +1,12 @@
-import pkg_resources
-
-from lxml import etree
+from importlib import resources
 
 from six import raise_from
 
+from lxml import etree
+
 
 def get_xsd(name):
-    return pkg_resources.resource_stream(__name__, "xsd/%s" % name)
+    return resources.open_binary(f"psims.validation.xsd", name)
 
 
 schemas = {
