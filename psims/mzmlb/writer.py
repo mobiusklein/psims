@@ -426,4 +426,14 @@ class MzMLbWriter(_MzMLWriter):
 
     def _create_fixed_length_attribute(self, group: h5py.Group, name: str, value: str, encoding: str='ascii'):
         encoded = value.encode(encoding)
-        group.attrs.create(name, encoded, dtype=h5py.string_dtype('ascii', len(encoded)))
+        type_id = h5py.h5t.TypeID.copy(h5py.h5t.C_S1)
+        type_id.set_size(len(value) + 1)
+        type_id.set_strpad(h5py.h5t.STR_NULLTERM)
+        if encoding == 'ascii':
+            type_id.set_cset(h5py.h5t.CSET_ASCII)
+        elif encoding == 'utf8':
+            type_id.set_cset(h5py.h5t.CSET_UTF8)
+        else:
+            warnings.warn(f"{encoding} is not compatible with HDF5, defaulting to UTF8")
+            type_id.set_cset(h5py.h5t.CSET_UTF8)
+        group.attrs.create(name, encoded, dtype=type_id)
