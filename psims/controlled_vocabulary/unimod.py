@@ -1,3 +1,4 @@
+from typing import Union
 import warnings
 import re
 
@@ -760,7 +761,13 @@ class Unimod(object):
         except Exception:
             return self.default_version
 
-    def get(self, identifier, strict=True):
+    def by_id(self, identifier: int):
+        mod = self.session.query(Modification).get(identifier)
+        if mod is None:
+            raise KeyError(identifier)
+        return mod
+
+    def get(self, identifier: Union[str, int], strict=True):
         is_explicit_accession = isinstance(identifier, basestring) and identifier.startswith("UNIMOD")
         try:
             # At least one Modification has an empty string code_name or ex_code_name, causing
@@ -772,10 +779,7 @@ class Unimod(object):
         if isinstance(identifier, int) or is_explicit_accession:
             if is_explicit_accession:
                 identifier = int(identifier.replace("UNIMOD:", ''))
-            mod = self.session.query(Modification).get(identifier)
-            if mod is None:
-                raise KeyError(identifier)
-            return mod
+            return self.by_id(identifier)
         elif isinstance(identifier, basestring):
             if strict:
                 mod = self.session.query(Modification).filter(

@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [Unreleased]
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
+| gno.obo.gz | 2023-11-09 | 078de92750ee4956b705684253a66f97 |
+| go.obo.gz | releases/2023-11-15 | 1130d315870d82c1624f87b37305777b |
+| pato.obo.gz | releases/2023-05-18/pato.obo | 8a14f0e3b3318c13d029d84d693a01e3 |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.136 | 1d5aa08ea57762000d00a9300734a78c |
+| unimod_tables.xml.gz | - | efc94f333458012a77203d09a64d7d38 |
+| unit.obo.gz | releases/2023-05-25 | 5a04e9d871730a1ee04764055e841785 |
+
+### Added
+1. Add `by_id` method to `Unimod` for parity with `pyteomics`
+
 ## [v1.3.1]
 
 ### Changed
