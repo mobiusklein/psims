@@ -19,7 +19,7 @@ from sqlalchemy import (Numeric, Unicode,
                         UnicodeText, Boolean, event)
 from sqlalchemy import exc as sa_exc
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from six import string_types as basestring
 
@@ -705,7 +705,7 @@ def create(doc_path, output_path="sqlite://"):
     tree = preprocess_xml(doc_path)
     engine = create_engine(output_path)
     Base.metadata.create_all(engine)
-    session = sessionmaker(bind=engine, autoflush=False)()
+    session = scoped_session(sessionmaker(bind=engine, autoflush=False))
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=sa_exc.SAWarning)
         for model in model_registry:
@@ -728,7 +728,7 @@ def create(doc_path, output_path="sqlite://"):
 def session(path="sqlite:///unimod.db"):
     engine = create_engine(path)
     Base.metadata.create_all(engine)
-    session = sessionmaker(bind=engine, autoflush=False)()
+    session = scoped_session(sessionmaker(bind=engine, autoflush=False))
     return session
 
 
