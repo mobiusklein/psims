@@ -3,16 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
-## [v1.3.3]
+## [v1.3.3] - 2024-01-25
 
 | Name | Version | Checksum |
 |  :---: |  :---: |  :---: |
 | XLMOD.obo.gz | release/2019-10-28 | 4e577044551d277e4bbd62753fa15e08 |
 | gno.obo.gz | 2023-12-11 | ec47a2eb0af631bca7a40d85a4832ab4 |
-| go.obo.gz | releases/2023-11-15 | 1130d315870d82c1624f87b37305777b |
+| go.obo.gz | releases/2024-01-17 | 7e6b9974184dda306e6e07631f1783af |
 | pato.obo.gz | releases/2023-05-18/pato.obo | 8a14f0e3b3318c13d029d84d693a01e3 |
 | psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
-| psi-ms.obo.gz | 4.1.138 | 816db64f5e1ff386ff85cad35147f3c1 |
+| psi-ms.obo.gz | 4.1.139 | a7254eb76da9e38c85b9dad624c9f77e |
 | unimod_tables.xml.gz | - | efc94f333458012a77203d09a64d7d38 |
 | unit.obo.gz | releases/2023-05-25 | 5a04e9d871730a1ee04764055e841785 |
 
