@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [v1.3.4] - 2024-08-25
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | release/2019-10-28 | 20422ebfdf25d53d9287eea52f1f925d |
+| gno.obo.gz | 2024-05-21 | 5f5db5832b92c6ef3e036e3e80da608f |
+| go.obo.gz | releases/2024-06-17 | 7fa7ade5e3e26eab3959a7e4bc89ad4f |
+| pato.obo.gz | releases/2024-03-28/pato.obo | 1d9a7fb3423ef79f18f54eea352d09c8 |
+| psi-mod.obo.gz | - | 713e6dd17632d0388802f1b0e06800f0 |
+| psi-ms.obo.gz | 4.1.172 | e5defa3b8c03ed1f43a04fd7c8d1819e |
+| unimod_tables.xml.gz | - | 50ca5b540cea270e91df3f555483d1e6 |
+| unit.obo.gz | releases/2023-05-25 | 5a04e9d871730a1ee04764055e841785 |
+
+### Fixed
+- Make XSD value type parsing and formatting separate concepts and properly re-format date-like types
+
 ## [v1.3.3] - 2024-01-25
 
 | Name | Version | Checksum |
@@ -485,8 +501,10 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.3.2...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.3.4...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v1.3.4]: https://github.com/mobiusklein/psims/releases/v1.3.4
+[v1.3.3]: https://github.com/mobiusklein/psims/releases/v1.3.3
 [v1.3.2]: https://github.com/mobiusklein/psims/releases/v1.3.2
 [v1.3.1]: https://github.com/mobiusklein/psims/releases/v1.3.1
 [v1.3.0]: https://github.com/mobiusklein/psims/releases/v1.3.0
