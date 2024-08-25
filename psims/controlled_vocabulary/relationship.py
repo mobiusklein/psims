@@ -86,7 +86,8 @@ class HasValueTypeRelationship(Relationship):
     def make_value_type(self, vocabulary):
         # We have a built-in data type with known semantics
         if 'xsd' in self.accession:
-            self.value_type = TypeDefinition(self.accession, self.comment or self.accession, parse_xsdtype(self.accession))
+            converter, formatter = parse_xsdtype(self.accession)
+            self.value_type = TypeDefinition(self.accession, self.comment or self.accession, converter, formatter)
         else:
             term = vocabulary[self.accession]
             self.value_type = term.as_value_type()

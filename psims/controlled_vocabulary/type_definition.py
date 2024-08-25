@@ -24,20 +24,69 @@ def positive_integer(value):
     return x
 
 
+def resolve_datetime(value):
+    if isinstance(value, datetime.datetime):
+        return value
+    else:
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+
+
+def resolve_date(value):
+    if isinstance(value, datetime.date):
+        return value
+    else:
+        return datetime.date.strptime(value, "%Y-%m-%d")
+
+
+def str_or_f(f):
+    def g(x):
+        if isinstance(x, str):
+            return x
+        else:
+            return f(x)
+    return g
+
+
+def resolve_boolean(x):
+    if isinstance(x, str):
+        if x.lower().strip() == "true":
+            return True
+        else:
+            return False
+    else:
+        return bool(x)
+
+
 value_type_resolvers = {
-    'int': int,
-    'integer': int,
-    'double': float,
-    'float': float,
-    'decimal': float,
-    'string': text_type,
+    "int": int,
+    "integer": int,
+    "double": float,
+    "float": float,
+    "decimal": float,
+    "string": text_type,
     "anyURI": text_type,
-    'nonNegativeInteger': non_negative_integer,
-    'boolean': bool,
-    'positiveInteger': positive_integer,
-    'dateTime': lambda x: datetime.datetime.strptime(x, '%Y-%m-%dT%H:%M:%S'),
+    "nonNegativeInteger": non_negative_integer,
+    "boolean": resolve_boolean,
+    "positiveInteger": positive_integer,
+    "dateTime": resolve_datetime,
     # TODO
-    'date': str,
+    "date": resolve_date,
+}
+
+
+value_type_formatters = {
+    "int": str,
+    "integer": str,
+    "double": str,
+    "float": str,
+    "decimal": str,
+    "string": str,
+    "anyURI": str,
+    "nonNegativeInteger": str,
+    "positiveInteger": str,
+    "boolean": lambda x: str(x).lower(),
+    "dateTime": str_or_f(datetime.datetime.isoformat),
+    "date": str_or_f(datetime.date.isoformat),
 }
 
 
@@ -52,7 +101,8 @@ def parse_xsdtype(text):
 
     Returns
     -------
-    :class:`~.Callable`
+    converter : :class:`~.Callable`
+    formatter: :class:`~.Callable`
     """
     match = xsd_pattern.search(text)
     if match:
@@ -60,9 +110,16 @@ def parse_xsdtype(text):
         try:
             dtype = value_type_resolvers[dtype_name]
         except KeyError:
-            warnings.warn("Could not find a converter for XSD type %r" % (text, ))
+            warnings.warn("Could not find a converter for XSD type %r" % (text,))
             dtype = str
-        return dtype
+        try:
+            formatter = value_type_formatters[dtype_name]
+        except KeyError:
+            warnings.warn("Could not find a formatter for XSD type %r" % (text,))
+            formatter = str
+        return dtype, formatter
+    else:
+        return str, str
 
 
 def obj_to_xsdtype(value):
@@ -114,10 +171,11 @@ def type_inference_guess(string):
 
 
 class TypeDefinition(object):
-    def __init__(self, id, name, type_definition):
+    def __init__(self, id, name, type_definition, formatter=str):
         self.id = id
         self.name = name
         self.type_definition = type_definition
+        self.formatter = formatter
 
     def __repr__(self):
         template = "{self.__class__.__name__}({self.id!r}, {self.name!r}, {self.type_definition!r})"
@@ -130,7 +188,7 @@ class TypeDefinition(object):
         return self.parse(value)
 
     def format(self, value):
-        return str(value)
+        return self.formatter(value)
 
 
 class ListOfType(TypeDefinition):

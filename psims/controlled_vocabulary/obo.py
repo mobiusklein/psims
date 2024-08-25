@@ -208,7 +208,7 @@ class OBOParser(object):
                             dtype = None
                         value = value.strip()
                         if dtype is not None:
-                            dtype = parse_xsdtype(dtype)
+                            dtype, _ = parse_xsdtype(dtype)
                         if dtype is not None:
                             value = dtype(value[1:-1])
                         else:
@@ -226,7 +226,7 @@ class OBOParser(object):
                 val = val.strip()
                 if val.startswith("\""):
                     val, dtype = val.rsplit(" ", 1)
-                    dtype = parse_xsdtype(dtype)
+                    dtype, _ = parse_xsdtype(dtype)
                     try:
                         val = dtype(val[1:-1])
                     except (ValueError, TypeError):

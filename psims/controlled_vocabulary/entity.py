@@ -5,7 +5,7 @@ from collections.abc import Mapping, MutableSequence
 
 from psims.utils import ensure_iterable
 
-from .type_definition import parse_xsdtype, TypeDefinition, ListOfType
+from .type_definition import TypeDefinition, ListOfType
 
 if TYPE_CHECKING:
     from psims.controlled_vocabulary.controlled_vocabulary import ControlledVocabulary
