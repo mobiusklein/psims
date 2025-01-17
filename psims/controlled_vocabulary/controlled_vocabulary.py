@@ -337,7 +337,7 @@ class ControlledVocabulary(Mapping[str, Entity]):
 
     def _query_imported(self, query):
         term = None
-        for url in ensure_iterable(self.metadata['import']):
+        for url in ensure_iterable(self.metadata.get('import', [])):
             if url in self.imports:
                 cv = self.imports[url]
             else:

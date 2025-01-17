@@ -89,8 +89,14 @@ class HasValueTypeRelationship(Relationship):
             converter, formatter = parse_xsdtype(self.accession)
             self.value_type = TypeDefinition(self.accession, self.comment or self.accession, converter, formatter)
         else:
-            term = vocabulary[self.accession]
-            self.value_type = term.as_value_type()
+            try:
+                term = vocabulary[self.accession]
+                self.value_type = term.as_value_type()
+            except KeyError:
+                accession = 'xsd:' + self.accession
+                converter, formatter = parse_xsdtype(accession)
+                self.accession = accession
+                self.value_type = TypeDefinition(self.accession, self.comment or self.accession, converter, formatter)
 
     def parse(self, value):
         if self.value_type is None:
