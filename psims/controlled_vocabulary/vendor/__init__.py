@@ -5,7 +5,10 @@ from gzip import GzipFile
 
 
 def _load(prefix, name):
-    return (resources.files(prefix) / name).open('rb')
+    try:
+        return (resources.files(prefix) / name).open('rb')
+    except AttributeError:
+        return resources.open_binary(prefix, name)
 
 
 def _use_vendored_psims_obo():
