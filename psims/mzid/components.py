@@ -8,7 +8,8 @@ try:
     from collections.abc import Mapping
 except ImportError:
     from collections import Mapping
-from datetime import datetime, UTC
+import datetime
+# from datetime import datetime
 from numbers import Number as NumberBase
 from itertools import chain
 
@@ -65,7 +66,8 @@ class MzIdentML(TagBase):
     }
 
     def __init__(self, **attrs):
-        attrs.setdefault('creationDate', datetime.now(UTC).isoformat())
+        cd = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        attrs.setdefault('creationDate', cd)
         attrs.setdefault('id', 0)
         attrs.setdefault('version', '1.2.0')
         version = attrs['version']
