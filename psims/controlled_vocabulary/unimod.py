@@ -7,12 +7,9 @@ from collections import Counter
 from lxml import etree
 
 
-try:
-    from sqlalchemy.orm import declarative_base, DeclarativeMeta
-except ImportError: # sqlalchemy 1/2 compat
-    from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
-from sqlalchemy.orm import relationship, backref, object_session
+from sqlalchemy.orm import relationship, backref, object_session, declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy import (Numeric, Unicode,
                         Column, Integer, ForeignKey,
@@ -570,7 +567,7 @@ class Specificity(Base):
     modification_id = Column(Integer, ForeignKey(Modification.id), index=True)
     hidden = Column(Boolean, index=True)
     group = Column(Integer, index=True)
-    neutral_losses = relationship("SpecificityToNeutralLoss")
+    neutral_losses = relationship("SpecificityToNeutralLoss", back_populates='specificity')
 
     position = relationship(Position)
 
@@ -633,7 +630,7 @@ class SpecificityToNeutralLoss(Base):
 
     id = Column(Integer, primary_key=True)
     specificity_id = Column(Integer, ForeignKey(Specificity.id), index=True)
-    specificity = relationship(Specificity, uselist=False)
+    specificity = relationship(Specificity, uselist=False, back_populates="neutral_losses")
     monoisotopic_mass = Column(Numeric(12, 6, asdecimal=False), index=True)
     average_mass = Column(Numeric(12, 6, asdecimal=False), index=True)
     _composition = Column(Unicode(128))
@@ -762,7 +759,7 @@ class Unimod(object):
             return self.default_version
 
     def by_id(self, identifier: int):
-        mod = self.session.query(Modification).get(identifier)
+        mod = self.session.get(Modification, identifier)
         if mod is None:
             raise KeyError(identifier)
         return mod

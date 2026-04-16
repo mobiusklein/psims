@@ -6,7 +6,7 @@ from lxml import etree
 
 
 def get_xsd(name):
-    return resources.open_binary(f"psims.validation.xsd", name)
+    return resources.files(f"psims.validation.xsd") / name
 
 
 schemas = {

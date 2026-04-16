@@ -1,12 +1,11 @@
 import io
 import json
-try:
-    from importlib import resources
-    _load = resources.open_binary
-except ImportError:
-    import pkg_resources
-    _load = pkg_resources.resource_stream
+from importlib import resources
 from gzip import GzipFile
+
+
+def _load(prefix, name):
+    return (resources.files(prefix) / name).open('rb')
 
 
 def _use_vendored_psims_obo():
