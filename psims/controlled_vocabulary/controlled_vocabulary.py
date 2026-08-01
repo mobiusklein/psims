@@ -14,6 +14,7 @@ from psims.controlled_vocabulary.relationship import Reference
 
 from .obo import OBOParser
 from . import unimod
+from . import resid
 
 from .vendor import (
     _use_vendored_bto_obo, _use_vendored_gno_obo, _use_vendored_go_obo,
@@ -623,7 +624,19 @@ def resolve_unimod(cache):
             return unimod.Unimod(None, _use_vendored_unimod_xml())
 
 
+def resolve_resid(cache):
+    '''Custom resolver for the RESID XML document
+
+    RESID ships XML rather than OBO, so it cannot go through the ordinary
+    :meth:`OBOCache.load` path, which only knows how to parse OBO.
+    '''
+    if cache.enabled:
+        return resid.RESID(cache.resolve(resid.RESID_SOURCE_URL))
+    return resid.RESID()
+
+
 OBOCache.default_resolvers.setdefault("http://www.unimod.org/obo/unimod.obo", resolve_unimod)
+OBOCache.default_resolvers.setdefault(resid.RESID_SOURCE_URL, resolve_resid)
 obo_cache = OBOCache(enabled=False)
 
 
@@ -699,4 +712,17 @@ def load_psimod():
 
 def load_gno():
     cv = obo_cache.load("http://purl.obolibrary.org/obo/gno.obo")
+    return cv
+
+
+def load_resid():
+    """Load the RESID Database of Protein Modifications.
+
+    RESID is not bundled with :mod:`psims`, unlike the other vocabularies: its
+    XML carries an explicit copyright notice with no accompanying licence
+    grant, so it is fetched at need rather than redistributed. This means
+    :func:`load_resid` requires network access the first time it is called, or
+    a configured cache.
+    """
+    cv = obo_cache.load(resid.RESID_SOURCE_URL)
     return cv

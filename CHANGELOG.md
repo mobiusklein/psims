@@ -3,6 +3,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
+## [Unreleased]
+
+### Added
+- `load_resid`, making the RESID Database of Protein Modifications reachable
+  through the usual loader interface. RESID ships XML rather than OBO, so it is
+  wired in through `OBOCache.default_resolvers` as UNIMOD is. It is not vendored:
+  the RESID XML carries an explicit copyright notice with no accompanying licence
+  grant, so it is fetched at need rather than redistributed.
+- `RESIDModification.corrections`, exposing every mass change RESID lists for an
+  entry along with the parent residue each applies to.
+
+### Fixed
+- `RESIDModification` reported the mass and composition of the whole modified
+  residue rather than of the modification. O-phospho-L-threonine resolved to
+  181.014009 instead of 79.966331 — wrong by the mass of a threonine, and wrong
+  silently. The mass attributes now read `CorrectionBlock`; the whole-residue
+  values remain available as `residue_monoisotopic_mass` and
+  `residue_composition`.
+- `RESID_SOURCE_URL` pointed at an `ftp://` URL. PIR retired anonymous FTP, and
+  the URL could not have been fetched through `OBOCache` in any case, since
+  `_open_url` wraps every URI in a `Request` with headers. It now points at the
+  same file over HTTPS.
+
 ## [v1.3.4] - 2024-08-25
 
 | Name | Version | Checksum |
