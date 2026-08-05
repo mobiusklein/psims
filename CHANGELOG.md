@@ -8,9 +8,11 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 ### Added
 - `load_resid`, making the RESID Database of Protein Modifications reachable
   through the usual loader interface. RESID ships XML rather than OBO, so it is
-  wired in through `OBOCache.default_resolvers` as UNIMOD is. It is not vendored:
-  the RESID XML carries an explicit copyright notice with no accompanying licence
-  grant, so it is fetched at need rather than redistributed.
+  wired in through `OBOCache.default_resolvers` as UNIMOD is. The resolver
+  prefers the cache, falls back to the network, and falls back again to a
+  vendored copy, and it honours `use_remote`.
+- `residues.xml.gz` in `vendor/`, RESID release 76.00, so RESID is available
+  offline like the other bundled vocabularies.
 - `RESIDModification.corrections`, exposing every mass change RESID lists for an
   entry along with the parent residue each applies to.
 

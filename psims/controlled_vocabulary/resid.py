@@ -42,17 +42,11 @@ from lxml import etree
 
 try:
     has_pyteomics = True
-    from pyteomics.mass.mass import Composition, _make_isotope_string
+    from pyteomics.mass.mass import Composition
     CompositionType = Composition
 except ImportError:
     has_pyteomics = False
     CompositionType = Counter
-
-    def _make_isotope_string(element, isotope):
-        if isotope:
-            return "%s[%d]" % (element, isotope)
-        else:
-            return str(element)
 
 from psims.utils import KeyToAttrProxy
 from .entity import Entity

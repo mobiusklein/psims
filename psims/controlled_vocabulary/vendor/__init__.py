@@ -19,6 +19,12 @@ def _use_vendored_psimod_obo():
     return GzipFile(fileobj=_load(__name__, "psi-mod.obo.gz"))
 
 
+def _use_vendored_resid_xml():
+    # Lowercase deliberately: MANIFEST.in matches `*.xml*` case-sensitively, so
+    # an uppercase .XML would not be packaged.
+    return GzipFile(fileobj=_load(__name__, "residues.xml.gz"))
+
+
 def _use_vendored_unit_obo():
     return GzipFile(fileobj=_load(__name__, "unit.obo.gz"))
 

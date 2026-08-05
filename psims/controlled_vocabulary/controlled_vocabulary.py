@@ -1,3 +1,4 @@
+import io
 import os
 import sys
 import re
@@ -19,7 +20,8 @@ from . import resid
 from .vendor import (
     _use_vendored_bto_obo, _use_vendored_gno_obo, _use_vendored_go_obo,
     _use_vendored_pato_obo, _use_vendored_psimod_obo, _use_vendored_psims_obo,
-    _use_vendored_unimod_xml, _use_vendored_unit_obo, _use_vendored_xlmod_obo)
+    _use_vendored_resid_xml, _use_vendored_unimod_xml, _use_vendored_unit_obo,
+    _use_vendored_xlmod_obo)
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -629,10 +631,38 @@ def resolve_resid(cache):
 
     RESID ships XML rather than OBO, so it cannot go through the ordinary
     :meth:`OBOCache.load` path, which only knows how to parse OBO.
+
+    Prefers the cache, falls back to the network, and falls back again to the
+    vendored copy. The last step matters more here than the download size
+    suggests: a generic modification name is resolved by trying every
+    vocabulary in turn, so a source that always reaches the network turns one
+    name lookup into a multi-megabyte fetch.
     '''
-    if cache.enabled:
-        return resid.RESID(cache.resolve(resid.RESID_SOURCE_URL))
-    return resid.RESID()
+    if not cache.use_remote:
+        # Asked not to touch the network. RESID's own reader goes straight to
+        # `urlopen`, bypassing `_open_url` where that flag is normally honoured,
+        # so it has to be honoured here instead.
+        return resid.RESID(_use_vendored_resid_xml())
+
+    # Cached under a plain filename rather than the source URL, because
+    # `OBOCache.resolve` dispatches back to this very function for a URI that
+    # has a custom resolver -- as `resolve_unimod` avoids the same way.
+    path = cache.path_for("residues.xml", False) if cache.enabled else None
+    if path and os.path.exists(path) and os.path.getsize(path) > 0:
+        return resid.RESID(open(path, 'rb'))
+
+    try:
+        data = urlopen(resid.RESID_SOURCE_URL).read()
+    except OSError:
+        logger.warning(
+            "Could not reach %s; using the copy of RESID bundled with psims.",
+            resid.RESID_SOURCE_URL)
+        return resid.RESID(_use_vendored_resid_xml())
+
+    if path:
+        with open(path, 'wb') as fh:
+            fh.write(data)
+    return resid.RESID(io.BytesIO(data))
 
 
 OBOCache.default_resolvers.setdefault("http://www.unimod.org/obo/unimod.obo", resolve_unimod)

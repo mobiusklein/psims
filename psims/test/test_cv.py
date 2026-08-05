@@ -115,3 +115,43 @@ def test_resid_keeps_the_self_referential_correction():
     by_mass = sorted(c.monoisotopic_mass for c in alanine.corrections)
     assert abs(by_mass[0] - -43.989829) < 1e-6
     assert by_mass[1] == 0.0
+
+
+def test_resid_falls_back_to_the_vendored_copy():
+    # Nothing else in the package exercises a vendored fallback, so this is the
+    # only check that the bundled data is present, is readable, and is wired to
+    # the accessor. `use_remote=False` means what it says: no network, even
+    # though RESID's reader would otherwise call urlopen directly.
+    from psims.controlled_vocabulary.controlled_vocabulary import resolve_resid
+
+    offline = OBOCache(cache_path=os.path.join(tempdir, ".resid_cache"),
+                       enabled=False, use_remote=False)
+    cv = resolve_resid(offline)
+    assert cv.version == "76.00"
+    assert abs(cv['AA0038'].monoisotopic_mass - 79.966331) < 1e-6
+    assert cv['O-phospho-L-threonine'].id == 'AA0038'
+
+
+def test_resid_reads_from_the_cache_without_the_network():
+    # The cache path is the one that matters in practice: a generic
+    # modification name is resolved by trying every vocabulary in turn, so a
+    # source that re-fetches on each call is expensive. Seeded from the bundled
+    # copy so the test needs no network and stays deterministic.
+    from psims.controlled_vocabulary.controlled_vocabulary import resolve_resid
+    from psims.controlled_vocabulary.vendor import _use_vendored_resid_xml
+
+    cache_dir = os.path.join(tempdir, ".resid_cache_test")
+    try:
+        shutil.rmtree(cache_dir)
+    except OSError:
+        pass
+    os.makedirs(cache_dir)
+    cache = OBOCache(cache_path=cache_dir, enabled=True)
+    with open(cache.path_for("residues.xml", False), "wb") as fh:
+        fh.write(_use_vendored_resid_xml().read())
+
+    # use_remote stays True: the point is that the cache is consulted first, so
+    # this must not reach out even though it is allowed to.
+    cv = resolve_resid(cache)
+    assert cv.version == "76.00"
+    assert abs(cv['AA0038'].monoisotopic_mass - 79.966331) < 1e-6
