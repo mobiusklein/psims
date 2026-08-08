@@ -23,6 +23,10 @@
     "checksum": "e5defa3b8c03ed1f43a04fd7c8d1819e",
     "version": "4.1.172"
   },
+  "residues.xml.gz": {
+    "checksum": "ba31f86f9ebf2f373704a405ee594ec7",
+    "version": "76.00"
+  },
   "unimod_tables.xml.gz": {
     "checksum": "50ca5b540cea270e91df3f555483d1e6",
     "version": null

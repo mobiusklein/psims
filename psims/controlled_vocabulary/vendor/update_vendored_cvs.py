@@ -18,6 +18,8 @@ registry = {
     "go.obo": "http://purl.obolibrary.org/obo/go.obo",
     'psi-mod.obo': 'https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo',
     'gno.obo': "http://purl.obolibrary.org/obo/gno.obo",
+    # RESID is frozen -- release 76.00, 2018 -- and served over HTTPS by PIR.
+    'residues.xml': "https://ftp.proteininformationresource.org/pir_databases/other_databases/resid/RESIDUES.XML",
 }
 
 

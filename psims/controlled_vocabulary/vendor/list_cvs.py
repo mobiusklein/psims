@@ -14,6 +14,7 @@ registry = {
     "go.obo.gz": br"data-version: ([^\n]+)\n",
     "psi-mod.obo.gz": br"remark: PSI-MOD version: \(([^)\n]+)\)\n",
     "gno.obo.gz": br"data-version: ([^\n]+)\n",
+    "residues.xml.gz": br'<Database id="RESID" release="([^"]+)"',
 }
 
 
