@@ -3,7 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
-## [Unreleased]
+## [v1.4.0] - 2026-08-8
+
+| Name | Version | Checksum |
+|  :---: |  :---: |  :---: |
+| XLMOD.obo.gz | 1.5.4 | ca72a670ff4687581877157df4e83db6 |
+| gno.obo.gz | 2026-07-24 | 4508636a8b31141d71ffd567fd390882 |
+| go.obo.gz | releases/2026-06-15 | 958bf3796d705412cfb3bafc4c2b45c7 |
+| pato.obo.gz | releases/2025-05-14/pato.obo | cf7dcba3b2b8a952a0091fc18fe3ed36 |
+| psi-mod.obo.gz | - | 9f8711f150c98be0eaf0e1dad7c456f9 |
+| psi-ms.obo.gz | 4.1.258 | 0915a2ba14e28ddfe1332e98f919c5b0 |
+| residues.xml.gz | 76.00 | ba31f86f9ebf2f373704a405ee594ec7 |
+| unimod_tables.xml.gz | - | 2d64d1e08013808d05982885117c02da |
+| unit.obo.gz | releases/2026-07-31 | 8eab6443bfa313872de068082f8250c4 |
 
 ### Added
 - `load_resid`, making the RESID Database of Protein Modifications reachable
@@ -526,8 +538,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 [Semantic Versioning]: https://semver.org/
 
 <!-- Versions -->
-[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.3.4...HEAD
+[Unreleased]: https://github.com/mobiusklein/psims/compare/v1.4.0...HEAD
 [Released]: https://github.com/mobiusklein/psims/releases
+[v1.4.0]: https://github.com/mobiusklein/psims/releases/v1.4.0
 [v1.3.4]: https://github.com/mobiusklein/psims/releases/v1.3.4
 [v1.3.3]: https://github.com/mobiusklein/psims/releases/v1.3.3
 [v1.3.2]: https://github.com/mobiusklein/psims/releases/v1.3.2
