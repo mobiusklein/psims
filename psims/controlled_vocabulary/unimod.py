@@ -51,7 +51,9 @@ class SubclassRegisteringDeclarativeMeta(DeclarativeMeta):
 
 Base = declarative_base(metaclass=SubclassRegisteringDeclarativeMeta)
 
-_unimod_xml_download_url = "http://www.unimod.org/xml/unimod_tables.xml"
+_UNIMOD_XML_DOWNLOAD_URL = "http://www.unimod.org/xml/unimod_tables.xml"
+
+UNIMOD_OBO_URL = "http://www.unimod.org/obo/unimod.obo"
 
 
 def simple_repr(self):  # pragma: no cover
@@ -73,7 +75,7 @@ def simple_repr(self):  # pragma: no cover
 Base.__repr__ = simple_repr
 
 
-def attr_repr(attr_name):  # pragma: no cover
+def _attr_repr(attr_name):  # pragma: no cover
     def __repr__(self):
         return str(getattr(self, attr_name))
 
@@ -182,8 +184,7 @@ def _composition_listener(attr):
 
 def has_composition(attr_name):
     '''
-    A decorator to simplify flagging a Model with a column
-    to be treated as a formula for parsing. Calls :func:`_composition_listener`
+    Flag a Model with a column to be treated as a formula for parsing. Calls :func:`_composition_listener`
     internally.
     '''
     def decorator(model):
@@ -193,10 +194,8 @@ def has_composition(attr_name):
 
 
 class HasFullNameMixin(object):
-    '''
-    A simple mixin to standardize equality operators
-    for models with a :attr:`full_name` attribute.
-    '''
+    '''Standardize the equality operators for models with a :attr:`full_name` attribute'''
+
     def __eq__(self, other):
         try:
             return self.full_name == other.full_name
@@ -262,7 +261,7 @@ class AminoAcid(Base, HasFullNameMixin):
     three_letter = Column(Unicode(10), index=True)
 
 
-@attr_repr("classification")
+@_attr_repr("classification")
 class Classification(Base):
     __tablename__ = "Classification"
 
@@ -281,7 +280,7 @@ class Classification(Base):
     classification = Column(Unicode(30), index=True)
 
 
-@attr_repr("position")
+@_attr_repr("position")
 class Position(Base):
     __tablename__ = "Position"
 
@@ -733,7 +732,7 @@ class Unimod(object):
     name = "UNIMOD"
     default_version = '1.0'
 
-    def __init__(self, path=None, unimod_xml_uri=_unimod_xml_download_url):
+    def __init__(self, path=None, unimod_xml_uri=_UNIMOD_XML_DOWNLOAD_URL):
         if path is None:
             self.path = None
             self.session = create(unimod_xml_uri)

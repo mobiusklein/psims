@@ -27,20 +27,20 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 fallback = {
-    ("http://psidev.cvs.sourceforge.net/*checkout*/"
-     "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
-    ("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/"
-     "psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"): _use_vendored_psims_obo,
+    (
+        "http://psidev.cvs.sourceforge.net/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"
+    ): _use_vendored_psims_obo,
+    (
+        "http://psidev.cvs.sourceforge.net/viewvc/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"
+    ): _use_vendored_psims_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"): _use_vendored_psims_obo,
     "http://purl.obolibrary.org/obo/ms/psi-ms.obo": _use_vendored_psims_obo,
-    ("http://obo.cvs.sourceforge.net/*checkout*/"
-     "obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo,
+    ("http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo"): _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/uo.obo"): _use_vendored_unit_obo,
     "http://purl.obolibrary.org/obo/uo.obo": _use_vendored_unit_obo,
     ("http://ontologies.berkeleybop.org/pato.obo"): _use_vendored_pato_obo,
     ("https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo"): _use_vendored_xlmod_obo,
-    ("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"
-     ): _use_vendored_bto_obo,
+    ("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"): _use_vendored_bto_obo,
     "http://purl.obolibrary.org/obo/go.obo": _use_vendored_go_obo,
     "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo": _use_vendored_psimod_obo,
     "http://purl.obolibrary.org/obo/gno.obo": _use_vendored_gno_obo,
@@ -54,6 +54,18 @@ def _default_import_resolver(url: str) -> Optional['ControlledVocabulary']:
 
 
 def is_curie(text: Union[str, Reference]) -> bool:
+    """
+    Test if text is a CURIE (<NS>:<ID>)
+
+    Parameters
+    ----------
+    text : str | Reference
+        The value to check
+
+    Returns
+    -------
+    bool
+    """
     if isinstance(text, Reference):
         text = text.accession
     if isinstance(text, str):
@@ -626,8 +638,9 @@ def resolve_unimod(cache):
             return unimod.Unimod(None, _use_vendored_unimod_xml())
 
 
-def resolve_resid(cache):
-    '''Custom resolver for the RESID XML document
+def resolve_resid(cache: "OBOCache"):
+    """
+    Resolve the RESID XML document
 
     RESID ships XML rather than OBO, so it cannot go through the ordinary
     :meth:`OBOCache.load` path, which only knows how to parse OBO.
@@ -637,7 +650,7 @@ def resolve_resid(cache):
     suggests: a generic modification name is resolved by trying every
     vocabulary in turn, so a source that always reaches the network turns one
     name lookup into a multi-megabyte fetch.
-    '''
+    """
     if not cache.use_remote:
         # Asked not to touch the network. RESID's own reader goes straight to
         # `urlopen`, bypassing `_open_url` where that flag is normally honoured,
@@ -665,7 +678,7 @@ def resolve_resid(cache):
     return resid.RESID(io.BytesIO(data))
 
 
-OBOCache.default_resolvers.setdefault("http://www.unimod.org/obo/unimod.obo", resolve_unimod)
+OBOCache.default_resolvers.setdefault(unimod.UNIMOD_OBO_URL, resolve_unimod)
 OBOCache.default_resolvers.setdefault(resid.RESID_SOURCE_URL, resolve_resid)
 obo_cache = OBOCache(enabled=False)
 
@@ -710,6 +723,7 @@ def load_uo():
 
 
 def load_pato():
+    """Load the PATO ontology"""
     cv = obo_cache.load("http://purl.obolibrary.org/obo/pato.obo")
     return cv
 
@@ -726,33 +740,30 @@ def load_unimod():
 
 
 def load_bto():
+    """Load the Brenda Tissue Ontology"""
     cv = obo_cache.load("http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO")
     return cv
 
 
 def load_go():
+    """Load the Gene Ontology (GO)"""
     cv = obo_cache.load("http://purl.obolibrary.org/obo/go.obo")
     return cv
 
 
 def load_psimod():
+    """Load the PSI-MOD protein modification vocabulary"""
     cv = obo_cache.load("https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo")
     return cv
 
 
 def load_gno():
+    """Load the GNOme glycan namespace"""
     cv = obo_cache.load("http://purl.obolibrary.org/obo/gno.obo")
     return cv
 
 
 def load_resid():
-    """Load the RESID Database of Protein Modifications.
-
-    RESID is not bundled with :mod:`psims`, unlike the other vocabularies: its
-    XML carries an explicit copyright notice with no accompanying licence
-    grant, so it is fetched at need rather than redistributed. This means
-    :func:`load_resid` requires network access the first time it is called, or
-    a configured cache.
-    """
+    """Load the RESID Database of Protein Modifications"""
     cv = obo_cache.load(resid.RESID_SOURCE_URL)
     return cv
