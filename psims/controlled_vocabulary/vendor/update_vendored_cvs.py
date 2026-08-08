@@ -52,7 +52,12 @@ for cv, url in workload:
         'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like'
                        ' Gecko) Chrome/68.0.3440.106 Safari/537.36')
     })
-    f = urlopen(rq)
+    try:
+        f = urlopen(rq)
+    except Exception as e:
+        print(f"Encountered error {e} while updating {cv} from {url}. Skipping")
+        continue
+
     code = None
     # The keepalive library monkey patches urllib2's urlopen and returns
     # an object with a different API. First handle the normal case, then
